@@ -1,6 +1,8 @@
 
 import 'package:flutter/material.dart';
 
+import '../screens/home-page.dart';
+
 class LoginFormModel {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
@@ -22,7 +24,13 @@ class LoginFormModel {
 
   bool submitForm(BuildContext context) {
     if (formKey.currentState!.validate()) {
-      // Perform form submission logic
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => HomePage(
+              email: emailController.text,
+            )),
+      );
       return true; // Form is valid
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
