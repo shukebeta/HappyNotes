@@ -1,6 +1,6 @@
 {
-    "name": "loginapp",
-    "short_name": "loginapp",
+    "name": "HappyNotes",
+    "short_name": "HappyNotes",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

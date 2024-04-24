@@ -1,4 +1,4 @@
-package com.example.loginapp
+package com.example.HappyNotes
 
 import io.flutter.embedding.android.FlutterActivity
 

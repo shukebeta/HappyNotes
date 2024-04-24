@@ -1,4 +1,4 @@
-# loginapp
+# HappyNotes
 
 A new Flutter project.
 
