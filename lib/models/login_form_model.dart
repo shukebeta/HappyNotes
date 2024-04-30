@@ -1,4 +1,7 @@
 
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+
 import 'package:flutter/material.dart';
 
 import '../screens/home-page.dart';
@@ -21,22 +24,47 @@ class LoginFormModel {
     }
     return null;
   }
+  // Function to make API call
+  Future<void> _verifyCredentials(String username, String password, Function(bool, String) callback) async {
+    final url = Uri.parse('http://localhost:5012/account/login');
+    final response = await http.post(
+      url,
+      body: jsonEncode({'username': username, 'password': password}),
+      headers: {'Content-Type': 'application/json'},
+    );
 
-  bool submitForm(BuildContext context) {
+    final jsonResponse = json.decode(response.body);
+    final successful = jsonResponse['successful'];
+
+    if (jsonResponse['successful']) {
+      callback(true, jsonResponse['data']['token']);
+    } else {
+      // Unsuccessful response
+      callback(false, jsonResponse['message']);
+    }
+  }
+
+  Future<void> submitForm(BuildContext context) async {
     if (formKey.currentState!.validate()) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => HomePage(
-              email: emailController.text,
-            )),
-      );
-      return true; // Form is valid
+      var success = await _verifyCredentials(emailController.text, passwordController.text, (bool result, String tokenOrErrorMessage) {
+        if (result) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => HomePage(
+                  email: emailController.text,
+                )),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(tokenOrErrorMessage)),
+          );
+        }
+      });
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please fill input')),
       );
-      return false; // Form is invalid
     }
   }
 
