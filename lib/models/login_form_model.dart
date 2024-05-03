@@ -11,21 +11,19 @@ class LoginFormModel {
   final TextEditingController passwordController = TextEditingController();
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
-  String? validateEmail(String? value) {
+  String? validateUsername(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Please enter your email';
+      return 'Please enter your email or username';
     }
-    return null;
   }
 
   String? validatePassword(String? value) {
     if (value == null || value.isEmpty) {
       return 'Please enter your password';
     }
-    return null;
   }
   // Function to make API call
-  Future<void> _verifyCredentials(String username, String password, Function(bool, String) callback) async {
+  Future<void> verifyCredentials(String username, String password, Function(bool, String) callback) async {
     final url = Uri.parse('http://localhost:5012/account/login');
     final response = await http.post(
       url,
@@ -46,7 +44,7 @@ class LoginFormModel {
 
   Future<void> submitForm(BuildContext context) async {
     if (formKey.currentState!.validate()) {
-      var success = await _verifyCredentials(emailController.text, passwordController.text, (bool result, String tokenOrErrorMessage) {
+      await verifyCredentials(emailController.text, passwordController.text, (bool result, String tokenOrErrorMessage) {
         if (result) {
           Navigator.push(
             context,

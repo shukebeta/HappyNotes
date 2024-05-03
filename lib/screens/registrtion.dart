@@ -1,20 +1,17 @@
-
-import 'package:HappyNotes/screens/registrtion.dart';
 import 'package:flutter/material.dart';
+import '../models/registration_form_model.dart';
 
-import '../models/login_form_model.dart';
-
-class Login extends StatefulWidget {
-  const Login({Key? key, required this.title}) : super(key: key);
+class Registration extends StatefulWidget {
+  const Registration({Key? key, required this.title}) : super(key: key);
 
   final String title;
 
   @override
-  State<Login> createState() => _LoginState();
+  State<Registration> createState() => _RegistrationState();
 }
 
-class _LoginState extends State<Login> {
-  final _formModel = LoginFormModel();
+class _RegistrationState extends State<Registration> {
+  final _formModel = RegistrationFormModel();
 
   @override
   void dispose() {
@@ -38,12 +35,23 @@ class _LoginState extends State<Login> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
                 child: TextFormField(
-                  controller: _formModel.emailController,
+                  controller: _formModel.usernameController,
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: "Username",
                   ),
                   validator: _formModel.validateUsername,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+                child: TextFormField(
+                  controller: _formModel.emailController,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: "Email",
+                  ),
+                  validator: _formModel.validateEmail,
                 ),
               ),
               Padding(
@@ -63,22 +71,10 @@ class _LoginState extends State<Login> {
                 child: Center(
                   child: ElevatedButton(
                     onPressed: () {
-                      _formModel.submitForm(context);
+                      _formModel.registerUser(context);
                     },
-                    child: const Text('Submit'),
+                    child: const Text('Register'),
                   ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8.0),
-                child: TextButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => Registration(title: 'Registration')),
-                    );
-                  },
-                  child: Text('Don\'t have an account? Register here'),
                 ),
               ),
             ],
