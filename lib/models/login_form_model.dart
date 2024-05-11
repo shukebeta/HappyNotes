@@ -49,9 +49,7 @@ class LoginFormModel {
           Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => HomePage(
-                  email: emailController.text,
-                )),
+                builder: (context) => HomePage()),
           );
         } else {
           ScaffoldMessenger.of(context).showSnackBar(

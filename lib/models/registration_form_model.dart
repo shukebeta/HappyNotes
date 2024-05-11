@@ -76,9 +76,7 @@ class RegistrationFormModel {
               context,
               MaterialPageRoute(
                   builder: (context) =>
-                      HomePage(
-                        email: emailController.text,
-                      )),
+                      HomePage()),
             );
           } else {
             // Registration unsuccessful, display error message
