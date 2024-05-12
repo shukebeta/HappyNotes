@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 
 import '../screens/home-page.dart';
+import '../services/auth-service.dart';
 
 class LoginFormModel {
   final TextEditingController emailController = TextEditingController();
@@ -44,23 +45,27 @@ class LoginFormModel {
 
   Future<void> submitForm(BuildContext context) async {
     if (formKey.currentState!.validate()) {
-      await verifyCredentials(emailController.text, passwordController.text, (bool result, String tokenOrErrorMessage) {
-        if (result) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => HomePage()),
-          );
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(tokenOrErrorMessage)),
-          );
-        }
-      });
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill input')),
-      );
+      final username = emailController.text;
+      final password = passwordController.text;
+
+      // Call AuthService for login
+      final token = await AuthService.login(username, password);
+
+      if (token != null) {
+        // Save the access token
+        await AuthService.saveToken(token);
+
+        // Navigate to the home page
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => HomePage()),
+        );
+      } else {
+        // Show error message if login fails
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Login failed. Please check your credentials.')),
+        );
+      }
     }
   }
 
