@@ -1,11 +1,7 @@
-
-import 'dart:convert';
-import 'package:http/http.dart' as http;
-
 import 'package:flutter/material.dart';
 
 import '../screens/home-page.dart';
-import '../services/auth-service.dart';
+import '../services/account_service.dart';
 
 class LoginFormModel {
   final TextEditingController emailController = TextEditingController();
@@ -16,54 +12,39 @@ class LoginFormModel {
     if (value == null || value.isEmpty) {
       return 'Please enter your email or username';
     }
+    return null;
   }
 
   String? validatePassword(String? value) {
     if (value == null || value.isEmpty) {
       return 'Please enter your password';
     }
+    return null;
   }
   // Function to make API call
-  Future<void> verifyCredentials(String username, String password, Function(bool, String) callback) async {
-    final url = Uri.parse('http://localhost:5012/account/login');
-    final response = await http.post(
-      url,
-      body: jsonEncode({'username': username, 'password': password}),
-      headers: {'Content-Type': 'application/json'},
-    );
-
-    final jsonResponse = json.decode(response.body);
-    final successful = jsonResponse['successful'];
-
-    if (jsonResponse['successful']) {
-      callback(true, jsonResponse['data']['token']);
-    } else {
-      // Unsuccessful response
-      callback(false, jsonResponse['message']);
-    }
-  }
-
   Future<void> submitForm(BuildContext context) async {
     if (formKey.currentState!.validate()) {
       final username = emailController.text;
       final password = passwordController.text;
 
+      // capture the context before entering await
+      final scaffoldContext = ScaffoldMessenger.of(context); // Capture the context
+      final navigator = Navigator.of(context);
       // Call AuthService for login
-      final token = await AuthService.login(username, password);
+      final apiResponse = await AccountService.login(username, password);
 
-      if (token != null) {
+      if (apiResponse['successful']) {
         // Save the access token
-        await AuthService.saveToken(token);
+        await AccountService.saveToken(apiResponse['data']['token']);
 
         // Navigate to the home page
-        Navigator.push(
-          context,
+        navigator.push(
           MaterialPageRoute(builder: (context) => HomePage()),
         );
       } else {
         // Show error message if login fails
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Login failed. Please check your credentials.')),
+        scaffoldContext.showSnackBar(
+          SnackBar(content: Text('Login failed: ${apiResponse.message}')),
         );
       }
     }

@@ -1,9 +1,10 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 
+import '../apis/auth_api.dart';
 import '../screens/home-page.dart';
+import '../services/account_service.dart';
 
 class RegistrationFormModel {
   final TextEditingController usernameController = TextEditingController();
@@ -17,6 +18,7 @@ class RegistrationFormModel {
     }
     return null;
   }
+
   String? validateEmail(String? value) {
     if (value == null || value.isEmpty) {
       return 'Please enter your email or username';
@@ -39,25 +41,6 @@ class RegistrationFormModel {
     return null;
   }
 
-  Future<void> register(String username, String email, String password, Function(bool, String) callback) async {
-    final url = Uri.parse('http://localhost:5012/account/register');
-    final response = await http.post(
-      url,
-      body: jsonEncode({'username': username, 'email': email, 'password': password}),
-      headers: {'Content-Type': 'application/json'},
-    );
-
-    final jsonResponse = json.decode(response.body);
-    final successful = jsonResponse['successful'];
-
-    if (jsonResponse['successful']) {
-      callback(true, jsonResponse['data']['token']);
-    } else {
-      // Unsuccessful response
-      callback(false, jsonResponse['message']);
-    }
-  }
-
   Future<void> registerUser(BuildContext context) async {
     if (formKey.currentState!.validate()) {
       final username = usernameController.text;
@@ -65,31 +48,22 @@ class RegistrationFormModel {
       final password = passwordController.text;
 
       // Make API call to register user
-      try {
-        await register(username, email, password, (successful, tokenOrErrorMessage) {
-          if (successful) {
-            // Registration successful, navigate to home page or display success message
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Registration successful')),
-            );
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) =>
-                      HomePage()),
-            );
-          } else {
-            // Registration unsuccessful, display error message
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(tokenOrErrorMessage)),
-            );
-          }
-        });
-      } catch (e) {
-        // Error occurred during API call
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Error registering user')),
+      final scaffoldContext =
+          ScaffoldMessenger.of(context); // Capture the context
+      final navigator = Navigator.of(context);
+      // Call AuthService for login
+      final apiResponse =
+          await AccountService.register(username, email, password);
+      if (apiResponse['successful']) {
+        await AccountService.saveToken(apiResponse['data']['token']);
+        scaffoldContext.showSnackBar(
+            const SnackBar(content: Text('Registration successful')));
+        navigator.push(
+          MaterialPageRoute(builder: (context) => HomePage()),
         );
+      } else {
+        scaffoldContext
+            .showSnackBar(SnackBar(content: Text(apiResponse.message)));
       }
     } else {
       // Form validation failed
