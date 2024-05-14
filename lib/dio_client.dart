@@ -1,5 +1,5 @@
+import 'package:HappyNotes/utils/app_logger.dart';
 import 'package:dio/dio.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 
 import 'app_config.dart';
 
@@ -24,8 +24,7 @@ class DioClient {
         },
         onError: (DioException e, ErrorInterceptorHandler handler) {
           // Handle global error here
-          // Show a toast notification for the error
-          Fluttertoast.showToast(msg: 'An error occurred: ${e.message}');
+          AppLogger.e(e.toString());
           return handler.next(e);
         },
       ));

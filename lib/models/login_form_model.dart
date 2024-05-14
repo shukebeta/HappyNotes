@@ -30,21 +30,28 @@ class LoginFormModel {
       // capture the context before entering await
       final scaffoldContext = ScaffoldMessenger.of(context); // Capture the context
       final navigator = Navigator.of(context);
-      // Call AuthService for login
-      final apiResponse = await AccountService.login(username, password);
+      try {
+        // Call AuthService for login
+        final apiResponse = await AccountService.login(username, password);
 
-      if (apiResponse['successful']) {
-        // Save the access token
-        await AccountService.saveToken(apiResponse['data']['token']);
+        if (apiResponse['successful']) {
+          // Save the access token
+          await AccountService.saveToken(apiResponse['data']['token']);
 
-        // Navigate to the home page
-        navigator.push(
-          MaterialPageRoute(builder: (context) => HomePage()),
-        );
-      } else {
-        // Show error message if login fails
+          // Navigate to the home page
+          navigator.push(
+            MaterialPageRoute(builder: (context) => HomePage()),
+          );
+        } else {
+          // Show error message if login fails
+          scaffoldContext.showSnackBar(
+            SnackBar(content: Text('Login failed: ${apiResponse.message}')),
+          );
+        }
+
+      } catch (e) {
         scaffoldContext.showSnackBar(
-          SnackBar(content: Text('Login failed: ${apiResponse.message}')),
+            SnackBar(content: Text('Login failed: ${e.toString()}')),
         );
       }
     }

@@ -1,9 +1,11 @@
+import 'package:HappyNotes/utils/app_logger.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'screens/login.dart';
 
 void main() async {
+  AppLogger.initialize();
   await dotenv.load(fileName: '.env');
   runApp(const HappyNotesApp());
 }

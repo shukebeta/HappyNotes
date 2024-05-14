@@ -52,18 +52,24 @@ class RegistrationFormModel {
           ScaffoldMessenger.of(context); // Capture the context
       final navigator = Navigator.of(context);
       // Call AuthService for login
-      final apiResponse =
-          await AccountService.register(username, email, password);
-      if (apiResponse['successful']) {
-        await AccountService.saveToken(apiResponse['data']['token']);
+      try {
+        final apiResponse =
+        await AccountService.register(username, email, password);
+        if (apiResponse['successful']) {
+          await AccountService.saveToken(apiResponse['data']['token']);
+          scaffoldContext.showSnackBar(
+              const SnackBar(content: Text('Registration successful')));
+          navigator.push(
+            MaterialPageRoute(builder: (context) => HomePage()),
+          );
+        } else {
+          scaffoldContext
+              .showSnackBar(SnackBar(content: Text(apiResponse.message)));
+        }
+      } catch (e) {
         scaffoldContext.showSnackBar(
-            const SnackBar(content: Text('Registration successful')));
-        navigator.push(
-          MaterialPageRoute(builder: (context) => HomePage()),
+          SnackBar(content: Text(e.toString())),
         );
-      } else {
-        scaffoldContext
-            .showSnackBar(SnackBar(content: Text(apiResponse.message)));
       }
     } else {
       // Form validation failed
