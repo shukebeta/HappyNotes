@@ -87,11 +87,4 @@ class _LoginState extends State<Login> {
       ),
     );
   }
-  // Function to handle error messages and display them to the user
-  void showError(String errorMessage) {
-    // Show a Snackbar with the error message
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text(errorMessage),
-    ));
-  }
 }

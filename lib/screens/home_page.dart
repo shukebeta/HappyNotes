@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../entities/note.dart';
 import '../services/notes_services.dart';
+import '../utils/util.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -35,6 +36,8 @@ class _HomePageState extends State<HomePage> {
 
   // Function to load notes from the server
   Future<void> loadNotes(int pageSize, int pageNumber) async {
+    final scaffoldContext =
+    ScaffoldMessenger.of(context); // Capture the context
     try {
       var result = await notesModel.fetchLatestNotes(pageSize, pageNumber);
       setState(() {
@@ -43,7 +46,7 @@ class _HomePageState extends State<HomePage> {
         currentPage = pageNumber;
       });
     } catch (error) {
-      showError(error.toString());
+      Util.showError(scaffoldContext, error.toString());
     }
   }
 
@@ -102,9 +105,9 @@ class _HomePageState extends State<HomePage> {
                             : null,
                         child: Text('Previous Page'),
                       ),
-                      SizedBox(width: 20),
+                      const SizedBox(width: 20),
                       Text('Page $currentPage of $totalPages'),
-                      SizedBox(width: 20),
+                      const SizedBox(width: 20),
                       ElevatedButton(
                         onPressed: currentPage < totalPages
                             ? () =>
@@ -128,13 +131,5 @@ class _HomePageState extends State<HomePage> {
     if (pageNumber >= 1 && pageNumber <= totalPages) {
       await loadNotes(pageSize, pageNumber);
     }
-  }
-
-  // Function to handle error messages and display them to the user
-  void showError(String errorMessage) {
-    // Show a Snackbar with the error message
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text(errorMessage),
-    ));
   }
 }
