@@ -2,6 +2,7 @@ import 'package:HappyNotes/screens/write-note.dart';
 import 'package:flutter/material.dart';
 
 import '../models/note_model.dart';
+import '../services/notes_services.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -13,60 +14,46 @@ class HomePage extends StatefulWidget {
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 class _HomePageState extends State<HomePage> {
-// Mock data for notes
-  final List<Note> mockNotes = [
-    Note(
-      id: 1,
-      content: 'This is note 1',
-      isPrivate: false,
-      createdAt: DateTime.now().millisecondsSinceEpoch,
-    ),
-    Note(
-      id: 2,
-      content: 'This is note 2',
-      isPrivate: false,
-      createdAt: DateTime.now().millisecondsSinceEpoch,
-    ),
-    Note(
-      id: 3,
-      content: 'This is note 3',
-      isPrivate: false,
-      createdAt: DateTime.now().millisecondsSinceEpoch,
-    ),
-    // Add more mock notes as needed
-    Note(
-      id: 4,
-      content: 'This is note 4',
-      isPrivate: false,
-      createdAt: DateTime.now().millisecondsSinceEpoch,
-    ),
-    Note(
-      id: 5,
-      content: 'This is note 5',
-      isPrivate: false,
-      createdAt: DateTime.now().millisecondsSinceEpoch,
-    ),
-    Note(
-      id: 6,
-      content: 'This is note 6',
-      isPrivate: false,
-      createdAt: DateTime.now().millisecondsSinceEpoch,
-    ),
-  ];
+  List<Note> notes = []; // List to hold notes fetched from the server
 
   // Pagination variables
   final int notesPerPage = 5; // Number of notes per page
   int currentPage = 1; // Current page number
 
   // Calculate total number of pages based on notes count and notes per page
-  int get totalPages => (mockNotes.length / notesPerPage).ceil();
+  int get totalPages => (notes.length / notesPerPage).ceil();
 
-  // Get notes for the current page
   // Get notes for the current page
   List<Note> getNotesForPage(int page) {
     final startIndex = (page - 1) * notesPerPage;
     final endIndex = startIndex + notesPerPage;
-    return mockNotes.sublist(startIndex, endIndex.clamp(0, mockNotes.length));
+    return notes.sublist(startIndex, endIndex.clamp(0, notes.length));
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    // Load notes from the server when the widget is first initialized
+    loadNotes();
+  }
+
+  // Function to load notes from the server
+  void loadNotes() async {
+    try {
+      // Call NotesService.latest method to fetch notes
+      var apiResult = await NotesService.latest( // replace NotesService.latest with the appropriate method
+        notesPerPage,
+        1,
+      );
+      List<dynamic> fetchedNotesData = apiResult['dataList']; // Extract the list of notes data from the response
+      List<Note> fetchedNotes = fetchedNotesData.map((json) => Note.fromJson(json)).toList();
+      setState(() {
+        notes = fetchedNotes; // Update the notes list with the fetched notes
+      });
+    } catch (error) {
+      // Handle any errors that occur during the fetch operation
+      print('Error loading notes: $error');
+    }
   }
 
   @override
@@ -104,7 +91,7 @@ class _HomePageState extends State<HomePage> {
                         return ListTile(
                           title: Text(note.content),
                           subtitle: Text(DateTime.fromMillisecondsSinceEpoch(
-                                  note.createdAt)
+                                  note.createAt)
                               .toString()),
                         );
                       },

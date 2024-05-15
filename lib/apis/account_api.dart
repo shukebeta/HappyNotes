@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 
 import '../dio_client.dart';
 
-class AuthApi {
+class AccountApi {
   static final Dio _dio = DioClient.getInstance();
 
   static Future<Response> login(Map<String, dynamic> params) async {
@@ -10,7 +10,7 @@ class AuthApi {
   }
 
   static Future<Response> register(Map<String, dynamic> params) async {
-      return await _dio.get('/channel/list', data: params);
+      return await _dio.post('/account/register', data: params);
   }
 
 }
