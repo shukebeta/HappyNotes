@@ -75,10 +75,10 @@ class _LoginState extends State<Login> {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => Registration(title: 'Registration')),
+                      MaterialPageRoute(builder: (context) => const Registration(title: 'Registration')),
                     );
                   },
-                  child: Text('Don\'t have an account? Register here'),
+                  child: const Text('Don\'t have an account? Register here'),
                 ),
               ),
             ],
@@ -86,5 +86,12 @@ class _LoginState extends State<Login> {
         ),
       ),
     );
+  }
+  // Function to handle error messages and display them to the user
+  void showError(String errorMessage) {
+    // Show a Snackbar with the error message
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(errorMessage),
+    ));
   }
 }

@@ -1,7 +1,8 @@
-import 'package:HappyNotes/screens/write-note.dart';
+import 'package:HappyNotes/models/notes_model.dart';
+import 'package:HappyNotes/screens/write_note.dart';
 import 'package:flutter/material.dart';
 
-import '../models/note_model.dart';
+import '../entities/note.dart';
 import '../services/notes_services.dart';
 
 class HomePage extends StatefulWidget {
@@ -14,6 +15,7 @@ class HomePage extends StatefulWidget {
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 class _HomePageState extends State<HomePage> {
+  final notesModel = NotesModel();
   List<Note> notes = []; // List to hold notes fetched from the server
 
   // Pagination variables
@@ -28,28 +30,20 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    // Load notes from the server when the widget is first initialized
-    loadNotes(notesPerPage, currentPage);
+    navigateToPage(notesPerPage, 1);
   }
 
   // Function to load notes from the server
   Future<void> loadNotes(int pageSize, int pageNumber) async {
     try {
-      // Call NotesService.latest method to fetch notes
-      var apiResult = await NotesService.latest( // replace NotesService.latest with the appropriate method
-        pageSize,
-        pageNumber,
-      );
-      totalNotes = apiResult['totalCount'];
-      List<dynamic> fetchedNotesData = apiResult['dataList']; // Extract the list of notes data from the response
-
-      List<Note> fetchedNotes = fetchedNotesData.map((json) => Note.fromJson(json)).toList();
+      var result = await notesModel.fetchLatestNotes(pageSize, pageNumber);
       setState(() {
-        notes = fetchedNotes; // Update the notes list with the fetched notes
+        totalNotes = result.totalNotes;
+        notes = result.notes;
+        currentPage = pageNumber;
       });
     } catch (error) {
-      // Handle any errors that occur during the fetch operation
-      print('Error loading notes: $error');
+      showError(error.toString());
     }
   }
 
@@ -79,28 +73,32 @@ class _HomePageState extends State<HomePage> {
               body: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // List of notes
-                  Expanded(
-                    child: ListView.builder(
-                      itemCount: notes.length,
-                      itemBuilder: (context, index) {
-                        final note = notes[index];
-                        return ListTile(
-                          title: Text(note.content),
-                          subtitle: Text(DateTime.fromMillisecondsSinceEpoch(
-                                  note.createAt * 1000)
-                              .toString()),
-                        );
-                      },
-                    ),
-                  ),
+                  notes.isEmpty
+                      ? const CircularProgressIndicator()
+                      // List of notes
+                      : Expanded(
+                          child: ListView.builder(
+                            itemCount: notes.length,
+                            itemBuilder: (context, index) {
+                              final note = notes[index];
+                              return ListTile(
+                                title: Text(note.content),
+                                subtitle: Text(
+                                    DateTime.fromMillisecondsSinceEpoch(
+                                            note.createAt * 1000)
+                                        .toString()),
+                              );
+                            },
+                          ),
+                        ),
                   // Pagination buttons
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       ElevatedButton(
                         onPressed: currentPage > 1
-                            ? () => navigateToPage(notesPerPage, currentPage - 1)
+                            ? () =>
+                                navigateToPage(notesPerPage, currentPage - 1)
                             : null,
                         child: Text('Previous Page'),
                       ),
@@ -109,7 +107,8 @@ class _HomePageState extends State<HomePage> {
                       SizedBox(width: 20),
                       ElevatedButton(
                         onPressed: currentPage < totalPages
-                            ? () => navigateToPage(notesPerPage, currentPage + 1)
+                            ? () =>
+                                navigateToPage(notesPerPage, currentPage + 1)
                             : null,
                         child: Text('Next Page'),
                       ),
@@ -127,10 +126,15 @@ class _HomePageState extends State<HomePage> {
 // Function to navigate to a specific page
   void navigateToPage(int pageSize, int pageNumber) async {
     if (pageNumber >= 1 && pageNumber <= totalPages) {
-      setState(() {
-        currentPage = pageNumber;
-      });
       await loadNotes(pageSize, pageNumber);
     }
+  }
+
+  // Function to handle error messages and display them to the user
+  void showError(String errorMessage) {
+    // Show a Snackbar with the error message
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(errorMessage),
+    ));
   }
 }
