@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../screens/home-page.dart';
+import '../screens/home_page.dart';
 import '../services/account_service.dart';
 
 class LoginFormModel {

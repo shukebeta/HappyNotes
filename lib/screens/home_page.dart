@@ -19,33 +19,30 @@ class _HomePageState extends State<HomePage> {
   // Pagination variables
   final int notesPerPage = 5; // Number of notes per page
   int currentPage = 1; // Current page number
+  //initial value is set to 1
+  int totalNotes = 1;
 
   // Calculate total number of pages based on notes count and notes per page
-  int get totalPages => (notes.length / notesPerPage).ceil();
-
-  // Get notes for the current page
-  List<Note> getNotesForPage(int page) {
-    final startIndex = (page - 1) * notesPerPage;
-    final endIndex = startIndex + notesPerPage;
-    return notes.sublist(startIndex, endIndex.clamp(0, notes.length));
-  }
+  int get totalPages => (totalNotes / notesPerPage).floor() + 1;
 
   @override
   void initState() {
     super.initState();
     // Load notes from the server when the widget is first initialized
-    loadNotes();
+    loadNotes(notesPerPage, currentPage);
   }
 
   // Function to load notes from the server
-  void loadNotes() async {
+  Future<void> loadNotes(int pageSize, int pageNumber) async {
     try {
       // Call NotesService.latest method to fetch notes
       var apiResult = await NotesService.latest( // replace NotesService.latest with the appropriate method
-        notesPerPage,
-        1,
+        pageSize,
+        pageNumber,
       );
+      totalNotes = apiResult['totalCount'];
       List<dynamic> fetchedNotesData = apiResult['dataList']; // Extract the list of notes data from the response
+
       List<Note> fetchedNotes = fetchedNotesData.map((json) => Note.fromJson(json)).toList();
       setState(() {
         notes = fetchedNotes; // Update the notes list with the fetched notes
@@ -85,13 +82,13 @@ class _HomePageState extends State<HomePage> {
                   // List of notes
                   Expanded(
                     child: ListView.builder(
-                      itemCount: getNotesForPage(currentPage).length,
+                      itemCount: notes.length,
                       itemBuilder: (context, index) {
-                        final note = getNotesForPage(currentPage)[index];
+                        final note = notes[index];
                         return ListTile(
                           title: Text(note.content),
                           subtitle: Text(DateTime.fromMillisecondsSinceEpoch(
-                                  note.createAt)
+                                  note.createAt * 1000)
                               .toString()),
                         );
                       },
@@ -103,7 +100,7 @@ class _HomePageState extends State<HomePage> {
                     children: [
                       ElevatedButton(
                         onPressed: currentPage > 1
-                            ? () => navigateToPage(currentPage - 1)
+                            ? () => navigateToPage(notesPerPage, currentPage - 1)
                             : null,
                         child: Text('Previous Page'),
                       ),
@@ -112,7 +109,7 @@ class _HomePageState extends State<HomePage> {
                       SizedBox(width: 20),
                       ElevatedButton(
                         onPressed: currentPage < totalPages
-                            ? () => navigateToPage(currentPage + 1)
+                            ? () => navigateToPage(notesPerPage, currentPage + 1)
                             : null,
                         child: Text('Next Page'),
                       ),
@@ -128,11 +125,12 @@ class _HomePageState extends State<HomePage> {
   }
 
 // Function to navigate to a specific page
-  void navigateToPage(int page) {
-    if (page >= 1 && page <= totalPages) {
+  void navigateToPage(int pageSize, int pageNumber) async {
+    if (pageNumber >= 1 && pageNumber <= totalPages) {
       setState(() {
-        currentPage = page;
+        currentPage = pageNumber;
       });
+      await loadNotes(pageSize, pageNumber);
     }
   }
 }
