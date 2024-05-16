@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../screens/home_page.dart';
 import '../services/account_service.dart';
+import '../utils/util.dart';
 
 class LoginFormModel {
   final TextEditingController emailController = TextEditingController();
@@ -45,14 +46,12 @@ class LoginFormModel {
         } else {
           // Show error message if login fails
           scaffoldContext.showSnackBar(
-            SnackBar(content: Text('Login failed: ${apiResponse.message}')),
+            SnackBar(content: Text('Login failed: ${apiResponse['message']}')),
           );
         }
 
       } catch (e) {
-        scaffoldContext.showSnackBar(
-            SnackBar(content: Text('Login failed: ${e.toString()}')),
-        );
+        Util.showError(scaffoldContext, e.toString());
       }
     }
   }

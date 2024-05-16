@@ -3,7 +3,6 @@ import 'package:HappyNotes/screens/write_note.dart';
 import 'package:flutter/material.dart';
 
 import '../entities/note.dart';
-import '../services/notes_services.dart';
 import '../utils/util.dart';
 
 class HomePage extends StatefulWidget {
@@ -39,6 +38,13 @@ class _HomePageState extends State<HomePage> {
     navigateToPage(notesPerPage, 1);
   }
 
+  // Function to navigate to a specific page
+  void navigateToPage(int pageSize, int pageNumber) async {
+    if (pageNumber >= 1 && pageNumber <= totalPages) {
+      await loadNotes(pageSize, pageNumber);
+    }
+  }
+
   // Function to load notes from the server
   Future<void> loadNotes(int pageSize, int pageNumber) async {
     final scaffoldContext =
@@ -67,7 +73,7 @@ class _HomePageState extends State<HomePage> {
                 title: const Text('Home Page'),
                 actions: [
                   IconButton(
-                    icon: Icon(Icons.edit),
+                    icon: const Icon(Icons.edit),
                     onPressed: () {
                       // Navigate to the write note screen
                       Navigator.push(
@@ -108,7 +114,7 @@ class _HomePageState extends State<HomePage> {
                             ? () =>
                                 navigateToPage(notesPerPage, currentPage - 1)
                             : null,
-                        child: Text('Previous Page'),
+                        child: const Text('Previous Page'),
                       ),
                       const SizedBox(width: 20),
                       Text('Page $currentPage of $totalPages'),
@@ -118,7 +124,7 @@ class _HomePageState extends State<HomePage> {
                             ? () =>
                                 navigateToPage(notesPerPage, currentPage + 1)
                             : null,
-                        child: Text('Next Page'),
+                        child: const Text('Next Page'),
                       ),
                     ],
                   ),
@@ -129,12 +135,5 @@ class _HomePageState extends State<HomePage> {
         );
       },
     );
-  }
-
-// Function to navigate to a specific page
-  void navigateToPage(int pageSize, int pageNumber) async {
-    if (pageNumber >= 1 && pageNumber <= totalPages) {
-      await loadNotes(pageSize, pageNumber);
-    }
   }
 }

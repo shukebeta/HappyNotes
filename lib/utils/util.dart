@@ -4,6 +4,7 @@ class Util {
   static void showError(ScaffoldMessengerState scaffoldContext, String errorMessage) {
     scaffoldContext.showSnackBar(SnackBar(
       content: Text(errorMessage),
+      backgroundColor: Colors.orange,
     ));
   }
 
