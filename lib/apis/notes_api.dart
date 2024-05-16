@@ -18,15 +18,18 @@ class NotesApi {
   }
 
   static Future<Response> latest(Map<String, dynamic> params) async {
-    var pager = params['pageSize'] > 0 && params['pageNumber'] > 0 
+    final  options = Options(
+      headers: {'AllowAnonymous': true},
+    );
+    var pager = params['pageSize'] > 0 && params['pageNumber'] > 0
       ? '/${params['pageSize']}/${params['pageNumber']}'
       : '/${AppConfig.defaultPageSize}/1';
-    return await _dio.get('/notes/latest$pager');
+    return await _dio.get('/notes/latest$pager', options: options);
   }
 
   static Future<Response> myLatest(Map<String, dynamic> params) async {
     var pager = params['pageSize'] > 0 && params['pageNumber'] > 0
-        ? '/pageSize/pageNumber'
+        ? '/${params['pageSize']}/${params['pageNumber']}'
         : '/${AppConfig.defaultPageSize}/1';
     return await _dio.get('/notes/myLatest$pager');
   }

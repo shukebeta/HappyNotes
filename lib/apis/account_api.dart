@@ -6,11 +6,16 @@ class AccountApi {
   static final Dio _dio = DioClient.getInstance();
 
   static Future<Response> login(Map<String, dynamic> params) async {
-      return await _dio.post('/account/login', data: params);
+    final  options = Options(
+      headers: {'AllowAnonymous': true},
+    );
+    return await _dio.post('/account/login', data: params, options: options);
   }
 
   static Future<Response> register(Map<String, dynamic> params) async {
-      return await _dio.post('/account/register', data: params);
+    final options = Options(
+      headers: {'AllowAnonymous': true},
+    );
+    return await _dio.post('/account/register', data: params);
   }
-
 }

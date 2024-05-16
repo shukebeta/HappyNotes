@@ -25,7 +25,7 @@ class _HomePageState extends State<HomePage> {
   int totalNotes = 1;
 
   // Calculate total number of pages based on notes count and notes per page
-  int get totalPages => (totalNotes / notesPerPage).floor() + 1;
+  int get totalPages => (totalNotes / notesPerPage).ceil();
 
   @override
   void initState() {
@@ -50,7 +50,7 @@ class _HomePageState extends State<HomePage> {
     final scaffoldContext =
     ScaffoldMessenger.of(context); // Capture the context
     try {
-      var result = await notesModel.fetchLatestNotes(pageSize, pageNumber);
+      var result = await notesModel.fetchMyLatestNotes(pageSize, pageNumber);
       setState(() {
         totalNotes = result.totalNotes;
         notes = result.notes;
