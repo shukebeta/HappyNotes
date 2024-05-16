@@ -56,6 +56,7 @@ class _LoginState extends State<Login> {
                     labelText: "Password",
                   ),
                   validator: _formModel.validatePassword,
+                  onFieldSubmitted: (_) => _formModel.submitForm(context),
                 ),
               ),
               Padding(

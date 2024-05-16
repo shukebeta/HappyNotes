@@ -64,6 +64,7 @@ class _RegistrationState extends State<Registration> {
                     labelText: "Password",
                   ),
                   validator: _formModel.validatePassword,
+                  onFieldSubmitted: (_) => _formModel.registerUser(context),
                 ),
               ),
               Padding(
