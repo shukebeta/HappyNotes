@@ -13,12 +13,13 @@ class NewNote extends StatefulWidget {
 
 class NewNoteState extends State<NewNote> {
   final TextEditingController _noteController = TextEditingController();
-  final FocusNode _noteFocusNode = FocusNode();
+  late FocusNode _noteFocusNode;
   bool _isPrivate = false;
 
   @override
   void initState() {
     super.initState();
+    _noteFocusNode = FocusNode();
     WidgetsBinding.instance.addPostFrameCallback((_){
       _noteFocusNode.requestFocus();
     });
@@ -41,10 +42,9 @@ class NewNoteState extends State<NewNote> {
     return PopScope(
       canPop: false,
       onPopInvoked: (bool didPop) async {
-        if (!didPop && _noteController.text.isNotEmpty) {
+        if (!didPop) {
           final navigator = Navigator.of(context);
-          final shouldPop = await _showUnsavedChangesDialog(context);
-          if (shouldPop == true) {
+          if (_noteController.text.isEmpty || (_noteController.text.isNotEmpty && (await _showUnsavedChangesDialog(context) ?? false))) {
             navigator.pop();
           }
         }
