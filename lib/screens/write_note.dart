@@ -10,6 +10,8 @@ class _WriteNoteState extends State<WriteNote> {
 
   @override
   Widget build(BuildContext context) {
+    final maxLines = MediaQuery.of(context).size.height ~/ 30;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Write Note'),
@@ -22,7 +24,8 @@ class _WriteNoteState extends State<WriteNote> {
             children: [
               TextField(
                 controller: _noteController,
-                maxLines: null, // Allow multiple lines for the note
+                keyboardType: TextInputType.multiline,
+                maxLines: maxLines,
                 decoration: const InputDecoration(
                   hintText: 'Write your note here...',
                   border: OutlineInputBorder(),
@@ -42,11 +45,5 @@ class _WriteNoteState extends State<WriteNote> {
         child: const Icon(Icons.save),
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    _noteController.dispose();
-    super.dispose();
   }
 }
