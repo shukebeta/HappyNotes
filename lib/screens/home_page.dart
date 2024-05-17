@@ -77,7 +77,7 @@ class HomePageState extends State<HomePage> {
                       // Navigate to the write note screen and wait for result
                       final result = await Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const NewNote()),
+                        MaterialPageRoute(builder: (context) => const NewNote(isPrivate: false,)),
                       );
 
                       // Check if a note was saved

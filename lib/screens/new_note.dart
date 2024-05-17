@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import '../utils/util.dart';
 
 class NewNote extends StatefulWidget {
-  const NewNote({super.key});
+  final bool isPrivate;
+
+  const NewNote({super.key, required this.isPrivate});
 
   @override
   NewNoteState createState() => NewNoteState();
@@ -11,17 +13,25 @@ class NewNote extends StatefulWidget {
 
 class NewNoteState extends State<NewNote> {
   final TextEditingController _noteController = TextEditingController();
-  Future<void> saveNote({required String note, required bool isPrivate}) async {
-    final scaffoldContext =
-    ScaffoldMessenger.of(context); // Capture the context
+  bool _isPrivate = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _isPrivate = widget.isPrivate;
+  }
+
+  Future<void> saveNote() async {
+    final scaffoldContext = ScaffoldMessenger.of(context);
     final navigator = Navigator.of(context);
     try {
-      final noteId = await NotesService.post(note, isPrivate);
+      final noteId = await NotesService.post(_noteController.text, _isPrivate);
       navigator.pop({'noteId': noteId});
     } catch (error) {
       Util.showError(scaffoldContext, error.toString());
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -56,13 +66,30 @@ class NewNoteState extends State<NewNote> {
                   ),
                 ),
               ),
-              const SizedBox(height: 60), // Adjust the height as needed
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      const Text('Private Note'),
+                      Switch(
+                        value: _isPrivate,
+                        onChanged: (bool value) {
+                          setState(() {
+                            _isPrivate = value;
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                  FloatingActionButton(
+                    onPressed: saveNote,
+                    child: const Icon(Icons.save),
+                  ),
+                ],
+              ),
             ],
           ),
-        ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () => saveNote(note: _noteController.text, isPrivate: false),
-          child: const Icon(Icons.save),
         ),
       ),
     );
