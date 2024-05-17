@@ -3,10 +3,10 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 
 import '../apis/account_api.dart';
-import '../screens/home_page.dart';
+import 'home_page.dart';
 import '../services/account_service.dart';
 
-class RegistrationFormModel {
+class RegistrationController {
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-import '../screens/home_page.dart';
+import 'home_page.dart';
 import '../services/account_service.dart';
 import '../utils/util.dart';
 
-class LoginFormModel {
+class LoginController {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();

@@ -7,14 +7,14 @@ class NotesApi {
   static final Dio _dio = DioClient.getInstance();
 
   static Future<Response> post(Map<String, dynamic> params) async {
-    return await _dio.post('/notes/post', data: params);
+    return await _dio.post('/note/post', data: params);
   }
 
   static Future<Response> update(Map<String, dynamic> params) async {
     if (params['id'] == null) {
       throw ArgumentError('The "id" parameter is required for the update operation.');
     }
-    return await _dio.post('/notes/update/${params['id']}', data: params);
+    return await _dio.post('/note/update/${params['id']}', data: params);
   }
 
   static Future<Response> latest(Map<String, dynamic> params) async {

@@ -1,23 +1,22 @@
+import 'package:HappyNotes/services/notes_services.dart';
 import 'package:flutter/material.dart';
-
-import '../models/notes_model.dart';
 import '../utils/util.dart';
 
-class WriteNote extends StatefulWidget {
-  const WriteNote({super.key});
+class NewNote extends StatefulWidget {
+  const NewNote({super.key});
 
   @override
-  WriteNoteState createState() => WriteNoteState();
+  NewNoteState createState() => NewNoteState();
 }
 
-class WriteNoteState extends State<WriteNote> {
+class NewNoteState extends State<NewNote> {
   final TextEditingController _noteController = TextEditingController();
   Future<void> saveNote({required String note, required bool isPrivate}) async {
     final scaffoldContext =
     ScaffoldMessenger.of(context); // Capture the context
     final navigator = Navigator.of(context);
     try {
-      final noteId = await NotesModel.post(note, isPrivate);
+      final noteId = await NotesService.post(note, isPrivate);
       navigator.pop({'noteId': noteId});
     } catch (error) {
       Util.showError(scaffoldContext, error.toString());

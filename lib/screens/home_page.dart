@@ -1,9 +1,9 @@
-import 'package:HappyNotes/models/notes_model.dart';
-import 'package:HappyNotes/screens/write_note.dart';
 import 'package:flutter/material.dart';
 
 import '../entities/note.dart';
+import '../services/notes_services.dart';
 import '../utils/util.dart';
+import 'new_note.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -46,10 +46,9 @@ class HomePageState extends State<HomePage> {
 
   // Function to load notes from the server
   Future<void> loadNotes(int pageSize, int pageNumber) async {
-    final scaffoldContext =
-    ScaffoldMessenger.of(context); // Capture the context
+    final scaffoldContext = ScaffoldMessenger.of(context); // Capture the context
     try {
-      var result = await NotesModel.fetchMyLatestNotes(pageSize, pageNumber);
+      var result = await NotesService.myLatest(pageSize, pageNumber);
       setState(() {
         totalNotes = result.totalNotes;
         notes = result.notes;
@@ -73,12 +72,32 @@ class HomePageState extends State<HomePage> {
                 actions: [
                   IconButton(
                     icon: const Icon(Icons.edit),
-                    onPressed: () {
-                      // Navigate to the write note screen
-                      Navigator.push(
+                    onPressed: () async {
+                      final scaffoldContext = ScaffoldMessenger.of(context); // Capture the context
+                      // Navigate to the write note screen and wait for result
+                      final result = await Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => WriteNote()),
+                        MaterialPageRoute(builder: (context) => const NewNote()),
                       );
+
+                      // Check if a note was saved
+                      if (result != null && result['noteId'] != null) {
+                        scaffoldContext.showSnackBar(
+                          SnackBar(
+                            content: const Text('Successfully saved. Click here to view.'),
+                            duration: const Duration(hours: 1),
+                            action: SnackBarAction(
+                              label: 'View',
+                              onPressed: () {
+                                // Navigate to the note details page or perform the view action
+                                // Navigator.push(context, ...);
+                              },
+                            ),
+                          ),
+                        );
+                        // Reload the notes
+                        // loadNotes(notesPerPage, currentPage);
+                      }
                     },
                   ),
                 ],

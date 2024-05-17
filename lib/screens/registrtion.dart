@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../models/registration_form_model.dart';
+import 'registration_form_model.dart';
 
 class Registration extends StatefulWidget {
   const Registration({Key? key, required this.title}) : super(key: key);
@@ -11,7 +11,7 @@ class Registration extends StatefulWidget {
 }
 
 class _RegistrationState extends State<Registration> {
-  final _formModel = RegistrationFormModel();
+  final _formModel = RegistrationController();
 
   @override
   void dispose() {

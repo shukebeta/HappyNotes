@@ -2,7 +2,7 @@
 import 'package:HappyNotes/screens/registrtion.dart';
 import 'package:flutter/material.dart';
 
-import '../models/login_form_model.dart';
+import 'login_controller.dart';
 
 class Login extends StatefulWidget {
   const Login({Key? key, required this.title}) : super(key: key);
@@ -14,7 +14,7 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
-  final _formModel = LoginFormModel();
+  final _formModel = LoginController();
 
   @override
   void dispose() {
