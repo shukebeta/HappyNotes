@@ -13,11 +13,15 @@ class NewNote extends StatefulWidget {
 
 class NewNoteState extends State<NewNote> {
   final TextEditingController _noteController = TextEditingController();
+  final FocusNode _noteFocusNode = FocusNode();
   bool _isPrivate = false;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_){
+      _noteFocusNode.requestFocus();
+    });
     _isPrivate = widget.isPrivate;
   }
 
@@ -34,13 +38,16 @@ class NewNoteState extends State<NewNote> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        if (_noteController.text.isNotEmpty) {
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (bool didPop) async {
+        if (!didPop && _noteController.text.isNotEmpty) {
+          final navigator = Navigator.of(context);
           final shouldPop = await _showUnsavedChangesDialog(context);
-          return shouldPop ?? false;
+          if (shouldPop == true) {
+            navigator.pop();
+          }
         }
-        return true;
       },
       child: Scaffold(
         appBar: AppBar(
@@ -55,6 +62,7 @@ class NewNoteState extends State<NewNote> {
                   alignment: Alignment.topCenter,
                   child: TextField(
                     controller: _noteController,
+                    focusNode: _noteFocusNode,
                     keyboardType: TextInputType.multiline,
                     maxLines: null,
                     expands: true,

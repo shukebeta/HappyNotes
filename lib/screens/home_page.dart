@@ -95,8 +95,10 @@ class HomePageState extends State<HomePage> {
                             ),
                           ),
                         );
-                        // Reload the notes
-                        // loadNotes(notesPerPage, currentPage);
+                        // If it is the first page, Reload the notes
+                        if (currentPage == 1) {
+                          loadNotes(notesPerPage, currentPage);
+                        }
                       }
                     },
                   ),
