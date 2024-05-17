@@ -10,40 +10,32 @@ class _WriteNoteState extends State<WriteNote> {
 
   @override
   Widget build(BuildContext context) {
-    // Create a TextPainter to measure the height of a single line of text
-    final textPainter = TextPainter(
-      text: TextSpan(text: ' ', style: TextStyle(fontSize: 16.0)),
-      maxLines: 1,
-      textDirection: TextDirection.ltr,
-    )..layout();
-
-    // Calculate the height of a single line of text
-    final singleLineHeight = textPainter.size.height;
-
-    // Calculate the max lines based on the device's screen height
-    final maxLines = (MediaQuery.of(context).size.height * 0.65 / singleLineHeight).floor();
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Write Note'),
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              TextField(
-                controller: _noteController,
-                keyboardType: TextInputType.multiline,
-                maxLines: maxLines,
-                decoration: const InputDecoration(
-                  hintText: 'Write your note here...',
-                  border: OutlineInputBorder(),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            Expanded(
+              child: Align(
+                alignment: Alignment.topCenter,
+                child: TextField(
+                  controller: _noteController,
+                  keyboardType: TextInputType.multiline,
+                  maxLines: null,
+                  expands: true,
+                  textAlignVertical: TextAlignVertical.top,
+                  decoration: const InputDecoration(
+                    hintText: 'Write your note here...',
+                    border: OutlineInputBorder(),
+                  ),
                 ),
               ),
-            ],
-          ),
+            ),
+            SizedBox(height: 60), // Adjust the height as needed
+          ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
