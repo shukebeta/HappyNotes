@@ -12,33 +12,34 @@ class _WriteNoteState extends State<WriteNote> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Write Note'),
+        title: const Text('Write Note'),
       ),
-      body: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            TextField(
-              controller: _noteController,
-              maxLines: null, // Allow multiple lines for the note
-              decoration: InputDecoration(
-                hintText: 'Write your note here...',
-                border: OutlineInputBorder(),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              TextField(
+                controller: _noteController,
+                maxLines: null, // Allow multiple lines for the note
+                decoration: const InputDecoration(
+                  hintText: 'Write your note here...',
+                  border: OutlineInputBorder(),
+                ),
               ),
-            ),
-            SizedBox(height: 16.0),
-            ElevatedButton(
-              onPressed: () {
-                // Logic to save the note goes here
-                String note = _noteController.text;
-                // You can send the note to the backend, save it locally, etc.
-                Navigator.pop(context); // Navigate back to the previous screen
-              },
-              child: Text('Save Note'),
-            ),
-          ],
+            ],
+          ),
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // Logic to save the note goes here
+          String note = _noteController.text;
+          // You can send the note to the backend, save it locally, etc.
+          Navigator.pop(context); // Navigate back to the previous screen
+        },
+        child: const Icon(Icons.save),
       ),
     );
   }
