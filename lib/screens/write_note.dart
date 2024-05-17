@@ -10,7 +10,18 @@ class _WriteNoteState extends State<WriteNote> {
 
   @override
   Widget build(BuildContext context) {
-    final maxLines = MediaQuery.of(context).size.height ~/ 30;
+    // Create a TextPainter to measure the height of a single line of text
+    final textPainter = TextPainter(
+      text: TextSpan(text: ' ', style: TextStyle(fontSize: 16.0)),
+      maxLines: 1,
+      textDirection: TextDirection.ltr,
+    )..layout();
+
+    // Calculate the height of a single line of text
+    final singleLineHeight = textPainter.size.height;
+
+    // Calculate the max lines based on the device's screen height
+    final maxLines = (MediaQuery.of(context).size.height * 0.65 / singleLineHeight).floor();
 
     return Scaffold(
       appBar: AppBar(
