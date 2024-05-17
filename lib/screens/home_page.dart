@@ -9,13 +9,12 @@ class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
   @override
-  _HomePageState createState() => _HomePageState();
+  HomePageState createState() => HomePageState();
 }
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
-class _HomePageState extends State<HomePage> {
-  final notesModel = NotesModel();
+class HomePageState extends State<HomePage> {
   List<Note> notes = []; // List to hold notes fetched from the server
 
   // Pagination variables
@@ -50,7 +49,7 @@ class _HomePageState extends State<HomePage> {
     final scaffoldContext =
     ScaffoldMessenger.of(context); // Capture the context
     try {
-      var result = await notesModel.fetchMyLatestNotes(pageSize, pageNumber);
+      var result = await NotesModel.fetchMyLatestNotes(pageSize, pageNumber);
       setState(() {
         totalNotes = result.totalNotes;
         notes = result.notes;

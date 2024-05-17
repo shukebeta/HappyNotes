@@ -1,13 +1,28 @@
 import 'package:flutter/material.dart';
 
+import '../models/notes_model.dart';
+import '../utils/util.dart';
+
 class WriteNote extends StatefulWidget {
+  const WriteNote({super.key});
+
   @override
-  _WriteNoteState createState() => _WriteNoteState();
+  WriteNoteState createState() => WriteNoteState();
 }
 
-class _WriteNoteState extends State<WriteNote> {
+class WriteNoteState extends State<WriteNote> {
   final TextEditingController _noteController = TextEditingController();
-
+  Future<void> saveNote({required String note, required bool isPrivate}) async {
+    final scaffoldContext =
+    ScaffoldMessenger.of(context); // Capture the context
+    final navigator = Navigator.of(context);
+    try {
+      final noteId = await NotesModel.post(note, isPrivate);
+      navigator.pop({'noteId': noteId});
+    } catch (error) {
+      Util.showError(scaffoldContext, error.toString());
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -42,17 +57,12 @@ class _WriteNoteState extends State<WriteNote> {
                   ),
                 ),
               ),
-              SizedBox(height: 60), // Adjust the height as needed
+              const SizedBox(height: 60), // Adjust the height as needed
             ],
           ),
         ),
         floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            // Logic to save the note goes here
-            String note = _noteController.text;
-            // You can send the note to the backend, save it locally, etc.
-            Navigator.pop(context); // Navigate back to the previous screen
-          },
+          onPressed: () => saveNote(note: _noteController.text, isPrivate: false),
           child: const Icon(Icons.save),
         ),
       ),
@@ -63,16 +73,16 @@ class _WriteNoteState extends State<WriteNote> {
     return showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Unsaved changes'),
-        content: Text('You have unsaved changes. Do you really want to leave?'),
+        title: const Text('Unsaved changes'),
+        content: const Text('You have unsaved changes. Do you really want to leave?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: Text('No'),
+            child: const Text('No'),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: Text('Yes'),
+            child: const Text('Yes'),
           ),
         ],
       ),

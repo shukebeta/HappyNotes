@@ -12,8 +12,8 @@ class NotesService {
     return (await NotesApi.myLatest(params)).data;
   }
 
-  static Future<dynamic> post(String content) async {
-    var params = {'content': content};
+  static Future<dynamic> post(String content, bool isPrivate) async {
+    var params = {'content': content, 'isPrivate': isPrivate};
     return (await NotesApi.post(params)).data;
   }
 
