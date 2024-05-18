@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'registration_form_model.dart';
+import 'registration_controller.dart';
 
 class Registration extends StatefulWidget {
   const Registration({Key? key, required this.title}) : super(key: key);

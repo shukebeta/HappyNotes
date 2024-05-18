@@ -1,5 +1,5 @@
 
-import 'package:HappyNotes/screens/registrtion.dart';
+import 'package:HappyNotes/screens/registration.dart';
 import 'package:flutter/material.dart';
 
 import 'login_controller.dart';

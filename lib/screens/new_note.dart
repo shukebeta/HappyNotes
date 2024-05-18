@@ -1,6 +1,7 @@
-import 'package:HappyNotes/services/notes_services.dart';
+import 'package:HappyNotes/screens/new_note_controller.dart';
 import 'package:flutter/material.dart';
-import '../utils/util.dart';
+
+import '../dependency_injection.dart';
 
 class NewNote extends StatefulWidget {
   final bool isPrivate;
@@ -12,7 +13,7 @@ class NewNote extends StatefulWidget {
 }
 
 class NewNoteState extends State<NewNote> {
-  final TextEditingController _noteController = TextEditingController();
+  final newNoteController = locator<NewNoteController>();
   late FocusNode _noteFocusNode;
   late bool _isPrivate;
 
@@ -26,29 +27,11 @@ class NewNoteState extends State<NewNote> {
     });
   }
 
-  Future<void> saveNote() async {
-    final scaffoldContext = ScaffoldMessenger.of(context);
-    final navigator = Navigator.of(context);
-    try {
-      final noteId = await NotesService.post(_noteController.text, _isPrivate);
-      navigator.pop({'noteId': noteId});
-    } catch (error) {
-      Util.showError(scaffoldContext, error.toString());
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return PopScope(
       canPop: false,
-      onPopInvoked: (bool didPop) async {
-        if (!didPop) {
-          final navigator = Navigator.of(context);
-          if (_noteController.text.isEmpty || (_noteController.text.isNotEmpty && (await _showUnsavedChangesDialog(context) ?? false))) {
-            navigator.pop();
-          }
-        }
-      },
+      onPopInvoked: (didPop) => newNoteController.onPopHandler(context, didPop),
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Write Note'),
@@ -61,7 +44,7 @@ class NewNoteState extends State<NewNote> {
                 child: Align(
                   alignment: Alignment.topCenter,
                   child: TextField(
-                    controller: _noteController,
+                    controller: newNoteController.noteController,
                     focusNode: _noteFocusNode,
                     keyboardType: TextInputType.multiline,
                     maxLines: null,
@@ -91,7 +74,7 @@ class NewNoteState extends State<NewNote> {
                     ],
                   ),
                   FloatingActionButton(
-                    onPressed: saveNote,
+                    onPressed: () => newNoteController.saveNote(context, _isPrivate),
                     child: const Icon(Icons.save),
                   ),
                 ],
@@ -103,30 +86,9 @@ class NewNoteState extends State<NewNote> {
     );
   }
 
-  Future<bool?> _showUnsavedChangesDialog(BuildContext context) {
-    return showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Unsaved changes'),
-        content: const Text('You have unsaved changes. Do you really want to leave?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('No'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Yes'),
-          ),
-        ],
-      ),
-    );
-  }
-
   @override
   void dispose() {
     _noteFocusNode.dispose();
-    _noteController.dispose();
     super.dispose();
   }
 }
