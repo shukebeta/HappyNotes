@@ -85,7 +85,7 @@ class HomePageState extends State<HomePage> {
                         scaffoldContext.showSnackBar(
                           SnackBar(
                             content: const Text('Successfully saved. Click here to view.'),
-                            duration: const Duration(hours: 1),
+                            duration: const Duration(seconds: 5),
                             action: SnackBarAction(
                               label: 'View',
                               onPressed: () {
