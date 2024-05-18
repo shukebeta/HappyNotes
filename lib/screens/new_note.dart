@@ -14,16 +14,16 @@ class NewNote extends StatefulWidget {
 class NewNoteState extends State<NewNote> {
   final TextEditingController _noteController = TextEditingController();
   late FocusNode _noteFocusNode;
-  bool _isPrivate = false;
+  late bool _isPrivate;
 
   @override
   void initState() {
     super.initState();
+    _isPrivate = widget.isPrivate;
     _noteFocusNode = FocusNode();
     WidgetsBinding.instance.addPostFrameCallback((_){
       _noteFocusNode.requestFocus();
     });
-    _isPrivate = widget.isPrivate;
   }
 
   Future<void> saveNote() async {
@@ -121,5 +121,12 @@ class NewNoteState extends State<NewNote> {
         ],
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _noteFocusNode.dispose();
+    _noteController.dispose();
+    super.dispose();
   }
 }
