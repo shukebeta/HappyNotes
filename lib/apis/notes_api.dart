@@ -6,6 +6,18 @@ import '../dio_client.dart';
 class NotesApi {
   static final Dio _dio = DioClient.getInstance();
 
+  static Future<Response> get(int noteId) async {
+    return await _dio.get('/note/get/$noteId');
+  }
+
+  static Future<Response> delete(int noteId) async {
+    return await _dio.delete('/note/delete/$noteId');
+  }
+
+  static Future<Response> undelete(int noteId) async {
+    return await _dio.post('/note/undelete/$noteId');
+  }
+
   static Future<Response> post(Map<String, dynamic> params) async {
     return await _dio.post('/note/post', data: params);
   }

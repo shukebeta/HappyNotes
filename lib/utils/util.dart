@@ -28,8 +28,8 @@ class Util {
     );
   }
 
-  static void showInfo(BuildContext context, String message) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+  static void showInfo(ScaffoldMessengerState scaffoldContext, String message) {
+    scaffoldContext.showSnackBar(SnackBar(
       content: Text(message),
       backgroundColor: Colors.blue, // Optional: Set a different background color for info messages
     ));

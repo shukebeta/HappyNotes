@@ -1,3 +1,4 @@
+import 'package:HappyNotes/screens/note_detail.dart';
 import 'package:flutter/material.dart';
 
 import '../entities/note.dart';
@@ -68,10 +69,10 @@ class HomePageState extends State<HomePage> {
           builder: (context) {
             return Scaffold(
               appBar: AppBar(
-                title: const Text('Home Page'),
+                title: const Text('My Notes'),
                 actions: [
                   IconButton(
-                    icon: const Icon(Icons.edit),
+                    icon: const Icon(Icons.edit), // write a new note
                     onPressed: () async {
                       final scaffoldContext = ScaffoldMessenger.of(context); // Capture the context
                       // Navigate to the write note screen and wait for result
@@ -88,9 +89,10 @@ class HomePageState extends State<HomePage> {
                             duration: const Duration(seconds: 5),
                             action: SnackBarAction(
                               label: 'View',
-                              onPressed: () {
-                                // Navigate to the note details page or perform the view action
-                                // Navigator.push(context, ...);
+                              onPressed: () async {
+                                await Navigator.push(context,
+                                  MaterialPageRoute(builder: (context) => NoteDetail(noteId: result['noteId'])),
+                                );
                               },
                             ),
                           ),
