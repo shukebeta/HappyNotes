@@ -111,41 +111,76 @@ class HomePageState extends State<HomePage> {
                 children: [
                   notes.isEmpty
                       ? const CircularProgressIndicator()
-                      // List of notes
+                  // List of notes
                       : Expanded(
-                          child: ListView.builder(
-                            itemCount: notes.length,
-                            itemBuilder: (context, index) {
-                              final note = notes[index];
-                              return ListTile(
-                                title: Text(note.content),
-                                subtitle: Text(
-                                    DateTime.fromMillisecondsSinceEpoch(
-                                            note.createAt * 1000)
-                                        .toString()),
-                              );
-                            },
+                    child: ListView.builder(
+                      itemCount: notes.length,
+                      itemBuilder: (context, index) {
+                        final note = notes[index];
+                        return ListTile(
+                          title: Row(
+                            children: [
+                              Expanded(
+                                child: RichText(
+                                  text: TextSpan(
+                                    text: note.isLong ? '${note.content}...   '
+                                        : note.content,
+                                    style: TextStyle(
+                                      fontWeight: note.isPrivate ? FontWeight.w100 : FontWeight.normal,
+                                      color: Colors.black,
+                                    ),
+                                    children: note.isLong
+                                        ? [
+                                      const TextSpan(
+                                        text: 'more',
+                                        style: TextStyle(
+                                          color: Colors.blue,
+                                          decoration: TextDecoration.underline,
+                                        ),
+                                      )
+                                    ]
+                                        : [],
+                                  ),
+                                ),
+                              ),
+                              if (note.isPrivate)
+                                const Icon(
+                                  Icons.lock,
+                                  size: 16.0,
+                                  color: Colors.grey,
+                                ),
+                            ],
                           ),
-                        ),
+                          subtitle: Text(
+                            DateTime.fromMillisecondsSinceEpoch(note.createAt * 1000).toString(),
+                          ),
+                          onTap: () async {
+                            await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => NoteDetail(noteId: note.id),
+                              ),
+                            );
+                            // Reload notes after returning from detail page
+                            loadNotes(notesPerPage, currentPage);
+                          },
+                        );
+                      },
+                    ),
+                  ),
                   // Pagination buttons
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       ElevatedButton(
-                        onPressed: currentPage > 1
-                            ? () =>
-                                navigateToPage(notesPerPage, currentPage - 1)
-                            : null,
+                        onPressed: currentPage > 1 ? () => navigateToPage(notesPerPage, currentPage - 1) : null,
                         child: const Text('Previous Page'),
                       ),
                       const SizedBox(width: 20),
                       Text('Page $currentPage of $totalPages'),
                       const SizedBox(width: 20),
                       ElevatedButton(
-                        onPressed: currentPage < totalPages
-                            ? () =>
-                                navigateToPage(notesPerPage, currentPage + 1)
-                            : null,
+                        onPressed: currentPage < totalPages ? () => navigateToPage(notesPerPage, currentPage + 1) : null,
                         child: const Text('Next Page'),
                       ),
                     ],
