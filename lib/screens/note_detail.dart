@@ -1,6 +1,7 @@
 import 'package:HappyNotes/services/notes_services.dart';
 import 'package:flutter/material.dart';
 import '../entities/note.dart';
+import '../services/dialog_services.dart';
 import '../utils/util.dart';
 
 class NoteDetail extends StatefulWidget {
@@ -80,7 +81,12 @@ class NoteDetailState extends State<NoteDetail> {
             ),
           IconButton(
             icon: const Icon(Icons.delete),
-            onPressed: _deleteNote,
+            onPressed: () async {
+              var canDelete = await DialogService.showConfirmDialog(context) ?? false;
+              if (canDelete) {
+                _deleteNote();
+              }
+            },
           ),
         ],
       ),
@@ -100,24 +106,30 @@ class NoteDetailState extends State<NoteDetail> {
                 children: [
                   _isEditing
                       ? TextField(
-                    controller: _noteController,
-                    maxLines: null,
-                    decoration: const InputDecoration(
-                      hintText: 'Edit your note here...',
-                      border: OutlineInputBorder(),
-                    ),
-                  )
+                          controller: _noteController,
+                          maxLines: null,
+                          decoration: const InputDecoration(
+                            hintText: 'Edit your note here...',
+                            border: OutlineInputBorder(),
+                          ),
+                        )
                       : Text(
-                    note.content,
-                    style: const TextStyle(fontSize: 16.0),
-                  ),
+                          note.content,
+                          style: const TextStyle(fontSize: 16.0),
+                        ),
                   const SizedBox(height: 16.0),
                   Row(
                     children: [
                       const Text('Private Note'),
                       Switch(
                         value: _isEditing ? _isPrivate : note.isPrivate,
-                        onChanged: _isEditing ? (value) {setState(() {_isPrivate = value;});} : null,
+                        onChanged: _isEditing
+                            ? (value) {
+                                setState(() {
+                                  _isPrivate = value;
+                                });
+                              }
+                            : null,
                       ),
                     ],
                   ),
