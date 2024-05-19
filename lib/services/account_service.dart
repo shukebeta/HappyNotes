@@ -1,4 +1,4 @@
-import 'package:HappyNotes/apis/account_api.dart';
+import 'package:happy_notes/apis/account_api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AccountService {

@@ -1,4 +1,4 @@
-import 'package:HappyNotes/services/notes_services.dart';
+import 'package:happy_notes/services/notes_services.dart';
 import 'package:flutter/material.dart';
 import '../entities/note.dart';
 import '../services/dialog_services.dart';

@@ -1,4 +1,4 @@
-import 'package:HappyNotes/apis/notes_api.dart';
+import 'package:happy_notes/apis/notes_api.dart';
 import '../entities/note.dart';
 import '../results/notes_result.dart';
 

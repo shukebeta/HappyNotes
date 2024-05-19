@@ -1,5 +1,5 @@
-import 'package:HappyNotes/dio_interceptors/auth_interceptor.dart';
-import 'package:HappyNotes/utils/app_logger.dart';
+import 'package:happy_notes/dio_interceptors/auth_interceptor.dart';
+import 'package:happy_notes/utils/app_logger.dart';
 import 'package:dio/dio.dart';
 
 import 'app_config.dart';
@@ -26,7 +26,7 @@ class DioClient {
         },
         onError: (DioException e, ErrorInterceptorHandler handler) {
           // Handle global error here
-          AppLogger.e(e.toString());
+          // AppLogger.e(e.toString());
           return handler.next(e);
         },
       ));

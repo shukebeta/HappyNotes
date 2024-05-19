@@ -1,4 +1,4 @@
-import 'package:HappyNotes/screens/new_note_controller.dart';
+import 'package:happy_notes/screens/new_note_controller.dart';
 import 'package:flutter/material.dart';
 
 import '../dependency_injection.dart';

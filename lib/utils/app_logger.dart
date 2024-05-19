@@ -40,8 +40,12 @@ class AppLogger {
   }
 
   static Future<String> _getLogFilePath() async {
-    final Directory directory = await getApplicationSupportDirectory();
-    return '${directory.path}/dio_client.log';
+    try {
+      final Directory directory = await getApplicationSupportDirectory();
+      return '${directory.path}/dio_client.log';
+    } catch (e) {
+      return './dio_client.log';
+    }
   }
 
   static void _checkLogFileSize(String logFilePath) {
