@@ -19,7 +19,7 @@ jobs:
 
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.22.0-0.3.pre'
+          flutter-version: '3.7.0'
 
       - name: Decode keystore file
         env:
