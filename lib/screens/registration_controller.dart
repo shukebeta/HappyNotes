@@ -3,10 +3,14 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 
 import '../apis/account_api.dart';
+import '../dependency_injection.dart';
+import '../utils/token_utils.dart';
 import 'home_page.dart';
 import '../services/account_service.dart';
 
 class RegistrationController {
+  final tokenManager = locator<TokenUtils>();
+  final accountService = locator<AccountService>();
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
@@ -54,9 +58,8 @@ class RegistrationController {
       // Call AuthService for login
       try {
         final apiResponse =
-        await AccountService.register(username, email, password);
+        await accountService.register(username, email, password);
         if (apiResponse['successful']) {
-          await AccountService.saveToken(apiResponse['data']['token']);
           scaffoldContext.showSnackBar(
               const SnackBar(content: Text('Registration successful')));
           navigator.push(

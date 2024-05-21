@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:happy_notes/utils/token_utils.dart';
 
+import '../dependency_injection.dart';
 import 'home_page.dart';
 import '../services/account_service.dart';
 import '../utils/util.dart';
 
 class LoginController {
+  final tokenManager = locator<TokenUtils>();
+  final accountService = locator<AccountService>();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
@@ -33,12 +37,9 @@ class LoginController {
       final navigator = Navigator.of(context);
       try {
         // Call AuthService for login
-        final apiResponse = await AccountService.login(username, password);
+        final apiResponse = await accountService.login(username, password);
 
         if (apiResponse['successful']) {
-          // Save the access token
-          await AccountService.saveToken(apiResponse['data']['token']);
-
           // Navigate to the home page
           navigator.push(
             MaterialPageRoute(builder: (context) => HomePage()),

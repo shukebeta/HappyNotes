@@ -18,4 +18,8 @@ class AccountApi {
     );
     return await _dio.post('/account/register', data: params);
   }
+
+  static Future<Response> refreshToken() async {
+    return await _dio.post('/account/refreshToken', data: {});
+  }
 }

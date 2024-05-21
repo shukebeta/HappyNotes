@@ -1,7 +1,10 @@
 import 'package:dio/dio.dart';
+import 'package:happy_notes/utils/token_utils.dart';
+import '../dependency_injection.dart';
 import '../services/account_service.dart';
 
 class AuthInterceptor extends Interceptor {
+  final accountService = locator<AccountService>();
   @override
   void onRequest(
       RequestOptions options,
@@ -12,7 +15,7 @@ class AuthInterceptor extends Interceptor {
       return handler.next(options);
     }
 
-    final token = await AccountService.getToken();
+    final token = await accountService.getToken();
     if (token != null) {
       options.headers['Authorization'] = 'Bearer $token';
     }

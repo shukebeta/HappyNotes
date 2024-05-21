@@ -127,6 +127,7 @@ class HomePageState extends State<HomePage> {
                                         : note.content,
                                     style: TextStyle(
                                       fontWeight: note.isPrivate ? FontWeight.w100 : FontWeight.normal,
+                                      fontSize: 20,
                                       color: Colors.black,
                                     ),
                                     children: note.isLong
