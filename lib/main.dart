@@ -1,9 +1,7 @@
-import 'package:happy_notes/utils/app_logger.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:happy_notes/dependency_injection.dart' as di;
-
-import 'screens/login.dart';
+import 'package:happy_notes/screens/initial_page.dart';
 
 void main() async {
   di.init();
@@ -24,7 +22,7 @@ class HappyNotesApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const Login(title: 'Login'),
+      home: const InitialPage(),
     );
   }
 }
