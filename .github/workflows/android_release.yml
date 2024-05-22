@@ -11,8 +11,6 @@ jobs:
   build:
     name: Build APK
     runs-on: ubuntu-latest
-    environment:
-      name: production
 
     steps:
 
@@ -47,14 +45,17 @@ jobs:
           flutter pub run cider version ${{ env.VERSION }}+${{ env.BUILD }}
           flutter pub run cider bump build
 
+      - name: Create key.properties
+        run: |
+          echo "storeFile=../key.jks" > android/key.properties
+          echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" >> android/key.properties
+          echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
+          echo "keyPassword=${{ secrets.KEYSTORE_PASSWORD }}" >> android/key.properties
+          cat android/key.properties
+
       - name: Build APK
         run: |
           cp .env.production .env
-          echo "storePassword="${{ env.STOREPASSWORD }} > android/.key.properties
-          echo "keyPassword="${{ env.STOREPASSWORD }} >> android/.key.properties
-          echo "keyAlias="${{ env.KEYALIAS }} >> android/.key.properties
-          echo "storeFile=../key.jks" >> android/.key.properties
-          cat android/.key.properties
           flutter build apk --release
 
       - name: Make Github release
