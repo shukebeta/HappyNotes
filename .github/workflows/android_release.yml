@@ -62,6 +62,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ env.VERSION }}
+          token: ${{ secrets.RELEASE_TOKEN }}
           files: |
             build/app/outputs/flutter-apk/app-release.apk
       # Note: the original tag that triggered the workflow is in the form vX.Y.Z
