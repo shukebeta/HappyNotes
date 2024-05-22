@@ -65,20 +65,3 @@ jobs:
           token: ${{ secrets.RELEASE_TOKEN }}
           files: |
             build/app/outputs/flutter-apk/app-release.apk
-      # Note: the original tag that triggered the workflow is in the form vX.Y.Z
-      #       but the pubspec.yaml is committed in the commit after that one.
-      #       Since we need the tag to point to the correct commit for other workflows
-      #       such as f-droid we need a way to correct it. Only moving the tag
-      #       would not work, as it would trigger this workflow again. So as
-      #       a workaround, we use the v-tag to trigger this workflow, add a new
-      #       one without the v and push it.
-      - name: Commit pubspec version and delete tag
-        run: |
-          git config user.name Github-Actions
-          git config user.email github-actions@github.com
-          git remote set-url origin https://${{ secrets.RELEASE_TOKEN }}@github.com/shukebeta/HappyNotes.git
-          git checkout -b release-${{ env.VERSION }}
-          git add pubspec.yaml
-          git commit -m "Bump version to $( flutter pub run cider version )"
-          git push origin --delete ${{ env.VERSION_V }}
-          git push --set-upstream origin release-${{ env.VERSION }}

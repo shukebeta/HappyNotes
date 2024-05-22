@@ -1,0 +1,53 @@
+#!/bin/bash
+
+# Check if the workspace is clean and on the master branch
+if [ -n "$(git status --porcelain)" ]; then
+  echo "Error: Your workspace has uncommitted changes. Please commit or stash them before continuing."
+  exit 1
+fi
+
+if [ "$(git rev-parse --abbrev-ref HEAD)" != "master" ]; then
+  echo "Error: You are not on the master branch. Please switch to the master branch before continuing."
+  exit 1
+fi
+
+# Check if the correct number of arguments is provided
+if [ "$#" -ne 2 ]; then
+  echo "Usage: $0 <version_tag> <release_note>"
+  echo "Example: $0 v1.2.3 \"This is a release note\""
+  exit 1
+fi
+
+# Check if the version tag is in the correct format
+VERSION_TAG=$1
+if ! [[ $VERSION_TAG =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+  echo "Error: Invalid version tag format. It should be in the format 'v[number].[number].[number]'."
+  exit 1
+fi
+
+RELEASE_NOTE=$2
+
+# Extract the version number from the tag
+VERSION=${VERSION_TAG:1}
+
+# Pull the latest changes from the remote repository
+git pull --ff-only origin master
+
+# Set the version number in pubspec.yaml
+sed -i '' "s/^version: .*$/version: $VERSION/" pubspec.yaml
+
+# Add all changes to Git
+git add pubspec.yaml
+
+# Commit the changes with a message
+git commit -m "Release version $VERSION"
+
+# Create a Git tag with the release note
+git tag -a "$VERSION_TAG" -m "$RELEASE_NOTE"
+
+# Push the changes and the new tag to the remote repository
+git push origin master
+git push origin "$VERSION_TAG"
+
+echo "Release process completed successfully for version $VERSION (tag: $VERSION_TAG)"
+echo "Changes and the new tag have been pushed to the remote repository."
