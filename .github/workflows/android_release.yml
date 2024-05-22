@@ -52,7 +52,7 @@ jobs:
           cp .env.production .env
           echo "storePassword="${{ env.STOREPASSWORD }} > android/.key.properties
           echo "keyPassword="${{ env.STOREPASSWORD }} >> android/.key.properties
-          echo "keyAlias="${{ KEYALIAS }} >> android/.key.properties
+          echo "keyAlias="${{ env.KEYALIAS }} >> android/.key.properties
           echo "storeFile=../key.jks" >> android/.key.properties
           flutter build apk --release
 
