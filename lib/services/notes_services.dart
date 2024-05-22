@@ -4,20 +4,20 @@ import '../results/notes_result.dart';
 
 class NotesService {
   // fetch all public notes from all users
-  static Future<NotesResult> latest(int pageSize, int pageNumber) async {
+  Future<NotesResult> latest(int pageSize, int pageNumber) async {
     var params = {'pageSize': pageSize, 'pageNumber': pageNumber};
     var apiResult = (await NotesApi.latest(params)).data;
     return _getNotesResult(apiResult);
   }
 
   // fetch my latest notes (include private ones)
-  static Future<NotesResult> myLatest(int pageSize, int pageNumber) async {
+  Future<NotesResult> myLatest(int pageSize, int pageNumber) async {
     var params = {'pageSize': pageSize, 'pageNumber': pageNumber};
     var apiResult = (await NotesApi.myLatest(params)).data;
     return _getNotesResult(apiResult);
   }
 
-  static NotesResult _getNotesResult(apiResult) {
+  NotesResult _getNotesResult(apiResult) {
     if (!apiResult['successful']) throw Exception(apiResult['message']);
     var notes = apiResult['data'];
     int totalNotes = notes['totalCount'];

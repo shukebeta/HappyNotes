@@ -1,6 +1,7 @@
 import 'package:happy_notes/screens/note_detail.dart';
 import 'package:flutter/material.dart';
 
+import '../dependency_injection.dart';
 import '../entities/note.dart';
 import '../services/notes_services.dart';
 import '../utils/util.dart';
@@ -16,6 +17,7 @@ class HomePage extends StatefulWidget {
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 class HomePageState extends State<HomePage> {
+  final _notesService = locator<NotesService>();
   List<Note> notes = []; // List to hold notes fetched from the server
 
   // Pagination variables
@@ -49,7 +51,7 @@ class HomePageState extends State<HomePage> {
   Future<void> loadNotes(int pageSize, int pageNumber) async {
     final scaffoldContext = ScaffoldMessenger.of(context); // Capture the context
     try {
-      var result = await NotesService.myLatest(pageSize, pageNumber);
+      var result = await _notesService.myLatest(pageSize, pageNumber);
       setState(() {
         totalNotes = result.totalNotes;
         notes = result.notes;
