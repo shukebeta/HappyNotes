@@ -76,6 +76,7 @@ jobs:
         run: |
           git config user.name Github-Actions
           git config user.email github-actions@github.com
+          git remote set-url origin https://${{ secrets.RELEASE_TOKEN }}@github.com/shukebeta/HappyNotes.git
           git checkout -b release-${{ env.VERSION }}
           git add pubspec.yaml
           git commit -m "Bump version to $( flutter pub run cider version )"
