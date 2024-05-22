@@ -40,11 +40,6 @@ jobs:
           echo "VERSION=$(echo $GITHUB_REF | cut -d / -f 3 | cut -c 2-)" >> $GITHUB_ENV
           echo "BUILD=$(flutter pub run cider version | cut -d '+' -f 2)" >> $GITHUB_ENV
 
-      - name: Bump pubspec version
-        run: |
-          flutter pub run cider version ${{ env.VERSION }}+${{ env.BUILD }}
-          flutter pub run cider bump build
-
       - name: Create key.properties
         run: |
           echo "storeFile=../key.jks" > android/key.properties
