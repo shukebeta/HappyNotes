@@ -54,6 +54,7 @@ jobs:
           echo "keyPassword="${{ env.STOREPASSWORD }} >> android/.key.properties
           echo "keyAlias="${{ env.KEYALIAS }} >> android/.key.properties
           echo "storeFile=../key.jks" >> android/.key.properties
+          cat android/.key.properties
           flutter build apk --release
 
       - name: Make Github release
