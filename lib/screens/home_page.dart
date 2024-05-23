@@ -1,9 +1,10 @@
+import 'package:flutter/material.dart';
 import 'package:happy_notes/screens/home_page_controller.dart';
 import 'package:happy_notes/screens/note_detail.dart';
-import 'package:flutter/material.dart';
-
 import '../dependency_injection.dart';
 import '../services/notes_services.dart';
+import 'components/note_list.dart';
+import 'components/pagination_controls.dart';
 import 'new_note.dart';
 
 class HomePage extends StatefulWidget {
@@ -33,7 +34,7 @@ class HomePageState extends State<HomePage> {
   void navigateToPage(int pageNumber) async {
     if (pageNumber >= 1 && pageNumber <= _homePageController.totalPages) {
       await _homePageController.loadNotes(context, pageNumber);
-      setState(() {});
+      setState((){});
     }
   }
 
@@ -54,9 +55,11 @@ class HomePageState extends State<HomePage> {
                       final scaffoldContext = ScaffoldMessenger.of(context);
                       final result = await Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const NewNote(
-                          isPrivate: false,
-                        )),
+                        MaterialPageRoute(
+                          builder: (context) => const NewNote(
+                            isPrivate: false,
+                          ),
+                        ),
                       );
                       if (result != null && result['noteId'] != null) {
                         scaffoldContext.showSnackBar(
@@ -66,8 +69,11 @@ class HomePageState extends State<HomePage> {
                             action: SnackBarAction(
                               label: 'View',
                               onPressed: () async {
-                                await Navigator.push(context,
-                                  MaterialPageRoute(builder: (context) => NoteDetail(noteId: result['noteId'])),
+                                await Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => NoteDetail(noteId: result['noteId']),
+                                  ),
                                 );
                               },
                             ),
@@ -81,102 +87,40 @@ class HomePageState extends State<HomePage> {
                   ),
                 ],
               ),
-              body: _buildBody(),
+              body: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  if (_homePageController.isLoading)
+                    const Center(child: CircularProgressIndicator())
+                  else if (_homePageController.notes.isEmpty)
+                    const Center(child: Text('No notes available'))
+                  else
+                    Expanded(
+                      child: NoteList(
+                        notes: _homePageController.notes,
+                        onNoteTap: (noteId) async {
+                          await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => NoteDetail(noteId: noteId),
+                            ),
+                          );
+                          navigateToPage(_homePageController.currentPageNumber);
+                        },
+                      ),
+                    ),
+                  PaginationControls(
+                    currentPage: _homePageController.currentPageNumber,
+                    totalPages: _homePageController.totalPages,
+                    onPreviousPage: () => navigateToPage(_homePageController.currentPageNumber - 1),
+                    onNextPage: () => navigateToPage(_homePageController.currentPageNumber + 1),
+                  ),
+                ],
+              ),
             );
           },
         );
       },
-    );
-  }
-
-  Widget _buildBody() {
-    if (_homePageController.isLoading) {
-      return const Center(child: CircularProgressIndicator());
-    }
-
-    if (_homePageController.notes.isEmpty) {
-      return const Center(child: Text('No notes available. Create a new note to get started.'));
-    }
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Expanded(
-          child: ListView.builder(
-            itemCount: _homePageController.notes.length,
-            itemBuilder: (context, index) {
-              final note = _homePageController.notes[index];
-              return ListTile(
-                title: Row(
-                  children: [
-                    Expanded(
-                      child: RichText(
-                        text: TextSpan(
-                          text: note.isLong ? '${note.content}...   ' : note.content,
-                          style: TextStyle(
-                            fontWeight: note.isPrivate ? FontWeight.w100 : FontWeight.normal,
-                            fontSize: 20,
-                            color: Colors.black,
-                          ),
-                          children: note.isLong
-                              ? [
-                            const TextSpan(
-                              text: 'more',
-                              style: TextStyle(
-                                color: Colors.blue,
-                                decoration: TextDecoration.underline,
-                              ),
-                            )
-                          ]
-                              : [],
-                        ),
-                      ),
-                    ),
-                    if (note.isPrivate)
-                      const Icon(
-                        Icons.lock,
-                        size: 16.0,
-                        color: Colors.grey,
-                      ),
-                  ],
-                ),
-                subtitle: Text(
-                  DateTime.fromMillisecondsSinceEpoch(note.createAt * 1000).toString(),
-                ),
-                onTap: () async {
-                  await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => NoteDetail(noteId: note.id),
-                    ),
-                  );
-                  navigateToPage(_homePageController.currentPageNumber);
-                },
-              );
-            },
-          ),
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ElevatedButton(
-              onPressed: _homePageController.currentPageNumber > 1
-                  ? () => navigateToPage(_homePageController.currentPageNumber - 1)
-                  : null,
-              child: const Text('Previous Page'),
-            ),
-            const SizedBox(width: 20),
-            Text('Page ${_homePageController.currentPageNumber} of ${_homePageController.totalPages}'),
-            const SizedBox(width: 20),
-            ElevatedButton(
-              onPressed: _homePageController.currentPageNumber < _homePageController.totalPages
-                  ? () => navigateToPage(_homePageController.currentPageNumber + 1)
-                  : null,
-              child: const Text('Next Page'),
-            ),
-          ],
-        ),
-      ],
     );
   }
 }
