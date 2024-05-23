@@ -13,22 +13,20 @@ fi
 
 # Check if the correct number of arguments is provided
 if [ "$#" -ne 2 ]; then
-  echo "Usage: $0 <version_tag> <release_note>"
-  echo "Example: $0 v1.2.3 \"This is a release note\""
+  echo "Usage: $0 <version> <release_note>"
+  echo "Example: $0 1.2.3 \"This is a release note\""
   exit 1
 fi
 
-# Check if the version tag is in the correct format
-VERSION_TAG=$1
-if ! [[ $VERSION_TAG =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-  echo "Error: Invalid version tag format. It should be in the format 'v[number].[number].[number]'."
+# Check if the version is in the correct format
+VERSION=$1
+if ! [[ $VERSION =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+  echo "Error: Invalid version format. It should be in the format '[number].[number].[number]'."
   exit 1
 fi
 
 RELEASE_NOTE=$2
 
-# Extract the version number from the tag
-VERSION=${VERSION_TAG:1}
 
 # Pull the latest changes from the remote repository
 git pull --ff-only origin master
@@ -43,11 +41,11 @@ git add pubspec.yaml
 git commit -m "Release version $VERSION"
 
 # Create a Git tag with the release note
-git tag -a "$VERSION_TAG" -m "$RELEASE_NOTE"
+git tag -a "$VERSION" -m "$RELEASE_NOTE"
 
 # Push the changes and the new tag to the remote repository
 git push origin master
-git push origin "$VERSION_TAG"
+git push origin "$VERSION"
 
-echo "Release process completed successfully for version $VERSION (tag: $VERSION_TAG)"
+echo "Release process completed successfully for version $VERSION (tag: $VERSION)"
 echo "Changes and the new tag have been pushed to the remote repository."

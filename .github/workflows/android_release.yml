@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     tags:
-      - 'v[0-9]+.[0-9]+.[0-9]+'
+      - '[0-9]+.[0-9]+.[0-9]+'
 
 jobs:
 
@@ -36,9 +36,7 @@ jobs:
 
       - name: Extract version information
         run: |
-          echo "VERSION_V=$(echo $GITHUB_REF | cut -d / -f 3)" >> $GITHUB_ENV
-          echo "VERSION=$(echo $GITHUB_REF | cut -d / -f 3 | cut -c 2-)" >> $GITHUB_ENV
-          echo "BUILD=$(flutter pub run cider version | cut -d '+' -f 2)" >> $GITHUB_ENV
+          echo "VERSION=$GITHUB_REF" >> $GITHUB_ENV
 
       - name: Create key.properties
         run: |
