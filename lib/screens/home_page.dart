@@ -1,10 +1,9 @@
+import 'package:happy_notes/screens/home_page_controller.dart';
 import 'package:happy_notes/screens/note_detail.dart';
 import 'package:flutter/material.dart';
 
 import '../dependency_injection.dart';
-import '../entities/note.dart';
 import '../services/notes_services.dart';
-import '../utils/util.dart';
 import 'new_note.dart';
 
 class HomePage extends StatefulWidget {
@@ -17,48 +16,24 @@ class HomePage extends StatefulWidget {
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 class HomePageState extends State<HomePage> {
-  final _notesService = locator<NotesService>();
-  List<Note> notes = []; // List to hold notes fetched from the server
-
-  // Pagination variables
-  final int notesPerPage = 5; // Number of notes per page
-  int currentPage = 1; // Current page number
-  //initial value is set to 1
-  int totalNotes = 1;
-
-  // Calculate total number of pages based on notes count and notes per page
-  int get totalPages => (totalNotes / notesPerPage).ceil();
+  late HomePageController _homePageController;
 
   @override
   void initState() {
     super.initState();
+    _homePageController = HomePageController(locator<NotesService>());
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    navigateToPage(notesPerPage, 1);
+    navigateToPage(1);
   }
 
-  // Function to navigate to a specific page
-  void navigateToPage(int pageSize, int pageNumber) async {
-    if (pageNumber >= 1 && pageNumber <= totalPages) {
-      await loadNotes(pageSize, pageNumber);
-    }
-  }
-
-  // Function to load notes from the server
-  Future<void> loadNotes(int pageSize, int pageNumber) async {
-    final scaffoldContext = ScaffoldMessenger.of(context); // Capture the context
-    try {
-      var result = await _notesService.myLatest(pageSize, pageNumber);
-      setState(() {
-        totalNotes = result.totalNotes;
-        notes = result.notes;
-        currentPage = pageNumber;
-      });
-    } catch (error) {
-      Util.showError(scaffoldContext, error.toString());
+  void navigateToPage(int pageNumber) async {
+    if (pageNumber >= 1 && pageNumber <= _homePageController.totalPages) {
+      await _homePageController.loadNotes(context, pageNumber);
+      setState(() {});
     }
   }
 
@@ -74,16 +49,15 @@ class HomePageState extends State<HomePage> {
                 title: const Text('My Notes'),
                 actions: [
                   IconButton(
-                    icon: const Icon(Icons.edit), // write a new note
+                    icon: const Icon(Icons.edit),
                     onPressed: () async {
-                      final scaffoldContext = ScaffoldMessenger.of(context); // Capture the context
-                      // Navigate to the write note screen and wait for result
+                      final scaffoldContext = ScaffoldMessenger.of(context);
                       final result = await Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const NewNote(isPrivate: false,)),
+                        MaterialPageRoute(builder: (context) => const NewNote(
+                          isPrivate: false,
+                        )),
                       );
-
-                      // Check if a note was saved
                       if (result != null && result['noteId'] != null) {
                         scaffoldContext.showSnackBar(
                           SnackBar(
@@ -99,9 +73,8 @@ class HomePageState extends State<HomePage> {
                             ),
                           ),
                         );
-                        // If it is the first page, Reload the notes
-                        if (currentPage == 1) {
-                          loadNotes(notesPerPage, currentPage);
+                        if (_homePageController.isFirstPage) {
+                          navigateToPage(_homePageController.currentPageNumber);
                         }
                       }
                     },
@@ -111,22 +84,20 @@ class HomePageState extends State<HomePage> {
               body: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  notes.isEmpty
+                  _homePageController.notes.isEmpty
                       ? const CircularProgressIndicator()
-                  // List of notes
                       : Expanded(
                     child: ListView.builder(
-                      itemCount: notes.length,
+                      itemCount: _homePageController.notes.length,
                       itemBuilder: (context, index) {
-                        final note = notes[index];
+                        final note = _homePageController.notes[index];
                         return ListTile(
                           title: Row(
                             children: [
                               Expanded(
                                 child: RichText(
                                   text: TextSpan(
-                                    text: note.isLong ? '${note.content}...   '
-                                        : note.content,
+                                    text: note.isLong ? '${note.content}...   ' : note.content,
                                     style: TextStyle(
                                       fontWeight: note.isPrivate ? FontWeight.w100 : FontWeight.normal,
                                       fontSize: 20,
@@ -164,26 +135,28 @@ class HomePageState extends State<HomePage> {
                                 builder: (context) => NoteDetail(noteId: note.id),
                               ),
                             );
-                            // Reload notes after returning from detail page
-                            loadNotes(notesPerPage, currentPage);
+                            navigateToPage(_homePageController.currentPageNumber);
                           },
                         );
                       },
                     ),
                   ),
-                  // Pagination buttons
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       ElevatedButton(
-                        onPressed: currentPage > 1 ? () => navigateToPage(notesPerPage, currentPage - 1) : null,
+                        onPressed: _homePageController.currentPageNumber > 1
+                            ? () => navigateToPage(_homePageController.currentPageNumber - 1)
+                            : null,
                         child: const Text('Previous Page'),
                       ),
                       const SizedBox(width: 20),
-                      Text('Page $currentPage of $totalPages'),
+                      Text('Page ${_homePageController.currentPageNumber} of ${_homePageController.totalPages}'),
                       const SizedBox(width: 20),
                       ElevatedButton(
-                        onPressed: currentPage < totalPages ? () => navigateToPage(notesPerPage, currentPage + 1) : null,
+                        onPressed: _homePageController.currentPageNumber < _homePageController.totalPages
+                            ? () => navigateToPage( _homePageController.currentPageNumber + 1)
+                            : null,
                         child: const Text('Next Page'),
                       ),
                     ],
