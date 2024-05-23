@@ -34,7 +34,7 @@ class HomePageState extends State<HomePage> {
   void navigateToPage(int pageNumber) async {
     if (pageNumber >= 1 && pageNumber <= _homePageController.totalPages) {
       await _homePageController.loadNotes(context, pageNumber);
-      setState((){});
+      setState(() {});
     }
   }
 
@@ -87,40 +87,48 @@ class HomePageState extends State<HomePage> {
                   ),
                 ],
               ),
-              body: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  if (_homePageController.isLoading)
-                    const Center(child: CircularProgressIndicator())
-                  else if (_homePageController.notes.isEmpty)
-                    const Center(child: Text('No notes available'))
-                  else
-                    Expanded(
-                      child: NoteList(
-                        notes: _homePageController.notes,
-                        onNoteTap: (noteId) async {
-                          await Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => NoteDetail(noteId: noteId),
-                            ),
-                          );
-                          navigateToPage(_homePageController.currentPageNumber);
-                        },
-                      ),
-                    ),
-                  PaginationControls(
-                    currentPage: _homePageController.currentPageNumber,
-                    totalPages: _homePageController.totalPages,
-                    onPreviousPage: () => navigateToPage(_homePageController.currentPageNumber - 1),
-                    onNextPage: () => navigateToPage(_homePageController.currentPageNumber + 1),
-                  ),
-                ],
-              ),
+              body: _buildBody(),
             );
           },
         );
       },
+    );
+  }
+
+  Widget _buildBody() {
+    if (_homePageController.isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (_homePageController.notes.isEmpty) {
+      return const Center(child: Text('No notes available. Create a new note to get started.'));
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Expanded(
+          child: NoteList(
+            notes: _homePageController.notes,
+            onNoteTap: (noteId) async {
+              await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => NoteDetail(noteId: noteId),
+                ),
+              );
+              navigateToPage(_homePageController.currentPageNumber);
+            },
+          ),
+        ),
+        if (_homePageController.notes.isNotEmpty)
+          PaginationControls(
+            currentPage: _homePageController.currentPageNumber,
+            totalPages: _homePageController.totalPages,
+            onPreviousPage: () => navigateToPage(_homePageController.currentPageNumber - 1),
+            onNextPage: () => navigateToPage(_homePageController.currentPageNumber + 1),
+          ),
+      ],
     );
   }
 }
