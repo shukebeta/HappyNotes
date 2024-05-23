@@ -82,8 +82,8 @@ class NoteDetailState extends State<NoteDetail> {
           IconButton(
             icon: const Icon(Icons.delete),
             onPressed: () async {
-              var canDelete = await DialogService.showConfirmDialog(context) ?? false;
-              if (canDelete) {
+              var sure = await DialogService.showConfirmDialog(context, title: 'Delete note', text: 'Each note has its story, are you sure you delete this one?') ?? false;
+              if (sure) {
                 _deleteNote();
               }
             },

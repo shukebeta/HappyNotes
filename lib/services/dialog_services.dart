@@ -4,7 +4,7 @@ class DialogService {
   static Future<bool?> showUnsavedChangesDialog(BuildContext context) {
     return showConfirmDialog(context, title: 'Unsaved changes', text: 'You have unsaved changes. Do you really want to leave?');
   }
-  static Future<bool?> showConfirmDialog(BuildContext context, {String title='User confirmation', String text="Are you sure?"}) {
+  static Future<bool?> showConfirmDialog(BuildContext context, {String title='', String text="Are you sure?", String noText='Cancel', String yesText='Yes'}) {
     return showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -13,11 +13,11 @@ class DialogService {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('No'),
+            child: Text(noText),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Yes'),
+            child: Text(yesText),
           ),
         ],
       ),
