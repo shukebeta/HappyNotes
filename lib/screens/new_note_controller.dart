@@ -8,9 +8,14 @@ class NewNoteController {
   final NotesService _notesService;
   NewNoteController({required NotesService notesService}): _notesService = notesService;
   final TextEditingController noteController = TextEditingController();
+  bool get nothingToSave => noteController.text.trim().isEmpty;
 
   Future<void> saveNote(BuildContext context, bool isPrivate) async {
     final scaffoldContext = ScaffoldMessenger.of(context);
+    if (nothingToSave) {
+      Util.showInfo(scaffoldContext, 'Please write something first');
+      return;
+    }
     final navigator = Navigator.of(context);
     try {
       final noteId = await NotesService.post(noteController.text, isPrivate);

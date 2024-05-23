@@ -81,92 +81,102 @@ class HomePageState extends State<HomePage> {
                   ),
                 ],
               ),
-              body: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  _homePageController.notes.isEmpty
-                      ? const CircularProgressIndicator()
-                      : Expanded(
-                    child: ListView.builder(
-                      itemCount: _homePageController.notes.length,
-                      itemBuilder: (context, index) {
-                        final note = _homePageController.notes[index];
-                        return ListTile(
-                          title: Row(
-                            children: [
-                              Expanded(
-                                child: RichText(
-                                  text: TextSpan(
-                                    text: note.isLong ? '${note.content}...   ' : note.content,
-                                    style: TextStyle(
-                                      fontWeight: note.isPrivate ? FontWeight.w100 : FontWeight.normal,
-                                      fontSize: 20,
-                                      color: Colors.black,
-                                    ),
-                                    children: note.isLong
-                                        ? [
-                                      const TextSpan(
-                                        text: 'more',
-                                        style: TextStyle(
-                                          color: Colors.blue,
-                                          decoration: TextDecoration.underline,
-                                        ),
-                                      )
-                                    ]
-                                        : [],
-                                  ),
-                                ),
-                              ),
-                              if (note.isPrivate)
-                                const Icon(
-                                  Icons.lock,
-                                  size: 16.0,
-                                  color: Colors.grey,
-                                ),
-                            ],
-                          ),
-                          subtitle: Text(
-                            DateTime.fromMillisecondsSinceEpoch(note.createAt * 1000).toString(),
-                          ),
-                          onTap: () async {
-                            await Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => NoteDetail(noteId: note.id),
-                              ),
-                            );
-                            navigateToPage(_homePageController.currentPageNumber);
-                          },
-                        );
-                      },
-                    ),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      ElevatedButton(
-                        onPressed: _homePageController.currentPageNumber > 1
-                            ? () => navigateToPage(_homePageController.currentPageNumber - 1)
-                            : null,
-                        child: const Text('Previous Page'),
-                      ),
-                      const SizedBox(width: 20),
-                      Text('Page ${_homePageController.currentPageNumber} of ${_homePageController.totalPages}'),
-                      const SizedBox(width: 20),
-                      ElevatedButton(
-                        onPressed: _homePageController.currentPageNumber < _homePageController.totalPages
-                            ? () => navigateToPage( _homePageController.currentPageNumber + 1)
-                            : null,
-                        child: const Text('Next Page'),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+              body: _buildBody(),
             );
           },
         );
       },
+    );
+  }
+
+  Widget _buildBody() {
+    if (_homePageController.isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (_homePageController.notes.isEmpty) {
+      return const Center(child: Text('No notes available. Create a new note to get started.'));
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Expanded(
+          child: ListView.builder(
+            itemCount: _homePageController.notes.length,
+            itemBuilder: (context, index) {
+              final note = _homePageController.notes[index];
+              return ListTile(
+                title: Row(
+                  children: [
+                    Expanded(
+                      child: RichText(
+                        text: TextSpan(
+                          text: note.isLong ? '${note.content}...   ' : note.content,
+                          style: TextStyle(
+                            fontWeight: note.isPrivate ? FontWeight.w100 : FontWeight.normal,
+                            fontSize: 20,
+                            color: Colors.black,
+                          ),
+                          children: note.isLong
+                              ? [
+                            const TextSpan(
+                              text: 'more',
+                              style: TextStyle(
+                                color: Colors.blue,
+                                decoration: TextDecoration.underline,
+                              ),
+                            )
+                          ]
+                              : [],
+                        ),
+                      ),
+                    ),
+                    if (note.isPrivate)
+                      const Icon(
+                        Icons.lock,
+                        size: 16.0,
+                        color: Colors.grey,
+                      ),
+                  ],
+                ),
+                subtitle: Text(
+                  DateTime.fromMillisecondsSinceEpoch(note.createAt * 1000).toString(),
+                ),
+                onTap: () async {
+                  await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => NoteDetail(noteId: note.id),
+                    ),
+                  );
+                  navigateToPage(_homePageController.currentPageNumber);
+                },
+              );
+            },
+          ),
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton(
+              onPressed: _homePageController.currentPageNumber > 1
+                  ? () => navigateToPage(_homePageController.currentPageNumber - 1)
+                  : null,
+              child: const Text('Previous Page'),
+            ),
+            const SizedBox(width: 20),
+            Text('Page ${_homePageController.currentPageNumber} of ${_homePageController.totalPages}'),
+            const SizedBox(width: 20),
+            ElevatedButton(
+              onPressed: _homePageController.currentPageNumber < _homePageController.totalPages
+                  ? () => navigateToPage(_homePageController.currentPageNumber + 1)
+                  : null,
+              child: const Text('Next Page'),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }
