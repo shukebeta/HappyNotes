@@ -3,8 +3,8 @@ import 'package:happy_notes/screens/home_page_controller.dart';
 import 'package:happy_notes/screens/note_detail.dart';
 import '../dependency_injection.dart';
 import '../services/notes_services.dart';
-import 'components/note_list.dart';
-import 'components/pagination_controls.dart';
+import '../components/note_list.dart';
+import '../components/pagination_controls.dart';
 import 'new_note.dart';
 
 class HomePage extends StatefulWidget {

@@ -1,7 +1,7 @@
 import 'package:happy_notes/screens/new_note_controller.dart';
 import 'package:flutter/material.dart';
-
 import '../dependency_injection.dart';
+import '../components/note_editor.dart';
 
 class NewNote extends StatefulWidget {
   final bool isPrivate;
@@ -22,7 +22,7 @@ class NewNoteState extends State<NewNote> {
     super.initState();
     _isPrivate = widget.isPrivate;
     _noteFocusNode = FocusNode();
-    WidgetsBinding.instance.addPostFrameCallback((_){
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       _noteFocusNode.requestFocus();
     });
   }
@@ -38,49 +38,21 @@ class NewNoteState extends State<NewNote> {
         ),
         body: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              Expanded(
-                child: Align(
-                  alignment: Alignment.topCenter,
-                  child: TextField(
-                    controller: newNoteController.noteController,
-                    focusNode: _noteFocusNode,
-                    keyboardType: TextInputType.multiline,
-                    maxLines: null,
-                    expands: true,
-                    textAlignVertical: TextAlignVertical.top,
-                    decoration: const InputDecoration(
-                      hintText: 'Write your note here...',
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
-                ),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      const Text('Private Note'),
-                      Switch(
-                        value: _isPrivate,
-                        onChanged: (bool value) {
-                          setState(() {
-                            _isPrivate = value;
-                          });
-                        },
-                      ),
-                    ],
-                  ),
-                  FloatingActionButton(
-                    onPressed: () => newNoteController.saveNote(context, _isPrivate),
-                    child: const Icon(Icons.save),
-                  ),
-                ],
-              ),
-            ],
+          child: NoteEditor(
+            controller: newNoteController.noteController,
+            focusNode: _noteFocusNode,
+            isEditing: true,
+            isPrivate: _isPrivate,
+            onPrivateChanged: (value) {
+              setState(() {
+                _isPrivate = value;
+              });
+            },
           ),
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () => newNoteController.saveNote(context, _isPrivate),
+          child: const Icon(Icons.save),
         ),
       ),
     );

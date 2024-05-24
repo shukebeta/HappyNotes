@@ -4,6 +4,7 @@ import '../dependency_injection.dart';
 import '../entities/note.dart';
 import '../services/dialog_services.dart';
 import '../utils/util.dart';
+import '../components/note_editor.dart';
 
 class NoteDetail extends StatefulWidget {
   final int noteId;
@@ -80,7 +81,7 @@ class NoteDetailState extends State<NoteDetail> {
                 setState(() {
                   _isEditing = true;
                 });
-                WidgetsBinding.instance.addPostFrameCallback((_){
+                WidgetsBinding.instance.addPostFrameCallback((_) {
                   _noteFocusNode.requestFocus();
                 });
               },
@@ -104,50 +105,18 @@ class NoteDetailState extends State<NoteDetail> {
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (snapshot.hasData) {
-            final note = snapshot.data!;
             return Padding(
               padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: _isEditing
-                        ? TextField(
-                      controller: _noteController,
-                      focusNode: _noteFocusNode,
-                      keyboardType: TextInputType.multiline,
-                      maxLines: null,
-                      expands: true,
-                      textAlignVertical: TextAlignVertical.top,
-                      decoration: const InputDecoration(
-                        hintText: 'Edit your note here...',
-                        border: OutlineInputBorder(),
-                      ),
-                    )
-                        : SingleChildScrollView(
-                      child: Text(
-                        note.content,
-                        style: const TextStyle(fontSize: 16.0),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16.0),
-                  Row(
-                    children: [
-                      const Text('Private Note'),
-                      Switch(
-                        value: _isEditing ? _isPrivate : note.isPrivate,
-                        onChanged: _isEditing
-                            ? (value) {
-                          setState(() {
-                            _isPrivate = value;
-                          });
-                        }
-                            : null,
-                      ),
-                    ],
-                  ),
-                ],
+              child: NoteEditor(
+                controller: _noteController,
+                focusNode: _noteFocusNode,
+                isEditing: _isEditing,
+                isPrivate: _isEditing ? _isPrivate : snapshot.data!.isPrivate,
+                onPrivateChanged: (value) {
+                  setState(() {
+                    _isPrivate = value;
+                  });
+                },
               ),
             );
           } else {
