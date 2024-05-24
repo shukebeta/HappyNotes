@@ -24,6 +24,10 @@ if ! [[ $VERSION =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
   echo "Error: Invalid version format. It should be in the format '[number].[number].[number]'."
   exit 1
 fi
+
+script_dir="$(dirname "$(readlink -f "$0")")"
+cd $script_dir/..
+
 mv .env .env.backup
 cp .env.production .env
 
