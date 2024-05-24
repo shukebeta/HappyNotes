@@ -13,7 +13,7 @@ class NewNoteController {
   Future<void> saveNote(BuildContext context, bool isPrivate) async {
     final scaffoldContext = ScaffoldMessenger.of(context);
     if (nothingToSave) {
-      Util.showInfo(scaffoldContext, 'Please write something first');
+      Util.showInfo(scaffoldContext, 'Please write something');
       return;
     }
     final navigator = Navigator.of(context);
