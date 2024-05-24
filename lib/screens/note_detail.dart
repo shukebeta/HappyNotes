@@ -1,5 +1,6 @@
 import 'package:happy_notes/services/notes_services.dart';
 import 'package:flutter/material.dart';
+import '../dependency_injection.dart';
 import '../entities/note.dart';
 import '../services/dialog_services.dart';
 import '../utils/util.dart';
@@ -16,6 +17,7 @@ class NoteDetail extends StatefulWidget {
 class NoteDetailState extends State<NoteDetail> {
   late Future<Note> _noteFuture;
   final TextEditingController _noteController = TextEditingController();
+  final _notesService = locator<NotesService>();
   bool _isPrivate = false;
   bool _isEditing = false;
 
@@ -26,7 +28,7 @@ class NoteDetailState extends State<NoteDetail> {
   }
 
   Future<Note> _fetchNote() async {
-    final note = await NotesService.get(widget.noteId);
+    final note = await _notesService.get(widget.noteId);
     _noteController.text = note.content;
     _isPrivate = note.isPrivate;
     return note;
@@ -35,7 +37,7 @@ class NoteDetailState extends State<NoteDetail> {
   Future<void> _saveNote() async {
     final scaffoldContext = ScaffoldMessenger.of(context);
     try {
-      await NotesService.update(widget.noteId, _noteController.text, _isPrivate);
+      await _notesService.update(widget.noteId, _noteController.text, _isPrivate);
       setState(() {
         _isEditing = false;
         // No need to await _fetchNote() because FutureBuilder will handle the Future
@@ -51,7 +53,7 @@ class NoteDetailState extends State<NoteDetail> {
     final scaffoldContext = ScaffoldMessenger.of(context);
     final navigator = Navigator.of(context);
     try {
-      await NotesService.delete(widget.noteId);
+      await _notesService.delete(widget.noteId);
       navigator.pop(); // Go back to the previous screen
       Util.showInfo(scaffoldContext, 'Note successfully deleted.');
     } catch (error) {

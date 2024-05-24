@@ -27,7 +27,7 @@ class NotesService {
   }
 
   // post a note and get its noteId
-  static Future<int> post(String content, bool isPrivate) async {
+  Future<int> post(String content, bool isPrivate) async {
     var params = {'content': content, 'isPrivate': isPrivate};
     var apiResult = (await NotesApi.post(params)).data;
     if (!apiResult['successful']) throw Exception(apiResult['message']);
@@ -35,26 +35,26 @@ class NotesService {
   }
 
   // update a note and get its noteId
-  static Future<int> update(int noteId, String content, bool isPrivate) async {
+  Future<int> update(int noteId, String content, bool isPrivate) async {
     var params = {'id': noteId, 'content': content, 'isPrivate': isPrivate};
     var apiResult = (await NotesApi.update(params)).data;
     if (!apiResult['successful']) throw Exception(apiResult['message']);
     return apiResult['data']; //note id
   }
 
-  static Future<int> delete(int noteId) async {
+  Future<int> delete(int noteId) async {
     var apiResult = (await NotesApi.delete(noteId)).data;
     if (!apiResult['successful']) throw Exception(apiResult['message']);
     return apiResult['data']; //note id
   }
 
-  static Future<int> undelete(int noteId) async {
+  Future<int> undelete(int noteId) async {
     var apiResult = (await NotesApi.undelete(noteId)).data;
     if (!apiResult['successful']) throw Exception(apiResult['message']);
     return apiResult['data']; //note id
   }
 
-  static Future<Note> get(int noteId) async {
+  Future<Note> get(int noteId) async {
     var apiResult = (await NotesApi.get(noteId)).data;
     if (!apiResult['successful']) throw Exception(apiResult['message']);
     return Note.fromJson(apiResult['data']); //note id
