@@ -36,7 +36,7 @@ jobs:
 
       - name: Extract version information
         run: |
-          echo "VERSION=$GITHUB_REF" >> $GITHUB_ENV
+          echo "VERSION=$(echo $GITHUB_REF | cut -d / -f 3)" >> $GITHUB_ENV
 
       - name: Create key.properties
         run: |
