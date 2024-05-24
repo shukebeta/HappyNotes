@@ -6,9 +6,10 @@ import '../components/note_editor.dart';
 import '../services/notes_services.dart';
 import 'note_detail_controller.dart';
 
+// ignore: must_be_immutable
 class NoteDetail extends StatefulWidget {
   final int noteId;
-  bool? enterEditing = false;
+  bool? enterEditing;
 
   NoteDetail({super.key, required this.noteId, this.enterEditing});
 
@@ -25,11 +26,9 @@ class NoteDetailState extends State<NoteDetail> {
     super.initState();
     _controller = NoteDetailController(notesService: locator<NotesService>());
     _controller.isEditing = widget.enterEditing ?? false;
-    if (_controller.isEditing) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _controller.noteFocusNode.requestFocus();
-      });
-    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_controller.isEditing) _controller.noteFocusNode.requestFocus();
+    });
     _noteFuture = _controller.fetchNote(widget.noteId);
   }
 
@@ -54,8 +53,6 @@ class NoteDetailState extends State<NoteDetail> {
               onPressed: () {
                 setState(() {
                   _controller.isEditing = true;
-                });
-                WidgetsBinding.instance.addPostFrameCallback((_) {
                   _controller.noteFocusNode.requestFocus();
                 });
               },
