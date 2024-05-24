@@ -110,11 +110,20 @@ class HomePageState extends State<HomePage> {
         Expanded(
           child: NoteList(
             notes: _homePageController.notes,
-            onNoteTap: (noteId) async {
+            onTap: (noteId) async {
               await Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) => NoteDetail(noteId: noteId),
+                ),
+              );
+              navigateToPage(_homePageController.currentPageNumber);
+            },
+            onDoubleTap: (noteId) async {
+              await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => NoteDetail(noteId: noteId, enterEditing: true),
                 ),
               );
               navigateToPage(_homePageController.currentPageNumber);

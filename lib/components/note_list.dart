@@ -4,12 +4,14 @@ import 'note_list_item.dart';
 
 class NoteList extends StatelessWidget {
   final List<Note> notes;
-  final Function(int) onNoteTap;
+  final Function(int) onTap;
+  Function(int)? onDoubleTap;
 
-  const NoteList({
+  NoteList({
     Key? key,
     required this.notes,
-    required this.onNoteTap,
+    required this.onTap,
+    this.onDoubleTap,
   }) : super(key: key);
 
   @override
@@ -20,7 +22,8 @@ class NoteList extends StatelessWidget {
         final note = notes[index];
         return NoteListItem(
           note: note,
-          onTap: () => onNoteTap(note.id),
+          onTap: () => onTap(note.id),
+          onDoubleTap: onDoubleTap != null  ? () => onDoubleTap!(note.id) : null,
         );
       },
     );

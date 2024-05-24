@@ -8,8 +8,9 @@ import 'note_detail_controller.dart';
 
 class NoteDetail extends StatefulWidget {
   final int noteId;
+  bool? enterEditing = false;
 
-  const NoteDetail({super.key, required this.noteId});
+  NoteDetail({super.key, required this.noteId, this.enterEditing});
 
   @override
   NoteDetailState createState() => NoteDetailState();
@@ -23,6 +24,12 @@ class NoteDetailState extends State<NoteDetail> {
   void initState() {
     super.initState();
     _controller = NoteDetailController(notesService: locator<NotesService>());
+    _controller.isEditing = widget.enterEditing ?? false;
+    if (_controller.isEditing) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _controller.noteFocusNode.requestFocus();
+      });
+    }
     _noteFuture = _controller.fetchNote(widget.noteId);
   }
 
