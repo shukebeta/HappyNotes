@@ -20,11 +20,13 @@ class NoteDetailState extends State<NoteDetail> {
   final _notesService = locator<NotesService>();
   bool _isPrivate = false;
   bool _isEditing = false;
+  late FocusNode _noteFocusNode;
 
   @override
   void initState() {
     super.initState();
     _noteFuture = _fetchNote();
+    _noteFocusNode = FocusNode();
   }
 
   Future<Note> _fetchNote() async {
@@ -40,7 +42,6 @@ class NoteDetailState extends State<NoteDetail> {
       await _notesService.update(widget.noteId, _noteController.text, _isPrivate);
       setState(() {
         _isEditing = false;
-        // No need to await _fetchNote() because FutureBuilder will handle the Future
         _noteFuture = _fetchNote(); // Refresh note data
       });
       Util.showInfo(scaffoldContext, 'Note successfully updated.');
@@ -79,12 +80,15 @@ class NoteDetailState extends State<NoteDetail> {
                 setState(() {
                   _isEditing = true;
                 });
+                WidgetsBinding.instance.addPostFrameCallback((_){
+                  _noteFocusNode.requestFocus();
+                });
               },
             ),
           IconButton(
             icon: const Icon(Icons.delete),
             onPressed: () async {
-              var sure = await DialogService.showConfirmDialog(context, title: 'Delete note', text: 'Each note has its story, are you sure you delete this one?') ?? false;
+              var sure = await DialogService.showConfirmDialog(context, title: 'Delete note', text: 'Each note has its story, are you sure you want to delete this one?') ?? false;
               if (sure) {
                 _deleteNote();
               }
@@ -106,19 +110,27 @@ class NoteDetailState extends State<NoteDetail> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _isEditing
-                      ? TextField(
-                          controller: _noteController,
-                          maxLines: null,
-                          decoration: const InputDecoration(
-                            hintText: 'Edit your note here...',
-                            border: OutlineInputBorder(),
-                          ),
-                        )
-                      : Text(
-                          note.content,
-                          style: const TextStyle(fontSize: 16.0),
-                        ),
+                  Expanded(
+                    child: _isEditing
+                        ? TextField(
+                      controller: _noteController,
+                      focusNode: _noteFocusNode,
+                      keyboardType: TextInputType.multiline,
+                      maxLines: null,
+                      expands: true,
+                      textAlignVertical: TextAlignVertical.top,
+                      decoration: const InputDecoration(
+                        hintText: 'Edit your note here...',
+                        border: OutlineInputBorder(),
+                      ),
+                    )
+                        : SingleChildScrollView(
+                      child: Text(
+                        note.content,
+                        style: const TextStyle(fontSize: 16.0),
+                      ),
+                    ),
+                  ),
                   const SizedBox(height: 16.0),
                   Row(
                     children: [
@@ -127,10 +139,10 @@ class NoteDetailState extends State<NoteDetail> {
                         value: _isEditing ? _isPrivate : note.isPrivate,
                         onChanged: _isEditing
                             ? (value) {
-                                setState(() {
-                                  _isPrivate = value;
-                                });
-                              }
+                          setState(() {
+                            _isPrivate = value;
+                          });
+                        }
                             : null,
                       ),
                     ],
@@ -144,5 +156,11 @@ class NoteDetailState extends State<NoteDetail> {
         },
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _noteFocusNode.dispose();
+    super.dispose();
   }
 }
