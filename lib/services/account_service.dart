@@ -1,4 +1,3 @@
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:happy_notes/apis/account_api.dart';
 import 'package:happy_notes/app_config.dart';
 import 'package:happy_notes/utils/token_utils.dart';
@@ -9,7 +8,6 @@ import '../dependency_injection.dart';
 class AccountService {
   final _tokenKey = 'accessToken';
   final _baseUrlKey = 'baseUrl';
-  final _storage = locator<FlutterSecureStorage>();
   final _tokenUtils = locator<TokenUtils>();
   Future<dynamic> login(String username, String password) async {
     var params = {'username': username, 'password': password};
@@ -41,12 +39,14 @@ class AccountService {
   }
 
   Future<void> _storeToken(String token) async {
-    await _storage.write(key: _tokenKey, value: token);
-    await _storage.write(key: _baseUrlKey, value: AppConfig.baseUrl);
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_tokenKey, token);
+    await prefs.setString(_baseUrlKey, AppConfig.baseUrl);
   }
 
   Future<String?> getToken() async {
-    final token = await _storage.read(key: _tokenKey);
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString(_tokenKey);
     if (token != null) {
       var remainingTime = await _tokenUtils.getTokenRemainingTime(token);
       if (remainingTime.inDays <= 30) {
@@ -73,7 +73,8 @@ class AccountService {
 
   // if env changes, even the token is valid, we still need to ask user to log in
   Future<bool> _isSameEnv() async {
-    final previousBaseUrl = await _storage.read(key: _baseUrlKey);
+    final prefs = await SharedPreferences.getInstance();
+    final previousBaseUrl = prefs.getString(_baseUrlKey);
     return previousBaseUrl == AppConfig.baseUrl;
   }
 }
