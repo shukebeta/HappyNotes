@@ -26,7 +26,7 @@ class NoteListItem extends StatelessWidget {
                 text: TextSpan(
                   text: note.isLong ? '${note.content}...   ' : note.content,
                   style: TextStyle(
-                    fontWeight: note.isPrivate ? FontWeight.w100 : FontWeight.normal,
+                    fontStyle: note.isPrivate ? FontStyle.italic : FontStyle.normal,
                     fontSize: 20,
                     color: Colors.black,
                   ),
@@ -35,6 +35,7 @@ class NoteListItem extends StatelessWidget {
                     const TextSpan(
                       text: 'more',
                       style: TextStyle(
+                        fontWeight: FontWeight.normal,
                         color: Colors.blue,
                         decoration: TextDecoration.underline,
                       ),
@@ -51,9 +52,6 @@ class NoteListItem extends StatelessWidget {
                 color: Colors.grey,
               ),
           ],
-        ),
-        subtitle: Text(
-          DateTime.fromMillisecondsSinceEpoch(note.createAt * 1000).toString(),
         ),
       ),
     );
