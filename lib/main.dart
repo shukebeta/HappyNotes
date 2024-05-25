@@ -4,6 +4,8 @@ import 'package:happy_notes/dependency_injection.dart' as di;
 import 'package:happy_notes/screens/initial_page.dart';
 import 'package:happy_notes/screens/new_note.dart';
 import 'package:quick_actions/quick_actions.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'dart:io' show Platform; // Import Platform for platform checks
 
 void main() async {
   di.init();
@@ -20,7 +22,7 @@ class HappyNotesApp extends StatefulWidget {
 }
 
 class HappyNotesState extends State<HappyNotesApp> {
-  final quickActions = const QuickActions();
+  QuickActions? quickActions;
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
   @override
@@ -30,14 +32,16 @@ class HappyNotesState extends State<HappyNotesApp> {
   }
 
   void initializeQuickActions() {
-    quickActions.setShortcutItems([
+    if (kIsWeb || !(Platform.isAndroid || Platform.isIOS)) return;
+    quickActions = const QuickActions();
+    quickActions!.setShortcutItems([
       const ShortcutItem(
         type: 'takeNote',
         localizedTitle: 'Take note',
         icon: 'pencil',
       ),
     ]);
-    quickActions.initialize((String shortcutType) async {
+    quickActions!.initialize((String shortcutType) async {
       if (shortcutType == 'takeNote') {
         await navigatorKey.currentState?.push(
           MaterialPageRoute(
