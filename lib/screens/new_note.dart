@@ -13,17 +13,15 @@ class NewNote extends StatefulWidget {
 }
 
 class NewNoteState extends State<NewNote> {
-  final newNoteController = locator<NewNoteController>();
-  late FocusNode _noteFocusNode;
+  final _newNoteController = locator<NewNoteController>();
   late bool _isPrivate;
 
   @override
   void initState() {
     super.initState();
     _isPrivate = widget.isPrivate;
-    _noteFocusNode = FocusNode();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _noteFocusNode.requestFocus();
+      _newNoteController.noteFocusNode.requestFocus();
     });
   }
 
@@ -31,7 +29,7 @@ class NewNoteState extends State<NewNote> {
   Widget build(BuildContext context) {
     return PopScope(
       canPop: false,
-      onPopInvoked: (didPop) => newNoteController.onPopHandler(context, didPop),
+      onPopInvoked: (didPop) => _newNoteController.onPopHandler(context, didPop),
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Write Note'),
@@ -39,8 +37,8 @@ class NewNoteState extends State<NewNote> {
         body: Padding(
           padding: const EdgeInsets.all(16.0),
           child: NoteEditor(
-            controller: newNoteController.noteController,
-            focusNode: _noteFocusNode,
+            controller: _newNoteController.noteController,
+            focusNode: _newNoteController.noteFocusNode,
             isEditing: true,
             isPrivate: _isPrivate,
             onPrivateChanged: (value) {
@@ -51,7 +49,7 @@ class NewNoteState extends State<NewNote> {
           ),
         ),
         floatingActionButton: FloatingActionButton(
-          onPressed: () => newNoteController.saveNote(context, _isPrivate),
+          onPressed: () => _newNoteController.saveNote(context, _isPrivate),
           child: const Icon(Icons.save),
         ),
       ),
@@ -60,7 +58,7 @@ class NewNoteState extends State<NewNote> {
 
   @override
   void dispose() {
-    _noteFocusNode.dispose();
+    _newNoteController.dispose();
     super.dispose();
   }
 }

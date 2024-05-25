@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../entities/note.dart';
+import '../services/dialog_services.dart';
 import '../services/notes_services.dart';
 import '../utils/util.dart';
 
@@ -7,6 +8,7 @@ class NoteDetailController {
   final NotesService _notesService;
   final TextEditingController noteController = TextEditingController();
   final FocusNode noteFocusNode = FocusNode();
+  late Note _originalNote;
 
   NoteDetailController({required NotesService notesService})
       : _notesService = notesService;
@@ -15,10 +17,10 @@ class NoteDetailController {
   bool isEditing = false;
 
   Future<Note> fetchNote(int noteId) async {
-    final note = await _notesService.get(noteId);
-    noteController.text = note.content;
-    isPrivate = note.isPrivate;
-    return note;
+    _originalNote = await _notesService.get(noteId);
+    noteController.text = _originalNote.content;
+    isPrivate = _originalNote.isPrivate;
+    return _originalNote;
   }
 
   Future<void> saveNote(
@@ -44,6 +46,17 @@ class NoteDetailController {
       Util.showInfo(scaffoldContext, 'Note successfully deleted.');
     } catch (error) {
       Util.showError(scaffoldContext, error.toString());
+    }
+  }
+
+  onPopHandler(BuildContext context, bool didPop) async {
+    if (!didPop) {
+      final navigator = Navigator.of(context);
+      if (noteController.text.trim() == _originalNote.content ||
+          (await DialogService.showUnsavedChangesDialog(context) ?? false)
+      ) {
+        navigator.pop();
+      }
     }
   }
 

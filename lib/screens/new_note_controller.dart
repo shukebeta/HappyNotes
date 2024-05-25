@@ -8,6 +8,7 @@ class NewNoteController {
   final NotesService _notesService;
   NewNoteController({required NotesService notesService}): _notesService = notesService;
   final TextEditingController noteController = TextEditingController();
+  final FocusNode noteFocusNode = FocusNode();
   bool get nothingToSave => noteController.text.trim().isEmpty;
 
   Future<void> saveNote(BuildContext context, bool isPrivate) async {
@@ -35,5 +36,10 @@ class NewNoteController {
         navigator.pop();
       }
     }
+  }
+
+  void dispose() {
+    noteController.dispose();
+    noteFocusNode.dispose();
   }
 }
