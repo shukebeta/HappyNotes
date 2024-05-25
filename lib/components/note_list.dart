@@ -7,12 +7,14 @@ class NoteList extends StatelessWidget {
   final List<Note> notes;
   final Function(int) onTap;
   final Function(int)? onDoubleTap;
+  final Future<void> Function()? onRefresh;
 
-  NoteList({
+  const NoteList({
     Key? key,
     required this.notes,
     required this.onTap,
     this.onDoubleTap,
+    this.onRefresh,
   }) : super(key: key);
 
   @override
@@ -20,42 +22,52 @@ class NoteList extends StatelessWidget {
     // Group notes by date
     final notesByDate = <String, List<Note>>{};
     for (var note in notes) {
-      final dateKey = DateTime.fromMillisecondsSinceEpoch(note.createAt * 1000).toString().split(' ')[0];
+      final dateKey = DateTime.fromMillisecondsSinceEpoch(note.createAt * 1000)
+          .toString()
+          .split(' ')[0];
       notesByDate[dateKey] = notesByDate[dateKey] ?? [];
       notesByDate[dateKey]!.add(note);
     }
 
-    return ListView.builder(
-      itemCount: notesByDate.keys.length,
-      itemBuilder: (context, index) {
-        final dateKey = notesByDate.keys.elementAt(index);
-        final dayNotes = notesByDate[dateKey]!;
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Date header
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-              child: Align(
-              alignment: Alignment.center,
-              child:Text(
-                _formatDate(DateTime.parse(dateKey)),
-                style: const TextStyle(
-                  fontWeight: FontWeight.w300,
-                  fontSize: 16,
+    return RefreshIndicator(
+      onRefresh: onRefresh ?? () async {},
+      child: ListView.builder(
+        itemCount: notesByDate.keys.length,
+        itemBuilder: (context, index) {
+          final dateKey = notesByDate.keys.elementAt(index);
+          final dayNotes = notesByDate[dateKey]!;
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Date header
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                child: Align(
+                  alignment: Alignment.center,
+                  child: Text(
+                    _formatDate(DateTime.parse(dateKey)),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w300,
+                      fontSize: 16,
+                    ),
+                  ),
                 ),
               ),
-            ),
-            ),
-            // List of notes for that date
-            ...dayNotes.map((note) => NoteListItem(
-              note: note,
-              onTap: () => onTap(note.id),
-              onDoubleTap: onDoubleTap != null ? () => onDoubleTap!(note.id) : null,
-            )).toList(),
-          ],
-        );
-      },
+              // List of notes for that date
+              ...dayNotes
+                  .map((note) => NoteListItem(
+                        note: note,
+                        onTap: () => onTap(note.id),
+                        onDoubleTap: onDoubleTap != null
+                            ? () => onDoubleTap!(note.id)
+                            : null,
+                      ))
+                  .toList(),
+            ],
+          );
+        },
+      ),
     );
   }
 

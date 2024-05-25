@@ -7,7 +7,7 @@ export "FLUTTER_TARGET=/Users/shukebeta/AndroidStudioProjects/happy_notes/lib/ma
 export "FLUTTER_BUILD_DIR=build"
 export "FLUTTER_BUILD_NAME=0.1.3"
 export "FLUTTER_BUILD_NUMBER=0.1.3"
-export "DART_DEFINES=RkxVVFRFUl9XRUJfQ0FOVkFTS0lUX1VSTD1odHRwczovL3d3dy5nc3RhdGljLmNvbS9mbHV0dGVyLWNhbnZhc2tpdC81NWVhZTY4NjRiMjk2ZGQ5ZjQzYjJjYzc1NzdlYzI1NmU1YzMyYThkLw=="
+export "DART_DEFINES=Zmx1dHRlci5pbnNwZWN0b3Iuc3RydWN0dXJlZEVycm9ycz10cnVl,RkxVVFRFUl9XRUJfQ0FOVkFTS0lUX1VSTD1odHRwczovL3d3dy5nc3RhdGljLmNvbS9mbHV0dGVyLWNhbnZhc2tpdC81NWVhZTY4NjRiMjk2ZGQ5ZjQzYjJjYzc1NzdlYzI1NmU1YzMyYThkLw=="
 export "DART_OBFUSCATION=false"
 export "TRACK_WIDGET_CREATION=true"
 export "TREE_SHAKE_ICONS=false"

@@ -128,6 +128,7 @@ class HomePageState extends State<HomePage> {
               );
               navigateToPage(_homePageController.currentPageNumber);
             },
+            onRefresh: ()async => navigateToPage(_homePageController.currentPageNumber),
           ),
         ),
         if (_homePageController.notes.isNotEmpty)
