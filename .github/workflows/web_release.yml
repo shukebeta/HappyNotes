@@ -3,7 +3,7 @@ name: Deploy HappyNotes Web
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
   build:
