@@ -15,9 +15,12 @@ jobs:
         with:
           flutter-version: '3.19.x'
           channel: 'stable'
-      - run: flutter config --enable-web
-      - run: flutter build web --release
-      - run: flutter build web --release --base-href "/HappyNotes/"
+
+      - name: Build web
+        run: |
+          cp .env.production .env
+          flutter config --enable-web
+          flutter build web --release --base-href "/HappyNotes/"
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
