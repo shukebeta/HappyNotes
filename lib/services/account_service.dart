@@ -6,12 +6,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../dependency_injection.dart';
 
 class AccountService {
+  final AccountApi _accountApi;
+  AccountService({required AccountApi accountApi}): _accountApi = accountApi;
   final _tokenKey = 'accessToken';
   final _baseUrlKey = 'baseUrl';
   final _tokenUtils = locator<TokenUtils>();
   Future<dynamic> login(String username, String password) async {
     var params = {'username': username, 'password': password};
-    final apiResponse = (await AccountApi.login(params)).data;
+    final apiResponse = (await _accountApi.login(params)).data;
     if (apiResponse['successful']) {
       await _storeToken(apiResponse['data']['token']);
     } else {
@@ -22,7 +24,7 @@ class AccountService {
 
   Future<dynamic> register(String username, String email, String password) async {
     var params = {'username': username, 'email': email, 'password': password};
-    var apiResponse = (await AccountApi.register(params)).data;
+    var apiResponse = (await _accountApi.register(params)).data;
     if (apiResponse['successful']) {
       await _storeToken(apiResponse['data']['token']);
     } else {
@@ -32,7 +34,7 @@ class AccountService {
   }
 
   Future<dynamic> _refreshToken() async {
-    var apiResponse = (await AccountApi.refreshToken()).data;
+    var apiResponse = (await _accountApi.refreshToken()).data;
     if (apiResponse['successful']) {
       _storeToken(apiResponse['data']['token']);
     }

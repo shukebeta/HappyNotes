@@ -1,25 +1,24 @@
 import 'package:dio/dio.dart';
-
 import '../dio_client.dart';
 
 class AccountApi {
   static final Dio _dio = DioClient.getInstance();
 
-  static Future<Response> login(Map<String, dynamic> params) async {
+  Future<Response> login(Map<String, dynamic> params) async {
     final  options = Options(
       headers: {'AllowAnonymous': true},
     );
     return await _dio.post('/account/login', data: params, options: options);
   }
 
-  static Future<Response> register(Map<String, dynamic> params) async {
+  Future<Response> register(Map<String, dynamic> params) async {
     final options = Options(
       headers: {'AllowAnonymous': true},
     );
     return await _dio.post('/account/register', data: params);
   }
 
-  static Future<Response> refreshToken() async {
+  Future<Response> refreshToken() async {
     return await _dio.post('/account/refreshToken', data: {});
   }
 }
