@@ -1,7 +1,9 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import '../../entities/note.dart';
-import 'note_list_item.dart';
 import 'package:intl/intl.dart';
+
+import '../entities/note.dart';
+import 'note_list_item.dart';
 
 class NoteList extends StatelessWidget {
   final List<Note> notes;
@@ -42,7 +44,7 @@ class NoteList extends StatelessWidget {
               // Date header
               Padding(
                 padding:
-                    const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
                 child: Align(
                   alignment: Alignment.center,
                   child: Text(
@@ -54,15 +56,22 @@ class NoteList extends StatelessWidget {
                   ),
                 ),
               ),
-              // List of notes for that date
+              // List of notes for that date with dividers
               ...dayNotes
-                  .map((note) => NoteListItem(
-                        note: note,
-                        onTap: () => onTap(note.id),
-                        onDoubleTap: onDoubleTap != null
-                            ? () => onDoubleTap!(note.id)
-                            : null,
-                      ))
+                  .asMap()
+                  .entries
+                  .map((entry) => Column(
+                children: [
+                  NoteListItem(
+                    note: entry.value,
+                    onTap: () => onTap(entry.value.id),
+                    onDoubleTap: onDoubleTap != null
+                        ? () => onDoubleTap!(entry.value.id)
+                        : null,
+                  ),
+                  if (entry.key < dayNotes.length - 1) const Divider(),
+                ],
+              ))
                   .toList(),
             ],
           );

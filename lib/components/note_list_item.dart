@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../entities/note.dart';
+
+import '../entities/note.dart';
 
 class NoteListItem extends StatelessWidget {
   final Note note;
@@ -18,40 +19,37 @@ class NoteListItem extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       onDoubleTap: onDoubleTap, // Call onDoubleTap callback when double-tapped
-      child: ListTile(
-        title: Row(
-          children: [
-            Expanded(
-              child: RichText(
-                text: TextSpan(
-                  text: note.isLong ? '${note.content}...   ' : note.content,
-                  style: TextStyle(
-                    fontStyle: note.isPrivate ? FontStyle.italic : FontStyle.normal,
-                    fontSize: 20,
-                    color: Colors.black,
+      child: Container(
+        color: note.isPrivate ? Colors.grey.shade200 : Colors.transparent,
+        child: ListTile(
+          title: Row(
+            children: [
+              Expanded(
+                child: RichText(
+                  text: TextSpan(
+                    text: note.isLong ? '${note.content}...   ' : note.content,
+                    style: TextStyle(
+                      fontStyle: note.isPrivate ? FontStyle.italic : FontStyle.normal,
+                      fontSize: 20,
+                      color: Colors.black,
+                    ),
+                    children: note.isLong
+                        ? [
+                      const TextSpan(
+                        text: 'more',
+                        style: TextStyle(
+                          fontWeight: FontWeight.normal,
+                          color: Colors.blue,
+                          decoration: TextDecoration.underline,
+                        ),
+                      )
+                    ]
+                        : [],
                   ),
-                  children: note.isLong
-                      ? [
-                    const TextSpan(
-                      text: 'more',
-                      style: TextStyle(
-                        fontWeight: FontWeight.normal,
-                        color: Colors.blue,
-                        decoration: TextDecoration.underline,
-                      ),
-                    )
-                  ]
-                      : [],
                 ),
               ),
-            ),
-            if (note.isPrivate)
-              const Icon(
-                Icons.lock,
-                size: 16.0,
-                color: Colors.grey,
-              ),
-          ],
+            ],
+          ),
         ),
       ),
     );
