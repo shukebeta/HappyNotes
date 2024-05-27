@@ -21,34 +21,38 @@ class NoteListItem extends StatelessWidget {
       onDoubleTap: onDoubleTap, // Call onDoubleTap callback when double-tapped
       child: Container(
         color: note.isPrivate ? Colors.grey.shade200 : Colors.transparent,
-        child: ListTile(
-          title: Row(
-            children: [
-              Expanded(
-                child: RichText(
-                  text: TextSpan(
-                    text: note.isLong ? '${note.content}...   ' : note.content,
-                    style: TextStyle(
-                      fontStyle: note.isPrivate ? FontStyle.italic : FontStyle.normal,
-                      fontSize: 20,
-                      color: Colors.black,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: ListTile(
+            contentPadding: EdgeInsets.zero,
+            title: Row(
+              children: [
+                Expanded(
+                  child: RichText(
+                    text: TextSpan(
+                      text: note.isLong ? '${note.content}...   ' : note.content,
+                      style: TextStyle(
+                        fontStyle: note.isPrivate ? FontStyle.italic : FontStyle.normal,
+                        fontSize: 20,
+                        color: Colors.black,
+                      ),
+                      children: note.isLong
+                          ? [
+                        const TextSpan(
+                          text: 'more',
+                          style: TextStyle(
+                            fontWeight: FontWeight.normal,
+                            color: Colors.blue,
+                            decoration: TextDecoration.underline,
+                          ),
+                        )
+                      ]
+                          : [],
                     ),
-                    children: note.isLong
-                        ? [
-                      const TextSpan(
-                        text: 'more',
-                        style: TextStyle(
-                          fontWeight: FontWeight.normal,
-                          color: Colors.blue,
-                          decoration: TextDecoration.underline,
-                        ),
-                      )
-                    ]
-                        : [],
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

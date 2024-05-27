@@ -69,7 +69,12 @@ class NoteList extends StatelessWidget {
                         ? () => onDoubleTap!(entry.value.id)
                         : null,
                   ),
-                  if (entry.key < dayNotes.length - 1) const Divider(),
+                  if (entry.key < dayNotes.length - 1) const Divider(
+                    height: 1, // Adjust the height of the divider
+                    thickness: 1,
+                    indent: 16, // Indent to match ListTile padding
+                    endIndent: 16, // Indent to match ListTile padding
+                  ),
                 ],
               ))
                   .toList(),
