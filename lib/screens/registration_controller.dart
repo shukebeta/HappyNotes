@@ -62,8 +62,9 @@ class RegistrationController {
         if (apiResponse['successful']) {
           scaffoldContext.showSnackBar(
               const SnackBar(content: Text('Registration successful')));
-          navigator.push(
+          navigator.pushAndRemoveUntil(
             MaterialPageRoute(builder: (context) => HomePage()),
+              (route) => false,
           );
         } else {
           scaffoldContext

@@ -41,8 +41,9 @@ class LoginController {
 
         if (apiResponse['successful']) {
           // Navigate to the home page
-          navigator.push(
+          navigator.pushAndRemoveUntil(
             MaterialPageRoute(builder: (context) => HomePage()),
+              (route) => false,
           );
         } else {
           // Show error message if login fails
