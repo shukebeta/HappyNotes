@@ -59,6 +59,7 @@ class HomePageState extends State<HomePage> {
                         MaterialPageRoute(
                           builder: (context) => const NewNote(
                             isPrivate: false,
+                            onNoteSaved: null,
                           ),
                         ),
                       );

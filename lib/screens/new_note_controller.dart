@@ -12,16 +12,21 @@ class NewNoteController {
   final FocusNode noteFocusNode = FocusNode();
   bool get nothingToSave => noteController.text.trim().isEmpty;
 
-  Future<void> saveNote(BuildContext context, bool isPrivate) async {
+  Future<void> saveNote(BuildContext context, bool isPrivate, VoidCallback? onNoteSaved) async {
     final scaffoldContext = ScaffoldMessenger.of(context);
     if (nothingToSave) {
       Util.showInfo(scaffoldContext, 'Please write something');
       return;
     }
-    final navigator = Navigator.of(context);
     try {
+      var navigator = Navigator.of(context);;
       final noteId = await _notesService.post(noteController.text, isPrivate);
-      navigator.pop({'noteId': noteId});
+      if (onNoteSaved == null) {
+        navigator.pop({'noteId': noteId});
+      } // Call the callback to update the index
+      else {
+        onNoteSaved();
+      }
     } catch (error) {
       Util.showError(scaffoldContext, error.toString());
     }
@@ -44,3 +49,4 @@ class NewNoteController {
     noteFocusNode.dispose();
   }
 }
+

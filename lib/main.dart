@@ -52,6 +52,7 @@ class HappyNotesState extends State<HappyNotesApp> {
           MaterialPageRoute(
             builder: (context) => const NewNote(
               isPrivate: false,
+              onNoteSaved: null,
             ),
           ),
         );

@@ -30,9 +30,16 @@ class MainMenuState extends State<MainMenu> {
     return LazyLoadIndexedStack(
       index: index,
       preloadIndexes: const [0],
-      children: const [
-        HomePage(),
-        NewNote(isPrivate: false),
+      children: [
+        const HomePage(),
+        NewNote(
+          isPrivate: false,
+          onNoteSaved: () {
+            setState(() {
+              _selectedIndex = 0;
+            });
+          },
+        ),
       ],
     );
   }
@@ -58,7 +65,7 @@ class MainMenuState extends State<MainMenu> {
         children: [
           if (isDesktop) RailNavigation(selectedIndex: _selectedIndex, onDestinationSelected: _onItemTapped),
           Expanded(
-            child: _getPage(_selectedIndex)
+            child: _getPage(_selectedIndex),
           ),
         ],
       ),
