@@ -5,13 +5,18 @@ import 'package:happy_notes/screens/initial_page.dart';
 import 'package:happy_notes/screens/new_note.dart';
 import 'package:quick_actions/quick_actions.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
-import 'dart:io' show Platform; // Import Platform for platform checks
+import 'dart:io' show Platform;
+import 'package:timezone/data/latest.dart' as tz_data;
 
 void main() async {
   di.init();
-  // AppLogger.initialize();
+  if (!kIsWeb) {
+    tz_data.initializeTimeZones();
+  } else {
+    // await tz_web.initializeTimeZone();
+  }
   await dotenv.load(fileName: '.env');
-  runApp(const HappyNotesApp());
+  runApp( const HappyNotesApp());
 }
 
 class HappyNotesApp extends StatefulWidget {
@@ -63,7 +68,7 @@ class HappyNotesState extends State<HappyNotesApp> {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const InitialPage(),
+      home: const InitialPage(), // Use MainMenu as the home
     );
   }
 }

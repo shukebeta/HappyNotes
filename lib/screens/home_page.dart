@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:happy_notes/components/LifecycleAwarePage.dart';
 import 'package:happy_notes/screens/home_page_controller.dart';
 import 'package:happy_notes/screens/note_detail.dart';
 import '../dependency_injection.dart';
@@ -7,11 +8,21 @@ import '../components/note_list.dart';
 import '../components/pagination_controls.dart';
 import 'new_note.dart';
 
-class HomePage extends StatefulWidget {
+class HomePage extends LifecycleAwarePage {
   const HomePage({super.key});
 
   @override
   HomePageState createState() => HomePageState();
+
+  @override
+  void onPageBecomesActive() {
+    // TODO: implement onPageBecomesActive
+  }
+
+  @override
+  void onPageBecomesInactive() {
+    // TODO: implement onPageBecomesInactive
+  }
 }
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();

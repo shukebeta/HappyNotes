@@ -30,7 +30,7 @@ class NoteListItem extends StatelessWidget {
                 Expanded(
                   child: RichText(
                     text: TextSpan(
-                      text: note.isLong ? '${note.content}...   ' : note.content,
+                      text: '${note.createTime!} ${note.isLong ? '${note.content}...   ' : note.content}',
                       style: TextStyle(
                         fontStyle: note.isPrivate ? FontStyle.italic : FontStyle.normal,
                         fontSize: 20,

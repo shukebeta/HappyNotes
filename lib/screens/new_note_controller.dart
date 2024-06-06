@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../services/notes_services.dart';
 import '../utils/util.dart';
+import 'main_menu.dart';
 
 class NewNoteController {
   final NotesService _notesService;
@@ -20,7 +21,10 @@ class NewNoteController {
     final navigator = Navigator.of(context);
     try {
       final noteId = await _notesService.post(noteController.text, isPrivate);
-      navigator.pop({'noteId': noteId});
+      navigator.pushAndRemoveUntil(
+        MaterialPageRoute(builder: (context) => const MainMenu()),
+            (route) => false,
+      );
     } catch (error) {
       Util.showError(scaffoldContext, error.toString());
     }

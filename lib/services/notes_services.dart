@@ -1,6 +1,8 @@
+import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:happy_notes/apis/notes_api.dart';
 import '../entities/note.dart';
 import '../results/notes_result.dart';
+import '../utils/util.dart';
 
 class NotesService {
   // fetch all public notes from all users
@@ -17,12 +19,18 @@ class NotesService {
     return _getNotesResult(apiResult);
   }
 
-  NotesResult _getNotesResult(apiResult) {
+  Future<NotesResult> _getNotesResult(apiResult) async {
+    var currentTimeZone = 'Pacific/Auckland';
     if (!apiResult['successful']) throw Exception(apiResult['message']);
     var notes = apiResult['data'];
     int totalNotes = notes['totalCount'];
     List<dynamic> fetchedNotesData = notes['dataList'];
     List<Note> fetchedNotes = fetchedNotesData.map((json) => Note.fromJson(json)).toList();
+    fetchedNotes = fetchedNotes.map((el) {
+      el.createDate = Util.formatUnixTimestampToLocalDate(el.createAt, 'yyyy-MM-dd', currentTimeZone);
+      el.createTime = Util.formatUnixTimestampToLocalDate(el.createAt, 'HH:mm', currentTimeZone);
+      return el;
+    }).toList();
     return NotesResult(fetchedNotes, totalNotes);
   }
 

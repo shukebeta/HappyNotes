@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:happy_notes/screens/main_menu.dart';
 import '../dependency_injection.dart';
 import '../services/account_service.dart';
 import 'home_page.dart';
@@ -24,7 +25,7 @@ class InitialPageState extends State<InitialPage> {
     var navigator = Navigator.of(context);
     if (await accountService.isValidToken()) {
       navigator.pushReplacement(
-        MaterialPageRoute(builder: (context) => const HomePage()),
+        MaterialPageRoute(builder: (context) => const MainMenu()),
       );
     } else {
       navigator.pushReplacement(
