@@ -38,6 +38,12 @@ class HomePageState extends State<HomePage> {
       setState(() {});
     }
   }
+ 
+  Future<void> refreshPage() async {
+    if (_homePageController.isFirstPage) {
+      navigateToPage(_homePageController.currentPageNumber);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -81,9 +87,7 @@ class HomePageState extends State<HomePage> {
                             ),
                           ),
                         );
-                        if (_homePageController.isFirstPage) {
-                          navigateToPage(_homePageController.currentPageNumber);
-                        }
+                        refreshPage();
                       }
                     },
                   ),

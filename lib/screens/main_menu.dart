@@ -25,19 +25,21 @@ class MainMenu extends StatefulWidget {
 
 class MainMenuState extends State<MainMenu> {
   int _selectedIndex = 0;
+  final GlobalKey<HomePageState> homePageKey = GlobalKey<HomePageState>();
 
   LazyLoadIndexedStack _getPage(int index) {
     return LazyLoadIndexedStack(
       index: index,
       preloadIndexes: const [0],
       children: [
-        const HomePage(),
+        HomePage(key: homePageKey,),
         NewNote(
           isPrivate: false,
           onNoteSaved: () {
             setState(() {
               _selectedIndex = 0;
             });
+            homePageKey.currentState?.refreshPage();
           },
         ),
       ],
