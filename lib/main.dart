@@ -68,7 +68,7 @@ class HappyNotesState extends State<HappyNotesApp> {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const InitialPage(), // Use MainMenu as the home
+      home: const InitialPage(), // if already login then show main menu, otherwise show login page
     );
   }
 }

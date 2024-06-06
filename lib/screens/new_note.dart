@@ -1,30 +1,17 @@
-import 'package:happy_notes/components/LifecycleAwarePage.dart';
 import 'package:happy_notes/screens/new_note_controller.dart';
 import 'package:flutter/material.dart';
 import '../dependency_injection.dart';
 import '../components/note_editor.dart';
 
-class NewNote extends LifecycleAwarePage {
+class NewNote extends StatefulWidget {
   final bool isPrivate;
   const NewNote({super.key, required this.isPrivate});
 
   @override
   NewNoteState createState() => NewNoteState();
-
-  @override
-  void onPageBecomesActive() {
-    // TODO: implement onPageBecomesActive
-  }
-
-  @override
-  void onPageBecomesInactive() {
-    // TODO: implement onPageBecomesInactive
-  }
 }
 
-class NewNoteState extends State<NewNote> with AutomaticKeepAliveClientMixin {
-  @override
-  bool get wantKeepAlive => true;
+class NewNoteState extends State<NewNote> {
   final _newNoteController = locator<NewNoteController>();
   late bool _isPrivate;
 
@@ -71,6 +58,7 @@ class NewNoteState extends State<NewNote> with AutomaticKeepAliveClientMixin {
   @override
   void dispose() {
     _newNoteController.dispose();
+    _newNoteController.noteFocusNode.dispose();
     super.dispose();
   }
 }

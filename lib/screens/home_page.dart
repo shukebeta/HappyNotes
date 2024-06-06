@@ -8,21 +8,11 @@ import '../components/note_list.dart';
 import '../components/pagination_controls.dart';
 import 'new_note.dart';
 
-class HomePage extends LifecycleAwarePage {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
   @override
   HomePageState createState() => HomePageState();
-
-  @override
-  void onPageBecomesActive() {
-    // TODO: implement onPageBecomesActive
-  }
-
-  @override
-  void onPageBecomesInactive() {
-    // TODO: implement onPageBecomesInactive
-  }
 }
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();

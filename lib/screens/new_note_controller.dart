@@ -21,10 +21,7 @@ class NewNoteController {
     final navigator = Navigator.of(context);
     try {
       final noteId = await _notesService.post(noteController.text, isPrivate);
-      navigator.pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) => const MainMenu()),
-            (route) => false,
-      );
+      navigator.pop({'noteId': noteId});
     } catch (error) {
       Util.showError(scaffoldContext, error.toString());
     }
