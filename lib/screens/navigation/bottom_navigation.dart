@@ -26,14 +26,14 @@ class BottomNavigation extends StatelessWidget {
           icon: Icon(Icons.collections_outlined),
           label: 'Notes',
         ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.calendar_today),
-          label: 'Memories',
-        ),
         // BottomNavigationBarItem(
-        //   icon: Icon(Icons.note_add_outlined),
-        //   label: 'New Note',
+        //   icon: Icon(Icons.calendar_today),
+        //   label: 'Memories',
         // ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.note_add_outlined),
+          label: 'New Note',
+        ),
         // BottomNavigationBarItem(
         //   icon: Icon(Icons.public),
         //   label: 'Discovery',

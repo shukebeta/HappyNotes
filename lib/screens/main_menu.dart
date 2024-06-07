@@ -9,13 +9,6 @@ import 'note_detail.dart';
 
 // Constants
 const kAppBarTitle = 'Happy Notes';
-const kDrawerHeader = 'Happy Notes';
-const kDrawerHeaderStyle = TextStyle(
-  color: Colors.white,
-  fontSize: 24,
-);
-const kSelectedItemColor = Colors.deepPurple;
-const kUnselectedItemColor = Colors.grey;
 
 class MainMenu extends StatefulWidget {
   final int initialPageIndex;
@@ -90,9 +83,9 @@ class MainMenuState extends State<MainMenu> {
     final isDesktop = kIsWeb || MediaQuery.of(context).size.width >= 600;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(kAppBarTitle),
-      ),
+      // appBar: AppBar(
+      //   title: const Text(kAppBarTitle),
+      // ),
       body: Row(
         children: [
           if (isDesktop) RailNavigation(selectedIndex: _selectedIndex, onDestinationSelected: switchToPage),

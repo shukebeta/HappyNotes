@@ -53,51 +53,6 @@ class HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('My Notes'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.edit),
-            onPressed: () async {
-              final scaffoldContext = ScaffoldMessenger.of(context);
-              final navigator = Navigator.of(context);
-              await Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => NewNote(
-                    isPrivate: false,
-                    onNoteSaved: (int? noteId) async {
-                      if (noteId == null) {
-                        Util.showError(scaffoldContext, "Something went wrong when saving the note");
-                        return;
-                      }
-                      navigator.pop();
-                      if (isFirstPage) {
-                        await refreshPage();
-                        return;
-                      }
-                      scaffoldContext.showSnackBar(
-                        SnackBar(
-                          content: const Text('Successfully saved. Click here to view.'),
-                          duration: const Duration(seconds: 5),
-                          action: SnackBarAction(
-                            label: 'View',
-                            onPressed: () async {
-                              await Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => NoteDetail(noteId: noteId),
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              );
-            },
-          ),
-        ],
       ),
       body: _buildBody(),
     );
