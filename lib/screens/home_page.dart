@@ -28,7 +28,7 @@ class HomePageState extends State<HomePage> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    navigateToPage(1);
+    navigateToPage(_homePageController.currentPageNumber);
   }
 
   Future<bool> navigateToPage(int pageNumber) async {
@@ -40,8 +40,8 @@ class HomePageState extends State<HomePage> {
     return false;
   }
 
- void refreshPage() async {
-     await navigateToPage(_homePageController.currentPageNumber);
+ Future<bool> refreshPage() async {
+     return await navigateToPage(_homePageController.currentPageNumber);
   }
 
   @override
@@ -70,7 +70,7 @@ class HomePageState extends State<HomePage> {
                       );
                       if (result != null && result['noteId'] != null) {
                         if (_homePageController.isFirstPage) {
-                          refreshPage();
+                          await refreshPage();
                           return;
                         }
                         scaffoldContext.showSnackBar(
@@ -125,7 +125,7 @@ class HomePageState extends State<HomePage> {
                   builder: (context) => NoteDetail(noteId: noteId),
                 ),
               );
-              navigateToPage(_homePageController.currentPageNumber);
+              await navigateToPage(_homePageController.currentPageNumber);
             },
             onDoubleTap: (noteId) async {
               await Navigator.push(
@@ -136,7 +136,7 @@ class HomePageState extends State<HomePage> {
               );
               navigateToPage(_homePageController.currentPageNumber);
             },
-            onRefresh: ()async => navigateToPage(_homePageController.currentPageNumber),
+            onRefresh: ()async => await navigateToPage(_homePageController.currentPageNumber),
           ),
         ),
         if (_homePageController.notes.isNotEmpty)

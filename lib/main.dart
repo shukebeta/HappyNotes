@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:happy_notes/dependency_injection.dart' as di;
 import 'package:happy_notes/screens/initial_page.dart';
-import 'package:happy_notes/screens/new_note.dart';
+import 'package:happy_notes/screens/main_menu.dart';
 import 'package:quick_actions/quick_actions.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'dart:io' show Platform;
@@ -29,6 +29,7 @@ class HappyNotesApp extends StatefulWidget {
 class HappyNotesState extends State<HappyNotesApp> {
   QuickActions? quickActions;
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+  final GlobalKey<MainMenuState> mainMenuKey = GlobalKey<MainMenuState>();
 
   @override
   void initState() {
@@ -48,11 +49,11 @@ class HappyNotesState extends State<HappyNotesApp> {
     ]);
     quickActions!.initialize((String shortcutType) async {
       if (shortcutType == 'takeNote') {
-        await navigatorKey.currentState?.push(
+        await navigatorKey.currentState?.pushReplacement(
           MaterialPageRoute(
-            builder: (context) => const NewNote(
-              isPrivate: false,
-              onNoteSaved: null,
+            builder: (context) => MainMenu(
+              key: mainMenuKey,
+              initialPageIndex: 1,
             ),
           ),
         );

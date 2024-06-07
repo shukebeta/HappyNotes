@@ -17,7 +17,8 @@ const kSelectedItemColor = Colors.deepPurple;
 const kUnselectedItemColor = Colors.grey;
 
 class MainMenu extends StatefulWidget {
-  const MainMenu({super.key});
+  final int initialPageIndex;
+  const MainMenu({super.key, this.initialPageIndex = 0});
 
   @override
   MainMenuState createState() => MainMenuState();
@@ -26,6 +27,11 @@ class MainMenu extends StatefulWidget {
 class MainMenuState extends State<MainMenu> {
   int _selectedIndex = 0;
   final GlobalKey<HomePageState> homePageKey = GlobalKey<HomePageState>();
+  @override
+  void initState() {
+    super.initState();
+    _selectedIndex = widget.initialPageIndex;
+  }
 
   LazyLoadIndexedStack _getPage(int index) {
     return LazyLoadIndexedStack(
@@ -35,24 +41,22 @@ class MainMenuState extends State<MainMenu> {
         HomePage(key: homePageKey,),
         NewNote(
           isPrivate: false,
-          onNoteSaved: () {
+          onNoteSaved: () async {
             setState(() {
               _selectedIndex = 0;
             });
-            homePageKey.currentState?.refreshPage();
+            await homePageKey.currentState?.refreshPage();
           },
         ),
       ],
     );
   }
 
-  void _onItemTapped(int index) {
+  void switchToPage(int index) {
     // Use a post-frame callback to defer the state change
-    WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() {
         _selectedIndex = index;
       });
-    });
   }
 
   @override
@@ -65,7 +69,7 @@ class MainMenuState extends State<MainMenu> {
       ),
       body: Row(
         children: [
-          if (isDesktop) RailNavigation(selectedIndex: _selectedIndex, onDestinationSelected: _onItemTapped),
+          if (isDesktop) RailNavigation(selectedIndex: _selectedIndex, onDestinationSelected: switchToPage),
           Expanded(
             child: _getPage(_selectedIndex),
           ),
@@ -73,7 +77,7 @@ class MainMenuState extends State<MainMenu> {
       ),
       bottomNavigationBar: isDesktop
           ? null
-          : BottomNavigation(currentIndex: _selectedIndex, onTap: _onItemTapped,),
+          : BottomNavigation(currentIndex: _selectedIndex, onTap: switchToPage,),
     );
   }
 }
