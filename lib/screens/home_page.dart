@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:happy_notes/components/LifecycleAwarePage.dart';
 import 'package:happy_notes/screens/home_page_controller.dart';
 import 'package:happy_notes/screens/note_detail.dart';
 import '../dependency_injection.dart';
