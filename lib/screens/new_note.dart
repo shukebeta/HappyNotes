@@ -61,7 +61,6 @@ class NewNoteState extends State<NewNote> {
   @override
   void dispose() {
     _newNoteController.dispose();
-    _newNoteController.noteFocusNode.dispose();
     super.dispose();
   }
 }
