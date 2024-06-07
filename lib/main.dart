@@ -39,6 +39,7 @@ class HappyNotesState extends State<HappyNotesApp> {
 
   void initializeQuickActions() {
     if (kIsWeb || !(Platform.isAndroid || Platform.isIOS)) return;
+
     quickActions = const QuickActions();
     quickActions!.setShortcutItems([
       const ShortcutItem(
@@ -47,16 +48,23 @@ class HappyNotesState extends State<HappyNotesApp> {
         icon: 'pencil',
       ),
     ]);
+
     quickActions!.initialize((String shortcutType) async {
       if (shortcutType == 'takeNote') {
-        await navigatorKey.currentState?.pushReplacement(
-          MaterialPageRoute(
-            builder: (context) => MainMenu(
-              key: mainMenuKey,
-              initialPageIndex: 1,
+        if (mainMenuKey.currentState != null) {
+          // MainMenu is already in the widget tree
+          mainMenuKey.currentState?.switchToPage(1); // Switch to 'New Note' page
+        } else {
+          // MainMenu is not in the widget tree, push it onto the stack
+          await navigatorKey.currentState?.pushReplacement(
+            MaterialPageRoute(
+              builder: (context) => MainMenu(
+                key: mainMenuKey,
+                initialPageIndex: 1, // Start with 'New Note' page
+              ),
             ),
-          ),
-        );
+          );
+        }
       }
     });
   }
