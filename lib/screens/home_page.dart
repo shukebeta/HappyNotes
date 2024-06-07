@@ -31,17 +31,17 @@ class HomePageState extends State<HomePage> {
     navigateToPage(1);
   }
 
-  void navigateToPage(int pageNumber) async {
+  Future<bool> navigateToPage(int pageNumber) async {
     if (pageNumber >= 1 && pageNumber <= _homePageController.totalPages) {
       await _homePageController.loadNotes(context, pageNumber);
       setState(() {});
+      return true;
     }
+    return false;
   }
- 
-  Future<void> refreshPage() async {
-    if (_homePageController.isFirstPage) {
-      navigateToPage(_homePageController.currentPageNumber);
-    }
+
+ void refreshPage() async {
+     await navigateToPage(_homePageController.currentPageNumber);
   }
 
   @override
@@ -69,6 +69,10 @@ class HomePageState extends State<HomePage> {
                         ),
                       );
                       if (result != null && result['noteId'] != null) {
+                        if (_homePageController.isFirstPage) {
+                          refreshPage();
+                          return;
+                        }
                         scaffoldContext.showSnackBar(
                           SnackBar(
                             content: const Text('Successfully saved. Click here to view.'),
@@ -86,7 +90,6 @@ class HomePageState extends State<HomePage> {
                             ),
                           ),
                         );
-                        refreshPage();
                       }
                     },
                   ),
