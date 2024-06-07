@@ -1,5 +1,6 @@
 import 'package:happy_notes/services/dialog_services.dart';
 import 'package:flutter/material.dart';
+import 'package:happy_notes/typedefs.dart';
 
 import '../services/notes_services.dart';
 import '../utils/util.dart';
@@ -12,7 +13,7 @@ class NewNoteController {
   final FocusNode noteFocusNode = FocusNode();
   bool get nothingToSave => noteController.text.trim().isEmpty;
 
-  Future<void> saveNote(BuildContext context, bool isPrivate, VoidCallback? onNoteSaved) async {
+  Future<void> saveNote(BuildContext context, bool isPrivate, SaveNoteCallback? onNoteSaved) async {
     final scaffoldContext = ScaffoldMessenger.of(context);
     if (nothingToSave) {
       Util.showInfo(scaffoldContext, 'Please write something');
@@ -21,11 +22,10 @@ class NewNoteController {
     try {
       var navigator = Navigator.of(context);;
       final noteId = await _notesService.post(noteController.text, isPrivate);
-      if (onNoteSaved == null) {
-        navigator.pop({'noteId': noteId});
-      } // Call the callback to update the index
-      else {
-        onNoteSaved();
+      if (onNoteSaved != null) {
+        noteController.text = '';
+        noteFocusNode.unfocus();
+        onNoteSaved(noteId);
       }
     } catch (error) {
       Util.showError(scaffoldContext, error.toString());

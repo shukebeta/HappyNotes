@@ -5,6 +5,7 @@ import 'package:lazy_load_indexed_stack/lazy_load_indexed_stack.dart';
 import 'home_page.dart';
 import 'navigation/bottom_navigation.dart';
 import 'new_note.dart';
+import 'note_detail.dart';
 
 // Constants
 const kAppBarTitle = 'Happy Notes';
@@ -41,11 +42,36 @@ class MainMenuState extends State<MainMenu> {
         HomePage(key: homePageKey,),
         NewNote(
           isPrivate: false,
-          onNoteSaved: () async {
+          onNoteSaved: (int? noteId) async {
             setState(() {
               _selectedIndex = 0;
             });
-            await homePageKey.currentState?.refreshPage();
+            if (noteId != null) {
+              if (homePageKey.currentState?.isFirstPage ?? false) {
+                await homePageKey.currentState?.refreshPage();
+                return;
+              }
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: const Text(
+                      'Successfully saved. Click here to view.'),
+                  duration: const Duration(seconds: 5),
+                  action: SnackBarAction(
+                    label: 'View',
+                    onPressed: () async {
+                      await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              NoteDetail(
+                                  noteId: noteId),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              );
+            }
           },
         ),
       ],

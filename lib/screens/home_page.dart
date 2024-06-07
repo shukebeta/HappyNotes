@@ -5,6 +5,7 @@ import '../dependency_injection.dart';
 import '../services/notes_services.dart';
 import '../components/note_list.dart';
 import '../components/pagination_controls.dart';
+import '../utils/util.dart';
 import 'new_note.dart';
 
 class HomePage extends StatefulWidget {
@@ -18,6 +19,9 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 class HomePageState extends State<HomePage> {
   late HomePageController _homePageController;
+  int currentPageNumber = 1;
+
+  bool get isFirstPage => currentPageNumber == 1;
 
   @override
   void initState() {
@@ -28,20 +32,22 @@ class HomePageState extends State<HomePage> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    navigateToPage(_homePageController.currentPageNumber);
+    navigateToPage(currentPageNumber);
   }
 
   Future<bool> navigateToPage(int pageNumber) async {
     if (pageNumber >= 1 && pageNumber <= _homePageController.totalPages) {
       await _homePageController.loadNotes(context, pageNumber);
-      setState(() {});
+      setState(() {
+        currentPageNumber = pageNumber;
+      });
       return true;
     }
     return false;
   }
 
- Future<bool> refreshPage() async {
-     return await navigateToPage(_homePageController.currentPageNumber);
+  Future<bool> refreshPage() async {
+    return await navigateToPage(currentPageNumber);
   }
 
   @override
@@ -59,38 +65,48 @@ class HomePageState extends State<HomePage> {
                     icon: const Icon(Icons.edit),
                     onPressed: () async {
                       final scaffoldContext = ScaffoldMessenger.of(context);
-                      final result = await Navigator.push(
+                      final navigator = Navigator.of(context);
+                      await Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const NewNote(
-                            isPrivate: false,
-                            onNoteSaved: null,
-                          ),
+                          builder: (context) =>
+                              NewNote(
+                                isPrivate: false,
+                                onNoteSaved: (int? noteId) async {
+                                  if (noteId == null) {
+                                    Util.showError(scaffoldContext,
+                                        "Something is wrong when saving the note");
+                                    return;
+                                  }
+                                  navigator.pop();
+                                  if (isFirstPage) {
+                                    await refreshPage();
+                                    return;
+                                  }
+                                  scaffoldContext.showSnackBar(
+                                    SnackBar(
+                                      content: const Text(
+                                          'Successfully saved. Click here to view.'),
+                                      duration: const Duration(seconds: 5),
+                                      action: SnackBarAction(
+                                        label: 'View',
+                                        onPressed: () async {
+                                          await Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  NoteDetail(
+                                                      noteId: noteId),
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
                         ),
                       );
-                      if (result != null && result['noteId'] != null) {
-                        if (_homePageController.isFirstPage) {
-                          await refreshPage();
-                          return;
-                        }
-                        scaffoldContext.showSnackBar(
-                          SnackBar(
-                            content: const Text('Successfully saved. Click here to view.'),
-                            duration: const Duration(seconds: 5),
-                            action: SnackBarAction(
-                              label: 'View',
-                              onPressed: () async {
-                                await Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => NoteDetail(noteId: result['noteId']),
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                        );
-                      }
                     },
                   ),
                 ],
@@ -109,7 +125,8 @@ class HomePageState extends State<HomePage> {
     }
 
     if (_homePageController.notes.isEmpty) {
-      return const Center(child: Text('No notes available. Create a new note to get started.'));
+      return const Center(
+          child: Text('No notes available. Create a new note to get started.'));
     }
 
     return Column(
@@ -125,26 +142,27 @@ class HomePageState extends State<HomePage> {
                   builder: (context) => NoteDetail(noteId: noteId),
                 ),
               );
-              await navigateToPage(_homePageController.currentPageNumber);
+              await navigateToPage(currentPageNumber);
             },
             onDoubleTap: (noteId) async {
               await Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => NoteDetail(noteId: noteId, enterEditing: true),
+                  builder: (context) =>
+                      NoteDetail(noteId: noteId, enterEditing: true),
                 ),
               );
-              navigateToPage(_homePageController.currentPageNumber);
+              navigateToPage(currentPageNumber);
             },
-            onRefresh: ()async => await navigateToPage(_homePageController.currentPageNumber),
+            onRefresh: () async => await navigateToPage(currentPageNumber),
           ),
         ),
         if (_homePageController.notes.isNotEmpty)
           PaginationControls(
-            currentPage: _homePageController.currentPageNumber,
+            currentPage: currentPageNumber,
             totalPages: _homePageController.totalPages,
-            onPreviousPage: () => navigateToPage(_homePageController.currentPageNumber - 1),
-            onNextPage: () => navigateToPage(_homePageController.currentPageNumber + 1),
+            onPreviousPage: () => navigateToPage(currentPageNumber - 1),
+            onNextPage: () => navigateToPage(currentPageNumber + 1),
           ),
       ],
     );

@@ -1,10 +1,11 @@
 import 'package:happy_notes/screens/new_note_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:happy_notes/typedefs.dart';
 import '../dependency_injection.dart';
 import '../components/note_editor.dart';
 class NewNote extends StatefulWidget {
   final bool isPrivate;
-  final VoidCallback? onNoteSaved;
+  final SaveNoteCallback? onNoteSaved;
   const NewNote({super.key, required this.isPrivate, required this.onNoteSaved});
 
   @override
@@ -20,7 +21,9 @@ class NewNoteState extends State<NewNote> {
     super.initState();
     _isPrivate = widget.isPrivate;
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _newNoteController.noteFocusNode.requestFocus();
+      if (mounted) {
+        _newNoteController.noteFocusNode.requestFocus();
+      }
     });
   }
 
