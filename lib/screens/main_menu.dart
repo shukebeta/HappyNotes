@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:happy_notes/screens/navigation/rail_navigation.dart';
@@ -87,7 +89,7 @@ class MainMenuState extends State<MainMenu> {
 
   @override
   Widget build(BuildContext context) {
-    final isDesktop = kIsWeb || MediaQuery.of(context).size.width >= 600;
+    final isDesktop = MediaQuery.of(context).size.width >= 600;
 
     return Scaffold(
       // appBar: AppBar(
