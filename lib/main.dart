@@ -6,12 +6,10 @@ import 'package:happy_notes/screens/main_menu.dart';
 import 'package:quick_actions/quick_actions.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'dart:io' show Platform;
-import 'utils/timezone/timezone_initializer.dart';
 
 
 void main() async {
   di.init();
-  initializeTimeZone();
   await dotenv.load(fileName: '.env');
   runApp( const HappyNotesApp());
 }

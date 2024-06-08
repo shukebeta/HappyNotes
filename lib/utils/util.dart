@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:timezone/timezone.dart' as tz;
 
 class Util {
   static void showError(ScaffoldMessengerState scaffoldContext, String errorMessage) {
@@ -88,11 +87,8 @@ class Util {
   }
   static String formatUnixTimestampToLocalDate(int unixTimestamp, String strFormat, String timeZone) {
 
-    // Get the specific time zone location
-    final location = tz.getLocation(timeZone);
-
     // Convert Unix timestamp (seconds since epoch) to TZDateTime
-    final dateTime = tz.TZDateTime.fromMillisecondsSinceEpoch(location, unixTimestamp * 1000);
+    final dateTime = DateTime.fromMillisecondsSinceEpoch(unixTimestamp * 1000);
 
     // Create a DateFormat for 'yyyyMMdd'
     final dateFormat = DateFormat(strFormat);
