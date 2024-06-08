@@ -16,21 +16,30 @@ class PaginationControls extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        ElevatedButton(
-          onPressed: currentPage > 1 ? onPreviousPage : null,
-          child: const Text('Previous Page'),
-        ),
-        const SizedBox(width: 20),
-        Text('Page $currentPage of $totalPages'),
-        const SizedBox(width: 20),
-        ElevatedButton(
-          onPressed: currentPage < totalPages ? onNextPage : null,
-          child: const Text('Next Page'),
-        ),
-      ],
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(0, 0, 20, 10),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          SizedBox(
+            width: 120,
+            child: ElevatedButton(
+              onPressed: currentPage > 1 ? onPreviousPage : null,
+              child: const Text('Previous'),
+            ),
+          ),
+          const SizedBox(width: 20),
+          Text('$currentPage of $totalPages'),
+          const SizedBox(width: 20),
+          SizedBox(
+            width: 120,
+            child: ElevatedButton(
+              onPressed: currentPage < totalPages ? onNextPage : null,
+              child: const Text('Next'),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
