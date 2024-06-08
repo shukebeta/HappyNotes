@@ -94,7 +94,7 @@ class HomePageState extends State<HomePage> {
             onRefresh: () async => await navigateToPage(currentPageNumber),
           ),
         ),
-        if (_homePageController.notes.isNotEmpty)
+        if (_homePageController.totalPages > 1)
           PaginationControls(
             currentPage: currentPageNumber,
             totalPages: _homePageController.totalPages,
