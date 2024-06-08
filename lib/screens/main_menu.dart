@@ -21,6 +21,7 @@ class MainMenu extends StatefulWidget {
 class MainMenuState extends State<MainMenu> {
   int _selectedIndex = 0;
   final GlobalKey<HomePageState> homePageKey = GlobalKey<HomePageState>();
+  final GlobalKey<NewNoteState> newNoteKey = GlobalKey<NewNoteState>();
   @override
   void initState() {
     super.initState();
@@ -34,6 +35,7 @@ class MainMenuState extends State<MainMenu> {
       children: [
         HomePage(key: homePageKey,),
         NewNote(
+          key: newNoteKey,
           isPrivate: false,
           onNoteSaved: (int? noteId) async {
             setState(() {
@@ -72,10 +74,15 @@ class MainMenuState extends State<MainMenu> {
   }
 
   void switchToPage(int index) {
-    // Use a post-frame callback to defer the state change
+      if (_selectedIndex == 1 && index != 1) {
+        newNoteKey.currentState?.setFocus(false);
+      }
       setState(() {
         _selectedIndex = index;
       });
+      if (index == 1) {
+        newNoteKey.currentState?.setFocus(true);
+      }
   }
 
   @override
