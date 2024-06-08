@@ -7,6 +7,8 @@ class Note {
   String? createDate; // yyyy-MM-dd format
   String? createTime; // HH:mm format
 
+  String get formattedContent => content.replaceAll(RegExp('\n{3,}'), '\n\n');
+
   Note({
     required this.id,
     required this.content,

@@ -20,6 +20,7 @@ class NoteDetail extends StatefulWidget {
 class NoteDetailState extends State<NoteDetail> {
   late Future<Note> _noteFuture;
   late NoteDetailController _controller;
+  late Note _note;
 
   @override
   void initState() {
@@ -57,6 +58,7 @@ class NoteDetailState extends State<NoteDetail> {
                 onPressed: () {
                   setState(() {
                     _controller.isEditing = true;
+                    _controller.noteController.text = _note.content;
                     _controller.noteFocusNode.requestFocus();
                   });
                 },
@@ -90,6 +92,7 @@ class NoteDetailState extends State<NoteDetail> {
             } else if (snapshot.hasError) {
               return Center(child: Text('Error: ${snapshot.error}'));
             } else if (snapshot.hasData) {
+              _note = snapshot.data!;
               return Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: NoteEditor(

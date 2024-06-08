@@ -18,13 +18,12 @@ class NoteDetailController {
 
   Future<Note> fetchNote(int noteId) async {
     _originalNote = await _notesService.get(noteId);
-    noteController.text = _originalNote.content;
+    noteController.text = isEditing? _originalNote.content : _originalNote.formattedContent;
     isPrivate = _originalNote.isPrivate;
     return _originalNote;
   }
 
-  Future<void> saveNote(
-      BuildContext context, int noteId, void Function() onSuccess) async {
+  Future<void> saveNote(BuildContext context, int noteId, void Function() onSuccess) async {
     final scaffoldContext = ScaffoldMessenger.of(context);
     try {
       await _notesService.update(noteId, noteController.text, isPrivate);
@@ -36,8 +35,7 @@ class NoteDetailController {
     }
   }
 
-  Future<void> deleteNote(BuildContext context, int noteId,
-      void Function() onSuccess) async {
+  Future<void> deleteNote(BuildContext context, int noteId, void Function() onSuccess) async {
     final scaffoldContext = ScaffoldMessenger.of(context);
     final navigator = Navigator.of(context);
     try {
@@ -52,7 +50,7 @@ class NoteDetailController {
   onPopHandler(BuildContext context, bool didPop) async {
     if (!didPop) {
       final navigator = Navigator.of(context);
-      if (noteController.text.trim() == _originalNote.content ||
+      if (!isEditing || noteController.text == _originalNote.content ||
           (await DialogService.showUnsavedChangesDialog(context) ?? false)
       ) {
         navigator.pop();

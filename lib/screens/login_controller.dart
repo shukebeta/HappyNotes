@@ -3,7 +3,6 @@ import 'package:happy_notes/screens/main_menu.dart';
 import 'package:happy_notes/utils/token_utils.dart';
 
 import '../dependency_injection.dart';
-import 'home_page.dart';
 import '../services/account_service.dart';
 import '../utils/util.dart';
 

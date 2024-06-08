@@ -4,6 +4,7 @@ import 'package:happy_notes/utils/token_utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../dependency_injection.dart';
+import '../exceptions/custom_exception.dart';
 
 class AccountService {
   final AccountApi _accountApi;
@@ -17,7 +18,7 @@ class AccountService {
     if (apiResponse['successful']) {
       await _storeToken(apiResponse['data']['token']);
     } else {
-      throw Exception(apiResponse['message']);
+      throw CustomException(apiResponse['message']);
     }
     return apiResponse;
   }
