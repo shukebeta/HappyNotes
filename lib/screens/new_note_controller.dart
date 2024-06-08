@@ -1,8 +1,10 @@
 import 'package:happy_notes/services/dialog_services.dart';
 import 'package:flutter/material.dart';
+import 'package:happy_notes/typedefs.dart';
 
 import '../services/notes_services.dart';
 import '../utils/util.dart';
+import 'main_menu.dart';
 
 class NewNoteController {
   final NotesService _notesService;
@@ -11,16 +13,20 @@ class NewNoteController {
   final FocusNode noteFocusNode = FocusNode();
   bool get nothingToSave => noteController.text.trim().isEmpty;
 
-  Future<void> saveNote(BuildContext context, bool isPrivate) async {
+  Future<void> saveNote(BuildContext context, bool isPrivate, SaveNoteCallback? onNoteSaved) async {
     final scaffoldContext = ScaffoldMessenger.of(context);
     if (nothingToSave) {
       Util.showInfo(scaffoldContext, 'Please write something');
       return;
     }
-    final navigator = Navigator.of(context);
     try {
+      var navigator = Navigator.of(context);;
       final noteId = await _notesService.post(noteController.text, isPrivate);
-      navigator.pop({'noteId': noteId});
+      if (onNoteSaved != null) {
+        noteController.text = '';
+        noteFocusNode.unfocus();
+        onNoteSaved(noteId);
+      }
     } catch (error) {
       Util.showError(scaffoldContext, error.toString());
     }
@@ -43,3 +49,4 @@ class NewNoteController {
     noteFocusNode.dispose();
   }
 }
+

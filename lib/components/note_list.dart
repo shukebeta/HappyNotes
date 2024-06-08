@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../entities/note.dart';
+import '../utils/util.dart';
 import 'note_list_item.dart';
 
 class NoteList extends StatelessWidget {
@@ -24,9 +25,7 @@ class NoteList extends StatelessWidget {
     // Group notes by date
     final notesByDate = <String, List<Note>>{};
     for (var note in notes) {
-      final dateKey = DateTime.fromMillisecondsSinceEpoch(note.createAt * 1000)
-          .toString()
-          .split(' ')[0];
+      final dateKey = note.createDate!;
       notesByDate[dateKey] = notesByDate[dateKey] ?? [];
       notesByDate[dateKey]!.add(note);
     }

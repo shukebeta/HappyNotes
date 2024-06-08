@@ -2,16 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:happy_notes/dependency_injection.dart' as di;
 import 'package:happy_notes/screens/initial_page.dart';
-import 'package:happy_notes/screens/new_note.dart';
+import 'package:happy_notes/screens/main_menu.dart';
 import 'package:quick_actions/quick_actions.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
-import 'dart:io' show Platform; // Import Platform for platform checks
+import 'dart:io' show Platform;
+import 'package:timezone/data/latest.dart' as tz_data;
 
 void main() async {
   di.init();
-  // AppLogger.initialize();
+  if (!kIsWeb) {
+    tz_data.initializeTimeZones();
+  } else {
+    // await tz_web.initializeTimeZone();
+  }
   await dotenv.load(fileName: '.env');
-  runApp(const HappyNotesApp());
+  runApp( const HappyNotesApp());
 }
 
 class HappyNotesApp extends StatefulWidget {
@@ -24,6 +29,7 @@ class HappyNotesApp extends StatefulWidget {
 class HappyNotesState extends State<HappyNotesApp> {
   QuickActions? quickActions;
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+  final GlobalKey<MainMenuState> mainMenuKey = GlobalKey<MainMenuState>();
 
   @override
   void initState() {
@@ -33,6 +39,7 @@ class HappyNotesState extends State<HappyNotesApp> {
 
   void initializeQuickActions() {
     if (kIsWeb || !(Platform.isAndroid || Platform.isIOS)) return;
+
     quickActions = const QuickActions();
     quickActions!.setShortcutItems([
       const ShortcutItem(
@@ -41,15 +48,23 @@ class HappyNotesState extends State<HappyNotesApp> {
         icon: 'pencil',
       ),
     ]);
+
     quickActions!.initialize((String shortcutType) async {
       if (shortcutType == 'takeNote') {
-        await navigatorKey.currentState?.push(
-          MaterialPageRoute(
-            builder: (context) => const NewNote(
-              isPrivate: false,
+        if (mainMenuKey.currentState != null) {
+          // MainMenu is already in the widget tree
+          mainMenuKey.currentState?.switchToPage(1); // Switch to 'New Note' page
+        } else {
+          // MainMenu is not in the widget tree, push it onto the stack
+          await navigatorKey.currentState?.pushReplacement(
+            MaterialPageRoute(
+              builder: (context) => MainMenu(
+                key: mainMenuKey,
+                initialPageIndex: 1, // Start with 'New Note' page
+              ),
             ),
-          ),
-        );
+          );
+        }
       }
     });
   }
@@ -63,7 +78,7 @@ class HappyNotesState extends State<HappyNotesApp> {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const InitialPage(),
+      home: const InitialPage(), // if already login then show main menu, otherwise show login page
     );
   }
 }

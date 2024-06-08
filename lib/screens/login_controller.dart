@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:happy_notes/screens/main_menu.dart';
 import 'package:happy_notes/utils/token_utils.dart';
 
 import '../dependency_injection.dart';
@@ -42,7 +43,7 @@ class LoginController {
         if (apiResponse['successful']) {
           // Navigate to the home page
           navigator.pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => HomePage()),
+            MaterialPageRoute(builder: (context) => const MainMenu()),
               (route) => false,
           );
         } else {

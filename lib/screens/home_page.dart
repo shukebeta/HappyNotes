@@ -5,6 +5,7 @@ import '../dependency_injection.dart';
 import '../services/notes_services.dart';
 import '../components/note_list.dart';
 import '../components/pagination_controls.dart';
+import '../utils/util.dart';
 import 'new_note.dart';
 
 class HomePage extends StatefulWidget {
@@ -14,10 +15,11 @@ class HomePage extends StatefulWidget {
   HomePageState createState() => HomePageState();
 }
 
-final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
-
 class HomePageState extends State<HomePage> {
   late HomePageController _homePageController;
+  int currentPageNumber = 1;
+
+  bool get isFirstPage => currentPageNumber == 1;
 
   @override
   void initState() {
@@ -28,70 +30,31 @@ class HomePageState extends State<HomePage> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    navigateToPage(1);
+    navigateToPage(currentPageNumber);
   }
 
-  void navigateToPage(int pageNumber) async {
+  Future<bool> navigateToPage(int pageNumber) async {
     if (pageNumber >= 1 && pageNumber <= _homePageController.totalPages) {
       await _homePageController.loadNotes(context, pageNumber);
-      setState(() {});
+      setState(() {
+        currentPageNumber = pageNumber;
+      });
+      return true;
     }
+    return false;
+  }
+
+  Future<bool> refreshPage() async {
+    return await navigateToPage(currentPageNumber);
   }
 
   @override
   Widget build(BuildContext context) {
-    return Navigator(
-      key: navigatorKey,
-      onGenerateRoute: (settings) {
-        return MaterialPageRoute(
-          builder: (context) {
-            return Scaffold(
-              appBar: AppBar(
-                title: const Text('My Notes'),
-                actions: [
-                  IconButton(
-                    icon: const Icon(Icons.edit),
-                    onPressed: () async {
-                      final scaffoldContext = ScaffoldMessenger.of(context);
-                      final result = await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const NewNote(
-                            isPrivate: false,
-                          ),
-                        ),
-                      );
-                      if (result != null && result['noteId'] != null) {
-                        scaffoldContext.showSnackBar(
-                          SnackBar(
-                            content: const Text('Successfully saved. Click here to view.'),
-                            duration: const Duration(seconds: 5),
-                            action: SnackBarAction(
-                              label: 'View',
-                              onPressed: () async {
-                                await Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => NoteDetail(noteId: result['noteId']),
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                        );
-                        if (_homePageController.isFirstPage) {
-                          navigateToPage(_homePageController.currentPageNumber);
-                        }
-                      }
-                    },
-                  ),
-                ],
-              ),
-              body: _buildBody(),
-            );
-          },
-        );
-      },
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('My Notes'),
+      ),
+      body: _buildBody(),
     );
   }
 
@@ -117,7 +80,7 @@ class HomePageState extends State<HomePage> {
                   builder: (context) => NoteDetail(noteId: noteId),
                 ),
               );
-              navigateToPage(_homePageController.currentPageNumber);
+              await navigateToPage(currentPageNumber);
             },
             onDoubleTap: (noteId) async {
               await Navigator.push(
@@ -126,17 +89,17 @@ class HomePageState extends State<HomePage> {
                   builder: (context) => NoteDetail(noteId: noteId, enterEditing: true),
                 ),
               );
-              navigateToPage(_homePageController.currentPageNumber);
+              navigateToPage(currentPageNumber);
             },
-            onRefresh: ()async => navigateToPage(_homePageController.currentPageNumber),
+            onRefresh: () async => await navigateToPage(currentPageNumber),
           ),
         ),
-        if (_homePageController.notes.isNotEmpty)
+        if (_homePageController.totalPages > 1)
           PaginationControls(
-            currentPage: _homePageController.currentPageNumber,
+            currentPage: currentPageNumber,
             totalPages: _homePageController.totalPages,
-            onPreviousPage: () => navigateToPage(_homePageController.currentPageNumber - 1),
-            onNextPage: () => navigateToPage(_homePageController.currentPageNumber + 1),
+            onPreviousPage: () => navigateToPage(currentPageNumber - 1),
+            onNextPage: () => navigateToPage(currentPageNumber + 1),
           ),
       ],
     );
