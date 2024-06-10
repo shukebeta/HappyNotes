@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import '../entities/note.dart';
+import '../screens/memories_on_day.dart';
+import 'memory_list_item.dart';
 import 'note_list_item.dart';
 
 class MemoryList extends StatelessWidget {
@@ -34,46 +35,53 @@ class MemoryList extends StatelessWidget {
         itemBuilder: (context, index) {
           final dateKey = notesByDate.keys.elementAt(index);
           final dayNotes = notesByDate[dateKey]!;
+          final date = DateTime.parse(dateKey);
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Date header
-              Padding(
-                padding:
-                const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    _formatDate(DateTime.parse(dateKey)),
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w900,
-                      fontSize: 16,
-                    ),
+              GestureDetector(
+                onTap: () => _navigateToMemoriesOnDay(context, date),
+                child: Container(
+                  color: const Color(0xFFEBDDFF), // Light purple background
+                  padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        _formatDate(date),
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w900,
+                          fontSize: 16,
+                        ),
+                      ),
+                      const Icon(Icons.arrow_forward_ios),
+                    ],
                   ),
                 ),
               ),
               // List of notes for that date with dividers
-              ...dayNotes
-                  .asMap()
-                  .entries
-                  .map((entry) => Column(
-                children: [
-                  NoteListItem(
-                    note: entry.value,
-                    onTap: () => onTap(entry.value.id),
-                    onDoubleTap: onDoubleTap != null
-                        ? () => onDoubleTap!(entry.value.id)
-                        : null,
+              ...dayNotes.asMap().entries.map((entry) {
+                final note = entry.value;
+                return GestureDetector(
+                  onTap: () => _navigateToMemoriesOnDay(context, date),
+                  child: Column(
+                    children: [
+                      MemoryListItem(
+                        note: note,
+                        onTap: () => _navigateToMemoriesOnDay(context, date),
+                      ),
+                      if (entry.key < dayNotes.length - 1)
+                        const Divider(
+                          height: 1,
+                          thickness: 1,
+                          indent: 16,
+                          endIndent: 16,
+                        ),
+                    ],
                   ),
-                  if (entry.key < dayNotes.length - 1) const Divider(
-                    height: 1, // Adjust the height of the divider
-                    thickness: 1,
-                    indent: 16, // Indent to match ListTile padding
-                    endIndent: 16, // Indent to match ListTile padding
-                  ),
-                ],
-              ))
-                  .toList(),
+                );
+              }).toList(),
             ],
           );
         },
@@ -81,23 +89,31 @@ class MemoryList extends StatelessWidget {
     );
   }
 
+  void _navigateToMemoriesOnDay(BuildContext context, DateTime date) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => MemoriesOnDay(date: date),
+      ),
+    );
+  }
+
   String _formatDate(DateTime date) {
     final now = DateTime.now();
     final difference = now.difference(date);
-    var suffix = ' - ${DateFormat('EEEE, MMM d, yyyy').format(date)}';
     if (difference.inDays >= 365) {
       final years = difference.inDays ~/ 365;
-      return '$years year${years > 1 ? 's' : ''} ago$suffix';
+      return '$years year${years > 1 ? 's' : ''} ago';
     } else if (difference.inDays >= 30) {
       final months = difference.inDays ~/ 30;
-      return '$months month${months > 1 ? 's' : ''} ago$suffix';
+      return '$months month${months > 1 ? 's' : ''} ago';
     } else if (difference.inDays >= 7) {
       final weeks = difference.inDays ~/ 7;
-      return '$weeks week${weeks > 1 ? 's' : ''} ago$suffix';
+      return '$weeks week${weeks > 1 ? 's' : ''} ago';
     } else if (difference.inDays >= 1) {
-      return '${difference.inDays} day${difference.inDays > 1 ? 's' : ''} ago$suffix';
+      return '${difference.inDays} day${difference.inDays > 1 ? 's' : ''} ago';
     } else {
-      return 'Today$suffix';
+      return 'Today';
     }
   }
 }

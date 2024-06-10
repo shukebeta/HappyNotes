@@ -22,6 +22,7 @@ class MainMenu extends StatefulWidget {
 class MainMenuState extends State<MainMenu> {
   int _selectedIndex = 0;
   final GlobalKey<HomePageState> homePageKey = GlobalKey<HomePageState>();
+  final GlobalKey<MemoriesState> memoriesKey = GlobalKey<MemoriesState>();
   final GlobalKey<NewNoteState> newNoteKey = GlobalKey<NewNoteState>();
 
   @override
@@ -43,7 +44,7 @@ class MainMenuState extends State<MainMenu> {
           isPrivate: false,
           onNoteSaved: _onNoteSaved,
         ),
-        const Memories(),
+        Memories(key: memoriesKey),
       ],
     );
   }
@@ -86,6 +87,9 @@ class MainMenuState extends State<MainMenu> {
     });
     if (index == indexNewNote) {
       newNoteKey.currentState?.setFocus(true);
+    }
+    if (index == memoriesKey) {
+      memoriesKey.currentState?.fetchMemories();
     }
   }
 

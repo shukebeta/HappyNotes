@@ -40,6 +40,7 @@ class NotesService {
     return NotesResult(fetchedNotes, fetchedNotes.length);
   }
 
+  // List<dynamic> => List<note>
   List<Note> _convertNotes(List<dynamic> fetchedNotesData, String currentTimeZone) {
     List<Note> fetchedNotes = fetchedNotesData.map((json) => Note.fromJson(json)).toList();
     fetchedNotes = fetchedNotes.map((el) {

@@ -17,8 +17,6 @@ class Note {
     required this.isPrivate,
     required this.isLong,
     required this.createAt,
-    this.createDate,
-    this.createTime
   });
   factory Note.fromJson(Map<String, dynamic> json) {
     return Note(
