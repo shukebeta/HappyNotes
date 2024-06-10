@@ -1,5 +1,4 @@
 import 'package:happy_notes/app_config.dart';
-
 import '../entities/note.dart';
 import '../services/notes_services.dart';
 import '../utils/util.dart';

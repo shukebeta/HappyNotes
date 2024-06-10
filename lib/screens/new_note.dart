@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:happy_notes/screens/new_note_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:happy_notes/typedefs.dart';
