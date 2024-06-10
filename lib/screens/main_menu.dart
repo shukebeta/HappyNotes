@@ -39,12 +39,12 @@ class MainMenuState extends State<MainMenu> {
         HomePage(
           key: homePageKey,
         ),
+        Memories(key: memoriesKey),
         NewNote(
           key: newNoteKey,
           isPrivate: false,
           onNoteSaved: _onNoteSaved,
         ),
-        Memories(key: memoriesKey),
       ],
     );
   }
@@ -88,7 +88,7 @@ class MainMenuState extends State<MainMenu> {
     if (index == indexNewNote) {
       newNoteKey.currentState?.setFocus(true);
     }
-    if (index == memoriesKey) {
+    if (index == indexMemories) {
       memoriesKey.currentState?.fetchMemories();
     }
   }

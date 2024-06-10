@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 const kSelectedItemColor = Colors.deepPurple;
 const kUnselectedItemColor = Colors.grey;
 const int indexNotes = 0;
-const int indexNewNote = 1;
-const int indexMemories = 2;
+const int indexMemories = 1;
+const int indexNewNote = 2;
 const int indexSharedNotes = 3;
 const int indexMore = 4;
 
@@ -34,12 +34,12 @@ class BottomNavigation extends StatelessWidget {
           label: 'Notes',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.note_add_outlined),
-          label: 'New Note',
-        ),
-        BottomNavigationBarItem(
           icon: Icon(Icons.calendar_today),
           label: 'Memories',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.note_add_outlined),
+          label: 'New Note',
         ),
         // BottomNavigationBarItem(
         //   icon: Icon(Icons.public),
