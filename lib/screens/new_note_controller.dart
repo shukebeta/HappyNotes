@@ -1,10 +1,8 @@
 import 'package:happy_notes/services/dialog_services.dart';
 import 'package:flutter/material.dart';
 import 'package:happy_notes/typedefs.dart';
-
 import '../services/notes_services.dart';
 import '../utils/util.dart';
-import 'main_menu.dart';
 
 class NewNoteController {
   final NotesService _notesService;

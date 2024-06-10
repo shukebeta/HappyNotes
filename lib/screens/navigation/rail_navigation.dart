@@ -22,11 +22,11 @@ class RailNavigation extends StatelessWidget {
           selectedIcon: Icon(Icons.collections_outlined, color: Colors.blue),
           label: Text('Notes'),
         ),
-        // NavigationRailDestination(
-        //   icon: Icon(Icons.calendar_today),
-        //   selectedIcon: Icon(Icons.calendar_today, color: Colors.blue),
-        //   label: Text('Memories'),
-        // ),
+        NavigationRailDestination(
+          icon: Icon(Icons.calendar_today),
+          selectedIcon: Icon(Icons.calendar_today, color: Colors.blue),
+          label: Text('Memories'),
+        ),
         NavigationRailDestination(
           icon: Icon(Icons.note_add_outlined),
           selectedIcon: Icon(Icons.note_add_outlined, color: Colors.blue),

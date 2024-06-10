@@ -3,7 +3,14 @@ import 'package:flutter/material.dart';
 // Constants
 const kSelectedItemColor = Colors.deepPurple;
 const kUnselectedItemColor = Colors.grey;
+const int indexNotes = 0;
+const int indexMemories = 1;
+const int indexNewNote = 2;
+const int indexSharedNotes = 3;
+const int indexMore = 4;
 
+// Remember to adjust rail_navigation.dart as well
+// when you adjust the order of the menu items
 class BottomNavigation extends StatelessWidget {
   final int currentIndex;
   final Function(int) onTap;
@@ -26,10 +33,10 @@ class BottomNavigation extends StatelessWidget {
           icon: Icon(Icons.collections_outlined),
           label: 'Notes',
         ),
-        // BottomNavigationBarItem(
-        //   icon: Icon(Icons.calendar_today),
-        //   label: 'Memories',
-        // ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.calendar_today),
+          label: 'Memories',
+        ),
         BottomNavigationBarItem(
           icon: Icon(Icons.note_add_outlined),
           label: 'New Note',
