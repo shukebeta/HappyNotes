@@ -1,11 +1,11 @@
 // This is a generated file; do not edit or check into version control.
-FLUTTER_ROOT=/Users/shukebeta/development/flutter
-FLUTTER_APPLICATION_PATH=/Users/shukebeta/AndroidStudioProjects/happy_notes
+FLUTTER_ROOT=/home/davidwei/snap/flutter/common/flutter
+FLUTTER_APPLICATION_PATH=/home/davidwei/AndroidStudioProjects/happy_notes
 COCOAPODS_PARALLEL_CODE_SIGN=true
 FLUTTER_TARGET=lib/main.dart
 FLUTTER_BUILD_DIR=build
-FLUTTER_BUILD_NAME=0.1.3
-FLUTTER_BUILD_NUMBER=0.1.3
+FLUTTER_BUILD_NAME=0.1.4
+FLUTTER_BUILD_NUMBER=0.1.4
 EXCLUDED_ARCHS[sdk=iphonesimulator*]=i386
 EXCLUDED_ARCHS[sdk=iphoneos*]=armv7
 DART_OBFUSCATION=false

@@ -46,4 +46,12 @@ class NotesApi {
     return await _dio.get('/notes/myLatest$pager');
   }
 
+  static Future<Response> memories(Map<String, dynamic> params) async {
+    return await _dio.get('/notes/memories?localTimeZone=${params['localTimeZone']}');
+  }
+
+  static Future<Response> memoriesOn(Map<String, dynamic> params) async {
+    return await _dio.get('/notes/memoriesOn?localTimeZone=${params['localTimeZone']}&yyyyMMdd=${params['yyyyMMdd']}');
+  }
+
 }

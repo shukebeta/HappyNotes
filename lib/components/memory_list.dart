@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-
 import '../entities/note.dart';
-import '../utils/util.dart';
 import 'note_list_item.dart';
 
-class NoteList extends StatelessWidget {
+class MemoryList extends StatelessWidget {
   final List<Note> notes;
   final Function(int) onTap;
   final Function(int)? onDoubleTap;
   final Future<void> Function()? onRefresh;
 
-  const NoteList({
+  const MemoryList({
     Key? key,
     required this.notes,
     required this.onTap,
@@ -44,11 +42,11 @@ class NoteList extends StatelessWidget {
                 padding:
                 const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
                 child: Align(
-                  alignment: Alignment.center,
+                  alignment: Alignment.centerLeft,
                   child: Text(
                     _formatDate(DateTime.parse(dateKey)),
                     style: const TextStyle(
-                      fontWeight: FontWeight.w300,
+                      fontWeight: FontWeight.w900,
                       fontSize: 16,
                     ),
                   ),
@@ -84,6 +82,22 @@ class NoteList extends StatelessWidget {
   }
 
   String _formatDate(DateTime date) {
-    return '- ${DateFormat('EEEE, MMM d, yyyy').format(date)} -';
+    final now = DateTime.now();
+    final difference = now.difference(date);
+    var suffix = ' - ${DateFormat('EEEE, MMM d, yyyy').format(date)}';
+    if (difference.inDays >= 365) {
+      final years = difference.inDays ~/ 365;
+      return '$years year${years > 1 ? 's' : ''} ago$suffix';
+    } else if (difference.inDays >= 30) {
+      final months = difference.inDays ~/ 30;
+      return '$months month${months > 1 ? 's' : ''} ago$suffix';
+    } else if (difference.inDays >= 7) {
+      final weeks = difference.inDays ~/ 7;
+      return '$weeks week${weeks > 1 ? 's' : ''} ago$suffix';
+    } else if (difference.inDays >= 1) {
+      return '${difference.inDays} day${difference.inDays > 1 ? 's' : ''} ago$suffix';
+    } else {
+      return 'Today$suffix';
+    }
   }
 }

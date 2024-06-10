@@ -5,8 +5,6 @@ import '../dependency_injection.dart';
 import '../services/notes_services.dart';
 import '../components/note_list.dart';
 import '../components/pagination_controls.dart';
-import '../utils/util.dart';
-import 'new_note.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
