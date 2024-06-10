@@ -17,9 +17,9 @@ class PaginationControls extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(0, 0, 20, 10),
+      padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           SizedBox(
             width: 120,

@@ -19,6 +19,8 @@ class HomePageState extends State<HomePage> {
 
   bool get isFirstPage => currentPageNumber == 1;
 
+  bool get isLastPage => currentPageNumber == _homePageController.totalPages;
+
   @override
   void initState() {
     super.initState();
@@ -48,21 +50,29 @@ class HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    var isDesktop = MediaQuery.of(context).size.width >= 600;
     return Scaffold(
       appBar: AppBar(
         title: const Text('My Notes'),
       ),
-      body: _buildBody(),
+      body: Stack(
+        children: [
+          _buildBody(isDesktop),
+          if (_homePageController.totalPages > 1 && !isDesktop)
+            _buildFloatingPagination(),
+        ],
+      ),
     );
   }
 
-  Widget _buildBody() {
+  Widget _buildBody(bool isDesktop) {
     if (_homePageController.isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
 
     if (_homePageController.notes.isEmpty) {
-      return const Center(child: Text('No notes available. Create a new note to get started.'));
+      return const Center(
+          child: Text('No notes available. Create a new note to get started.'));
     }
 
     return Column(
@@ -84,7 +94,8 @@ class HomePageState extends State<HomePage> {
               await Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => NoteDetail(noteId: noteId, enterEditing: true),
+                  builder: (context) =>
+                      NoteDetail(noteId: noteId, enterEditing: true),
                 ),
               );
               navigateToPage(currentPageNumber);
@@ -92,7 +103,7 @@ class HomePageState extends State<HomePage> {
             onRefresh: () async => await navigateToPage(currentPageNumber),
           ),
         ),
-        if (_homePageController.totalPages > 1)
+        if (_homePageController.totalPages > 1 && isDesktop)
           PaginationControls(
             currentPage: currentPageNumber,
             totalPages: _homePageController.totalPages,
@@ -100,6 +111,37 @@ class HomePageState extends State<HomePage> {
             onNextPage: () => navigateToPage(currentPageNumber + 1),
           ),
       ],
+    );
+  }
+
+  Widget _buildFloatingPagination() {
+    return Positioned(
+      right: 16,
+      top: 100,
+      bottom: 100,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          FloatingActionButton(
+            heroTag: 'prevPage',
+            mini: true,
+            onPressed: isFirstPage
+                ? null
+                : () => navigateToPage(currentPageNumber - 1),
+            backgroundColor: isFirstPage ? Colors.grey.shade400 : const Color(0xFFEBDDFF),
+            child: const Icon(Icons.arrow_upward),
+          ),
+          const SizedBox(height: 16),
+          FloatingActionButton(
+            heroTag: 'nextPage',
+            mini: true,
+            onPressed:
+                isLastPage ? null : () => navigateToPage(currentPageNumber + 1),
+            backgroundColor: isLastPage ? Colors.grey.shade400 : const Color(0xFFEBDDFF),
+            child: const Icon(Icons.arrow_downward),
+          ),
+        ],
+      ),
     );
   }
 }
