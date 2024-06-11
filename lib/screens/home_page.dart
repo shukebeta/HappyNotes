@@ -18,6 +18,7 @@ class HomePage extends StatefulWidget {
 class HomePageState extends State<HomePage> {
   late HomePageController _homePageController;
   int currentPageNumber = 1;
+  bool showPageSelector = false;
 
   bool get isFirstPage => currentPageNumber == 1;
 
@@ -40,6 +41,7 @@ class HomePageState extends State<HomePage> {
       await _homePageController.loadNotes(context, pageNumber);
       setState(() {
         currentPageNumber = pageNumber;
+        showPageSelector = false;
       });
       return true;
     }
@@ -166,61 +168,118 @@ class HomePageState extends State<HomePage> {
       right: 16,
       top: 100,
       bottom: 100,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Previous Page Number
-          if (currentPageNumber > 1)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 4.0),
-              child: Text(
-                (currentPageNumber - 1).toString(),
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
+      child: showPageSelector
+          ? _buildPageSelector()
+          : Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                GestureDetector(
+                  onLongPress: () {
+                    setState(() {
+                      showPageSelector = true;
+                    });
+                  },
+                  child: FloatingActionButton(
+                    heroTag: 'prevPage',
+                    mini: true,
+                    onPressed: isFirstPage
+                        ? null
+                        : () => navigateToPage(currentPageNumber - 1),
+                    backgroundColor: isFirstPage
+                        ? Colors.grey.shade400
+                        : const Color(0xFFEBDDFF),
+                    child: const Icon(Icons.arrow_upward),
+                  ),
                 ),
-              ),
-            ),
-          // Previous Page Button
-          FloatingActionButton(
-            heroTag: 'prevPage',
-            mini: true,
-            onPressed: isFirstPage ? null : () => navigateToPage(currentPageNumber - 1),
-            backgroundColor: isFirstPage ? Colors.grey.shade400 : const Color(0xFFEBDDFF),
-            child: const Icon(Icons.arrow_upward),
-          ),
-          // Current Page Number
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8.0),
-            child: Text(
-              currentPageNumber.toString(),
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-              ),
-            ),
-          ),
-          // Next Page Button
-          FloatingActionButton(
-            heroTag: 'nextPage',
-            mini: true,
-            onPressed: isLastPage ? null : () => navigateToPage(currentPageNumber + 1),
-            backgroundColor: isLastPage ? Colors.grey.shade400 : const Color(0xFFEBDDFF),
-            child: const Icon(Icons.arrow_downward),
-          ),
-          // Next Page Number
-          if (currentPageNumber < _homePageController.totalPages)
-            Padding(
-              padding: const EdgeInsets.only(top: 4.0),
-              child: Text(
-                (currentPageNumber + 1).toString(),
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
+                const SizedBox(height: 16),
+                Text('$currentPageNumber'),
+                const SizedBox(height: 16),
+                GestureDetector(
+                  onLongPress: () {
+                    setState(() {
+                      showPageSelector = true;
+                    });
+                  },
+                  child: FloatingActionButton(
+                    heroTag: 'nextPage',
+                    mini: true,
+                    onPressed: isLastPage
+                        ? null
+                        : () => navigateToPage(currentPageNumber + 1),
+                    backgroundColor: isLastPage
+                        ? Colors.grey.shade400
+                        : const Color(0xFFEBDDFF),
+                    child: const Icon(Icons.arrow_downward),
+                  ),
                 ),
-              ),
+              ],
             ),
-        ],
+    );
+  }
+
+  Widget _buildPageSelector() {
+    final TextEditingController pageController = TextEditingController();
+    final FocusNode pageFocusNode = FocusNode();
+
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          showPageSelector = false;
+        });
+      },
+      child: Center(
+        child: Material(
+          // Ensures the container has a proper layout
+          color: Colors.transparent, // Makes sure we see the selector clearly
+          child: Container(
+            constraints: const BoxConstraints(
+              maxWidth: 300, // Set max width for the selector container
+              maxHeight: 200, // Set max height for the selector container
+            ),
+            padding: const EdgeInsets.all(16.0),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(8),
+              boxShadow: const [
+                BoxShadow(
+                  color: Colors.black26,
+                  blurRadius: 10,
+                  offset: Offset(0, 10),
+                ),
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: pageController,
+                  focusNode: pageFocusNode,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    labelText:
+                        'Enter a page number: 1 ~ ${_homePageController.totalPages}',
+                  ),
+                ),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () {
+                    final page = int.tryParse(pageController.text);
+                    if (page != null &&
+                        page > 0 &&
+                        page <= _homePageController.totalPages) {
+                      navigateToPage(page);
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Invalid page number')),
+                      );
+                    }
+                  },
+                  child: const Text('OK'),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
