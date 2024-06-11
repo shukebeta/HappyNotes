@@ -169,26 +169,57 @@ class HomePageState extends State<HomePage> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
+          // Previous Page Number
+          if (currentPageNumber > 1)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 4.0),
+              child: Text(
+                (currentPageNumber - 1).toString(),
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+            ),
+          // Previous Page Button
           FloatingActionButton(
             heroTag: 'prevPage',
             mini: true,
-            onPressed: isFirstPage
-                ? null
-                : () => navigateToPage(currentPageNumber - 1),
-            backgroundColor:
-                isFirstPage ? Colors.grey.shade400 : const Color(0xFFEBDDFF),
+            onPressed: isFirstPage ? null : () => navigateToPage(currentPageNumber - 1),
+            backgroundColor: isFirstPage ? Colors.grey.shade400 : const Color(0xFFEBDDFF),
             child: const Icon(Icons.arrow_upward),
           ),
-          const SizedBox(height: 16),
+          // Current Page Number
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: Text(
+              currentPageNumber.toString(),
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+            ),
+          ),
+          // Next Page Button
           FloatingActionButton(
             heroTag: 'nextPage',
             mini: true,
-            onPressed:
-                isLastPage ? null : () => navigateToPage(currentPageNumber + 1),
-            backgroundColor:
-                isLastPage ? Colors.grey.shade400 : const Color(0xFFEBDDFF),
+            onPressed: isLastPage ? null : () => navigateToPage(currentPageNumber + 1),
+            backgroundColor: isLastPage ? Colors.grey.shade400 : const Color(0xFFEBDDFF),
             child: const Icon(Icons.arrow_downward),
           ),
+          // Next Page Number
+          if (currentPageNumber < _homePageController.totalPages)
+            Padding(
+              padding: const EdgeInsets.only(top: 4.0),
+              child: Text(
+                (currentPageNumber + 1).toString(),
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+            ),
         ],
       ),
     );
