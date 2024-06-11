@@ -42,8 +42,8 @@ class MainMenuState extends State<MainMenu> {
         Memories(key: memoriesKey),
         NewNote(
           key: newNoteKey,
-          isPrivate: false,
           onNoteSaved: _onNoteSaved,
+          isPrivate: true, // new note in main menu entry: always private note
         ),
       ],
     );
@@ -86,7 +86,8 @@ class MainMenuState extends State<MainMenu> {
       _selectedIndex = index;
     });
     if (index == indexNewNote) {
-      newNoteKey.currentState?.setFocus(true);
+      Future.delayed(const Duration(milliseconds: 200),
+          () => newNoteKey.currentState?.setFocus(true));
     }
     if (index == indexMemories) {
       memoriesKey.currentState?.fetchMemories();

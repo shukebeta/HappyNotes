@@ -5,6 +5,8 @@ import '../dependency_injection.dart';
 import '../services/notes_services.dart';
 import '../components/note_list.dart';
 import '../components/pagination_controls.dart';
+import '../utils/util.dart';
+import 'new_note.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -52,9 +54,54 @@ class HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     var isDesktop = MediaQuery.of(context).size.width >= 600;
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('My Notes'),
-      ),
+      appBar: AppBar(title: const Text('My Notes'), actions: [
+        IconButton(
+          icon: const Icon(Icons.edit),
+          onPressed: () async {
+            final scaffoldContext = ScaffoldMessenger.of(context);
+            final navigator = Navigator.of(context);
+            await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => NewNote(
+                  isPrivate: false, // this entry is always for public note
+                  onNoteSaved: (int? noteId) async {
+                    if (noteId == null) {
+                      Util.showError(scaffoldContext,
+                          "Something is wrong when saving the note");
+                      return;
+                    }
+                    navigator.pop();
+                    if (isFirstPage) {
+                      await refreshPage();
+                      return;
+                    }
+                    scaffoldContext.showSnackBar(
+                      SnackBar(
+                        content: const Text(
+                            'Successfully saved. Click here to view.'),
+                        duration: const Duration(seconds: 5),
+                        action: SnackBarAction(
+                          label: 'View',
+                          onPressed: () async {
+                            await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    NoteDetail(noteId: noteId),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            );
+          },
+        ),
+      ]),
       body: Stack(
         children: [
           _buildBody(isDesktop),
@@ -128,7 +175,8 @@ class HomePageState extends State<HomePage> {
             onPressed: isFirstPage
                 ? null
                 : () => navigateToPage(currentPageNumber - 1),
-            backgroundColor: isFirstPage ? Colors.grey.shade400 : const Color(0xFFEBDDFF),
+            backgroundColor:
+                isFirstPage ? Colors.grey.shade400 : const Color(0xFFEBDDFF),
             child: const Icon(Icons.arrow_upward),
           ),
           const SizedBox(height: 16),
@@ -137,7 +185,8 @@ class HomePageState extends State<HomePage> {
             mini: true,
             onPressed:
                 isLastPage ? null : () => navigateToPage(currentPageNumber + 1),
-            backgroundColor: isLastPage ? Colors.grey.shade400 : const Color(0xFFEBDDFF),
+            backgroundColor:
+                isLastPage ? Colors.grey.shade400 : const Color(0xFFEBDDFF),
             child: const Icon(Icons.arrow_downward),
           ),
         ],

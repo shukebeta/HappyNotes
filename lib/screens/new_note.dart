@@ -23,6 +23,7 @@ class NewNoteState extends State<NewNote> {
   void initState() {
     super.initState();
     _isPrivate = widget.isPrivate;
+    setFocus(true);
   }
 
   void setFocus(bool targetFocusStatus) {
