@@ -86,7 +86,7 @@ class MainMenuState extends State<MainMenu> {
       _selectedIndex = index;
     });
     if (index == indexNewNote) {
-      Future.delayed(const Duration(milliseconds: 200),
+      Future.delayed(const Duration(milliseconds: 350),
           () => newNoteKey.currentState?.setFocus(true));
     }
     if (index == indexMemories) {

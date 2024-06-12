@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:happy_notes/screens/home_page_controller.dart';
 import 'package:happy_notes/screens/note_detail.dart';
+import '../components/floating_pagination.dart';
 import '../dependency_injection.dart';
 import '../services/notes_services.dart';
 import '../components/note_list.dart';
@@ -108,7 +109,11 @@ class HomePageState extends State<HomePage> {
         children: [
           _buildBody(isDesktop),
           if (_homePageController.totalPages > 1 && !isDesktop)
-            _buildFloatingPagination(),
+            FloatingPagination(
+              currentPage: currentPageNumber,
+              totalPages: _homePageController.totalPages,
+              navigateToPage: navigateToPage,
+            ),
         ],
       ),
     );
@@ -160,127 +165,6 @@ class HomePageState extends State<HomePage> {
             onNextPage: () => navigateToPage(currentPageNumber + 1),
           ),
       ],
-    );
-  }
-
-  Widget _buildFloatingPagination() {
-    return Positioned(
-      right: 16,
-      top: 100,
-      bottom: 100,
-      child: showPageSelector
-          ? _buildPageSelector()
-          : Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                GestureDetector(
-                  onLongPress: () {
-                    setState(() {
-                      showPageSelector = true;
-                    });
-                  },
-                  child: FloatingActionButton(
-                    heroTag: 'prevPage',
-                    mini: true,
-                    onPressed: isFirstPage
-                        ? null
-                        : () => navigateToPage(currentPageNumber - 1),
-                    backgroundColor: isFirstPage
-                        ? Colors.grey.shade400
-                        : const Color(0xFFEBDDFF),
-                    child: const Icon(Icons.arrow_upward),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Text('$currentPageNumber'),
-                const SizedBox(height: 16),
-                GestureDetector(
-                  onLongPress: () {
-                    setState(() {
-                      showPageSelector = true;
-                    });
-                  },
-                  child: FloatingActionButton(
-                    heroTag: 'nextPage',
-                    mini: true,
-                    onPressed: isLastPage
-                        ? null
-                        : () => navigateToPage(currentPageNumber + 1),
-                    backgroundColor: isLastPage
-                        ? Colors.grey.shade400
-                        : const Color(0xFFEBDDFF),
-                    child: const Icon(Icons.arrow_downward),
-                  ),
-                ),
-              ],
-            ),
-    );
-  }
-
-  Widget _buildPageSelector() {
-    final TextEditingController pageController = TextEditingController();
-    final FocusNode pageFocusNode = FocusNode();
-
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          showPageSelector = false;
-        });
-      },
-      child: Center(
-        child: Material(
-          // Ensures the container has a proper layout
-          color: Colors.transparent, // Makes sure we see the selector clearly
-          child: Container(
-            constraints: const BoxConstraints(
-              maxWidth: 300, // Set max width for the selector container
-              maxHeight: 200, // Set max height for the selector container
-            ),
-            padding: const EdgeInsets.all(16.0),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(8),
-              boxShadow: const [
-                BoxShadow(
-                  color: Colors.black26,
-                  blurRadius: 10,
-                  offset: Offset(0, 10),
-                ),
-              ],
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextField(
-                  controller: pageController,
-                  focusNode: pageFocusNode,
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
-                    labelText:
-                        'Enter a page number: 1 ~ ${_homePageController.totalPages}',
-                  ),
-                ),
-                const SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed: () {
-                    final page = int.tryParse(pageController.text);
-                    if (page != null &&
-                        page > 0 &&
-                        page <= _homePageController.totalPages) {
-                      navigateToPage(page);
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Invalid page number')),
-                      );
-                    }
-                  },
-                  child: const Text('OK'),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
     );
   }
 }
