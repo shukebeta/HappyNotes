@@ -3,6 +3,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:happy_notes/dependency_injection.dart' as di;
 import 'package:happy_notes/screens/initial_page.dart';
 import 'package:happy_notes/screens/main_menu.dart';
+import 'package:happy_notes/screens/navigation/bottom_navigation.dart';
 import 'package:quick_actions/quick_actions.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'dart:io' show Platform;
@@ -48,14 +49,14 @@ class HappyNotesState extends State<HappyNotesApp> {
       if (shortcutType == 'takeNote') {
         if (mainMenuKey.currentState != null) {
           // MainMenu is already in the widget tree
-          mainMenuKey.currentState?.switchToPage(1); // Switch to 'New Note' page
+          mainMenuKey.currentState?.switchToPage(indexNewNote); // Switch to 'New Note' page
         } else {
           // MainMenu is not in the widget tree, push it onto the stack
           await navigatorKey.currentState?.pushReplacement(
             MaterialPageRoute(
               builder: (context) => MainMenu(
                 key: mainMenuKey,
-                initialPageIndex: 1, // Start with 'New Note' page
+                initialPageIndex: indexNewNote, // Start with 'New Note' page
               ),
             ),
           );
