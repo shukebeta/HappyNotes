@@ -48,6 +48,7 @@ class MemoriesOnDayState extends State<MemoriesOnDay> {
             _notes = snapshot.data!.notes;
             return NoteList(
               notes: _notes,
+              showDate: false,
               onTap: (noteId) async {
                 await Navigator.push(
                   context,

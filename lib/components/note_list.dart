@@ -9,6 +9,7 @@ class NoteList extends StatelessWidget {
   final Function(int) onTap;
   final Function(int)? onDoubleTap;
   final Future<void> Function()? onRefresh;
+  final bool showDate;
 
   const NoteList({
     Key? key,
@@ -16,6 +17,7 @@ class NoteList extends StatelessWidget {
     required this.onTap,
     this.onDoubleTap,
     this.onRefresh,
+    this.showDate = true,
   }) : super(key: key);
 
   @override
@@ -39,19 +41,21 @@ class NoteList extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Date header
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-                child: Align(
-                  alignment: Alignment.center,
-                  child: Text(
-                    _formatDate(DateTime.parse(dateKey)),
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w300,
-                      fontSize: 16,
+              if (showDate)
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 8.0, horizontal: 16.0),
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: Text(
+                      _formatDate(DateTime.parse(dateKey)),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w300,
+                        fontSize: 16,
+                      ),
                     ),
                   ),
                 ),
-              ),
               // List of notes for that date with combined time and separator
               ...dayNotes.asMap().entries.map((entry) {
                 final note = entry.value;
@@ -60,7 +64,8 @@ class NoteList extends StatelessWidget {
                   children: [
                     CombinedTimeSeparator(note: note),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 1.0),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16.0, vertical: 1.0),
                       child: NoteListItem(
                         note: note,
                         onTap: () => onTap(note.id),
