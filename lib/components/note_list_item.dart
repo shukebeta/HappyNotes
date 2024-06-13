@@ -20,7 +20,7 @@ class NoteListItem extends StatelessWidget {
       onTap: onTap,
       onDoubleTap: onDoubleTap, // Call onDoubleTap callback when double-tapped
       child: Container(
-        color: note.isPrivate ? Colors.grey.shade200 : Colors.transparent,
+        color: Colors.transparent,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 7.0, vertical: 0),
           child: ListTile(

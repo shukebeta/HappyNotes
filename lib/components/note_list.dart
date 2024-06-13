@@ -58,7 +58,7 @@ class NoteList extends StatelessWidget {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    CombinedTimeSeparator(time: note.createTime!),
+                    CombinedTimeSeparator(note: note),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 1.0),
                       child: NoteListItem(
@@ -90,9 +90,9 @@ class NoteList extends StatelessWidget {
 }
 
 class CombinedTimeSeparator extends StatelessWidget {
-  final String time;
+  final Note note;
 
-  const CombinedTimeSeparator({Key? key, required this.time}) : super(key: key);
+  const CombinedTimeSeparator({Key? key, required this.note}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -101,7 +101,7 @@ class CombinedTimeSeparator extends StatelessWidget {
       child: Row(
         children: [
           Text(
-            '- $time  ',
+            '- ${note.createTime} ${note.isPrivate ? '🔒' : ''}  ',
             style: const TextStyle(
               fontWeight: FontWeight.w200,
               fontSize: 12,
