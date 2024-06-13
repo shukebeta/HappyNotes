@@ -34,6 +34,7 @@ class NoteListItem extends StatelessWidget {
                       style: TextStyle(
                         fontStyle: note.isPrivate ? FontStyle.italic : FontStyle.normal,
                         fontSize: 20,
+                        height: 1.6,
                         color: Colors.black,
                       ),
                       children: note.isLong
