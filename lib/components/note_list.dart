@@ -108,7 +108,7 @@ class CombinedTimeSeparator extends StatelessWidget {
           Text(
             '- ${note.createTime} ${note.isPrivate ? '🔒' : ''}  ',
             style: const TextStyle(
-              fontWeight: FontWeight.w200,
+              fontWeight: FontWeight.w300,
               fontSize: 12,
             ),
           ),

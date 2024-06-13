@@ -47,9 +47,7 @@ class NoteDetailState extends State<NoteDetail> {
                 icon: const Icon(Icons.check),
                 onPressed: () =>
                     _controller.saveNote(context, widget.noteId, () {
-                  setState(() {
-                    _noteFuture = _controller.fetchNote(widget.noteId);
-                  });
+                      Navigator.of(context).pop();
                 }),
               )
             else
