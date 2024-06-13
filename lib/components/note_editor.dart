@@ -29,9 +29,20 @@ class NoteEditor extends StatelessWidget {
                   maxLines: null,
                   expands: true,
                   textAlignVertical: TextAlignVertical.top,
-                  decoration: const InputDecoration(
-                    hintText: 'Write your note here...',
-                    border: OutlineInputBorder(),
+                  decoration: InputDecoration(
+                    hintText: 'Write your ${isPrivate ? 'private' : 'public'} note here...',
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: isPrivate ? Colors.blue : Colors.green, // Set border color based on isPrivate
+                        width: 2.0, // Set the border width
+                      ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: isPrivate ? Colors.blueAccent : Colors.greenAccent, // Set focused border color
+                        width: 2.0, // Set the focused border width
+                      ),
+                    ),
                   ),
                 )
               : SingleChildScrollView(
@@ -44,14 +55,14 @@ class NoteEditor extends StatelessWidget {
                   ),
                 ),
         ),
-        const SizedBox(height: 16.0),
+        const SizedBox(height: 8.0),
         Row(
           children: [
-            const Text('Private Note'),
             Switch(
               value: isPrivate,
               onChanged: isEditing ? onPrivateChanged : null,
             ),
+            Text(isPrivate ? 'Private on' : 'Private off'),
           ],
         ),
       ],

@@ -38,10 +38,10 @@ class NewNoteState extends State<NewNote> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Write Note'),
+        title: Text(_isPrivate ? 'Private Note' : 'Public Note'),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.fromLTRB(4.0, 0, 4.0, 4.0),
         child: NoteEditor(
           controller: _newNoteController.noteController,
           focusNode: _newNoteController.noteFocusNode,
