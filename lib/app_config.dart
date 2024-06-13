@@ -26,4 +26,7 @@ class AppConfig {
     final markdownIsEnabledStr = dotenv.env['MARKDOWN_IS_ENABLED'];
     return markdownIsEnabledStr == null || markdownIsEnabledStr == '1';
   }
+
+  // duplicate request error, which shouldn't bother to show anything
+  static int get errorCodeQuiet => 105;
 }

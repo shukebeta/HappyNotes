@@ -1,4 +1,5 @@
 import 'package:happy_notes/apis/notes_api.dart';
+import '../app_config.dart';
 import '../entities/note.dart';
 import '../results/notes_result.dart';
 import '../utils/util.dart';
@@ -64,7 +65,7 @@ class NotesService {
   Future<int> post(String content, bool isPrivate) async {
     var params = {'content': content, 'isPrivate': isPrivate};
     var apiResult = (await NotesApi.post(params)).data;
-    if (!apiResult['successful']) throw Exception(apiResult['message']);
+    if (!apiResult['successful'] && apiResult['errorCode'] != AppConfig.errorCodeQuiet) throw Exception(apiResult['message']);
     return apiResult['data']; //note id
   }
 
@@ -72,7 +73,7 @@ class NotesService {
   Future<int> update(int noteId, String content, bool isPrivate) async {
     var params = {'id': noteId, 'content': content, 'isPrivate': isPrivate};
     var apiResult = (await NotesApi.update(params)).data;
-    if (!apiResult['successful']) throw Exception(apiResult['message']);
+    if (!apiResult['successful'] && apiResult['errorCode'] != AppConfig.errorCodeQuiet) throw Exception(apiResult['message']);
     return apiResult['data']; //note id
   }
 

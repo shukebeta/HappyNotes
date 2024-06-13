@@ -69,35 +69,35 @@ class HomePageState extends State<HomePage> {
                 builder: (context) => NewNote(
                   isPrivate: false, // this entry is always for public note
                   onNoteSaved: (int? noteId) async {
-                    if (noteId == null) {
-                      Util.showError(scaffoldContext,
-                          "Something is wrong when saving the note");
-                      return;
-                    }
-                    navigator.pop();
-                    if (isFirstPage) {
-                      await refreshPage();
-                      return;
-                    }
-                    scaffoldContext.showSnackBar(
-                      SnackBar(
-                        content: const Text(
-                            'Successfully saved. Click here to view.'),
-                        duration: const Duration(seconds: 5),
-                        action: SnackBarAction(
-                          label: 'View',
-                          onPressed: () async {
-                            await Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    NoteDetail(noteId: noteId),
-                              ),
-                            );
-                          },
+                    if (noteId != null && noteId > 0) {
+                      navigator.pop();
+                      if (isFirstPage) {
+                        await refreshPage();
+                        return;
+                      }
+                      scaffoldContext.showSnackBar(
+                        SnackBar(
+                          content: const Text(
+                              'Successfully saved. Click here to view.'),
+                          duration: const Duration(seconds: 5),
+                          action: SnackBarAction(
+                            label: 'View',
+                            onPressed: () async {
+                              await Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      NoteDetail(noteId: noteId),
+                                ),
+                              );
+                            },
+                          ),
                         ),
-                      ),
-                    );
+                      );
+                      return;
+                    }
+                    Util.showError(scaffoldContext,
+                        "Something is wrong when saving the note");
                   },
                 ),
               ),

@@ -53,7 +53,7 @@ class MainMenuState extends State<MainMenu> {
     setState(() {
       _selectedIndex = indexNotes;
     });
-    if (noteId != null) {
+    if (noteId != null && noteId > 0) {
       if (homePageKey.currentState?.isFirstPage ?? false) {
         await homePageKey.currentState?.refreshPage();
         return;
@@ -86,7 +86,7 @@ class MainMenuState extends State<MainMenu> {
       _selectedIndex = index;
     });
     if (index == indexNewNote) {
-      Future.delayed(const Duration(milliseconds: 350),
+      Future.delayed(const Duration(milliseconds: 550),
           () => newNoteKey.currentState?.setFocus(true));
     }
     if (index == indexMemories) {
