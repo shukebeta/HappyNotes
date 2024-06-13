@@ -22,7 +22,7 @@ class NoteListItem extends StatelessWidget {
       child: Container(
         color: note.isPrivate ? Colors.grey.shade200 : Colors.transparent,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          padding: const EdgeInsets.symmetric(horizontal: 7.0, vertical: 0),
           child: ListTile(
             contentPadding: EdgeInsets.zero,
             title: Row(
@@ -30,7 +30,7 @@ class NoteListItem extends StatelessWidget {
                 Expanded(
                   child: RichText(
                     text: TextSpan(
-                      text: '${note.createTime!} ${note.isLong ? '${note.content}...   ' : note.content}',
+                      text: note.isLong ? '${note.content}...   ' : note.content,
                       style: TextStyle(
                         fontStyle: note.isPrivate ? FontStyle.italic : FontStyle.normal,
                         fontSize: 20,

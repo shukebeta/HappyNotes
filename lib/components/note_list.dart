@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../entities/note.dart';
-import '../utils/util.dart';
 import 'note_list_item.dart';
 
 class NoteList extends StatelessWidget {
@@ -41,8 +40,7 @@ class NoteList extends StatelessWidget {
             children: [
               // Date header
               Padding(
-                padding:
-                const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
                 child: Align(
                   alignment: Alignment.center,
                   child: Text(
@@ -54,28 +52,26 @@ class NoteList extends StatelessWidget {
                   ),
                 ),
               ),
-              // List of notes for that date with dividers
-              ...dayNotes
-                  .asMap()
-                  .entries
-                  .map((entry) => Column(
-                children: [
-                  NoteListItem(
-                    note: entry.value,
-                    onTap: () => onTap(entry.value.id),
-                    onDoubleTap: onDoubleTap != null
-                        ? () => onDoubleTap!(entry.value.id)
-                        : null,
-                  ),
-                  if (entry.key < dayNotes.length - 1) const Divider(
-                    height: 1, // Adjust the height of the divider
-                    thickness: 1,
-                    indent: 16, // Indent to match ListTile padding
-                    endIndent: 16, // Indent to match ListTile padding
-                  ),
-                ],
-              ))
-                  .toList(),
+              // List of notes for that date with combined time and separator
+              ...dayNotes.asMap().entries.map((entry) {
+                final note = entry.value;
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    CombinedTimeSeparator(time: note.createTime!),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 1.0),
+                      child: NoteListItem(
+                        note: note,
+                        onTap: () => onTap(note.id),
+                        onDoubleTap: onDoubleTap != null
+                            ? () => onDoubleTap!(note.id)
+                            : null,
+                      ),
+                    ),
+                  ],
+                );
+              }).toList(),
             ],
           );
         },
@@ -85,5 +81,40 @@ class NoteList extends StatelessWidget {
 
   String _formatDate(DateTime date) {
     return '- ${DateFormat('EEEE, MMM d, yyyy').format(date)} -';
+  }
+
+  String _formatTime(String createDate) {
+    final dateTime = DateTime.parse(createDate);
+    return DateFormat('HH:mm').format(dateTime);
+  }
+}
+
+class CombinedTimeSeparator extends StatelessWidget {
+  final String time;
+
+  const CombinedTimeSeparator({Key? key, required this.time}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: Row(
+        children: [
+          Text(
+            '- $time  ',
+            style: const TextStyle(
+              fontWeight: FontWeight.w200,
+              fontSize: 12,
+            ),
+          ),
+          Expanded(
+            child: Divider(
+              color: Colors.grey.shade200,
+              thickness: 1,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
