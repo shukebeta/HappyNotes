@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'dart:math';
 
-class NoteEditor extends StatelessWidget {
+import 'package:happy_notes/utils/happy_notes_prompts.dart';
+
+class NoteEditor extends StatefulWidget {
   final TextEditingController controller;
   final FocusNode focusNode;
   final bool isEditing;
@@ -16,53 +19,88 @@ class NoteEditor extends StatelessWidget {
     required this.onPrivateChanged,
   }) : super(key: key);
 
+
   @override
+
+  _NoteEditorState createState() => _NoteEditorState();
+}
+
+class _NoteEditorState extends State<NoteEditor> {
+  late String prompt;
+
+  @override
+
+  void initState() {
+    super.initState();
+    prompt = HappyNotesPrompts.getRandom(widget.isPrivate);
+    widget.focusNode.addListener(_onFocusChange);
+  }
+
+
+  @override
+
+  void dispose() {
+    widget.focusNode.removeListener(_onFocusChange);
+    super.dispose();
+  }
+
+  void _onFocusChange() {
+    if (widget.focusNode.hasFocus) {
+      setState(() {
+        prompt = HappyNotesPrompts.getRandom(widget.isPrivate);
+      });
+    }
+  }
+
+
+  @override
+
   Widget build(BuildContext context) {
     return Column(
       children: [
         Expanded(
-          child: isEditing
+          child: widget.isEditing
               ? TextField(
-                  controller: controller,
-                  focusNode: focusNode,
-                  keyboardType: TextInputType.multiline,
-                  maxLines: null,
-                  expands: true,
-                  textAlignVertical: TextAlignVertical.top,
-                  decoration: InputDecoration(
-                    hintText: 'Write your ${isPrivate ? 'private' : 'public'} note here...',
-                    border: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: isPrivate ? Colors.blue : Colors.green, // Set border color based on isPrivate
-                        width: 2.0, // Set the border width
-                      ),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: isPrivate ? Colors.blueAccent : Colors.greenAccent, // Set focused border color
-                        width: 2.0, // Set the focused border width
-                      ),
-                    ),
-                  ),
-                )
-              : SingleChildScrollView(
-                  child: Align(
-                    alignment: Alignment.topLeft,
-                    child: Text(
-                      controller.text,
-                      style: const TextStyle(fontSize: 16.0),
-                    ),
-                  ),
+            controller: widget.controller,
+            focusNode: widget.focusNode,
+            keyboardType: TextInputType.multiline,
+            maxLines: null,
+            expands: true,
+            textAlignVertical: TextAlignVertical.top,
+            decoration: InputDecoration(
+              hintText: prompt,
+              border: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: widget.isPrivate ? Colors.blue : Colors.green,
+                  width: 2.0,
                 ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: widget.isPrivate ? Colors.blueAccent : Colors.greenAccent,
+                  width: 2.0,
+                ),
+              ),
+            ),
+          )
+              : SingleChildScrollView(
+            child: Align(
+              alignment: Alignment.topLeft,
+              child: Text(
+                widget.controller.text,
+                style: const TextStyle(fontSize: 16.0),
+              ),
+            ),
+          ),
         ),
         const SizedBox(height: 8.0),
         Row(
           children: [
             Switch(
-              value: isPrivate,
-              onChanged: isEditing ? onPrivateChanged : null,
+              value: widget.isPrivate,
+              onChanged: widget.isEditing ? widget.onPrivateChanged : null,
             ),
-            Text(isPrivate ? 'Private on' : 'Private off'),
+            Text(widget.isPrivate ? 'Private on' : 'Private off'),
           ],
         ),
       ],

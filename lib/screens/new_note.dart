@@ -23,6 +23,7 @@ class NewNoteState extends State<NewNote> {
   void initState() {
     super.initState();
     _isPrivate = widget.isPrivate;
+
     setFocus(true);
   }
 
@@ -36,28 +37,33 @@ class NewNoteState extends State<NewNote> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(_isPrivate ? 'Private Note' : 'Public Note'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.fromLTRB(4.0, 0, 4.0, 4.0),
-        child: NoteEditor(
-          controller: _newNoteController.noteController,
-          focusNode: _newNoteController.noteFocusNode,
-          isEditing: true,
-          isPrivate: _isPrivate,
-          onPrivateChanged: (value) {
-            setState(() {
-              _isPrivate = value;
-            });
-          },
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didPop) =>
+          _newNoteController.onPopHandler(context, didPop),
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(_isPrivate ? 'Private Note' : 'Public Note'),
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _newNoteController.saveNote(
-            context, _isPrivate, widget.onNoteSaved),
-        child: const Icon(Icons.save),
+        body: Padding(
+          padding: const EdgeInsets.fromLTRB(4.0, 0, 4.0, 4.0),
+          child: NoteEditor(
+            controller: _newNoteController.noteController,
+            focusNode: _newNoteController.noteFocusNode,
+            isEditing: true,
+            isPrivate: _isPrivate,
+            onPrivateChanged: (value) {
+              setState(() {
+                _isPrivate = value;
+              });
+            },
+          ),
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () => _newNoteController.saveNote(
+              context, _isPrivate, widget.onNoteSaved),
+          child: const Icon(Icons.save),
+        ),
       ),
     );
   }
