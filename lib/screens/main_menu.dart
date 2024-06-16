@@ -51,7 +51,7 @@ class MainMenuState extends State<MainMenu> {
     );
   }
 
-  void _onNoteSaved(int? noteId) async {
+  void _onNoteSaved(int? noteId, bool? isPrivate) async {
     setState(() {
       _selectedIndex = indexNotes;
     });
@@ -90,6 +90,9 @@ class MainMenuState extends State<MainMenu> {
     if (index == indexNewNote) {
       Future.delayed(const Duration(milliseconds: 550),
           () => newNoteKey.currentState?.setFocus(true));
+    }
+    if (index == indexNotes) {
+      homePageKey.currentState?.refreshPage();
     }
     if (index == indexMemories) {
       memoriesKey.currentState?.fetchMemories();

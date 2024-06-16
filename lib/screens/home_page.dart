@@ -68,7 +68,7 @@ class HomePageState extends State<HomePage> {
               MaterialPageRoute(
                 builder: (context) => NewNote(
                   isPrivate: false, // this entry is always for public note
-                  onNoteSaved: (int? noteId) async {
+                  onNoteSaved: (int? noteId, bool? isPrivate) async {
                     if (noteId != null && noteId > 0) {
                       navigator.pop();
                       if (isFirstPage) {

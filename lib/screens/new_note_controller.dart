@@ -23,7 +23,7 @@ class NewNoteController {
       if (onNoteSaved != null) {
         noteController.text = '';
         noteFocusNode.unfocus();
-        onNoteSaved(noteId);
+        onNoteSaved(noteId, isPrivate);
       }
     } catch (error) {
       Util.showError(scaffoldContext, error.toString());
