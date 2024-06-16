@@ -23,6 +23,10 @@ class AccountService {
     return apiResponse;
   }
 
+  Future<void> logout() async {
+    await _clearToken();
+  }
+
   Future<dynamic> register(String username, String email, String password) async {
     var params = {'username': username, 'email': email, 'password': password};
     var apiResponse = (await _accountApi.register(params)).data;
@@ -45,6 +49,11 @@ class AccountService {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_tokenKey, token);
     await prefs.setString(_baseUrlKey, AppConfig.baseUrl);
+  }
+
+  Future<void> _clearToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_tokenKey, '');
   }
 
   Future<String?> getToken() async {

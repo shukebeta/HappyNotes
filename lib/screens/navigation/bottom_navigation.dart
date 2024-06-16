@@ -45,10 +45,10 @@ class BottomNavigation extends StatelessWidget {
           icon: Icon(Icons.public),
           label: 'Discovery',
         ),
-        // BottomNavigationBarItem(
-        //   icon: Icon(Icons.settings),
-        //   label: 'Settings',
-        // ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.settings),
+          label: 'Settings',
+        ),
       ],
     );
   }

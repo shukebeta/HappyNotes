@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:happy_notes/results/notes_result.dart';
-import 'package:happy_notes/screens/memories_on_day_controller.dart';
 import 'package:intl/intl.dart';
 
-import '../components/note_list.dart';
-import '../dependency_injection.dart';
-import '../entities/note.dart';
-import '../services/notes_services.dart';
-import 'note_detail.dart';
+import '../../components/note_list.dart';
+import '../../dependency_injection.dart';
+import '../../entities/note.dart';
+import '../../services/notes_services.dart';
+import '../note_detail.dart';
+import 'memories_on_day_controller.dart';
 
 class MemoriesOnDay extends StatefulWidget {
   final DateTime date;

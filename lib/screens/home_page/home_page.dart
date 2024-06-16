@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:happy_notes/screens/home_page_controller.dart';
 import 'package:happy_notes/screens/note_detail.dart';
-import '../components/floating_pagination.dart';
-import '../dependency_injection.dart';
-import '../services/notes_services.dart';
-import '../components/note_list.dart';
-import '../components/pagination_controls.dart';
-import '../utils/util.dart';
-import 'new_note.dart';
+import 'package:happy_notes/services/notes_services.dart';
+import '../../components/floating_pagination.dart';
+import '../../dependency_injection.dart';
+import '../../components/note_list.dart';
+import '../../components/pagination_controls.dart';
+import '../../utils/util.dart';
+import '../new_note.dart';
+import 'home_page_controller.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -28,7 +28,7 @@ class HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    _homePageController = HomePageController(locator<NotesService>());
+    _homePageController = locator<HomePageController>();
   }
 
   @override

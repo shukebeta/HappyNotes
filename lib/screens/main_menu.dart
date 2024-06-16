@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:happy_notes/screens/discovery.dart';
 import 'package:happy_notes/screens/navigation/rail_navigation.dart';
+import 'package:happy_notes/screens/settings/settings.dart';
 import 'package:lazy_load_indexed_stack/lazy_load_indexed_stack.dart';
-import 'home_page.dart';
-import 'memories.dart';
+import 'home_page/home_page.dart';
+import 'memories/memories.dart';
 import 'navigation/bottom_navigation.dart';
 import 'new_note.dart';
 import 'note_detail.dart';
@@ -46,7 +47,8 @@ class MainMenuState extends State<MainMenu> {
           onNoteSaved: _onNoteSaved,
           isPrivate: true, // new note in main menu entry: always private note
         ),
-        const Discovery()
+        const Discovery(),
+        const Settings(),
       ],
     );
   }

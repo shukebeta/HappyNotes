@@ -1,7 +1,7 @@
 import 'package:happy_notes/app_config.dart';
-import '../entities/note.dart';
-import '../services/notes_services.dart';
-import '../utils/util.dart';
+import '../../entities/note.dart';
+import '../../services/notes_services.dart';
+import '../../utils/util.dart';
 import 'package:flutter/material.dart';
 
 class HomePageController {
@@ -11,7 +11,7 @@ class HomePageController {
   int _totalNotes = 1;
   bool isLoading = false;
 
-  HomePageController(this._notesService);
+  HomePageController({required notesService}): _notesService = notesService;
 
   int get totalPages => (_totalNotes / _pageSize).ceil();
 

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../dependency_injection.dart';
 import '../utils/token_utils.dart';
-import 'home_page.dart';
+import 'home_page/home_page.dart';
 import '../services/account_service.dart';
 
 class RegistrationController {

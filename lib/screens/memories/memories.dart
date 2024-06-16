@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import '../components/memory_list.dart';
-import '../dependency_injection.dart';
-import '../services/notes_services.dart';
+import '../../components/memory_list.dart';
+import '../../dependency_injection.dart';
+import '../../services/notes_services.dart';
+import '../note_detail.dart';
 import 'memories_controller.dart';
-import 'note_detail.dart';
 
 class Memories extends StatefulWidget {
   const Memories({super.key});

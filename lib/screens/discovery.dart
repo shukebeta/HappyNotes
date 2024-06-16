@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:happy_notes/screens/home_page_controller.dart';
 import 'package:happy_notes/screens/note_detail.dart';
 import '../components/floating_pagination.dart';
 import '../dependency_injection.dart';
-import '../services/notes_services.dart';
 import '../components/note_list.dart';
 import '../components/pagination_controls.dart';
 import '../utils/util.dart';

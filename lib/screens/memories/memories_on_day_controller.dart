@@ -1,6 +1,6 @@
 import 'package:happy_notes/results/notes_result.dart';
 import 'package:intl/intl.dart';
-import '../services/notes_services.dart';
+import '../../services/notes_services.dart';
 
 class MemoriesOnDayController {
   final NotesService _notesService;

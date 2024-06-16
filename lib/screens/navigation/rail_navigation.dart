@@ -37,11 +37,11 @@ class RailNavigation extends StatelessWidget {
           selectedIcon: Icon(Icons.public, color: Colors.blue),
           label: Text('Discovery'),
         ),
-        // NavigationRailDestination(
-        //   icon: Icon(Icons.settings),
-        //   selectedIcon: Icon(Icons.settings, color: Colors.blue),
-        //   label: Text('Settings'),
-        // ),
+        NavigationRailDestination(
+          icon: Icon(Icons.settings),
+          selectedIcon: Icon(Icons.settings, color: Colors.blue),
+          label: Text('Settings'),
+        ),
       ],
     );
   }

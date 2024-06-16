@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:happy_notes/screens/main_menu.dart';
 import '../dependency_injection.dart';
 import '../services/account_service.dart';
-import 'home_page.dart';
+import 'home_page/home_page.dart';
 import 'login.dart';
 
 class InitialPage extends StatefulWidget {

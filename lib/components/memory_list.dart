@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import '../entities/note.dart';
-import '../screens/memories_on_day.dart';
+import '../screens/memories/memories_on_day.dart';
 import 'memory_list_item.dart';
-import 'note_list_item.dart';
 
 class MemoryList extends StatelessWidget {
   final List<Note> notes;
