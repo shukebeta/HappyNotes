@@ -41,10 +41,10 @@ class BottomNavigation extends StatelessWidget {
           icon: Icon(Icons.note_add_outlined),
           label: 'New Note',
         ),
-        // BottomNavigationBarItem(
-        //   icon: Icon(Icons.public),
-        //   label: 'Discovery',
-        // ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.public),
+          label: 'Discovery',
+        ),
         // BottomNavigationBarItem(
         //   icon: Icon(Icons.settings),
         //   label: 'Settings',
