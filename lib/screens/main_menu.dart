@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:happy_notes/screens/discovery.dart';
+import 'package:happy_notes/screens/initial_page.dart';
 import 'package:happy_notes/screens/navigation/rail_navigation.dart';
 import 'package:happy_notes/screens/settings/settings.dart';
 import 'package:lazy_load_indexed_stack/lazy_load_indexed_stack.dart';
@@ -48,11 +49,16 @@ class MainMenuState extends State<MainMenu> {
           isPrivate: true, // new note in main menu entry: always private note
         ),
         const Discovery(),
-        const Settings(),
+        Settings(
+          onLogout: _onLogout,
+        ),
       ],
     );
   }
 
+  void _onLogout() {
+     Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const InitialPage()));
+  }
   void _onNoteSaved(int? noteId, bool? isPrivate) async {
     setState(() {
       _selectedIndex = indexNotes;

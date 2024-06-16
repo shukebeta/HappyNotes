@@ -1,5 +1,6 @@
 import 'package:happy_notes/apis/account_api.dart';
 import 'package:happy_notes/app_config.dart';
+import 'package:happy_notes/utils/app_logger.dart';
 import 'package:happy_notes/utils/token_utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -53,13 +54,13 @@ class AccountService {
 
   Future<void> _clearToken() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_tokenKey, '');
+    await prefs.remove(_tokenKey);
   }
 
   Future<String?> getToken() async {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString(_tokenKey);
-    if (token != null) {
+    if (token != null && token != '') {
       var remainingTime = await _tokenUtils.getTokenRemainingTime(token);
       if (remainingTime.inDays <= 30) {
         try {
@@ -76,8 +77,13 @@ class AccountService {
   Future<bool> isValidToken() async {
     if (await _isSameEnv()) {
       final token = await getToken();
-      if (token != null) {
-        return (await _tokenUtils.getTokenRemainingTime(token)).inSeconds >= 1;
+      if (token != null && token != '') {
+        try {
+          return (await _tokenUtils.getTokenRemainingTime(token)).inSeconds >= 1;
+        } catch (e) {
+          AppLogger.e(e.toString());
+          return false;
+        }
       }
     }
     return false;
