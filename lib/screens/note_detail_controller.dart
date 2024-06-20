@@ -35,7 +35,7 @@ class NoteDetailController {
     }
   }
 
-  Future<void> deleteNote(BuildContext context, int noteId, void Function() onSuccess) async {
+  Future<void> deleteNote(BuildContext context, int noteId) async {
     final scaffoldContext = ScaffoldMessenger.of(context);
     final navigator = Navigator.of(context);
     try {

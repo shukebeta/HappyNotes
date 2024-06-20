@@ -2,10 +2,21 @@ import 'package:flutter/material.dart';
 
 class DialogService {
   static Future<bool?> showUnsavedChangesDialog(BuildContext context) {
-    return showConfirmDialog(context, title: 'Unsaved changes', text: 'You have unsaved changes. Do you really want to leave?');
+    return showConfirmDialog(context,
+        title: 'Unsaved changes',
+        text: 'You have unsaved changes. Do you really want to leave?');
   }
-  static Future<bool?> showConfirmDialog(BuildContext context, {String title='', String text="Are you sure?", String noText='Cancel', String yesText='Yes'}) {
-    return showDialog<bool>(
+
+  static Future<bool?> showConfirmDialog(
+    BuildContext context, {
+    String title = '',
+    String text = "Are you sure?",
+    String noText = 'Cancel',
+    String yesText = 'Yes',
+    Function? yesCallback,
+    Function? noCallback,
+  }) async {
+    var result = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
         title: Text(title),
@@ -22,5 +33,10 @@ class DialogService {
         ],
       ),
     );
+    if (result != null) {
+      if (result && yesCallback != null) yesCallback();
+      if (!result && noCallback != null) noCallback();
+    }
+    return result;
   }
 }

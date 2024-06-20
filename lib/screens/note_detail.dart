@@ -33,6 +33,16 @@ class NoteDetailState extends State<NoteDetail> {
     _noteFuture = _controller.fetchNote(widget.noteId);
   }
 
+  void _enterEditingMode() {
+    setState(() {
+      if (!_controller.isEditing) {
+        _controller.isEditing = true;
+        _controller.noteController.text = _note.content;
+        _controller.noteFocusNode.requestFocus();
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return PopScope(
@@ -45,39 +55,22 @@ class NoteDetailState extends State<NoteDetail> {
             if (_controller.isEditing)
               IconButton(
                 icon: const Icon(Icons.check),
-                onPressed: () =>
-                    _controller.saveNote(context, widget.noteId, () {
-                      Navigator.of(context).pop();
-                }),
+                onPressed: () => _controller.saveNote(context, widget.noteId,Navigator.of(context).pop,),
               )
             else
               IconButton(
                 icon: const Icon(Icons.edit),
-                onPressed: () {
-                  setState(() {
-                    _controller.isEditing = true;
-                    _controller.noteController.text = _note.content;
-                    _controller.noteFocusNode.requestFocus();
-                  });
-                },
+                onPressed: _enterEditingMode,
               ),
             IconButton(
               icon: const Icon(Icons.delete),
               onPressed: () async {
-                var sure = await DialogService.showConfirmDialog(
-                      context,
-                      title: 'Delete note',
-                      text:
-                          'Each note is a story, are you sure you want to delete it?',
-                    ) ??
-                    false;
-                if (sure) {
-                  _controller.deleteNote(context, widget.noteId, () {
-                    setState(() {
-                      _noteFuture = _controller.fetchNote(widget.noteId);
-                    });
-                  });
-                }
+                await DialogService.showConfirmDialog(
+                  context,
+                  title: 'Delete note',
+                  text: 'Each note is a story, are you sure you want to delete it?',
+                  yesCallback: () => _controller.deleteNote(context, widget.noteId),
+                );
               },
             ),
           ],
@@ -91,20 +84,21 @@ class NoteDetailState extends State<NoteDetail> {
               return Center(child: Text('Error: ${snapshot.error}'));
             } else if (snapshot.hasData) {
               _note = snapshot.data!;
-              return Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: NoteEditor(
-                  controller: _controller.noteController,
-                  focusNode: _controller.noteFocusNode,
-                  isEditing: _controller.isEditing,
-                  isPrivate: _controller.isEditing
-                      ? _controller.isPrivate
-                      : snapshot.data!.isPrivate,
-                  onPrivateChanged: (value) {
-                    setState(() {
-                      _controller.isPrivate = value;
-                    });
-                  },
+              return GestureDetector(
+                onDoubleTap: _enterEditingMode,
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: NoteEditor(
+                    controller: _controller.noteController,
+                    focusNode: _controller.noteFocusNode,
+                    isEditing: _controller.isEditing,
+                    isPrivate: _controller.isEditing ? _controller.isPrivate : snapshot.data!.isPrivate,
+                    onPrivateChanged: (value) {
+                      setState(() {
+                        _controller.isPrivate = value;
+                      });
+                    },
+                  ),
                 ),
               );
             } else {

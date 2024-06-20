@@ -49,6 +49,7 @@ class MemoriesOnDayState extends State<MemoriesOnDay> {
             return NoteList(
               notes: _notes,
               showDate: false,
+              onRefresh: () => _notesFuture = _controller.fetchMemories(widget.date),
               onTap: (noteId) async {
                 await Navigator.push(
                   context,
