@@ -1,4 +1,4 @@
-import 'dart:convert';
+import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 
 class TokenUtils {
 
@@ -8,14 +8,12 @@ class TokenUtils {
       throw Exception('Invalid token');
     }
 
-    final payload = base64Url.decode(base64Url.normalize(parts[1]));
-    final payloadMap = json.decode(utf8.decode(payload));
-
-    if (payloadMap is! Map<String, dynamic>) {
+    var jwt = JWT.decode(token);
+    if (jwt.payload is! Map<String, dynamic>) {
       throw Exception('Invalid payload');
     }
 
-    return payloadMap;
+    return jwt.payload;
   }
 
   Future<Duration> getTokenRemainingTime(String token) async {

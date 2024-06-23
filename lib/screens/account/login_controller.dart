@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:happy_notes/screens/main_menu.dart';
 import 'package:happy_notes/utils/token_utils.dart';
-import '../dependency_injection.dart';
-import '../services/account_service.dart';
-import '../utils/util.dart';
+import '../../dependency_injection.dart';
+import '../../services/account_service.dart';
+import '../../utils/util.dart';
 
 class LoginController {
   final tokenManager = locator<TokenUtils>();

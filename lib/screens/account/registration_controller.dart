@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import '../dependency_injection.dart';
-import '../utils/token_utils.dart';
-import '../services/account_service.dart';
-import 'main_menu.dart';
+import '../../dependency_injection.dart';
+import '../../utils/token_utils.dart';
+import '../../services/account_service.dart';
+import '../main_menu.dart';
 
 class RegistrationController {
   final tokenManager = locator<TokenUtils>();

@@ -3,7 +3,7 @@ import 'package:happy_notes/screens/main_menu.dart';
 import '../dependency_injection.dart';
 import '../services/account_service.dart';
 import 'home_page/home_page.dart';
-import 'login.dart';
+import 'account/login.dart';
 
 class InitialPage extends StatefulWidget {
   const InitialPage({super.key});

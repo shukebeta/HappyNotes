@@ -6,13 +6,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../dependency_injection.dart';
 import '../exceptions/custom_exception.dart';
+import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 
 class AccountService {
   final AccountApi _accountApi;
   AccountService({required AccountApi accountApi}): _accountApi = accountApi;
-  final _tokenKey = 'accessToken';
-  final _baseUrlKey = 'baseUrl';
   final _tokenUtils = locator<TokenUtils>();
+
   Future<dynamic> login(String username, String password) async {
     var params = {'username': username, 'password': password};
     final apiResponse = (await _accountApi.login(params)).data;
@@ -46,15 +46,23 @@ class AccountService {
     }
   }
 
+  final _tokenKey = 'accessToken';
+  final _baseUrlKey = 'baseUrl';
+  final _userIdKey = 'currentUserId';
+  final String _payloadUserIdKey = 'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier';
   Future<void> _storeToken(String token) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_tokenKey, token);
     await prefs.setString(_baseUrlKey, AppConfig.baseUrl);
+    var payload = await _tokenUtils.decodeToken(token);
+    await prefs.setString(_userIdKey, payload[_payloadUserIdKey]);
   }
 
   Future<void> _clearToken() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_tokenKey);
+    await prefs.remove(_baseUrlKey);
+    await prefs.remove(_userIdKey);
   }
 
   Future<String?> getToken() async {
