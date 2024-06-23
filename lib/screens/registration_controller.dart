@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import '../dependency_injection.dart';
 import '../utils/token_utils.dart';
-import 'home_page/home_page.dart';
 import '../services/account_service.dart';
+import 'main_menu.dart';
 
 class RegistrationController {
   final tokenManager = locator<TokenUtils>();
@@ -58,9 +58,8 @@ class RegistrationController {
         if (apiResponse['successful']) {
           scaffoldContext.showSnackBar(
               const SnackBar(content: Text('Registration successful')));
-          navigator.pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => HomePage()),
-              (route) => false,
+          navigator.pushReplacement(
+            MaterialPageRoute(builder: (context) => const MainMenu())
           );
         } else {
           scaffoldContext

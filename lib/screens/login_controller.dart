@@ -40,10 +40,8 @@ class LoginController {
 
         if (apiResponse['successful']) {
           // Navigate to the home page
-          navigator.pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => const MainMenu()),
-              (route) => false,
-          );
+          navigator.pushReplacement(
+            MaterialPageRoute(builder: (context) => const MainMenu()));
         } else {
           // Show error message if login fails
           scaffoldContext.showSnackBar(
