@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import '../entities/note.dart';
-import '../services/dialog_services.dart';
-import '../services/notes_services.dart';
-import '../utils/util.dart';
+import '../../entities/note.dart';
+import '../../services/dialog_services.dart';
+import '../../services/notes_services.dart';
+import '../../utils/util.dart';
 
 class NoteDetailController {
   final NotesService _notesService;

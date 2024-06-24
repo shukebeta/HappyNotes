@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../entities/note.dart';
+import '../../entities/note.dart';
 
 class MemoryListItem extends StatelessWidget {
   final Note note;

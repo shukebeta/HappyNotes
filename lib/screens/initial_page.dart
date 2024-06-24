@@ -24,6 +24,7 @@ class InitialPageState extends State<InitialPage> {
   Future<void> _navigateBasedOnToken() async {
     var navigator = Navigator.of(context);
     if (await accountService.isValidToken()) {
+      accountService.setUserSession();
       navigator.pushReplacement(
         MaterialPageRoute(builder: (context) => const MainMenu()),
       );

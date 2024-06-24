@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:happy_notes/screens/discovery.dart';
+import 'package:happy_notes/screens/discovery/discovery.dart';
 import 'package:happy_notes/screens/initial_page.dart';
 import 'package:happy_notes/screens/navigation/rail_navigation.dart';
 import 'package:happy_notes/screens/settings/settings.dart';
 import 'package:lazy_load_indexed_stack/lazy_load_indexed_stack.dart';
+import '../entities/note.dart';
 import 'home_page/home_page.dart';
 import 'memories/memories.dart';
 import 'navigation/bottom_navigation.dart';
-import 'new_note.dart';
-import 'note_detail.dart';
+import 'new_note/new_note.dart';
+import 'note_detail/note_detail.dart';
 
 // Constants
 const kAppBarTitle = 'Happy Notes';
@@ -59,11 +60,11 @@ class MainMenuState extends State<MainMenu> {
   void _onLogout() {
      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const InitialPage()));
   }
-  void _onNoteSaved(int? noteId, bool? isPrivate) async {
+  void _onNoteSaved(Note note) async {
     setState(() {
       _selectedIndex = indexNotes;
     });
-    if (noteId != null && noteId > 0) {
+    if (note.id > 0) {
       if (homePageKey.currentState?.isFirstPage ?? false) {
         await homePageKey.currentState?.refreshPage();
         return;
@@ -78,7 +79,7 @@ class MainMenuState extends State<MainMenu> {
               await Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => NoteDetail(noteId: noteId),
+                  builder: (context) => NoteDetail(note: note),
                 ),
               );
             },

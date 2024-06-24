@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import '../entities/note.dart';
+import '../../entities/note.dart';
 import 'note_list_item.dart';
 
 class NoteList extends StatelessWidget {
   final List<Note> notes;
-  final Function(int) onTap;
-  final Function(int)? onDoubleTap;
+  final Function(Note) onTap;
+  final Function(Note)? onDoubleTap;
   final Future<void> Function()? onRefresh;
   final bool showDate;
 
@@ -68,9 +68,9 @@ class NoteList extends StatelessWidget {
                           horizontal: 16.0, vertical: 1.0),
                       child: NoteListItem(
                         note: note,
-                        onTap: () => onTap(note.id),
+                        onTap: () => onTap(note),
                         onDoubleTap: onDoubleTap != null
-                            ? () => onDoubleTap!(note.id)
+                            ? () => onDoubleTap!(note)
                             : null,
                       ),
                     ),

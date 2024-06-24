@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:happy_notes/results/notes_result.dart';
 import 'package:intl/intl.dart';
 
-import '../../components/note_list.dart';
+import '../components/note_list.dart';
 import '../../dependency_injection.dart';
 import '../../entities/note.dart';
 import '../../services/notes_services.dart';
-import '../note_detail.dart';
+import '../note_detail/note_detail.dart';
 import 'memories_on_day_controller.dart';
 
 class MemoriesOnDay extends StatefulWidget {
@@ -50,20 +50,20 @@ class MemoriesOnDayState extends State<MemoriesOnDay> {
               notes: _notes,
               showDate: false,
               onRefresh: () => _notesFuture = _controller.fetchMemories(widget.date),
-              onTap: (noteId) async {
+              onTap: (note) async {
                 await Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => NoteDetail(noteId: noteId),
+                    builder: (context) => NoteDetail(note: note),
                   ),
                 );
               },
-              onDoubleTap: (noteId) async {
+              onDoubleTap: (note) async {
                 await Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) =>
-                        NoteDetail(noteId: noteId, enterEditing: true),
+                        NoteDetail(note: note, enterEditing: true),
                   ),
                 );
               },

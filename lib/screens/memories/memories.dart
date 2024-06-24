@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import '../../components/memory_list.dart';
+import '../components/memory_list.dart';
 import '../../dependency_injection.dart';
 import '../../services/notes_services.dart';
-import '../note_detail.dart';
 import 'memories_controller.dart';
 
 class Memories extends StatefulWidget {
@@ -59,25 +58,6 @@ class MemoriesState extends State<Memories> {
         Expanded(
           child: MemoryList(
             notes: _memoriesController.notes,
-            onTap: (noteId) async {
-              await Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => NoteDetail(noteId: noteId),
-                ),
-              );
-              await fetchMemories();
-            },
-            onDoubleTap: (noteId) async {
-              await Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) =>
-                      NoteDetail(noteId: noteId, enterEditing: true),
-                ),
-              );
-              fetchMemories();
-            },
             onRefresh: () async => await fetchMemories(),
           ),
         ),

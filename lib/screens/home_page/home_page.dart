@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:happy_notes/screens/note_detail.dart';
-import 'package:happy_notes/services/notes_services.dart';
-import '../../components/floating_pagination.dart';
+import 'package:happy_notes/screens/note_detail/note_detail.dart';
+import '../components/floating_pagination.dart';
+import '../components/note_list.dart';
+import '../components/pagination_controls.dart';
 import '../../dependency_injection.dart';
-import '../../components/note_list.dart';
-import '../../components/pagination_controls.dart';
 import '../../utils/util.dart';
-import '../new_note.dart';
+import '../account/user_session.dart';
+import '../new_note/new_note.dart';
 import 'home_page_controller.dart';
 
 class HomePage extends StatefulWidget {
@@ -68,8 +68,8 @@ class HomePageState extends State<HomePage> {
               MaterialPageRoute(
                 builder: (context) => NewNote(
                   isPrivate: false, // this entry is always for public note
-                  onNoteSaved: (int? noteId, bool? isPrivate) async {
-                    if (noteId != null && noteId > 0) {
+                  onNoteSaved: (note) async {
+                    if (note.id > 0) {
                       navigator.pop();
                       if (isFirstPage) {
                         await refreshPage();
@@ -83,11 +83,10 @@ class HomePageState extends State<HomePage> {
                           action: SnackBarAction(
                             label: 'View',
                             onPressed: () async {
-                              await Navigator.push(
-                                context,
+                              await navigator.push(
                                 MaterialPageRoute(
                                   builder: (context) =>
-                                      NoteDetail(noteId: noteId),
+                                      NoteDetail(note: note),
                                 ),
                               );
                             },
@@ -135,21 +134,21 @@ class HomePageState extends State<HomePage> {
         Expanded(
           child: NoteList(
             notes: _homePageController.notes,
-            onTap: (noteId) async {
+            onTap: (note) async {
               await Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => NoteDetail(noteId: noteId),
+                  builder: (context) => NoteDetail(note: note),
                 ),
               );
               await navigateToPage(currentPageNumber);
             },
-            onDoubleTap: (noteId) async {
+            onDoubleTap: (note) async {
               await Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) =>
-                      NoteDetail(noteId: noteId, enterEditing: true),
+                      NoteDetail(note: note, enterEditing: note.userId == UserSession().id),
                 ),
               );
               navigateToPage(currentPageNumber);

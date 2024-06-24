@@ -1,14 +1,18 @@
+import 'package:happy_notes/screens/account/user_session.dart';
 import 'package:happy_notes/services/dialog_services.dart';
 import 'package:flutter/material.dart';
 import 'package:happy_notes/typedefs.dart';
-import '../services/notes_services.dart';
-import '../utils/util.dart';
+import '../../entities/note.dart';
+import '../../services/notes_services.dart';
+import '../../utils/util.dart';
 
 class NewNoteController {
   final NotesService _notesService;
-  NewNoteController({required NotesService notesService}): _notesService = notesService;
+
+  NewNoteController({required NotesService notesService}) : _notesService = notesService;
   final TextEditingController noteController = TextEditingController();
   final FocusNode noteFocusNode = FocusNode();
+
   bool get nothingToSave => noteController.text.trim().isEmpty;
 
   Future<void> saveNote(BuildContext context, bool isPrivate, SaveNoteCallback? onNoteSaved) async {
@@ -18,12 +22,21 @@ class NewNoteController {
       return;
     }
     try {
-      var navigator = Navigator.of(context);;
+      var navigator = Navigator.of(context);
+      var content = noteController.text;
+      var isLong = content.length < 1024;
       final noteId = await _notesService.post(noteController.text, isPrivate);
       if (onNoteSaved != null) {
+        final note = Note(
+            id: noteId,
+            userId: UserSession().id!,
+            content: content,
+            isLong: isLong,
+            isPrivate: isPrivate,
+            createAt: (DateTime.now().millisecondsSinceEpoch / 1000).round());
         noteController.text = '';
         noteFocusNode.unfocus();
-        onNoteSaved(noteId, isPrivate);
+        onNoteSaved(note);
       }
     } catch (error) {
       Util.showError(scaffoldContext, error.toString());
@@ -34,9 +47,7 @@ class NewNoteController {
     if (!didPop) {
       final navigator = Navigator.of(context);
       if (noteController.text.isEmpty ||
-          (noteController.text.isNotEmpty &&
-              (await DialogService.showUnsavedChangesDialog(context) ??
-                  false))) {
+          (noteController.text.isNotEmpty && (await DialogService.showUnsavedChangesDialog(context) ?? false))) {
         navigator.pop();
       }
     }
@@ -47,4 +58,3 @@ class NewNoteController {
     noteFocusNode.dispose();
   }
 }
-

@@ -8,7 +8,7 @@ import '../dependency_injection.dart';
 import '../exceptions/custom_exception.dart';
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 
-import '../screens/account/UserSession.dart';
+import '../screens/account/user_session.dart';
 
 class AccountService {
   final AccountApi _accountApi;
@@ -50,24 +50,26 @@ class AccountService {
 
   final _tokenKey = 'accessToken';
   final _baseUrlKey = 'baseUrl';
-  final _userIdKey = 'currentUserId';
   final String _payloadUserIdKey = 'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier';
   final String _payloadEmailKey = 'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress';
   Future<void> _storeToken(String token) async {
     final prefs = await SharedPreferences.getInstance();
-    var payload = await _tokenUtils.decodeToken(token);
-    UserSession().id = int.parse(payload[_payloadUserIdKey]);
-    UserSession().email = payload[_payloadEmailKey];
-    await prefs.setString(_userIdKey, payload[_payloadUserIdKey]);
+    await setUserSession(token:token);
     await prefs.setString(_baseUrlKey, AppConfig.baseUrl);
     await prefs.setString(_tokenKey, token);
+  }
+
+  Future<void> setUserSession({String? token}) async {
+    token ??= await getToken();
+    var payload = await _tokenUtils.decodeToken(token!);
+    UserSession().id = int.parse(payload[_payloadUserIdKey]);
+    UserSession().email = payload[_payloadEmailKey];
   }
 
   Future<void> _clearToken() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_tokenKey);
     await prefs.remove(_baseUrlKey);
-    await prefs.remove(_userIdKey);
     UserSession().id = null;
     UserSession().email = null;
   }

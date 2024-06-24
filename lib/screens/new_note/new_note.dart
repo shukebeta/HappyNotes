@@ -1,7 +1,7 @@
-import 'package:happy_notes/screens/new_note_controller.dart';
+import 'package:happy_notes/screens/new_note/new_note_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:happy_notes/typedefs.dart';
-import '../dependency_injection.dart';
+import '../../dependency_injection.dart';
 import '../components/note_editor.dart';
 
 class NewNote extends StatefulWidget {

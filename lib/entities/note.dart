@@ -1,5 +1,6 @@
 class Note {
   final int id;
+  final int userId;
   final String content;
   final bool isPrivate;
   final bool isLong;
@@ -13,6 +14,7 @@ class Note {
 
   Note({
     required this.id,
+    required this.userId,
     required this.content,
     required this.isPrivate,
     required this.isLong,
@@ -21,6 +23,7 @@ class Note {
   factory Note.fromJson(Map<String, dynamic> json) {
     return Note(
       id: json['id'],
+      userId: json['userId'],
       content: json['content'],
       isPrivate: json['isPrivate'],
       isLong: json['isLong'],

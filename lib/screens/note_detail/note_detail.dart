@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
-import '../dependency_injection.dart';
-import '../entities/note.dart';
-import '../services/dialog_services.dart';
+import '../../dependency_injection.dart';
+import '../../entities/note.dart';
+import '../../services/dialog_services.dart';
 import '../components/note_editor.dart';
-import '../services/notes_services.dart';
+import '../../services/notes_services.dart';
 import 'note_detail_controller.dart';
 
 // ignore: must_be_immutable
 class NoteDetail extends StatefulWidget {
-  final int noteId;
+  final Note note;
   bool? enterEditing;
 
-  NoteDetail({super.key, required this.noteId, this.enterEditing});
+  NoteDetail({super.key, required this.note, this.enterEditing});
 
   @override
   NoteDetailState createState() => NoteDetailState();
@@ -30,7 +30,7 @@ class NoteDetailState extends State<NoteDetail> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_controller.isEditing) _controller.noteFocusNode.requestFocus();
     });
-    _noteFuture = _controller.fetchNote(widget.noteId);
+    _noteFuture = _controller.fetchNote(widget.note.id);
   }
 
   void _enterEditingMode() {
@@ -55,7 +55,7 @@ class NoteDetailState extends State<NoteDetail> {
             if (_controller.isEditing)
               IconButton(
                 icon: const Icon(Icons.check),
-                onPressed: () => _controller.saveNote(context, widget.noteId,Navigator.of(context).pop,),
+                onPressed: () => _controller.saveNote(context, widget.note.id,Navigator.of(context).pop,),
               )
             else
               IconButton(
@@ -69,7 +69,7 @@ class NoteDetailState extends State<NoteDetail> {
                   context,
                   title: 'Delete note',
                   text: 'Each note is a story, are you sure you want to delete it?',
-                  yesCallback: () => _controller.deleteNote(context, widget.noteId),
+                  yesCallback: () => _controller.deleteNote(context, widget.note.id),
                 );
               },
             ),
