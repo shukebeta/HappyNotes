@@ -5,7 +5,6 @@ import '../../dependency_injection.dart';
 import '../components/note_list.dart';
 import '../components/pagination_controls.dart';
 import '../../entities/note.dart';
-import '../../utils/util.dart';
 import '../account/user_session.dart';
 import 'discovery_controller.dart';
 import '../new_note/new_note.dart';
@@ -29,7 +28,7 @@ class DiscoveryState extends State<Discovery> {
   @override
   void initState() {
     super.initState();
-    _discoveryController = locator<DiscoveryController>();;
+    _discoveryController = locator<DiscoveryController>();
   }
 
   @override
@@ -69,34 +68,28 @@ class DiscoveryState extends State<Discovery> {
                 builder: (context) => NewNote(
                   isPrivate: false, // this entry is always for public note
                   onNoteSaved: (Note note) async {
-                    if (note.id > 0) {
-                      navigator.pop();
-                      if (isFirstPage && !note.isPrivate!) {
-                        await refreshPage();
-                        return;
-                      }
-                      scaffoldContext.showSnackBar(
-                        SnackBar(
-                          content: const Text(
-                              'Successfully saved. Click here to view.'),
-                          duration: const Duration(seconds: 5),
-                          action: SnackBarAction(
-                            label: 'View',
-                            onPressed: () async {
-                              await navigator.push(
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      NoteDetail(note: note),
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                      );
+                    navigator.pop();
+                    if (isFirstPage && !note.isPrivate) {
+                      await refreshPage();
                       return;
                     }
-                    Util.showError(scaffoldContext,
-                        "Something is wrong when saving the note");
+                    scaffoldContext.showSnackBar(
+                      SnackBar(
+                        content: const Text('Successfully saved. Click here to view.'),
+                        duration: const Duration(seconds: 5),
+                        action: SnackBarAction(
+                          label: 'View',
+                          onPressed: () async {
+                            await navigator.push(
+                              MaterialPageRoute(
+                                builder: (context) => NoteDetail(note: note),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    );
+                    return;
                   },
                 ),
               ),
@@ -124,8 +117,7 @@ class DiscoveryState extends State<Discovery> {
     }
 
     if (_discoveryController.notes.isEmpty) {
-      return const Center(
-          child: Text('No notes available. Create a new note to get started.'));
+      return const Center(child: Text('Create a new note to get started.'));
     }
 
     return Column(
@@ -147,8 +139,7 @@ class DiscoveryState extends State<Discovery> {
               await Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) =>
-                      NoteDetail(note: note, enterEditing: note.userId == UserSession().id),
+                  builder: (context) => NoteDetail(note: note, enterEditing: note.userId == UserSession().id),
                 ),
               );
               navigateToPage(currentPageNumber);

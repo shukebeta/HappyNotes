@@ -104,7 +104,7 @@ class MainMenuState extends State<MainMenu> {
       homePageKey.currentState?.refreshPage();
     }
     if (index == indexMemories) {
-      memoriesKey.currentState?.fetchMemories();
+      memoriesKey.currentState?.refreshPage();
     }
   }
 

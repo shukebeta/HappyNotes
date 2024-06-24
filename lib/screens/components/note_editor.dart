@@ -22,10 +22,10 @@ class NoteEditor extends StatefulWidget {
 
   @override
 
-  _NoteEditorState createState() => _NoteEditorState();
+  NoteEditorState createState() => NoteEditorState();
 }
 
-class _NoteEditorState extends State<NoteEditor> {
+class NoteEditorState extends State<NoteEditor> {
   late String prompt;
 
   @override

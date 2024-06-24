@@ -58,51 +58,7 @@ class HomePageState extends State<HomePage> {
     var isDesktop = MediaQuery.of(context).size.width >= 600;
     return Scaffold(
       appBar: AppBar(title: const Text('My Notes'), actions: [
-        IconButton(
-          icon: const Icon(Icons.edit),
-          onPressed: () async {
-            final scaffoldContext = ScaffoldMessenger.of(context);
-            final navigator = Navigator.of(context);
-            await Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => NewNote(
-                  isPrivate: false, // this entry is always for public note
-                  onNoteSaved: (note) async {
-                    if (note.id > 0) {
-                      navigator.pop();
-                      if (isFirstPage) {
-                        await refreshPage();
-                        return;
-                      }
-                      scaffoldContext.showSnackBar(
-                        SnackBar(
-                          content: const Text(
-                              'Successfully saved. Click here to view.'),
-                          duration: const Duration(seconds: 5),
-                          action: SnackBarAction(
-                            label: 'View',
-                            onPressed: () async {
-                              await navigator.push(
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      NoteDetail(note: note),
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                      );
-                      return;
-                    }
-                    Util.showError(scaffoldContext,
-                        "Something is wrong when saving the note");
-                  },
-                ),
-              ),
-            );
-          },
-        ),
+        buildNewNoteButton(context),
       ]),
       body: Stack(
         children: [
@@ -118,14 +74,55 @@ class HomePageState extends State<HomePage> {
     );
   }
 
+  IconButton buildNewNoteButton(BuildContext context) {
+    return IconButton(
+        icon: const Icon(Icons.edit),
+        onPressed: () async {
+          final scaffoldContext = ScaffoldMessenger.of(context);
+          final navigator = Navigator.of(context);
+          await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => NewNote(
+                isPrivate: false, // this entry is always for public note
+                onNoteSaved: (note) async {
+                  navigator.pop();
+                  if (isFirstPage) {
+                    await refreshPage();
+                    return;
+                  }
+                  scaffoldContext.showSnackBar(
+                    SnackBar(
+                      content: const Text('Successfully saved. Click here to view.'),
+                      duration: const Duration(seconds: 5),
+                      action: SnackBarAction(
+                        label: 'View',
+                        onPressed: () async {
+                          await navigator.push(
+                            MaterialPageRoute(
+                              builder: (context) => NoteDetail(note: note),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  );
+                  return;
+                },
+              ),
+            ),
+          );
+        },
+      );
+  }
+
   Widget _buildBody(bool isDesktop) {
     if (_homePageController.isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
 
     if (_homePageController.notes.isEmpty) {
-      return const Center(
-          child: Text('No notes available. Create a new note to get started.'));
+      return const Center(child: Text('No notes available. Create a new note to get started.'));
     }
 
     return Column(
@@ -147,8 +144,7 @@ class HomePageState extends State<HomePage> {
               await Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) =>
-                      NoteDetail(note: note, enterEditing: note.userId == UserSession().id),
+                  builder: (context) => NoteDetail(note: note, enterEditing: note.userId == UserSession().id),
                 ),
               );
               navigateToPage(currentPageNumber);
