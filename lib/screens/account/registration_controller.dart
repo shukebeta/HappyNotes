@@ -48,22 +48,16 @@ class RegistrationController {
       final password = passwordController.text;
 
       // Make API call to register user
-      final scaffoldContext =
-          ScaffoldMessenger.of(context); // Capture the context
+      final scaffoldContext = ScaffoldMessenger.of(context); // Capture the context
       final navigator = Navigator.of(context);
       // Call AuthService for login
       try {
-        final apiResponse =
-        await accountService.register(username, email, password);
+        final apiResponse = await accountService.register(username, email, password);
         if (apiResponse['successful']) {
-          scaffoldContext.showSnackBar(
-              const SnackBar(content: Text('Registration successful')));
-          navigator.pushReplacement(
-            MaterialPageRoute(builder: (context) => const MainMenu())
-          );
+          scaffoldContext.showSnackBar(const SnackBar(content: Text('Registration successful')));
+          navigator.pushAndRemoveUntil(MaterialPageRoute(builder: (context) => const MainMenu()), (route) => false);
         } else {
-          scaffoldContext
-              .showSnackBar(SnackBar(content: Text(apiResponse.message)));
+          scaffoldContext.showSnackBar(SnackBar(content: Text(apiResponse.message)));
         }
       } catch (e) {
         scaffoldContext.showSnackBar(
