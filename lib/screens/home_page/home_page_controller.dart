@@ -8,7 +8,8 @@ class HomePageController {
   final NotesService _notesService;
   List<Note> notes = [];
   final int _pageSize = AppConfig.pageSize;
-  int _totalNotes = 1;
+  int _realTotalNotes = 1;
+  int get _totalNotes => _realTotalNotes <= 0 ? 1 : _realTotalNotes;
   bool isLoading = false;
 
   HomePageController({required notesService}): _notesService = notesService;
@@ -20,7 +21,7 @@ class HomePageController {
     try {
       isLoading = true;
       var result = await _notesService.myLatest(_pageSize, pageNumber);
-      _totalNotes = result.totalNotes;
+      _realTotalNotes = result.totalNotes;
       notes = result.notes;
     } catch (error) {
       Util.showError(scaffoldContext, error.toString());
