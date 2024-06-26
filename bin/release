@@ -11,9 +11,13 @@ if [ "$(git rev-parse --abbrev-ref HEAD)" != "master" ]; then
   exit 1
 fi
 
+script_dir="$(dirname "$(readlink -f "$0")")"
+cd $script_dir/..
+
 # Check if the correct number of arguments is provided
 if [ "$#" -ne 2 ]; then
   echo "Usage: $0 <version> <release_note>"
+  echo "Current $(rg version: pubspec.yaml)"
   echo "Example: $0 1.2.3 \"This is a release note\""
   exit 1
 fi
@@ -24,9 +28,6 @@ if ! [[ $VERSION =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
   echo "Error: Invalid version format. It should be in the format '[number].[number].[number]'."
   exit 1
 fi
-
-script_dir="$(dirname "$(readlink -f "$0")")"
-cd $script_dir/..
 
 mv .env .env.backup
 cp .env.production .env
