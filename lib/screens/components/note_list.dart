@@ -10,15 +10,21 @@ class NoteList extends StatelessWidget {
   final Function(Note)? onDoubleTap;
   final Future<void> Function()? onRefresh;
   final bool showDate;
+  final ScrollController _scrollController = ScrollController();
 
-  const NoteList({
+  NoteList({
     Key? key,
     required this.notes,
     required this.onTap,
     this.onDoubleTap,
     this.onRefresh,
     this.showDate = true,
-  }) : super(key: key);
+  }) : super(key: key) {
+    // Scroll to the top position when the widget is built or updated
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _scrollController.jumpTo(0);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,6 +39,7 @@ class NoteList extends StatelessWidget {
     return RefreshIndicator(
       onRefresh: onRefresh ?? () async {},
       child: ListView.builder(
+        controller: _scrollController,
         itemCount: notesByDate.keys.length,
         itemBuilder: (context, index) {
           final dateKey = notesByDate.keys.elementAt(index);
@@ -43,8 +50,7 @@ class NoteList extends StatelessWidget {
               // Date header
               if (showDate)
                 Padding(
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 8.0, horizontal: 16.0),
+                  padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
                   child: Align(
                     alignment: Alignment.center,
                     child: Text(
@@ -64,14 +70,11 @@ class NoteList extends StatelessWidget {
                   children: [
                     CombinedTimeSeparator(note: note),
                     Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16.0, vertical: 1.0),
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 1.0),
                       child: NoteListItem(
                         note: note,
                         onTap: () => onTap(note),
-                        onDoubleTap: onDoubleTap != null
-                            ? () => onDoubleTap!(note)
-                            : null,
+                        onDoubleTap: onDoubleTap != null ? () => onDoubleTap!(note) : null,
                       ),
                     ),
                   ],

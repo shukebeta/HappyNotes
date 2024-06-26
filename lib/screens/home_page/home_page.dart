@@ -4,7 +4,6 @@ import '../components/floating_pagination.dart';
 import '../components/note_list.dart';
 import '../components/pagination_controls.dart';
 import '../../dependency_injection.dart';
-import '../../utils/util.dart';
 import '../account/user_session.dart';
 import '../new_note/new_note.dart';
 import 'home_page_controller.dart';
