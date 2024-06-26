@@ -59,8 +59,7 @@ class MemoriesState extends State<Memories> with RouteAware {
       onPressed: () async {
         final scaffoldContext = ScaffoldMessenger.of(context);
         final navigator = Navigator.of(context);
-        await Navigator.push(
-          context,
+        await navigator.push(
           MaterialPageRoute(
             builder: (context) => NewNote(
               isPrivate: false, // this entry is always for public note
