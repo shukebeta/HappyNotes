@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:happy_notes/dependency_injection.dart' as di;
+import 'package:happy_notes/screens/account/user_session.dart';
 import 'package:happy_notes/screens/initial_page.dart';
 import 'package:happy_notes/screens/main_menu.dart';
 import 'package:happy_notes/screens/navigation/bottom_navigation.dart';
@@ -75,6 +76,7 @@ class HappyNotesState extends State<HappyNotesApp> {
         useMaterial3: true,
       ),
       home: const InitialPage(), // if already login then show main menu, otherwise show login page
+      navigatorObservers: [UserSession.routeObserver],
     );
   }
 }

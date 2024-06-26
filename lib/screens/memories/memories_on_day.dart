@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:happy_notes/results/notes_result.dart';
 import 'package:intl/intl.dart';
 
+import '../account/user_session.dart';
 import '../components/note_list.dart';
 import '../../dependency_injection.dart';
 import '../../entities/note.dart';
@@ -20,15 +21,32 @@ class MemoriesOnDay extends StatefulWidget {
   @override
   MemoriesOnDayState createState() => MemoriesOnDayState();
 }
-class MemoriesOnDayState extends State<MemoriesOnDay> {
+
+class MemoriesOnDayState extends State<MemoriesOnDay> with RouteAware {
   late Future<NotesResult> _notesFuture;
   late List<Note> _notes;
   late MemoriesOnDayController _controller;
+
   @override
   void initState() {
-    super.initState();
     _controller = MemoriesOnDayController(notesService: locator<NotesService>());
     _notesFuture = _controller.fetchMemories(widget.date);
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      UserSession.routeObserver.subscribe(this, ModalRoute.of(context)!);
+    });
+    super.initState();
+  }
+
+  @override
+  void didPopNext() {
+    _notesFuture = _controller.fetchMemories(widget.date);
+    setState(() {});
+  }
+
+  @override
+  void dispose() {
+    UserSession.routeObserver.unsubscribe(this);
+    super.dispose();
   }
 
   @override
@@ -62,8 +80,7 @@ class MemoriesOnDayState extends State<MemoriesOnDay> {
                 await Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) =>
-                        NoteDetail(note: note, enterEditing: true),
+                    builder: (context) => NoteDetail(note: note, enterEditing: true),
                   ),
                 );
               },

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../account/user_session.dart';
 import '../components/memory_list.dart';
 import '../../dependency_injection.dart';
 import '../../services/notes_services.dart';
@@ -12,13 +13,16 @@ class Memories extends StatefulWidget {
   MemoriesState createState() => MemoriesState();
 }
 
-class MemoriesState extends State<Memories> {
+class MemoriesState extends State<Memories> with RouteAware {
   late MemoriesController _memoriesController;
 
   @override
   void initState() {
-    super.initState();
     _memoriesController = MemoriesController(locator<NotesService>());
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      UserSession.routeObserver.subscribe(this, ModalRoute.of(context)!);
+    });
+    super.initState();
   }
 
   @override
@@ -30,6 +34,12 @@ class MemoriesState extends State<Memories> {
   Future<void> refreshPage() async {
     await _memoriesController.loadNotes(context);
     setState(() {});
+  }
+
+  @override
+  void dispose() {
+    UserSession.routeObserver.unsubscribe(this);
+    super.dispose();
   }
 
   @override

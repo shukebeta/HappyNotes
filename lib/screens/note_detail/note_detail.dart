@@ -18,17 +18,17 @@ class NoteDetail extends StatefulWidget {
   NoteDetailState createState() => NoteDetailState();
 }
 
-class NoteDetailState extends State<NoteDetail> {
+class NoteDetailState extends State<NoteDetail> with RouteAware {
   late NoteDetailController _controller;
 
   @override
   void initState() {
-    super.initState();
     _controller = NoteDetailController(notesService: locator<NotesService>());
     _controller.isEditing = widget.enterEditing ?? false;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_controller.isEditing) _controller.noteFocusNode.requestFocus();
     });
+    super.initState();
   }
 
   @override
@@ -46,6 +46,12 @@ class NoteDetailState extends State<NoteDetail> {
     await _controller.fetchNote(widget.note.id);
     setState(() {
     });
+  }
+
+  @override
+  void dispose() {
+    UserSession.routeObserver.unsubscribe(this);
+    super.dispose();
   }
 
   @override
@@ -105,11 +111,5 @@ class NoteDetailState extends State<NoteDetail> {
         ),
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
   }
 }

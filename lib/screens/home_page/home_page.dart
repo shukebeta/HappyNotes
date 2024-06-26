@@ -58,7 +58,7 @@ class HomePageState extends State<HomePage> {
     var isDesktop = MediaQuery.of(context).size.width >= 600;
     return Scaffold(
       appBar: AppBar(title: const Text('My Notes'), actions: [
-        buildNewNoteButton(context),
+        _buildNewNoteButton(context),
       ]),
       body: Stack(
         children: [
@@ -74,7 +74,7 @@ class HomePageState extends State<HomePage> {
     );
   }
 
-  IconButton buildNewNoteButton(BuildContext context) {
+  IconButton _buildNewNoteButton(BuildContext context) {
     return IconButton(
         icon: const Icon(Icons.edit),
         onPressed: () async {
