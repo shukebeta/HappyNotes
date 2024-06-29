@@ -98,4 +98,8 @@ class Util {
 
     return formattedDate;
   }
+
+  static String getErrorMessage(dynamic apiResult) {
+    return apiResult['errorCode'] + ': ' + apiResult['message'];
+  }
 }

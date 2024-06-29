@@ -1,19 +1,27 @@
 import 'package:happy_notes/apis/account_api.dart';
 import 'package:happy_notes/app_config.dart';
+import 'package:happy_notes/services/user_settings_service.dart';
 import 'package:happy_notes/utils/app_logger.dart';
 import 'package:happy_notes/utils/token_utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import '../dependency_injection.dart';
 import '../exceptions/custom_exception.dart';
-import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 
 import '../screens/account/user_session.dart';
 
 class AccountService {
   final AccountApi _accountApi;
-  AccountService({required AccountApi accountApi}): _accountApi = accountApi;
-  final _tokenUtils = locator<TokenUtils>();
+  final UserSettingsService _userSettingsService;
+  final TokenUtils _tokenUtils;
+
+  AccountService({
+    required AccountApi accountApi,
+    required UserSettingsService userSettingsService,
+    required TokenUtils tokenUtils,
+  })
+      :
+        _accountApi = accountApi,
+        _userSettingsService = userSettingsService,
+        _tokenUtils = tokenUtils;
 
   Future<dynamic> login(String username, String password) async {
     var params = {'username': username, 'password': password};
@@ -52,9 +60,10 @@ class AccountService {
   final _baseUrlKey = 'baseUrl';
   final String _payloadUserIdKey = 'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier';
   final String _payloadEmailKey = 'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress';
+
   Future<void> _storeToken(String token) async {
     final prefs = await SharedPreferences.getInstance();
-    await setUserSession(token:token);
+    await setUserSession(token: token);
     await prefs.setString(_baseUrlKey, AppConfig.baseUrl);
     await prefs.setString(_tokenKey, token);
   }
@@ -64,6 +73,7 @@ class AccountService {
     var payload = await _tokenUtils.decodeToken(token!);
     UserSession().id = int.parse(payload[_payloadUserIdKey]);
     UserSession().email = payload[_payloadEmailKey];
+    UserSession().userSettings = await _userSettingsService.getAll();
   }
 
   Future<void> _clearToken() async {
@@ -72,6 +82,7 @@ class AccountService {
     await prefs.remove(_baseUrlKey);
     UserSession().id = null;
     UserSession().email = null;
+    UserSession().userSettings = null;
   }
 
   Future<String?> getToken() async {

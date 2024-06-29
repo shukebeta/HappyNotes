@@ -1,3 +1,7 @@
+import 'package:happy_notes/screens/account/user_session.dart';
+
+import '../utils/util.dart';
+
 class Note {
   final int id;
   final int userId;
@@ -5,8 +9,17 @@ class Note {
   final bool isPrivate;
   final bool isLong;
   final int createAt; // You can change the type to DateTime if needed
-  String? createDate; // yyyy-MM-dd format
-  String? createTime; // HH:mm format
+
+  // yyyy-MM-dd format
+  String get createDate {
+    final timezone = UserSession().settings('timezone');
+    return Util.formatUnixTimestampToLocalDate(createAt, 'yyyy-MM-dd', timezone);
+  }
+  // HH:mm formatDate
+  String get createTime {
+    final timezone = UserSession().settings('timezone');
+    return Util.formatUnixTimestampToLocalDate(createAt, 'HH:mm', timezone);
+  }
 
   String get formattedContent => content
       .replaceFirst(RegExp('\n{3,}'), '\n\n')

@@ -10,6 +10,7 @@ class NoteList extends StatelessWidget {
   final Function(Note)? onDoubleTap;
   final Future<void> Function()? onRefresh;
   final bool showDate;
+  final bool showAuthor;
   final ScrollController _scrollController = ScrollController();
 
   NoteList({
@@ -19,6 +20,7 @@ class NoteList extends StatelessWidget {
     this.onDoubleTap,
     this.onRefresh,
     this.showDate = true,
+    this.showAuthor = false,
   }) : super(key: key) {
     // Scroll to the top position when the widget is built or updated
     WidgetsBinding.instance.addPostFrameCallback((_) {

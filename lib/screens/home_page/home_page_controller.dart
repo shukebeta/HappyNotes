@@ -12,7 +12,7 @@ class HomePageController {
   int get _totalNotes => _realTotalNotes <= 0 ? 1 : _realTotalNotes;
   bool isLoading = false;
 
-  HomePageController({required notesService}): _notesService = notesService;
+  HomePageController({required NotesService notesService}): _notesService = notesService;
 
   int get totalPages => (_totalNotes / _pageSize).ceil();
 

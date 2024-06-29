@@ -29,4 +29,29 @@ class AppConfig {
 
   // duplicate request error, which shouldn't bother to show anything
   static int get errorCodeQuiet => 105;
+
+  static String get timezone {
+    return 'Pacific/Auckland';
+  }
+
+  // Map to store property access functions
+  static final Map<String, dynamic Function()> _propertyAccessors = {
+    'baseUrl': () => baseUrl,
+    'pageSize': () => pageSize,
+    'pagerIsFixed': () => pagerIsFixed,
+    'newNoteIsPublic': () => newNoteIsPublic,
+    'markdownIsEnabled': () => markdownIsEnabled,
+    'errorCodeQuiet': () => errorCodeQuiet,
+    'timezone': () => timezone,
+  };
+
+  // Method to get property value by name
+  static dynamic getProperty(String name) {
+    final accessor = _propertyAccessors[name];
+    if (accessor != null) {
+      return accessor();
+    } else {
+      throw ArgumentError('No such property: $name');
+    }
+  }
 }

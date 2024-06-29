@@ -1,4 +1,4 @@
-import 'package:happy_notes/results/notes_result.dart';
+import 'package:happy_notes/models/notes_result.dart';
 import 'package:intl/intl.dart';
 import '../../services/notes_services.dart';
 
