@@ -7,20 +7,19 @@ import 'package:flutter/material.dart';
 class HomePageController {
   final NotesService _notesService;
   List<Note> notes = [];
-  final int _pageSize = AppConfig.pageSize;
   int _realTotalNotes = 1;
   int get _totalNotes => _realTotalNotes <= 0 ? 1 : _realTotalNotes;
   bool isLoading = false;
 
   HomePageController({required NotesService notesService}): _notesService = notesService;
 
-  int get totalPages => (_totalNotes / _pageSize).ceil();
+  int get totalPages => (_totalNotes / AppConfig.pageSize).ceil();
 
   Future<void> loadNotes(BuildContext context, int pageNumber) async {
     final scaffoldContext = ScaffoldMessenger.of(context);
     try {
       isLoading = true;
-      var result = await _notesService.myLatest(_pageSize, pageNumber);
+      var result = await _notesService.myLatest(AppConfig.pageSize, pageNumber);
       _realTotalNotes = result.totalNotes;
       notes = result.notes;
     } catch (error) {

@@ -85,12 +85,11 @@ class Util {
       },
     );
   }
-  static String formatUnixTimestampToLocalDate(int unixTimestamp, String strFormat, String timeZone) {
 
+  static String formatUnixTimestampToLocalDate(int unixTimestamp, String strFormat) {
     // Convert Unix timestamp (seconds since epoch) to TZDateTime
     final dateTime = DateTime.fromMillisecondsSinceEpoch(unixTimestamp * 1000);
 
-    // Create a DateFormat for 'yyyyMMdd'
     final dateFormat = DateFormat(strFormat);
 
     // Format the TZDateTime object to a string

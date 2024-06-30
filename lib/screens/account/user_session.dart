@@ -16,7 +16,7 @@ class UserSession {
   }
 
   UserSession._internal();
-  String settings(String key) {
+  String? settings(String key) {
     if (userSettings != null) {
       try {
         final settings = userSettings!.firstWhere((w) => w.settingName == key);
@@ -25,7 +25,7 @@ class UserSession {
         // did nothing;
       }
     }
-    return AppConfig.getProperty(key);
+    return null;
   }
 }
 

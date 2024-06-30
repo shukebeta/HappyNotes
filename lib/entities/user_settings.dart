@@ -2,7 +2,7 @@ class UserSettings {
   final int id;
   final int userId;
   final String settingName;
-  final String settingValue;
+  String settingValue;
 
   UserSettings({
     required this.id,

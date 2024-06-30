@@ -1,4 +1,5 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:happy_notes/screens/account/user_session.dart';
 
 class AppConfig {
   AppConfig._();
@@ -8,7 +9,7 @@ class AppConfig {
   }
 
   static int get pageSize {
-    final pageSizeStr = dotenv.env['PAGE_SIZE'];
+    final pageSizeStr = UserSession().settings('pageSize') ?? dotenv.env['PAGE_SIZE'];
     return pageSizeStr == null ? 20 : int.parse(pageSizeStr);
   }
 
@@ -31,7 +32,8 @@ class AppConfig {
   static int get errorCodeQuiet => 105;
 
   static String get timezone {
-    return 'Pacific/Auckland';
+    final timezone = UserSession().settings('timezone');
+    return timezone ?? 'Pacific/Auckland';
   }
 
   // Map to store property access functions

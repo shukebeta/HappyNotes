@@ -28,6 +28,7 @@ class MainMenuState extends State<MainMenu> {
   final GlobalKey<HomePageState> homePageKey = GlobalKey<HomePageState>();
   final GlobalKey<MemoriesState> memoriesKey = GlobalKey<MemoriesState>();
   final GlobalKey<NewNoteState> newNoteKey = GlobalKey<NewNoteState>();
+  final GlobalKey<SettingsState> settingsKey = GlobalKey<SettingsState>();
 
   @override
   void initState() {
@@ -51,6 +52,7 @@ class MainMenuState extends State<MainMenu> {
         ),
         const Discovery(),
         Settings(
+          key: settingsKey,
           onLogout: _onLogout,
         ),
       ],
@@ -96,15 +98,25 @@ class MainMenuState extends State<MainMenu> {
     setState(() {
       _selectedIndex = index;
     });
-    if (index == indexNewNote) {
-      Future.delayed(const Duration(milliseconds: 550),
-          () => newNoteKey.currentState?.setFocus(true));
-    }
-    if (index == indexNotes) {
-      homePageKey.currentState?.refreshPage();
-    }
-    if (index == indexMemories) {
-      memoriesKey.currentState?.refreshPage();
+    switch (index) {
+      case indexNewNote:
+        Future.delayed(const Duration(milliseconds: 550),
+                () => newNoteKey.currentState?.setFocus(true));
+        break;
+      case indexNotes:
+        homePageKey.currentState?.refreshPage();
+        break;
+      case indexMemories:
+        memoriesKey.currentState?.refreshPage();
+        break;
+      case indexSharedNotes:
+        memoriesKey.currentState?.setState(() {
+        });
+        break;
+      case indexSettings:
+        settingsKey.currentState?.setState(() {
+        });
+        break;
     }
   }
 

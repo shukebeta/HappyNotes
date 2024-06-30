@@ -15,12 +15,14 @@ final locator = GetIt.instance;
 void init() {
   locator.registerLazySingleton<AccountApi>(() => AccountApi());
   locator.registerLazySingleton<UserSettingsApi>(() => UserSettingsApi());
+  locator.registerLazySingleton<AccountService>(() => AccountService(accountApi: locator(), userSettingsService: locator(), tokenUtils: locator()));
   locator.registerLazySingleton<UserSettingsService>(() => UserSettingsService(userSettingsApi: locator()));
   locator.registerLazySingleton<NotesService>(() => NotesService());
-  locator.registerLazySingleton<AccountService>(() => AccountService(accountApi: locator(), userSettingsService: locator(), tokenUtils: locator()));
+
   locator.registerFactory<NewNoteController>(() => NewNoteController(notesService: locator()));
   locator.registerFactory<HomePageController>(() => HomePageController(notesService: locator()));
   locator.registerFactory<DiscoveryController>(() => DiscoveryController(notesService: locator()));
-  locator.registerFactory<SettingsController>(() => SettingsController(accountService: locator()));
+  locator.registerFactory<SettingsController>(() => SettingsController(accountService: locator(), userSettingsService: locator()));
+
   locator.registerLazySingleton<TokenUtils>(() => TokenUtils());
 }
