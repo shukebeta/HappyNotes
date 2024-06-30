@@ -39,13 +39,13 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
   }
 
   void _enterEditingMode() async {
+    if (widget.note.userId != UserSession().id) return;
     if (!_controller.isEditing) {
       _controller.isEditing = true;
       _controller.noteFocusNode.requestFocus();
     }
     await _controller.fetchNote(widget.note.id);
-    setState(() {
-    });
+    setState(() {});
   }
 
   @override
