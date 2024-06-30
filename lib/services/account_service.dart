@@ -4,6 +4,7 @@ import 'package:happy_notes/services/user_settings_service.dart';
 import 'package:happy_notes/utils/app_logger.dart';
 import 'package:happy_notes/utils/token_utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../exceptions/api_exception.dart';
 import '../exceptions/custom_exception.dart';
 
 import '../screens/account/user_session.dart';
@@ -25,13 +26,13 @@ class AccountService {
 
   Future<dynamic> login(String username, String password) async {
     var params = {'username': username, 'password': password};
-    final apiResponse = (await _accountApi.login(params)).data;
-    if (apiResponse['successful']) {
-      await _storeToken(apiResponse['data']['token']);
+    final apiResult = (await _accountApi.login(params)).data;
+    if (apiResult['successful']) {
+      await _storeToken(apiResult['data']['token']);
     } else {
-      throw CustomException(apiResponse['message']);
+      throw ApiException(apiResult);
     }
-    return apiResponse;
+    return apiResult;
   }
 
   Future<void> logout() async {
@@ -40,13 +41,13 @@ class AccountService {
 
   Future<dynamic> register(String username, String email, String password) async {
     var params = {'username': username, 'email': email, 'password': password};
-    var apiResponse = (await _accountApi.register(params)).data;
-    if (apiResponse['successful']) {
-      await _storeToken(apiResponse['data']['token']);
+    var apiResult = (await _accountApi.register(params)).data;
+    if (apiResult['successful']) {
+      await _storeToken(apiResult['data']['token']);
     } else {
-      throw Exception(apiResponse['message']);
+      throw ApiException(apiResult);
     }
-    return apiResponse;
+    return apiResult;
   }
 
   Future<dynamic> _refreshToken() async {

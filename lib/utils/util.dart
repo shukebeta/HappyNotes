@@ -99,6 +99,6 @@ class Util {
   }
 
   static String getErrorMessage(dynamic apiResult) {
-    return apiResult['errorCode'] + ': ' + apiResult['message'];
+    return apiResult['errorCode'].toString() + ': ' + apiResult['message'];
   }
 }

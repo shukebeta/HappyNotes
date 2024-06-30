@@ -1,9 +1,7 @@
 import 'package:happy_notes/apis/user_settings_api.dart';
 import 'package:happy_notes/entities/user_settings.dart';
-import 'package:happy_notes/exceptions/custom_exception.dart';
+import 'package:happy_notes/exceptions/api_exception.dart';
 import 'package:happy_notes/screens/account/user_session.dart';
-
-import '../utils/util.dart';
 
 class UserSettingsService {
   final UserSettingsApi _userSettingsApi;
@@ -16,7 +14,7 @@ class UserSettingsService {
  
   Future<bool> upsert(String settingName, String settingValue) async {
     final apiResult = (await _userSettingsApi.upsert(settingName, settingValue)).data;
-    if(!apiResult['successful']) throw CustomException(Util.getErrorMessage(apiResult));
+    if(!apiResult['successful']) throw ApiException(apiResult);
     for (var el in UserSession().userSettings!) {
       if(el.settingName == settingName) {
         el.settingValue = settingValue;

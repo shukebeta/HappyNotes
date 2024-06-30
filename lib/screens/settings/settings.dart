@@ -3,6 +3,7 @@ import 'package:happy_notes/screens/settings/settings_controller.dart';
 
 import '../../app_config.dart';
 import '../../dependency_injection.dart';
+import '../../utils/timezone_helper.dart';
 
 class Settings extends StatefulWidget {
   final VoidCallback? onLogout;
@@ -13,7 +14,8 @@ class Settings extends StatefulWidget {
 
 class SettingsState extends State<Settings> {
   bool isMarkdownModeOn = false;
-  int pageSize = AppConfig.pageSize; // Default page size
+  int pageSize = AppConfig.pageSize;
+  String? selectedTimezone = AppConfig.timezone;
   final SettingsController _settingsController = locator<SettingsController>();
 
   @override
@@ -47,6 +49,31 @@ class SettingsState extends State<Settings> {
                       );
                     },
                   ).toList(),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                const Text('Timezone: '),
+                const SizedBox(width: 16),
+                DropdownButton<String>(
+                  value: selectedTimezone,
+                  onChanged: (String? newValue) async {
+                    if (newValue != null) {
+                      await _settingsController.save(context, 'timezone', newValue);
+                      setState(() {
+                        selectedTimezone = newValue;
+                      });
+                    }
+                  },
+                  items: TimezoneHelper.getFormattedTimezones()
+                      .map<DropdownMenuItem<String>>((String formattedTimezone) {
+                    return DropdownMenuItem<String>(
+                      value: formattedTimezone.split(' ')[0].trim(),
+                      child: Text(formattedTimezone, style: const TextStyle(fontFamily: 'Courier')), // Use a monospaced font for alignment
+                    );
+                  }).toList(),
                 ),
               ],
             ),
