@@ -4,10 +4,13 @@ import 'package:happy_notes/screens/settings/settings_controller.dart';
 import '../../app_config.dart';
 import '../../dependency_injection.dart';
 import '../../utils/timezone_helper.dart';
+import '../components/timezone-dropdown-item.dart';
 
 class Settings extends StatefulWidget {
   final VoidCallback? onLogout;
+
   const Settings({super.key, required this.onLogout});
+
   @override
   SettingsState createState() => SettingsState();
 }
@@ -57,23 +60,20 @@ class SettingsState extends State<Settings> {
               children: [
                 const Text('Timezone: '),
                 const SizedBox(width: 16),
-                DropdownButton<String>(
-                  value: selectedTimezone,
-                  onChanged: (String? newValue) async {
-                    if (newValue != null) {
-                      await _settingsController.save(context, 'timezone', newValue);
-                      setState(() {
-                        selectedTimezone = newValue;
-                      });
-                    }
-                  },
-                  items: TimezoneHelper.getFormattedTimezones()
-                      .map<DropdownMenuItem<String>>((String formattedTimezone) {
-                    return DropdownMenuItem<String>(
-                      value: formattedTimezone.split(' ')[0].trim(),
-                      child: Text(formattedTimezone, style: const TextStyle(fontFamily: 'Courier')), // Use a monospaced font for alignment
-                    );
-                  }).toList(),
+                Container(
+                  width: 320,
+                  child: TimezoneDropdownItem(
+                    items: TimezoneHelper.timezones,
+                    value: selectedTimezone,
+                    onChanged: (String? newValue) async {
+                      if (newValue != null) {
+                        await _settingsController.save(context, 'timezone', newValue);
+                        setState(() {
+                          selectedTimezone = newValue;
+                        });
+                      }
+                    },
+                  ),
                 ),
               ],
             ),

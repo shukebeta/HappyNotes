@@ -66,13 +66,4 @@ class TimezoneHelper {
         ? -offsetDuration
         : offsetDuration;
   }
-
-  // Get formatted list for displaying in dropdown
-  static List<String> getFormattedTimezones() {
-    final maxLength = timezones.map((tz) => tz['name']!.length).reduce((a, b) => a > b ? a : b);
-    return timezones.map((tz) {
-      final paddedName = tz['name']!.padRight(maxLength);
-      return '$paddedName  ${tz['offset']}';
-    }).toList();
-  }
 }

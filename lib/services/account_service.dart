@@ -5,8 +5,6 @@ import 'package:happy_notes/utils/app_logger.dart';
 import 'package:happy_notes/utils/token_utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../exceptions/api_exception.dart';
-import '../exceptions/custom_exception.dart';
-
 import '../screens/account/user_session.dart';
 
 class AccountService {
