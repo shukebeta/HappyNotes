@@ -80,6 +80,7 @@ class SettingsState extends State<Settings> {
             const SizedBox(height: 16),
             Row(
               children: [
+                const Text('Markdown mode'),
                 Checkbox(
                   value: isMarkdownModeOn,
                   onChanged: (bool? value) {
@@ -88,7 +89,6 @@ class SettingsState extends State<Settings> {
                     });
                   },
                 ),
-                const Text('Markdown mode on'),
               ],
             ),
             const SizedBox(height: 32),
