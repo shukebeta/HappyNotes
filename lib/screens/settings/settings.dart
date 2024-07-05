@@ -60,8 +60,8 @@ class SettingsState extends State<Settings> {
               children: [
                 const Text('Timezone: '),
                 const SizedBox(width: 16),
-                Container(
-                  width: 320,
+                SizedBox(
+                  width: 270,
                   child: TimezoneDropdownItem(
                     items: TimezoneHelper.timezones,
                     value: selectedTimezone,
