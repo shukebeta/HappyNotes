@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../app_config.dart';
 import '../account/user_session.dart';
 import '../components/memory_list.dart';
 import '../../dependency_injection.dart';
@@ -62,7 +63,8 @@ class MemoriesState extends State<Memories> with RouteAware {
         await navigator.push(
           MaterialPageRoute(
             builder: (context) => NewNote(
-              isPrivate: false, // this entry is always for public note
+              initialIsMarkdown: AppConfig.markdownIsEnabled,
+              initialIsPrivate: false,
               onNoteSaved: (note) async {
                 navigator.pop();
                 await refreshPage();

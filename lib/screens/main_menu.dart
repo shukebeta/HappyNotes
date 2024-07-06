@@ -4,6 +4,7 @@ import 'package:happy_notes/screens/initial_page.dart';
 import 'package:happy_notes/screens/navigation/rail_navigation.dart';
 import 'package:happy_notes/screens/settings/settings.dart';
 import 'package:lazy_load_indexed_stack/lazy_load_indexed_stack.dart';
+import '../app_config.dart';
 import '../entities/note.dart';
 import 'home_page/home_page.dart';
 import 'memories/memories.dart';
@@ -47,8 +48,9 @@ class MainMenuState extends State<MainMenu> {
         Memories(key: memoriesKey),
         NewNote(
           key: newNoteKey,
+          initialIsMarkdown: AppConfig.markdownIsEnabled,
+          initialIsPrivate: true,
           onNoteSaved: _onNoteSaved,
-          isPrivate: true, // new note in main menu entry: always private note
         ),
         const Discovery(),
         Settings(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:happy_notes/screens/note_detail/note_detail.dart';
+import '../../app_config.dart';
 import '../components/floating_pagination.dart';
 import '../components/note_list.dart';
 import '../components/pagination_controls.dart';
@@ -83,7 +84,8 @@ class HomePageState extends State<HomePage> {
             context,
             MaterialPageRoute(
               builder: (context) => NewNote(
-                isPrivate: false, // this entry is always for public note
+                initialIsMarkdown: AppConfig.markdownIsEnabled,
+                initialIsPrivate: false,
                 onNoteSaved: (note) async {
                   navigator.pop();
                   if (isFirstPage) {

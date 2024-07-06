@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../dependency_injection.dart';
 import '../../entities/note.dart';
+import '../../models/note_model.dart';
 import '../../services/dialog_services.dart';
 import '../account/user_session.dart';
 import '../components/note_editor.dart';
@@ -29,6 +31,9 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
       if (_controller.isEditing) _controller.noteFocusNode.requestFocus();
     });
     super.initState();
+    final noteModel = context.read<NoteModel>();
+    noteModel.isPrivate = widget.note.isPrivate;
+    noteModel.isMarkdown = widget.note.isMarkdown;
   }
 
   @override
@@ -67,11 +72,16 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
               if (_controller.isEditing)
                 IconButton(
                   icon: const Icon(Icons.check),
-                  onPressed: () => _controller.saveNote(
-                    context,
-                    widget.note.id,
-                    Navigator.of(context).pop,
-                  ),
+                  onPressed: () {
+                    final noteModel = context.read<NoteModel>();
+                    _controller.saveNote(
+                      context,
+                      widget.note.id,
+                      noteModel.isPrivate,
+                      noteModel.isMarkdown,
+                      Navigator.of(context).pop,
+                    );
+                  },
                 )
               else
                 IconButton(
@@ -100,12 +110,6 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
               controller: _controller.noteController,
               focusNode: _controller.noteFocusNode,
               isEditing: _controller.isEditing,
-              isPrivate: _controller.isEditing ? _controller.isPrivate : widget.note.isPrivate,
-              onPrivateChanged: (value) {
-                setState(() {
-                  _controller.isPrivate = value;
-                });
-              },
             ),
           ),
         ),

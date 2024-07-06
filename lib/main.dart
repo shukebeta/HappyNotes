@@ -5,15 +5,19 @@ import 'package:happy_notes/screens/account/user_session.dart';
 import 'package:happy_notes/screens/initial_page.dart';
 import 'package:happy_notes/screens/main_menu.dart';
 import 'package:happy_notes/screens/navigation/bottom_navigation.dart';
+import 'package:provider/provider.dart';
 import 'package:quick_actions/quick_actions.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'dart:io' show Platform;
 
+import 'models/note_model.dart';
 
 void main() async {
   di.init();
   await dotenv.load(fileName: '.env');
-  runApp( const HappyNotesApp());
+  runApp(
+    ChangeNotifierProvider(create: (context) => NoteModel(), child: const HappyNotesApp()),
+  );
 }
 
 class HappyNotesApp extends StatefulWidget {
@@ -75,7 +79,8 @@ class HappyNotesState extends State<HappyNotesApp> {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const InitialPage(), // if already login then show main menu, otherwise show login page
+      home: const InitialPage(),
+      // if already login then show main menu, otherwise show login page
       navigatorObservers: [UserSession.routeObserver],
     );
   }

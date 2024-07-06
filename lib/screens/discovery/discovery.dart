@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:happy_notes/screens/note_detail/note_detail.dart';
+import '../../app_config.dart';
 import '../components/floating_pagination.dart';
 import '../../dependency_injection.dart';
 import '../components/note_list.dart';
@@ -66,7 +67,8 @@ class DiscoveryState extends State<Discovery> {
             await navigator.push(
               MaterialPageRoute(
                 builder: (context) => NewNote(
-                  isPrivate: false, // this entry is always for public note
+                  initialIsMarkdown: AppConfig.markdownIsEnabled,
+                  initialIsPrivate: false,
                   onNoteSaved: (Note note) async {
                     navigator.pop();
                     if (isFirstPage && !note.isPrivate) {

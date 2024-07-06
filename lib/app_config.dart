@@ -24,7 +24,7 @@ class AppConfig {
   }
 
   static bool get markdownIsEnabled {
-    final markdownIsEnabledStr = dotenv.env['MARKDOWN_IS_ENABLED'];
+    final markdownIsEnabledStr = UserSession().settings('markdownIsEnabled') ?? dotenv.env['MARKDOWN_IS_ENABLED'];
     return markdownIsEnabledStr == null || markdownIsEnabledStr == '1';
   }
 

@@ -1,15 +1,18 @@
-import 'package:happy_notes/screens/new_note/new_note_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:happy_notes/typedefs.dart';
+import 'package:provider/provider.dart';
+import 'package:happy_notes/screens/new_note/new_note_controller.dart';
 import '../../dependency_injection.dart';
+import '../../models/note_model.dart';
+import '../../typedefs.dart';
 import '../components/note_editor.dart';
 
 class NewNote extends StatefulWidget {
-  final bool isPrivate;
+  final bool initialIsPrivate;
+  final bool initialIsMarkdown;
   final SaveNoteCallback? onNoteSaved;
 
-  const NewNote(
-      {super.key, required this.isPrivate, required this.onNoteSaved});
+  const NewNote({Key? key, required this.initialIsMarkdown, required this.initialIsPrivate, this.onNoteSaved})
+      : super(key: key);
 
   @override
   NewNoteState createState() => NewNoteState();
@@ -17,13 +20,13 @@ class NewNote extends StatefulWidget {
 
 class NewNoteState extends State<NewNote> {
   final _newNoteController = locator<NewNoteController>();
-  late bool _isPrivate;
 
   @override
   void initState() {
     super.initState();
-    _isPrivate = widget.isPrivate;
-
+    final noteModel = context.read<NoteModel>();
+    noteModel.isPrivate = widget.initialIsPrivate;
+    noteModel.isMarkdown = widget.initialIsMarkdown;
     setFocus(true);
   }
 
@@ -39,11 +42,14 @@ class NewNoteState extends State<NewNote> {
   Widget build(BuildContext context) {
     return PopScope(
       canPop: false,
-      onPopInvoked: (didPop) =>
-          _newNoteController.onPopHandler(context, didPop),
+      onPopInvoked: (didPop) => _newNoteController.onPopHandler(context, didPop),
       child: Scaffold(
         appBar: AppBar(
-          title: Text(_isPrivate ? 'Private Note' : 'Public Note'),
+          title: Consumer<NoteModel>(
+            builder: (context, noteModel, child) {
+              return Text(noteModel.isPrivate ? 'Private Note' : 'Public Note');
+            },
+          ),
         ),
         body: Padding(
           padding: const EdgeInsets.fromLTRB(4.0, 0, 4.0, 4.0),
@@ -51,17 +57,18 @@ class NewNoteState extends State<NewNote> {
             controller: _newNoteController.noteController,
             focusNode: _newNoteController.noteFocusNode,
             isEditing: true,
-            isPrivate: _isPrivate,
-            onPrivateChanged: (value) {
-              setState(() {
-                _isPrivate = value;
-              });
-            },
           ),
         ),
         floatingActionButton: FloatingActionButton(
-          onPressed: () => _newNoteController.saveNote(
-              context, _isPrivate, widget.onNoteSaved),
+          onPressed: () {
+            final noteModel = context.read<NoteModel>();
+            _newNoteController.saveNote(
+              context,
+              noteModel.isPrivate,
+              noteModel.isMarkdown,
+              widget.onNoteSaved,
+            );
+          },
           child: const Icon(Icons.save),
         ),
       ),

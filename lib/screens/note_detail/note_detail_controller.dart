@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../entities/note.dart';
+import '../../models/note_model.dart';
 import '../../services/dialog_services.dart';
 import '../../services/notes_services.dart';
 import '../../utils/util.dart';
@@ -23,10 +24,10 @@ class NoteDetailController {
     return _originalNote;
   }
 
-  Future<void> saveNote(BuildContext context, int noteId, void Function() onSuccess) async {
+  Future<void> saveNote(BuildContext context, int noteId, bool isPrivate, bool isMarkdown, void Function() onSuccess) async {
     final scaffoldContext = ScaffoldMessenger.of(context);
     try {
-      await _notesService.update(noteId, noteController.text, isPrivate);
+      await _notesService.update(noteId, noteController.text, isPrivate, isMarkdown);
       isEditing = false;
       onSuccess();
       Util.showInfo(scaffoldContext, 'Note successfully updated.');

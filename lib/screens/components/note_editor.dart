@@ -1,27 +1,21 @@
 import 'package:flutter/material.dart';
-import 'dart:math';
-
+import 'package:provider/provider.dart';
 import 'package:happy_notes/utils/happy_notes_prompts.dart';
+import '../../models/note_model.dart';
 
 class NoteEditor extends StatefulWidget {
   final TextEditingController controller;
   final FocusNode focusNode;
   final bool isEditing;
-  final bool isPrivate;
-  final ValueChanged<bool> onPrivateChanged;
 
-  const NoteEditor({
+  NoteEditor({
     Key? key,
     required this.controller,
     required this.focusNode,
     required this.isEditing,
-    required this.isPrivate,
-    required this.onPrivateChanged,
   }) : super(key: key);
 
-
   @override
-
   NoteEditorState createState() => NoteEditorState();
 }
 
@@ -29,16 +23,14 @@ class NoteEditorState extends State<NoteEditor> {
   late String prompt;
 
   @override
-
   void initState() {
     super.initState();
-    prompt = HappyNotesPrompts.getRandom(widget.isPrivate);
+    final noteModel = context.read<NoteModel>();
+    prompt = HappyNotesPrompts.getRandom(noteModel.isPrivate);
     widget.focusNode.addListener(_onFocusChange);
   }
 
-
   @override
-
   void dispose() {
     widget.focusNode.removeListener(_onFocusChange);
     super.dispose();
@@ -47,42 +39,19 @@ class NoteEditorState extends State<NoteEditor> {
   void _onFocusChange() {
     if (widget.focusNode.hasFocus) {
       setState(() {
-        prompt = HappyNotesPrompts.getRandom(widget.isPrivate);
+        final noteModel = context.read<NoteModel>();
+        prompt = HappyNotesPrompts.getRandom(noteModel.isPrivate);
       });
     }
   }
 
-
   @override
-
   Widget build(BuildContext context) {
     return Column(
       children: [
         Expanded(
           child: widget.isEditing
-              ? TextField(
-            controller: widget.controller,
-            focusNode: widget.focusNode,
-            keyboardType: TextInputType.multiline,
-            maxLines: null,
-            expands: true,
-            textAlignVertical: TextAlignVertical.top,
-            decoration: InputDecoration(
-              hintText: prompt,
-              border: OutlineInputBorder(
-                borderSide: BorderSide(
-                  color: widget.isPrivate ? Colors.blue : Colors.green,
-                  width: 2.0,
-                ),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(
-                  color: widget.isPrivate ? Colors.blueAccent : Colors.greenAccent,
-                  width: 2.0,
-                ),
-              ),
-            ),
-          )
+              ? _buildEditor()
               : SingleChildScrollView(
             child: Align(
               alignment: Alignment.topLeft,
@@ -96,14 +65,65 @@ class NoteEditorState extends State<NoteEditor> {
         const SizedBox(height: 8.0),
         Row(
           children: [
-            Switch(
-              value: widget.isPrivate,
-              onChanged: widget.isEditing ? widget.onPrivateChanged : null,
+            Consumer<NoteModel>(
+              builder: (context, noteModel, child) {
+                return Switch(
+                  value: noteModel.isPrivate,
+                  onChanged: widget.isEditing
+                      ? (value) {
+                    noteModel.isPrivate = value;
+                    // Call setState to rebuild and apply changes
+                    setState(() {});
+                  }
+                      : null,
+                );
+              },
             ),
-            Text(widget.isPrivate ? 'Private on' : 'Private off'),
+            Text('Private Note'),
+            Consumer<NoteModel>(
+              builder: (context, noteModel, child) {
+                return Switch(
+                  value: noteModel.isMarkdown,
+                  onChanged: widget.isEditing
+                      ? (value) {
+                    noteModel.isMarkdown = value;
+                    // Call setState to rebuild and apply changes
+                    setState(() {});
+                  }
+                      : null,
+                );
+              },
+            ),
+            Text('Markdown Note'),
           ],
         ),
       ],
+    );
+  }
+
+  TextField _buildEditor() {
+    return TextField(
+      controller: widget.controller,
+      focusNode: widget.focusNode,
+      keyboardType: TextInputType.multiline,
+      maxLines: null,
+      expands: true,
+      textAlignVertical: TextAlignVertical.top,
+      decoration: InputDecoration(
+        hintText: prompt,
+        border: OutlineInputBorder(
+          borderSide: BorderSide(
+            color: context.read<NoteModel>().isPrivate ? Colors.blue : Colors.green,
+            width: 2.0,
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(
+            color: context.read<NoteModel>().isPrivate ? Colors.blueAccent : Colors.greenAccent,
+            width: 2.0,
+          ),
+        ),
+      ),
     );
   }
 }

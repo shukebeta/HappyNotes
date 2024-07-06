@@ -15,7 +15,7 @@ class NewNoteController {
 
   bool get nothingToSave => noteController.text.trim().isEmpty;
 
-  Future<void> saveNote(BuildContext context, bool isPrivate, SaveNoteCallback? onNoteSaved) async {
+  Future<void> saveNote(BuildContext context, bool isPrivate, bool isMarkdown, SaveNoteCallback? onNoteSaved) async {
     final scaffoldContext = ScaffoldMessenger.of(context);
     if (nothingToSave) {
       Util.showInfo(scaffoldContext, 'Please write something');
@@ -25,7 +25,7 @@ class NewNoteController {
       var navigator = Navigator.of(context);
       var content = noteController.text;
       var isLong = content.length < 1024;
-      final noteId = await _notesService.post(noteController.text, isPrivate);
+      final noteId = await _notesService.post(noteController.text, isPrivate, isMarkdown);
       if (onNoteSaved != null) {
         final note = Note(
             id: noteId,
@@ -33,6 +33,7 @@ class NewNoteController {
             content: content,
             isLong: isLong,
             isPrivate: isPrivate,
+            isMarkdown: isMarkdown,
             createAt: (DateTime.now().millisecondsSinceEpoch / 1000).round());
         noteController.text = '';
         noteFocusNode.unfocus();

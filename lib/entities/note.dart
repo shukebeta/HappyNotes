@@ -6,6 +6,7 @@ class Note {
   final String content;
   final bool isPrivate;
   final bool isLong;
+  final bool isMarkdown;
   final int createAt; // You can change the type to DateTime if needed
 
   // yyyy-MM-dd format
@@ -23,6 +24,7 @@ class Note {
     required this.content,
     required this.isPrivate,
     required this.isLong,
+    required this.isMarkdown,
     required this.createAt,
   });
   factory Note.fromJson(Map<String, dynamic> json) {
@@ -32,6 +34,7 @@ class Note {
       content: json['content'],
       isPrivate: json['isPrivate'],
       isLong: json['isLong'],
+      isMarkdown: json['isMarkdown'],
       createAt: json['createAt'],
     );
   }

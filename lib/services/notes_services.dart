@@ -54,16 +54,25 @@ class NotesService {
   }
 
   // post a note and get its noteId
-  Future<int> post(String content, bool isPrivate) async {
-    var params = {'content': content, 'isPrivate': isPrivate};
+  Future<int> post(String content, bool isPrivate, bool isMarkdown) async {
+    var params = {
+      'content': content,
+      'isPrivate': isPrivate,
+      'isMarkdown': isMarkdown,
+    };
     var apiResult = (await NotesApi.post(params)).data;
     if (!apiResult['successful'] && apiResult['errorCode'] != AppConfig.errorCodeQuiet) throw ApiException(apiResult);
     return apiResult['data']; //note id
   }
 
   // update a note and get its noteId
-  Future<int> update(int noteId, String content, bool isPrivate) async {
-    var params = {'id': noteId, 'content': content, 'isPrivate': isPrivate};
+  Future<int> update(int noteId, String content, bool isPrivate, bool isMarkdown) async {
+    var params = {
+      'id': noteId,
+      'content': content,
+      'isPrivate': isPrivate,
+      'isMarkdown': isMarkdown,
+    };
     var apiResult = (await NotesApi.update(params)).data;
     if (!apiResult['successful'] && apiResult['errorCode'] != AppConfig.errorCodeQuiet) throw ApiException(apiResult);
     return apiResult['data']; //note id
@@ -87,4 +96,3 @@ class NotesService {
     return Note.fromJson(apiResult['data']); //note id
   }
 }
-
