@@ -8,7 +8,7 @@ class NoteEditor extends StatefulWidget {
   final FocusNode focusNode;
   final bool isEditing;
 
-  NoteEditor({
+  const NoteEditor({
     Key? key,
     required this.controller,
     required this.focusNode,
@@ -53,48 +53,67 @@ class NoteEditorState extends State<NoteEditor> {
           child: widget.isEditing
               ? _buildEditor()
               : SingleChildScrollView(
-            child: Align(
-              alignment: Alignment.topLeft,
-              child: Text(
-                widget.controller.text,
-                style: const TextStyle(fontSize: 16.0),
-              ),
-            ),
-          ),
+                  child: Align(
+                    alignment: Alignment.topLeft,
+                    child: Text(
+                      widget.controller.text,
+                      style: const TextStyle(fontSize: 16.0),
+                    ),
+                  ),
+                ),
         ),
         const SizedBox(height: 8.0),
         Row(
           children: [
             Consumer<NoteModel>(
               builder: (context, noteModel, child) {
-                return Switch(
-                  value: noteModel.isPrivate,
-                  onChanged: widget.isEditing
-                      ? (value) {
-                    noteModel.isPrivate = value;
-                    // Call setState to rebuild and apply changes
-                    setState(() {});
-                  }
+                return GestureDetector(
+                  onTap: widget.isEditing
+                      ? () {
+                          noteModel.isPrivate = !noteModel.isPrivate;
+                        }
                       : null,
+                  child: Row(
+                    children: [
+                      const Text('Private'),
+                      Switch(
+                        value: noteModel.isPrivate,
+                        onChanged: widget.isEditing
+                            ? (value) {
+                                noteModel.isPrivate = value;
+                              }
+                            : null,
+                      ),
+                    ],
+                  ),
                 );
               },
             ),
-            Text('Private Note'),
+            const SizedBox(width: 24.0),
             Consumer<NoteModel>(
               builder: (context, noteModel, child) {
-                return Switch(
-                  value: noteModel.isMarkdown,
-                  onChanged: widget.isEditing
-                      ? (value) {
-                    noteModel.isMarkdown = value;
-                    // Call setState to rebuild and apply changes
-                    setState(() {});
-                  }
+                return GestureDetector(
+                  onTap: widget.isEditing
+                      ? () {
+                          noteModel.isMarkdown = !noteModel.isMarkdown;
+                        }
                       : null,
+                  child: Row(
+                    children: [
+                      const Text('Markdown'),
+                      Switch(
+                        value: noteModel.isMarkdown,
+                        onChanged: widget.isEditing
+                            ? (value) {
+                                noteModel.isMarkdown = value;
+                              }
+                            : null,
+                      ),
+                    ],
+                  ),
                 );
               },
             ),
-            Text('Markdown Note'),
           ],
         ),
       ],
