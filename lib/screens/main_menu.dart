@@ -62,8 +62,9 @@ class MainMenuState extends State<MainMenu> {
   }
 
   void _onLogout() {
-     Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const InitialPage()));
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const InitialPage()));
   }
+
   void _onNoteSaved(Note note) async {
     setState(() {
       _selectedIndex = indexNotes;
@@ -102,8 +103,7 @@ class MainMenuState extends State<MainMenu> {
     });
     switch (index) {
       case indexNewNote:
-        Future.delayed(const Duration(milliseconds: 550),
-                () => newNoteKey.currentState?.setFocus(true));
+        Future.delayed(const Duration(milliseconds: 550), () => newNoteKey.currentState?.setFocus(true));
         break;
       case indexNotes:
         homePageKey.currentState?.refreshPage();
@@ -112,12 +112,10 @@ class MainMenuState extends State<MainMenu> {
         memoriesKey.currentState?.refreshPage();
         break;
       case indexSharedNotes:
-        memoriesKey.currentState?.setState(() {
-        });
+        memoriesKey.currentState?.setState(() {});
         break;
       case indexSettings:
-        settingsKey.currentState?.setState(() {
-        });
+        settingsKey.currentState?.setState(() {});
         break;
     }
   }
@@ -132,10 +130,7 @@ class MainMenuState extends State<MainMenu> {
       // ),
       body: Row(
         children: [
-          if (isDesktop)
-            RailNavigation(
-                selectedIndex: _selectedIndex,
-                onDestinationSelected: switchToPage),
+          if (isDesktop) RailNavigation(selectedIndex: _selectedIndex, onDestinationSelected: switchToPage),
           Expanded(
             child: _getPage(_selectedIndex),
           ),
@@ -143,9 +138,12 @@ class MainMenuState extends State<MainMenu> {
       ),
       bottomNavigationBar: isDesktop
           ? null
-          : BottomNavigation(
-              currentIndex: _selectedIndex,
-              onTap: switchToPage,
+          : Padding(
+              padding: const EdgeInsets.fromLTRB(2, 0, 2, 4),
+              child: BottomNavigation(
+                currentIndex: _selectedIndex,
+                onTap: switchToPage,
+              ),
             ),
     );
   }
