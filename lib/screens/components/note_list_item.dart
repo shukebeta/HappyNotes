@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 
 import '../../entities/note.dart';
 
 class NoteListItem extends StatelessWidget {
   final Note note;
   final VoidCallback onTap;
-  final VoidCallback? onDoubleTap; // onDoubleTap callback is optional
+  final VoidCallback? onDoubleTap;
 
   const NoteListItem({
     Key? key,
@@ -18,7 +19,7 @@ class NoteListItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      onDoubleTap: onDoubleTap, // Call onDoubleTap callback when double-tapped
+      onDoubleTap: onDoubleTap,
       child: Container(
         color: Colors.transparent,
         child: Padding(
@@ -28,27 +29,27 @@ class NoteListItem extends StatelessWidget {
             title: Row(
               children: [
                 Expanded(
-                  child: RichText(
+                  child: note.isMarkdown
+                      ? MarkdownBody(
+                    data: note.content + (note.isLong ? '...more' : ''),
+                    styleSheet: MarkdownStyleSheet(
+                      p: TextStyle(
+                        fontStyle: note.isPrivate ? FontStyle.italic : FontStyle.normal,
+                        fontSize: 20,
+                        height: 1.6,
+                        color: Colors.black,
+                      ),
+                    ),
+                  )
+                      : RichText(
                     text: TextSpan(
-                      text: note.isLong ? '${note.content}...   ' : note.content,
+                      text: note.content + (note.isLong ? '...more' : ''),
                       style: TextStyle(
                         fontStyle: note.isPrivate ? FontStyle.italic : FontStyle.normal,
                         fontSize: 20,
                         height: 1.6,
                         color: Colors.black,
                       ),
-                      children: note.isLong
-                          ? [
-                        const TextSpan(
-                          text: 'more',
-                          style: TextStyle(
-                            fontWeight: FontWeight.normal,
-                            color: Colors.blue,
-                            decoration: TextDecoration.underline,
-                          ),
-                        )
-                      ]
-                          : [],
                     ),
                   ),
                 ),
