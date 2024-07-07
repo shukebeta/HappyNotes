@@ -1,4 +1,3 @@
-// note_view_edit.dart
 import 'package:flutter/material.dart';
 import 'note_view.dart';
 import 'note_edit.dart';
@@ -7,12 +6,14 @@ class NoteViewEdit extends StatefulWidget {
   final TextEditingController controller;
   final FocusNode focusNode;
   final bool isEditing;
+  final bool isMarkdown;
 
   const NoteViewEdit({
     Key? key,
     required this.controller,
     required this.focusNode,
     required this.isEditing,
+    required this.isMarkdown,
   }) : super(key: key);
 
   @override
@@ -29,6 +30,7 @@ class NoteViewEditState extends State<NoteViewEdit> {
     )
         : NoteView(
       controller: widget.controller,
+      isMarkdown: widget.isMarkdown,
     );
   }
 }

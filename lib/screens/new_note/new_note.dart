@@ -53,10 +53,15 @@ class NewNoteState extends State<NewNote> {
         ),
         body: Padding(
           padding: const EdgeInsets.fromLTRB(4.0, 0, 4.0, 4.0),
-          child: NoteViewEdit(
-            controller: _newNoteController.noteController,
-            focusNode: _newNoteController.noteFocusNode,
-            isEditing: true,
+          child: Consumer<NoteModel>(
+            builder: (context, noteModel, child) {
+              return NoteViewEdit(
+                controller: _newNoteController.noteController,
+                focusNode: _newNoteController.noteFocusNode,
+                isEditing: true,
+                isMarkdown: noteModel.isMarkdown, // Pass the isMarkdown state
+              );
+            },
           ),
         ),
         floatingActionButton: FloatingActionButton(

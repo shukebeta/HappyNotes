@@ -106,10 +106,15 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
           onDoubleTap: _enterEditingMode,
           child: Padding(
             padding: const EdgeInsets.all(16.0),
-            child: NoteViewEdit(
-              controller: _controller.noteController,
-              focusNode: _controller.noteFocusNode,
-              isEditing: _controller.isEditing,
+            child: Consumer<NoteModel>(
+              builder: (context, noteModel, child) {
+                return NoteViewEdit(
+                  controller: _controller.noteController,
+                  focusNode: _controller.noteFocusNode,
+                  isEditing: _controller.isEditing,
+                  isMarkdown: noteModel.isMarkdown, // Pass the isMarkdown state
+                );
+              },
             ),
           ),
         ),
