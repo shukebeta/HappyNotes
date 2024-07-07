@@ -1,25 +1,24 @@
+// note_edit.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:happy_notes/utils/happy_notes_prompts.dart';
 import '../../models/note_model.dart';
 
-class NoteEditor extends StatefulWidget {
+class NoteEdit extends StatefulWidget {
   final TextEditingController controller;
   final FocusNode focusNode;
-  final bool isEditing;
 
-  const NoteEditor({
+  const NoteEdit({
     Key? key,
     required this.controller,
     required this.focusNode,
-    required this.isEditing,
   }) : super(key: key);
 
   @override
-  NoteEditorState createState() => NoteEditorState();
+  NoteEditState createState() => NoteEditState();
 }
 
-class NoteEditorState extends State<NoteEditor> {
+class NoteEditState extends State<NoteEdit> {
   late String prompt;
 
   @override
@@ -50,17 +49,7 @@ class NoteEditorState extends State<NoteEditor> {
     return Column(
       children: [
         Expanded(
-          child: widget.isEditing
-              ? _buildEditor()
-              : SingleChildScrollView(
-                  child: Align(
-                    alignment: Alignment.topLeft,
-                    child: Text(
-                      widget.controller.text,
-                      style: const TextStyle(fontSize: 16.0),
-                    ),
-                  ),
-                ),
+          child: _buildEditor(),
         ),
         const SizedBox(height: 8.0),
         Row(
@@ -68,21 +57,17 @@ class NoteEditorState extends State<NoteEditor> {
             Consumer<NoteModel>(
               builder: (context, noteModel, child) {
                 return GestureDetector(
-                  onTap: widget.isEditing
-                      ? () {
-                          noteModel.isPrivate = !noteModel.isPrivate;
-                        }
-                      : null,
+                  onTap: () {
+                    noteModel.isPrivate = !noteModel.isPrivate;
+                  },
                   child: Row(
                     children: [
                       const Text('Private'),
                       Switch(
                         value: noteModel.isPrivate,
-                        onChanged: widget.isEditing
-                            ? (value) {
-                                noteModel.isPrivate = value;
-                              }
-                            : null,
+                        onChanged: (value) {
+                          noteModel.isPrivate = value;
+                        },
                       ),
                     ],
                   ),
@@ -93,21 +78,17 @@ class NoteEditorState extends State<NoteEditor> {
             Consumer<NoteModel>(
               builder: (context, noteModel, child) {
                 return GestureDetector(
-                  onTap: widget.isEditing
-                      ? () {
-                          noteModel.isMarkdown = !noteModel.isMarkdown;
-                        }
-                      : null,
+                  onTap: () {
+                    noteModel.isMarkdown = !noteModel.isMarkdown;
+                  },
                   child: Row(
                     children: [
                       const Text('Markdown'),
                       Switch(
                         value: noteModel.isMarkdown,
-                        onChanged: widget.isEditing
-                            ? (value) {
-                                noteModel.isMarkdown = value;
-                              }
-                            : null,
+                        onChanged: (value) {
+                          noteModel.isMarkdown = value;
+                        },
                       ),
                     ],
                   ),

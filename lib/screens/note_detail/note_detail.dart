@@ -5,7 +5,7 @@ import '../../entities/note.dart';
 import '../../models/note_model.dart';
 import '../../services/dialog_services.dart';
 import '../account/user_session.dart';
-import '../components/note_editor.dart';
+import '../components/note_view_edit.dart';
 import '../../services/notes_services.dart';
 import 'note_detail_controller.dart';
 
@@ -106,7 +106,7 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
           onDoubleTap: _enterEditingMode,
           child: Padding(
             padding: const EdgeInsets.all(16.0),
-            child: NoteEditor(
+            child: NoteViewEdit(
               controller: _controller.noteController,
               focusNode: _controller.noteFocusNode,
               isEditing: _controller.isEditing,
