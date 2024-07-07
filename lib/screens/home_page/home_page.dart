@@ -58,7 +58,7 @@ class HomePageState extends State<HomePage> {
     var isDesktop = MediaQuery.of(context).size.width >= 600;
     return Scaffold(
       appBar: AppBar(title: const Text('My Notes'), actions: [
-        if (!AppConfig.privateNoteOnlyIsEnabled) _buildNewNoteButton(context),
+        _buildNewNoteButton(context),
       ]),
       body: Stack(
         children: [
@@ -85,7 +85,7 @@ class HomePageState extends State<HomePage> {
           MaterialPageRoute(
             builder: (context) => NewNote(
               initialIsMarkdown: AppConfig.markdownIsEnabled,
-              initialIsPrivate: false,
+              initialIsPrivate: AppConfig.privateNoteOnlyIsEnabled,
               onNoteSaved: (note) async {
                 navigator.pop();
                 if (isFirstPage) {

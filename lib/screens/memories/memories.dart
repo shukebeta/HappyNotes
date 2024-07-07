@@ -48,7 +48,7 @@ class MemoriesState extends State<Memories> with RouteAware {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Memories'),
-        actions: [if (!AppConfig.privateNoteOnlyIsEnabled) _buildNewNoteButton(context)],
+        actions: [_buildNewNoteButton(context)],
       ),
       body: _buildBody(),
     );
@@ -64,7 +64,7 @@ class MemoriesState extends State<Memories> with RouteAware {
           MaterialPageRoute(
             builder: (context) => NewNote(
               initialIsMarkdown: AppConfig.markdownIsEnabled,
-              initialIsPrivate: false,
+              initialIsPrivate: AppConfig.privateNoteOnlyIsEnabled,
               onNoteSaved: (note) async {
                 navigator.pop();
                 await refreshPage();

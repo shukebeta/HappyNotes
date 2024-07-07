@@ -59,7 +59,7 @@ class DiscoveryState extends State<Discovery> {
     var isDesktop = MediaQuery.of(context).size.width >= 600;
     return Scaffold(
       appBar: AppBar(title: const Text('Shared Notes'), actions: [
-        if (!AppConfig.privateNoteOnlyIsEnabled) _buildNewNoteButton(context),
+        _buildNewNoteButton(context),
       ]),
       body: Stack(
         children: [
@@ -85,7 +85,7 @@ class DiscoveryState extends State<Discovery> {
           MaterialPageRoute(
             builder: (context) => NewNote(
               initialIsMarkdown: AppConfig.markdownIsEnabled,
-              initialIsPrivate: false,
+              initialIsPrivate: AppConfig.privateNoteOnlyIsEnabled,
               onNoteSaved: (Note note) async {
                 navigator.pop();
                 if (isFirstPage && !note.isPrivate) {
