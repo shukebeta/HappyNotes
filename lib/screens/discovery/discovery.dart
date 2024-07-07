@@ -59,45 +59,7 @@ class DiscoveryState extends State<Discovery> {
     var isDesktop = MediaQuery.of(context).size.width >= 600;
     return Scaffold(
       appBar: AppBar(title: const Text('Shared Notes'), actions: [
-        IconButton(
-          icon: const Icon(Icons.edit),
-          onPressed: () async {
-            final scaffoldContext = ScaffoldMessenger.of(context);
-            final navigator = Navigator.of(context);
-            await navigator.push(
-              MaterialPageRoute(
-                builder: (context) => NewNote(
-                  initialIsMarkdown: AppConfig.markdownIsEnabled,
-                  initialIsPrivate: false,
-                  onNoteSaved: (Note note) async {
-                    navigator.pop();
-                    if (isFirstPage && !note.isPrivate) {
-                      await refreshPage();
-                      return;
-                    }
-                    scaffoldContext.showSnackBar(
-                      SnackBar(
-                        content: const Text('Successfully saved. Click here to view.'),
-                        duration: const Duration(seconds: 5),
-                        action: SnackBarAction(
-                          label: 'View',
-                          onPressed: () async {
-                            await navigator.push(
-                              MaterialPageRoute(
-                                builder: (context) => NoteDetail(note: note),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                    );
-                    return;
-                  },
-                ),
-              ),
-            );
-          },
-        ),
+        if (!AppConfig.privateNoteOnlyIsEnabled) _buildNewNoteButton(context),
       ]),
       body: Stack(
         children: [
@@ -110,6 +72,48 @@ class DiscoveryState extends State<Discovery> {
             ),
         ],
       ),
+    );
+  }
+
+  IconButton _buildNewNoteButton(BuildContext context) {
+    return IconButton(
+      icon: const Icon(Icons.edit),
+      onPressed: () async {
+        final scaffoldContext = ScaffoldMessenger.of(context);
+        final navigator = Navigator.of(context);
+        await navigator.push(
+          MaterialPageRoute(
+            builder: (context) => NewNote(
+              initialIsMarkdown: AppConfig.markdownIsEnabled,
+              initialIsPrivate: false,
+              onNoteSaved: (Note note) async {
+                navigator.pop();
+                if (isFirstPage && !note.isPrivate) {
+                  await refreshPage();
+                  return;
+                }
+                scaffoldContext.showSnackBar(
+                  SnackBar(
+                    content: const Text('Successfully saved. Click here to view.'),
+                    duration: const Duration(seconds: 5),
+                    action: SnackBarAction(
+                      label: 'View',
+                      onPressed: () async {
+                        await navigator.push(
+                          MaterialPageRoute(
+                            builder: (context) => NoteDetail(note: note),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                );
+                return;
+              },
+            ),
+          ),
+        );
+      },
     );
   }
 

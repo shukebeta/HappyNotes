@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:happy_notes/screens/settings/settings_controller.dart';
 
 import '../../app_config.dart';
+import '../../app_constants.dart';
 import '../../dependency_injection.dart';
 import '../../utils/timezone_helper.dart';
 import '../components/timezone-dropdown-item.dart';
@@ -16,10 +17,16 @@ class Settings extends StatefulWidget {
 }
 
 class SettingsState extends State<Settings> {
-  bool isMarkdownModeOn = false;
+  bool markdownIsEnabled = AppConfig.markdownIsEnabled;
+  bool privateNoteOnlyIsEnabled = AppConfig.privateNoteOnlyIsEnabled;
   int pageSize = AppConfig.pageSize;
   String? selectedTimezone = AppConfig.timezone;
   final SettingsController _settingsController = locator<SettingsController>();
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,12 +41,12 @@ class SettingsState extends State<Settings> {
           children: [
             Row(
               children: [
-                const Text('Page size: '),
+                const Text('Page Size'),
                 const SizedBox(width: 16),
                 DropdownButton<int>(
                   value: pageSize,
                   onChanged: (int? newValue) async {
-                    await _settingsController.save(context, 'pageSize', newValue.toString());
+                    await _settingsController.save(context, AppConstants.pageSize, newValue.toString());
                     setState(() {
                       if (newValue != null) pageSize = newValue;
                     });
@@ -58,7 +65,7 @@ class SettingsState extends State<Settings> {
             const SizedBox(height: 16),
             Row(
               children: [
-                const Text('Timezone: '),
+                const Text('Timezone'),
                 const SizedBox(width: 16),
                 SizedBox(
                   width: 270,
@@ -67,10 +74,12 @@ class SettingsState extends State<Settings> {
                     value: selectedTimezone,
                     onChanged: (String? newValue) async {
                       if (newValue != null) {
-                        await _settingsController.save(context, 'timezone', newValue);
-                        setState(() {
-                          selectedTimezone = newValue;
-                        });
+                        final result = await _settingsController.save(context, AppConstants.timezone, newValue);
+                        if (result) {
+                          setState(() {
+                            selectedTimezone = newValue;
+                          });
+                        }
                       }
                     },
                   ),
@@ -80,13 +89,34 @@ class SettingsState extends State<Settings> {
             const SizedBox(height: 16),
             Row(
               children: [
-                const Text('Markdown mode'),
-                Checkbox(
-                  value: isMarkdownModeOn,
-                  onChanged: (bool? value) {
-                    setState(() {
-                      isMarkdownModeOn = value ?? false;
-                    });
+                const Text('Markdown'),
+                Switch(
+                  value: markdownIsEnabled,
+                  onChanged: (bool newValue) async {
+                    final result = await _settingsController.save(context, AppConstants.markdownIsEnabled, newValue ? "1" : "0");
+                    if (result) {
+                      setState(() {
+                        markdownIsEnabled = newValue;
+                      });
+                    }
+                  },
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                const Text('Private Note Only'),
+                Switch(
+                  value: privateNoteOnlyIsEnabled,
+                  onChanged: (bool newValue) async {
+                    final result = await _settingsController.save(
+                        context, AppConstants.privateNoteOnlyIsEnabled, newValue ? "1" : "0");
+                    if (result) {
+                      setState(() {
+                        privateNoteOnlyIsEnabled = newValue;
+                      });
+                    }
                   },
                 ),
               ],

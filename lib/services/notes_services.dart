@@ -61,7 +61,7 @@ class NotesService {
       'isMarkdown': isMarkdown,
     };
     var apiResult = (await NotesApi.post(params)).data;
-    if (!apiResult['successful'] && apiResult['errorCode'] != AppConfig.errorCodeQuiet) throw ApiException(apiResult);
+    if (!apiResult['successful'] && apiResult['errorCode'] != AppConfig.quietErrorCode) throw ApiException(apiResult);
     return apiResult['data']; //note id
   }
 
@@ -74,7 +74,7 @@ class NotesService {
       'isMarkdown': isMarkdown,
     };
     var apiResult = (await NotesApi.update(params)).data;
-    if (!apiResult['successful'] && apiResult['errorCode'] != AppConfig.errorCodeQuiet) throw ApiException(apiResult);
+    if (!apiResult['successful'] && apiResult['errorCode'] != AppConfig.quietErrorCode) throw ApiException(apiResult);
     return apiResult['data']; //note id
   }
 

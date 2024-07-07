@@ -48,7 +48,7 @@ class MemoriesState extends State<Memories> with RouteAware {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Memories'),
-        actions: [_buildNewNoteButton(context)],
+        actions: [if (!AppConfig.privateNoteOnlyIsEnabled) _buildNewNoteButton(context)],
       ),
       body: _buildBody(),
     );
@@ -75,7 +75,7 @@ class MemoriesState extends State<Memories> with RouteAware {
       },
     );
   }
- 
+
   Widget _buildBody() {
     if (_memoriesController.isLoading) {
       return const Center(child: CircularProgressIndicator());

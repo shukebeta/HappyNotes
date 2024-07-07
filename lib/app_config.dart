@@ -1,6 +1,8 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:happy_notes/screens/account/user_session.dart';
 
+import 'app_constants.dart';
+
 class AppConfig {
   AppConfig._();
 
@@ -9,42 +11,36 @@ class AppConfig {
   }
 
   static int get pageSize {
-    final pageSizeStr = UserSession().settings('pageSize') ?? dotenv.env['PAGE_SIZE'];
+    final pageSizeStr = UserSession().settings(AppConstants.pageSize) ?? dotenv.env['PAGE_SIZE'];
     return pageSizeStr == null ? 20 : int.parse(pageSizeStr);
   }
 
-  static bool get pagerIsFixed {
-    final pagerIsFixedStr = dotenv.env['PAGER_IS_FIXED'];
-    return pagerIsFixedStr == null || pagerIsFixedStr == '1';
-  }
-
-  static bool get newNoteIsPublic {
-    final newNoteIsPublicStr = dotenv.env['NEW_NOTE_IS_PUBLIC'];
-    return newNoteIsPublicStr == null || newNoteIsPublicStr == '1';
+  static bool get privateNoteOnlyIsEnabled {
+    final privateNoteOnlyIsEnabledStr = UserSession().settings(AppConstants.privateNoteOnlyIsEnabled) ?? dotenv.env['PRIVATE_NOTE_ONLY'];
+    return privateNoteOnlyIsEnabledStr != null && privateNoteOnlyIsEnabledStr == '1';
   }
 
   static bool get markdownIsEnabled {
-    final markdownIsEnabledStr = UserSession().settings('markdownIsEnabled') ?? dotenv.env['MARKDOWN_IS_ENABLED'];
-    return markdownIsEnabledStr == null || markdownIsEnabledStr == '1';
+    final markdownIsEnabledStr = UserSession().settings(AppConstants.markdownIsEnabled) ?? dotenv.env['MARKDOWN_IS_ENABLED'];
+    return markdownIsEnabledStr != null && markdownIsEnabledStr == '1';
   }
 
   // duplicate request error, which shouldn't bother to show anything
-  static int get errorCodeQuiet => 105;
+  static int quietErrorCode = 105;
 
   static String get timezone {
-    final timezone = UserSession().settings('timezone');
+    final timezone = UserSession().settings(AppConstants.timezone);
     return timezone ?? 'Pacific/Auckland';
   }
 
   // Map to store property access functions
   static final Map<String, dynamic Function()> _propertyAccessors = {
-    'baseUrl': () => baseUrl,
-    'pageSize': () => pageSize,
-    'pagerIsFixed': () => pagerIsFixed,
-    'newNoteIsPublic': () => newNoteIsPublic,
-    'markdownIsEnabled': () => markdownIsEnabled,
-    'errorCodeQuiet': () => errorCodeQuiet,
-    'timezone': () => timezone,
+    AppConstants.baseUrl: () => baseUrl,
+    AppConstants.pageSize: () => pageSize,
+    AppConstants.markdownIsEnabled: () => markdownIsEnabled,
+    AppConstants.privateNoteOnlyIsEnabled: () => privateNoteOnlyIsEnabled,
+    AppConstants.quietErrorCode: () => quietErrorCode,
+    AppConstants.timezone: () => timezone,
   };
 
   // Method to get property value by name

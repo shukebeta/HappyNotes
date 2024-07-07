@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:happy_notes/services/account_service.dart';
 import 'package:happy_notes/services/user_settings_service.dart';
 
+import '../../entities/user_settings.dart';
 import '../../utils/util.dart';
 
 class SettingsController {
@@ -13,13 +14,14 @@ class SettingsController {
       : _accountService = accountService,
         _userSettingsService = userSettingsService;
 
-  Future<void> save(BuildContext context, String settingName, String settingValue) async {
+  Future<bool> save(BuildContext context, String settingName, String settingValue) async {
     final scaffoldContext = ScaffoldMessenger.of(context);
     try {
-      final result = await _userSettingsService.upsert(settingName, settingValue);
+      return await _userSettingsService.upsert(settingName, settingValue);
     } catch (e) {
       Util.showError(scaffoldContext, e.toString());
     }
+    return false;
   }
 
   Future<void> logout() async {

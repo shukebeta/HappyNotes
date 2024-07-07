@@ -58,7 +58,7 @@ class HomePageState extends State<HomePage> {
     var isDesktop = MediaQuery.of(context).size.width >= 600;
     return Scaffold(
       appBar: AppBar(title: const Text('My Notes'), actions: [
-        _buildNewNoteButton(context),
+        if (!AppConfig.privateNoteOnlyIsEnabled) _buildNewNoteButton(context),
       ]),
       body: Stack(
         children: [
@@ -76,45 +76,45 @@ class HomePageState extends State<HomePage> {
 
   IconButton _buildNewNoteButton(BuildContext context) {
     return IconButton(
-        icon: const Icon(Icons.edit),
-        onPressed: () async {
-          final scaffoldContext = ScaffoldMessenger.of(context);
-          final navigator = Navigator.of(context);
-          await Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => NewNote(
-                initialIsMarkdown: AppConfig.markdownIsEnabled,
-                initialIsPrivate: false,
-                onNoteSaved: (note) async {
-                  navigator.pop();
-                  if (isFirstPage) {
-                    await refreshPage();
-                    return;
-                  }
-                  scaffoldContext.showSnackBar(
-                    SnackBar(
-                      content: const Text('Successfully saved. Click here to view.'),
-                      duration: const Duration(seconds: 5),
-                      action: SnackBarAction(
-                        label: 'View',
-                        onPressed: () async {
-                          await navigator.push(
-                            MaterialPageRoute(
-                              builder: (context) => NoteDetail(note: note),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  );
+      icon: const Icon(Icons.edit),
+      onPressed: () async {
+        final scaffoldContext = ScaffoldMessenger.of(context);
+        final navigator = Navigator.of(context);
+        await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => NewNote(
+              initialIsMarkdown: AppConfig.markdownIsEnabled,
+              initialIsPrivate: false,
+              onNoteSaved: (note) async {
+                navigator.pop();
+                if (isFirstPage) {
+                  await refreshPage();
                   return;
-                },
-              ),
+                }
+                scaffoldContext.showSnackBar(
+                  SnackBar(
+                    content: const Text('Successfully saved. Click here to view.'),
+                    duration: const Duration(seconds: 5),
+                    action: SnackBarAction(
+                      label: 'View',
+                      onPressed: () async {
+                        await navigator.push(
+                          MaterialPageRoute(
+                            builder: (context) => NoteDetail(note: note),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                );
+                return;
+              },
             ),
-          );
-        },
-      );
+          ),
+        );
+      },
+    );
   }
 
   Widget _buildBody(bool isDesktop) {
