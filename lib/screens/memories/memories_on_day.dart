@@ -39,7 +39,6 @@ class MemoriesOnDayState extends State<MemoriesOnDay> with RouteAware {
 
   @override
   void didPopNext() {
-    _notesFuture = _controller.fetchMemories(widget.date);
     setState(() {});
   }
 
@@ -56,7 +55,7 @@ class MemoriesOnDayState extends State<MemoriesOnDay> with RouteAware {
         title: Text(DateFormat('EEEE, MMM d, yyyy').format(widget.date)),
       ),
       body: FutureBuilder<NotesResult>(
-        future: _notesFuture,
+        future: _controller.fetchMemories(widget.date),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -67,7 +66,9 @@ class MemoriesOnDayState extends State<MemoriesOnDay> with RouteAware {
             return NoteList(
               notes: _notes,
               showDate: false,
-              onRefresh: () => _notesFuture = _controller.fetchMemories(widget.date),
+              onRefresh: () async {
+                setState(() {});
+              },
               onTap: (note) async {
                 await Navigator.push(
                   context,
