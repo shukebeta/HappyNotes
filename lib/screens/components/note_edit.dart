@@ -39,7 +39,6 @@ class NoteEditState extends State<NoteEdit> {
     if (widget.focusNode.hasFocus) {
       setState(() {
         final noteModel = context.read<NoteModel>();
-        prompt = HappyNotesPrompts.getRandom(noteModel.isPrivate);
       });
     }
   }
