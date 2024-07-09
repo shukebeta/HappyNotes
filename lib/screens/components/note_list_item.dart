@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 
 import '../../entities/note.dart';
+import 'markdown_body_here.dart';
 
 class NoteListItem extends StatelessWidget {
   final Note note;
@@ -30,28 +31,20 @@ class NoteListItem extends StatelessWidget {
               children: [
                 Expanded(
                   child: note.isMarkdown
-                      ? MarkdownBody(
-                    data: note.content + (note.isLong ? '...more' : ''),
-                    styleSheet: MarkdownStyleSheet(
-                      p: TextStyle(
-                        fontStyle: note.isPrivate ? FontStyle.italic : FontStyle.normal,
-                        fontSize: 20,
-                        height: 1.6,
-                        color: Colors.black,
-                      ),
-                    ),
-                  )
+                      ? MarkdownBodyHere(
+                          data: note.content + (note.isLong ? '...more' : ''),
+                        )
                       : RichText(
-                    text: TextSpan(
-                      text: note.content + (note.isLong ? '...more' : ''),
-                      style: TextStyle(
-                        fontStyle: note.isPrivate ? FontStyle.italic : FontStyle.normal,
-                        fontSize: 20,
-                        height: 1.6,
-                        color: Colors.black,
-                      ),
-                    ),
-                  ),
+                          text: TextSpan(
+                            text: note.content + (note.isLong ? '...more' : ''),
+                            style: TextStyle(
+                              fontStyle: note.isPrivate ? FontStyle.italic : FontStyle.normal,
+                              fontSize: 20,
+                              height: 1.6,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ),
                 ),
               ],
             ),
