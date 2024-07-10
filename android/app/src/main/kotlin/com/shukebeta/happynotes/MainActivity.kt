@@ -1,4 +1,4 @@
-package com.example.happy_notes
+package com.shukebeta.happynotes
 
 import io.flutter.embedding.android.FlutterActivity
 
