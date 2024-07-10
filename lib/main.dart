@@ -13,10 +13,21 @@ import 'dart:io' show Platform;
 import 'models/note_model.dart';
 
 void main() async {
+  // Ensure Flutter binding is initialized
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize dependencies
   di.init();
+
+  // Load environment variables
   await dotenv.load(fileName: '.env');
+
+  // Run the app
   runApp(
-    ChangeNotifierProvider(create: (context) => NoteModel(), child: const HappyNotesApp()),
+    ChangeNotifierProvider(
+      create: (context) => NoteModel(),
+      child: const HappyNotesApp(),
+    ),
   );
 }
 
@@ -79,8 +90,8 @@ class HappyNotesState extends State<HappyNotesApp> {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
+      // Show main menu if already logged in, otherwise show login page
       home: const InitialPage(),
-      // if already login then show main menu, otherwise show login page
       navigatorObservers: [UserSession.routeObserver],
     );
   }
