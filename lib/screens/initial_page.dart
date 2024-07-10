@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:happy_notes/screens/main_menu.dart';
 import '../dependency_injection.dart';
 import '../services/account_service.dart';
-import 'home_page/home_page.dart';
 import 'account/login.dart';
 
 class InitialPage extends StatefulWidget {
@@ -13,41 +12,41 @@ class InitialPage extends StatefulWidget {
 }
 
 class InitialPageState extends State<InitialPage> {
-  final accountService = locator<AccountService>();
-  bool _isLoading = true;
-  bool _isLoggedIn = false;
+  final AccountService accountService = locator<AccountService>();
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _navigateBasedOnToken();
-  }
-
-  Future<void> _navigateBasedOnToken() async {
-    var navigator = Navigator.of(context);
+  Future<bool> _checkToken() async {
     try {
       if (await accountService.isValidToken()) {
         await accountService.setUserSession();
-        _isLoggedIn = true;
-      } else {
-        _isLoggedIn = false;
+        return true;
       }
-    } finally {
-      _isLoading = false;
+    } catch (e) {
+      // Handle the error appropriately
     }
-    setState(() {});
+    return false;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _isLoading
-          ? const Center(
+      body: FutureBuilder<bool>(
+        future: _checkToken(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
               child: CircularProgressIndicator(),
-            )
-          : _isLoggedIn
-              ? const MainMenu()
-              : const Login(title: 'Login'),
+            );
+          } else if (snapshot.hasError) {
+            return Center(
+              child: Text('An error occurred: ${snapshot.error}'),
+            );
+          } else if (snapshot.hasData && snapshot.data!) {
+            return const MainMenu();
+          } else {
+            return const Login(title: 'Login');
+          }
+        },
+      ),
     );
   }
 }
