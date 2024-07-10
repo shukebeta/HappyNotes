@@ -9,7 +9,7 @@ class DialogService {
 
   static Future<bool?> showConfirmDialog(
     BuildContext context, {
-    String title = '',
+    String title = 'Yes to confirm.',
     String text = "Are you sure?",
     String noText = 'Cancel',
     String yesText = 'Yes',

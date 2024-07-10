@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:happy_notes/screens/initial_page.dart';
 import 'package:happy_notes/screens/main_menu.dart';
 import 'package:happy_notes/utils/token_utils.dart';
 import '../../dependency_injection.dart';
@@ -41,7 +42,7 @@ class LoginController {
         if (apiResponse['successful']) {
           // Navigate to the home page
           navigator.pushReplacement(
-            MaterialPageRoute(builder: (context) => const MainMenu()));
+            MaterialPageRoute(builder: (context) => const InitialPage()));
         } else {
           // Show error message if login fails
           scaffoldContext.showSnackBar(
