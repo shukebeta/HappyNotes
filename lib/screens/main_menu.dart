@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:happy_notes/screens/discovery/discovery.dart';
 import 'package:happy_notes/screens/initial_page.dart';
 import 'package:happy_notes/screens/navigation/rail_navigation.dart';
@@ -6,6 +7,7 @@ import 'package:happy_notes/screens/settings/settings.dart';
 import 'package:lazy_load_indexed_stack/lazy_load_indexed_stack.dart';
 import '../app_config.dart';
 import '../entities/note.dart';
+import '../services/dialog_services.dart';
 import 'home_page/home_page.dart';
 import 'memories/memories.dart';
 import 'navigation/bottom_navigation.dart';
@@ -124,27 +126,38 @@ class MainMenuState extends State<MainMenu> {
   Widget build(BuildContext context) {
     final isDesktop = MediaQuery.of(context).size.width >= 600;
 
-    return Scaffold(
-      // appBar: AppBar(
-      //   title: const Text(kAppBarTitle),
-      // ),
-      body: Row(
-        children: [
-          if (isDesktop) RailNavigation(selectedIndex: _selectedIndex, onDestinationSelected: switchToPage),
-          Expanded(
-            child: _getPage(_selectedIndex),
-          ),
-        ],
-      ),
-      bottomNavigationBar: isDesktop
-          ? null
-          : Padding(
-              padding: const EdgeInsets.fromLTRB(2, 0, 2, 4),
-              child: BottomNavigation(
-                currentIndex: _selectedIndex,
-                onTap: switchToPage,
-              ),
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (bool didPop) async {
+        if (!didPop) {
+          final navigator = Navigator.of(context);
+          if (true == await DialogService.showConfirmDialog(context, title: 'Yes to quit Happy Notes')) {
+            SystemNavigator.pop();
+          }
+        }
+      },
+      child: Scaffold(
+        // appBar: AppBar(
+        //   title: const Text(kAppBarTitle),
+        // ),
+        body: Row(
+          children: [
+            if (isDesktop) RailNavigation(selectedIndex: _selectedIndex, onDestinationSelected: switchToPage),
+            Expanded(
+              child: _getPage(_selectedIndex),
             ),
+          ],
+        ),
+        bottomNavigationBar: isDesktop
+            ? null
+            : Padding(
+                padding: const EdgeInsets.fromLTRB(2, 0, 2, 4),
+                child: BottomNavigation(
+                  currentIndex: _selectedIndex,
+                  onTap: switchToPage,
+                ),
+              ),
+      ),
     );
   }
 }
