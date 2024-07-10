@@ -12,40 +12,33 @@ class InitialPage extends StatefulWidget {
 }
 
 class InitialPageState extends State<InitialPage> {
-  final AccountService accountService = locator<AccountService>();
+  final accountService = locator<AccountService>();
 
-  Future<bool> _checkToken() async {
-    try {
-      if (await accountService.isValidToken()) {
-        await accountService.setUserSession();
-        return true;
-      }
-    } catch (e) {
-      // Handle the error appropriately
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _navigateBasedOnToken();
+  }
+
+  Future<void> _navigateBasedOnToken() async {
+    var navigator = Navigator.of(context);
+    if (await accountService.isValidToken()) {
+      await accountService.setUserSession();
+      navigator.pushReplacement(
+        MaterialPageRoute(builder: (context) => const MainMenu()),
+      );
+    } else {
+      navigator.pushReplacement(
+        MaterialPageRoute(builder: (context) => const Login(title: 'Login')),
+      );
     }
-    return false;
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: FutureBuilder<bool>(
-        future: _checkToken(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          } else if (snapshot.hasError) {
-            return Center(
-              child: Text('An error occurred: ${snapshot.error}'),
-            );
-          } else if (snapshot.hasData && snapshot.data!) {
-            return const MainMenu();
-          } else {
-            return const Login(title: 'Login');
-          }
-        },
+    return const Scaffold(
+      body: Center(
+        child: CircularProgressIndicator(),
       ),
     );
   }
