@@ -14,33 +14,40 @@ class InitialPage extends StatefulWidget {
 
 class InitialPageState extends State<InitialPage> {
   final accountService = locator<AccountService>();
+  bool _isLoading = true;
+  bool _isLoggedIn = false;
 
   @override
-  void initState() {
-    super.initState();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     _navigateBasedOnToken();
   }
 
   Future<void> _navigateBasedOnToken() async {
     var navigator = Navigator.of(context);
-    if (await accountService.isValidToken()) {
-      await accountService.setUserSession();
-      navigator.pushReplacement(
-        MaterialPageRoute(builder: (context) => const MainMenu()),
-      );
-    } else {
-      navigator.pushReplacement(
-        MaterialPageRoute(builder: (context) => const Login(title: 'Login')),
-      );
+    try {
+      if (await accountService.isValidToken()) {
+        await accountService.setUserSession();
+        _isLoggedIn = true;
+      } else {
+        _isLoggedIn = false;
+      }
+    } finally {
+      _isLoading = false;
     }
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
-        child: CircularProgressIndicator(),
-      ),
+    return Scaffold(
+      body: _isLoading
+          ? const Center(
+              child: CircularProgressIndicator(),
+            )
+          : _isLoggedIn
+              ? const MainMenu()
+              : const Login(title: 'Login'),
     );
   }
 }
