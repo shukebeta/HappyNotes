@@ -12,7 +12,12 @@ class MarkdownBodyHere extends StatelessWidget {
     return MarkdownBody(
       data: data,
       styleSheet: MarkdownStyleSheet(
-        p: const TextStyle(fontSize: 16.0),
+        p: const TextStyle(
+          fontStyle: FontStyle.normal,
+          fontSize: 16,
+          height: 1.6,
+          color: Colors.black,
+        ),
         codeblockDecoration: BoxDecoration(
           color: Colors.grey.shade200,
           borderRadius: BorderRadius.circular(4.0),

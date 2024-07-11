@@ -37,9 +37,9 @@ class NoteListItem extends StatelessWidget {
                       : RichText(
                           text: TextSpan(
                             text: note.content + (note.isLong ? '...more' : ''),
-                            style: TextStyle(
-                              fontStyle: note.isPrivate ? FontStyle.italic : FontStyle.normal,
-                              fontSize: 20,
+                            style: const TextStyle(
+                              fontStyle: FontStyle.normal,
+                              fontSize: 16,
                               height: 1.6,
                               color: Colors.black,
                             ),
