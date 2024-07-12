@@ -39,6 +39,7 @@ class NoteListItem extends StatelessWidget {
                             text: note.content + (note.isLong ? '...more' : ''),
                             style: const TextStyle(
                               fontStyle: FontStyle.normal,
+                              fontWeight: FontWeight.normal,
                               fontSize: 16,
                               height: 1.6,
                               color: Colors.black,

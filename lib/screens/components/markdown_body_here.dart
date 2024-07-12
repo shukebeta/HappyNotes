@@ -15,6 +15,7 @@ class MarkdownBodyHere extends StatelessWidget {
         p: const TextStyle(
           fontStyle: FontStyle.normal,
           fontSize: 16,
+          fontWeight: FontWeight.normal,
           height: 1.6,
           color: Colors.black,
         ),
