@@ -33,6 +33,11 @@ class AppConfig {
     return timezone ?? 'Pacific/Auckland';
   }
 
+  static String get fontFamily {
+    final fontFamily = UserSession().settings(AppConstants.fontFamily);
+    return fontFamily ?? 'Varela';
+  }
+
   // Map to store property access functions
   static final Map<String, dynamic Function()> _propertyAccessors = {
     AppConstants.baseUrl: () => baseUrl,
@@ -41,6 +46,7 @@ class AppConfig {
     AppConstants.privateNoteOnlyIsEnabled: () => privateNoteOnlyIsEnabled,
     AppConstants.quietErrorCode: () => quietErrorCode,
     AppConstants.timezone: () => timezone,
+    AppConstants.fontFamily: () => fontFamily,
   };
 
   // Method to get property value by name

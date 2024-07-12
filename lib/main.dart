@@ -10,6 +10,7 @@ import 'package:quick_actions/quick_actions.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'dart:io' show Platform;
 
+import 'app_config.dart';
 import 'models/note_model.dart';
 
 void main() async {
@@ -87,6 +88,8 @@ class HappyNotesState extends State<HappyNotesApp> {
       navigatorKey: navigatorKey,
       title: 'Happy Notes',
       theme: ThemeData(
+        fontFamily: AppConfig.fontFamily,
+        textTheme: Theme.of(context).textTheme.apply(fontFamily: AppConfig.fontFamily),
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
