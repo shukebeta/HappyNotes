@@ -89,7 +89,14 @@ class HappyNotesState extends State<HappyNotesApp> {
       title: 'Happy Notes',
       theme: ThemeData(
         fontFamily: AppConfig.fontFamily,
-        textTheme: Theme.of(context).textTheme.apply(fontFamily: AppConfig.fontFamily),
+        textTheme: Theme.of(context).textTheme.apply(fontFamily: AppConfig.fontFamily).copyWith(
+              titleLarge: const TextStyle(fontSize: 19.0),
+              titleMedium: const TextStyle(fontSize: 17.0),
+              titleSmall: const TextStyle(fontSize: 15.0),
+              bodyLarge: const TextStyle(fontSize: 16.0),
+              bodyMedium: const TextStyle(fontSize: 14.0),
+              bodySmall: const TextStyle(fontSize: 12.0),
+            ),
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),

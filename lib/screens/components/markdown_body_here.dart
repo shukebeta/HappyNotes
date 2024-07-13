@@ -13,11 +13,8 @@ class MarkdownBodyHere extends StatelessWidget {
       data: data,
       styleSheet: MarkdownStyleSheet(
         p: const TextStyle(
-          fontStyle: FontStyle.normal,
           fontSize: 16,
-          fontWeight: FontWeight.normal,
           height: 1.6,
-          color: Colors.black,
         ),
         codeblockDecoration: BoxDecoration(
           color: Colors.grey.shade200,
@@ -27,9 +24,8 @@ class MarkdownBodyHere extends StatelessWidget {
           backgroundColor: Colors.grey.shade100,
           color: Colors.purple.shade900,
           fontFamily: 'monospace',
+          fontSize: 16,
         ),
-        h1: const TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
-        h2: const TextStyle(fontSize: 22.0, fontWeight: FontWeight.bold),
       ),
       onTapLink: (text, url, title) {
         if (url != null) {
