@@ -1,4 +1,5 @@
 import '../utils/util.dart';
+import 'user.dart'; // Assuming User class is defined in user.dart
 
 class Note {
   final int id;
@@ -9,9 +10,12 @@ class Note {
   final bool isMarkdown;
   final int createAt; // You can change the type to DateTime if needed
 
+  User? user; // Adding User property
+  List<String>? tags;
+
   // yyyy-MM-dd format
   String get createDate => Util.formatUnixTimestampToLocalDate(createAt, 'yyyy-MM-dd');
-  // HH:mm formatDate
+  // HH:mm format
   String get createTime => Util.formatUnixTimestampToLocalDate(createAt, 'HH:mm');
 
   String get formattedContent => content
@@ -26,7 +30,10 @@ class Note {
     required this.isLong,
     required this.isMarkdown,
     required this.createAt,
+    this.user,
+    this.tags,
   });
+
   factory Note.fromJson(Map<String, dynamic> json) {
     return Note(
       id: json['id'],
@@ -36,6 +43,8 @@ class Note {
       isLong: json['isLong'],
       isMarkdown: json['isMarkdown'],
       createAt: json['createAt'],
+      user: User.fromJson(json['user']), // Parsing User object from JSON
+      tags: json['tags'].cast<String>(),
     );
   }
 }
