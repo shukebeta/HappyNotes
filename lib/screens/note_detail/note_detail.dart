@@ -66,43 +66,52 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
       onPopInvoked: (didPop) => _controller.onPopHandler(context, didPop),
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Note Details'),
-          actions: [
-            if (widget.note.userId == UserSession().id)
-              if (_controller.isEditing)
-                IconButton(
-                  icon: const Icon(Icons.check),
-                  onPressed: () {
-                    final noteModel = context.read<NoteModel>();
-                    _controller.saveNote(
-                      context,
-                      widget.note.id,
-                      noteModel.isPrivate,
-                      noteModel.isMarkdown,
-                      Navigator.of(context).pop,
-                    );
-                  },
-                )
-              else
-                IconButton(
-                  icon: const Icon(Icons.edit),
-                  onPressed: _enterEditingMode,
+      title: const Text('Note Details'),
+      actions: [
+        if (widget.note.userId == UserSession().id) ...[
+          if (_controller.isEditing)
+            IconButton(
+              icon: const Icon(Icons.check),
+              onPressed: () {
+                final noteModel = context.read<NoteModel>();
+                _controller.saveNote(
+                  context,
+                  widget.note.id,
+                  noteModel.isPrivate,
+                  noteModel.isMarkdown,
+                  Navigator.of(context).pop,
+                );
+              },
+            )
+          else
+            IconButton(
+              icon: const Icon(Icons.edit),
+              onPressed: _enterEditingMode,
+            ),
+          PopupMenuButton<String>(
+            onSelected: (value) async {
+              if (value == 'delete') {
+                await DialogService.showConfirmDialog(
+                  context,
+                  title: 'Delete note',
+                  text: 'Each note is a story, are you sure you want to delete it?',
+                  yesCallback: () => _controller.deleteNote(context, widget.note.id),
+                );
+              }
+            },
+            itemBuilder: (BuildContext context) {
+              return [
+                const PopupMenuItem<String>(
+                  value: 'delete',
+                  child: Text('Delete'),
                 ),
-            if (widget.note.userId == UserSession().id)
-              IconButton(
-                icon: const Icon(Icons.delete),
-                onPressed: () async {
-                  await DialogService.showConfirmDialog(
-                    context,
-                    title: 'Delete note',
-                    text: 'Each note is a story, are you sure you want to delete it?',
-                    yesCallback: () => _controller.deleteNote(context, widget.note.id),
-                  );
-                },
-              ),
-          ],
-        ),
-        body: GestureDetector(
+              ];
+            },
+          ),
+        ],
+      ],
+    ),
+    body: GestureDetector(
           onDoubleTap: _enterEditingMode,
           child: Padding(
             padding: const EdgeInsets.all(16.0),
