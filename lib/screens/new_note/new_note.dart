@@ -9,9 +9,10 @@ import '../components/note_view_edit.dart';
 class NewNote extends StatefulWidget {
   final bool initialIsPrivate;
   final bool initialIsMarkdown;
+  final String? initialTag;
   final SaveNoteCallback? onNoteSaved;
 
-  const NewNote({Key? key, required this.initialIsMarkdown, required this.initialIsPrivate, this.onNoteSaved})
+  const NewNote({Key? key, required this.initialIsMarkdown, required this.initialIsPrivate, this.onNoteSaved, this.initialTag})
       : super(key: key);
 
   @override
@@ -60,6 +61,7 @@ class NewNoteState extends State<NewNote> {
                 focusNode: _newNoteController.noteFocusNode,
                 isEditing: true,
                 isMarkdown: noteModel.isMarkdown, // Pass the isMarkdown state
+                initialTag: widget.initialTag,
               );
             },
           ),

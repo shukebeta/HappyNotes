@@ -88,6 +88,7 @@ class TagNotesState extends State<TagNotes> {
             builder: (context) => NewNote(
               initialIsMarkdown: AppConfig.markdownIsEnabled,
               initialIsPrivate: AppConfig.privateNoteOnlyIsEnabled,
+              initialTag: widget.tag,
               onNoteSaved: (note) async {
                 navigator.pop();
                 if (isFirstPage) {

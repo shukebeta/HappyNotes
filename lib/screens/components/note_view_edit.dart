@@ -7,6 +7,7 @@ class NoteViewEdit extends StatefulWidget {
   final FocusNode focusNode;
   final bool isEditing;
   final bool isMarkdown;
+  final String? initialTag;
 
   const NoteViewEdit({
     Key? key,
@@ -14,6 +15,7 @@ class NoteViewEdit extends StatefulWidget {
     required this.focusNode,
     required this.isEditing,
     required this.isMarkdown,
+    this.initialTag,
   }) : super(key: key);
 
   @override
@@ -27,6 +29,7 @@ class NoteViewEditState extends State<NoteViewEdit> {
         ? NoteEdit(
       controller: widget.controller,
       focusNode: widget.focusNode,
+      initialTag: widget.initialTag,
     )
         : NoteView(
       controller: widget.controller,
