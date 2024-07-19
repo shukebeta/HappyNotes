@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:happy_notes/screens/note_detail/note_detail.dart';
-import 'package:happy_notes/screens/tag_notes/tag_notes.dart';
+import 'package:happy_notes/screens/tag_notes/tag_notes_controller.dart';
 import '../../app_config.dart';
 import '../components/floating_pagination.dart';
 import '../components/note_list.dart';
@@ -8,28 +8,29 @@ import '../components/pagination_controls.dart';
 import '../../dependency_injection.dart';
 import '../account/user_session.dart';
 import '../new_note/new_note.dart';
-import 'home_page_controller.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+class TagNotes extends StatefulWidget {
+  final String tag;
+  final bool myNotesOnly;
+  const TagNotes({super.key, required this.tag, required this.myNotesOnly});
 
   @override
-  HomePageState createState() => HomePageState();
+  TagNotesState createState() => TagNotesState();
 }
 
-class HomePageState extends State<HomePage> {
-  late HomePageController _homePageController;
+class TagNotesState extends State<TagNotes> {
+  late TagNotesController _tagNotesController;
   int currentPageNumber = 1;
   bool showPageSelector = false;
 
   bool get isFirstPage => currentPageNumber == 1;
 
-  bool get isLastPage => currentPageNumber == _homePageController.totalPages;
+  bool get isLastPage => currentPageNumber == _tagNotesController.totalPages;
 
   @override
   void initState() {
     super.initState();
-    _homePageController = locator<HomePageController>();
+    _tagNotesController = locator<TagNotesController>();
   }
 
   @override
@@ -39,8 +40,8 @@ class HomePageState extends State<HomePage> {
   }
 
   Future<bool> navigateToPage(int pageNumber) async {
-    if (pageNumber >= 1 && pageNumber <= _homePageController.totalPages) {
-      await _homePageController.loadNotes(context, pageNumber);
+    if (pageNumber >= 1 && pageNumber <= _tagNotesController.totalPages) {
+      await _tagNotesController.loadNotes(context, widget.tag, pageNumber, widget.myNotesOnly);
       setState(() {
         currentPageNumber = pageNumber;
         showPageSelector = false;
@@ -58,16 +59,16 @@ class HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     var isDesktop = MediaQuery.of(context).size.width >= 600;
     return Scaffold(
-      appBar: AppBar(title: const Text('My Notes'), actions: [
+      appBar: AppBar(title: Text('My Tag: ${widget.tag}'), actions: [
         _buildNewNoteButton(context),
       ]),
       body: Stack(
         children: [
           _buildBody(isDesktop),
-          if (_homePageController.totalPages > 1 && !isDesktop)
+          if (_tagNotesController.totalPages > 1 && !isDesktop)
             FloatingPagination(
               currentPage: currentPageNumber,
-              totalPages: _homePageController.totalPages,
+              totalPages: _tagNotesController.totalPages,
               navigateToPage: navigateToPage,
             ),
         ],
@@ -119,11 +120,11 @@ class HomePageState extends State<HomePage> {
   }
 
   Widget _buildBody(bool isDesktop) {
-    if (_homePageController.isLoading) {
+    if (_tagNotesController.isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
 
-    if (_homePageController.notes.isEmpty) {
+    if (_tagNotesController.notes.isEmpty) {
       return const Center(child: Text('No notes available. Create a new note to get started.'));
     }
 
@@ -132,7 +133,7 @@ class HomePageState extends State<HomePage> {
       children: [
         Expanded(
           child: NoteList(
-            notes: _homePageController.notes,
+            notes: _tagNotesController.notes,
             onTap: (note) async {
               await Navigator.push(
                 context,
@@ -151,21 +152,13 @@ class HomePageState extends State<HomePage> {
               );
               navigateToPage(currentPageNumber);
             },
-            onTagTap: (tag) async {
-              await Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => TagNotes(tag: tag, myNotesOnly: true,),
-                ),
-              );
-            },
             onRefresh: () async => await navigateToPage(currentPageNumber),
           ),
         ),
-        if (_homePageController.totalPages > 1 && isDesktop)
+        if (_tagNotesController.totalPages > 1 && isDesktop)
           PaginationControls(
             currentPage: currentPageNumber,
-            totalPages: _homePageController.totalPages,
+            totalPages: _tagNotesController.totalPages,
             onPreviousPage: () => navigateToPage(currentPageNumber - 1),
             onNextPage: () => navigateToPage(currentPageNumber + 1),
           ),

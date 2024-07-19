@@ -7,6 +7,7 @@ class NoteList extends StatelessWidget {
   final List<Note> notes;
   final Function(Note) onTap;
   final Function(Note)? onDoubleTap;
+  final Function(String tag)? onTagTap;
   final Future<void> Function()? onRefresh;
   final bool showDate;
   final bool showAuthor;
@@ -17,6 +18,7 @@ class NoteList extends StatelessWidget {
     required this.notes,
     required this.onTap,
     this.onDoubleTap,
+    this.onTagTap,
     this.onRefresh,
     this.showDate = true,
     this.showAuthor = false,
@@ -76,6 +78,7 @@ class NoteList extends StatelessWidget {
                         note: note,
                         onTap: () => onTap(note),
                         onDoubleTap: onDoubleTap != null ? () => onDoubleTap!(note) : null,
+                        onTagTap: onTagTap,
                       ),
                     ),
                   ],

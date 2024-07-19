@@ -19,6 +19,13 @@ class NotesService {
     return _getPagedNotesResult(apiResult);
   }
 
+  // fetch tag notes (mine or all)
+  Future<NotesResult> tagNotes(String tag, int pageSize, int pageNumber, bool myNotesOnly) async {
+    var params = {'tag': tag, 'pageSize': pageSize, 'pageNumber': pageNumber};
+    var apiResult = myNotesOnly ? (await NotesApi.myTagNotes(params)).data : (await NotesApi.tagNotes(params));
+    return _getPagedNotesResult(apiResult);
+  }
+
   // fetch my latest notes (include private ones)
   Future<NotesResult> memories() async {
     var params = {'localTimeZone': AppConfig.timezone};
