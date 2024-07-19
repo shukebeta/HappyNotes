@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-
 import '../../entities/note.dart';
 import 'note_list_item.dart';
 

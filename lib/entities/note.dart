@@ -44,7 +44,7 @@ class Note {
       isMarkdown: json['isMarkdown'],
       createAt: json['createAt'],
       user: User.fromJson(json['user']), // Parsing User object from JSON
-      tags: json['tags'].cast<String>(),
+      tags: json['tags']?.split(' ') ?? [],
     );
   }
 }

@@ -5,3 +5,4 @@ import 'entities/note.dart';
 
 typedef VoidCallbackWithNullableIntParameter = void Function(int? value);
 typedef SaveNoteCallback = void Function(Note note);
+typedef VoidTagTap = void Function(String tag);
