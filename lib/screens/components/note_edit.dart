@@ -7,13 +7,11 @@ import '../../models/note_model.dart';
 class NoteEdit extends StatefulWidget {
   final TextEditingController controller;
   final FocusNode focusNode;
-  final String? initialTag;
 
   const NoteEdit({
     Key? key,
     required this.controller,
     required this.focusNode,
-    this.initialTag,
   }) : super(key: key);
 
   @override
@@ -27,8 +25,9 @@ class NoteEditState extends State<NoteEdit> {
   void initState() {
     super.initState();
     final noteModel = context.read<NoteModel>();
-    if (widget.initialTag != null) {
-      widget.controller.text = '#${widget.initialTag!}\n${widget.controller.text}';
+    if (noteModel.initialTag != null) {
+      widget.controller.text = '#${noteModel.initialTag}\n${widget.controller.text}';
+      noteModel.resetInitialTag(); // Reset after use
     }
     prompt = HappyNotesPrompts.getRandom(noteModel.isPrivate);
     widget.focusNode.addListener(_onFocusChange);

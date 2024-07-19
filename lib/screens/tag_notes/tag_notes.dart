@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:happy_notes/screens/note_detail/note_detail.dart';
 import 'package:happy_notes/screens/tag_notes/tag_notes_controller.dart';
-import '../../app_config.dart';
+import '../../models/note_model.dart';
 import '../components/floating_pagination.dart';
 import '../components/note_list.dart';
 import '../components/pagination_controls.dart';
 import '../../dependency_injection.dart';
 import '../account/user_session.dart';
 import '../new_note/new_note.dart';
+import 'package:provider/provider.dart';
 
 class TagNotes extends StatefulWidget {
   final String tag;
@@ -31,6 +32,8 @@ class TagNotesState extends State<TagNotes> {
   void initState() {
     super.initState();
     _tagNotesController = locator<TagNotesController>();
+    var noteModel = context.read<NoteModel>();
+    noteModel.initialTag = widget.tag;
   }
 
   @override
@@ -58,6 +61,7 @@ class TagNotesState extends State<TagNotes> {
   @override
   Widget build(BuildContext context) {
     var isDesktop = MediaQuery.of(context).size.width >= 600;
+
     return Scaffold(
       appBar: AppBar(title: Text('My Tag: ${widget.tag}'), actions: [
         _buildNewNoteButton(context),
@@ -86,9 +90,6 @@ class TagNotesState extends State<TagNotes> {
           context,
           MaterialPageRoute(
             builder: (context) => NewNote(
-              initialIsMarkdown: AppConfig.markdownIsEnabled,
-              initialIsPrivate: AppConfig.privateNoteOnlyIsEnabled,
-              initialTag: widget.tag,
               onNoteSaved: (note) async {
                 navigator.pop();
                 if (isFirstPage) {

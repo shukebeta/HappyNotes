@@ -121,7 +121,6 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
                   controller: _controller.noteController,
                   focusNode: _controller.noteFocusNode,
                   isEditing: _controller.isEditing,
-                  isMarkdown: noteModel.isMarkdown, // Pass the isMarkdown state
                 );
               },
             ),

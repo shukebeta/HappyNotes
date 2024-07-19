@@ -1,28 +1,39 @@
 import 'package:flutter/material.dart';
 
-class NoteModel with ChangeNotifier {
+class NoteModel extends ChangeNotifier {
   bool _isPrivate;
   bool _isMarkdown;
+  String? _initialTag;
 
-  NoteModel({bool isPrivate = true, bool isMarkdown = false})
-      : _isPrivate = isPrivate,
-        _isMarkdown = isMarkdown;
+  NoteModel({
+    bool isPrivate = true,
+    bool isMarkdown = false,
+    String? initialTag,
+  })  : _isPrivate = isPrivate,
+        _isMarkdown = isMarkdown,
+        _initialTag = initialTag;
 
   bool get isPrivate => _isPrivate;
+  bool get isMarkdown => _isMarkdown;
+  String? get initialTag => _initialTag;
 
   set isPrivate(bool value) {
-    if (_isPrivate != value) {
-      _isPrivate = value;
-      notifyListeners(); // Notify listeners about the change
-    }
+    _isPrivate = value;
+    notifyListeners();
   }
 
-  bool get isMarkdown => _isMarkdown;
-
   set isMarkdown(bool value) {
-    if (_isMarkdown != value) {
-      _isMarkdown = value;
-      notifyListeners(); // Notify listeners about the change
-    }
+    _isMarkdown = value;
+    notifyListeners();
+  }
+
+  set initialTag(String? value) {
+    _initialTag = value;
+    notifyListeners();
+  }
+
+  void resetInitialTag() {
+    _initialTag = null;
+    notifyListeners();
   }
 }

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:happy_notes/app_config.dart';
 import 'package:happy_notes/screens/note_detail/note_detail.dart';
 import 'package:happy_notes/screens/tag_notes/tag_notes.dart';
-import '../../app_config.dart';
+import '../../models/note_model.dart';
 import '../components/floating_pagination.dart';
 import '../components/note_list.dart';
 import '../components/pagination_controls.dart';
@@ -9,6 +10,7 @@ import '../../dependency_injection.dart';
 import '../account/user_session.dart';
 import '../new_note/new_note.dart';
 import 'home_page_controller.dart';
+import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -81,12 +83,12 @@ class HomePageState extends State<HomePage> {
       onPressed: () async {
         final scaffoldContext = ScaffoldMessenger.of(context);
         final navigator = Navigator.of(context);
+        var noteModel = context.read<NoteModel>();
+        noteModel.isPrivate = AppConfig.privateNoteOnlyIsEnabled;
         await Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => NewNote(
-              initialIsMarkdown: AppConfig.markdownIsEnabled,
-              initialIsPrivate: AppConfig.privateNoteOnlyIsEnabled,
               onNoteSaved: (note) async {
                 navigator.pop();
                 if (isFirstPage) {

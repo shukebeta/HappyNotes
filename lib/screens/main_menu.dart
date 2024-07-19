@@ -50,8 +50,6 @@ class MainMenuState extends State<MainMenu> {
         Memories(key: memoriesKey),
         NewNote(
           key: newNoteKey,
-          initialIsMarkdown: AppConfig.markdownIsEnabled,
-          initialIsPrivate: true,
           onNoteSaved: _onNoteSaved,
         ),
         const Discovery(),

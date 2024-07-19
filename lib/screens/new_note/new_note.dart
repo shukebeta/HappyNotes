@@ -1,18 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:happy_notes/screens/new_note/new_note_controller.dart';
+import '../../app_config.dart';
 import '../../dependency_injection.dart';
 import '../../models/note_model.dart';
 import '../../typedefs.dart';
 import '../components/note_view_edit.dart';
 
 class NewNote extends StatefulWidget {
-  final bool initialIsPrivate;
-  final bool initialIsMarkdown;
-  final String? initialTag;
   final SaveNoteCallback? onNoteSaved;
 
-  const NewNote({Key? key, required this.initialIsMarkdown, required this.initialIsPrivate, this.onNoteSaved, this.initialTag})
+  const NewNote({Key? key, this.onNoteSaved})
       : super(key: key);
 
   @override
@@ -25,9 +23,10 @@ class NewNoteState extends State<NewNote> {
   @override
   void initState() {
     super.initState();
-    final noteModel = context.read<NoteModel>();
-    noteModel.isPrivate = widget.initialIsPrivate;
-    noteModel.isMarkdown = widget.initialIsMarkdown;
+    var noteModel = context.read<NoteModel>();
+    if (AppConfig.privateNoteOnlyIsEnabled) {
+      noteModel.isPrivate = true;
+    }
     setFocus(true);
   }
 
@@ -41,6 +40,7 @@ class NewNoteState extends State<NewNote> {
 
   @override
   Widget build(BuildContext context) {
+    final noteModel = context.read<NoteModel>();
     return PopScope(
       canPop: false,
       onPopInvoked: (didPop) => _newNoteController.onPopHandler(context, didPop),
@@ -60,8 +60,6 @@ class NewNoteState extends State<NewNote> {
                 controller: _newNoteController.noteController,
                 focusNode: _newNoteController.noteFocusNode,
                 isEditing: true,
-                isMarkdown: noteModel.isMarkdown, // Pass the isMarkdown state
-                initialTag: widget.initialTag,
               );
             },
           ),
