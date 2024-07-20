@@ -23,7 +23,7 @@ class NoteDetail extends StatefulWidget {
 
 class NoteDetailState extends State<NoteDetail> with RouteAware {
   late NoteDetailController _controller;
-  late Note note;
+  Note? note;
 
   @override
   void initState() {
@@ -55,10 +55,20 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
 
   @override
   Widget build(BuildContext context) {
+    if (note == null) {
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text('Note Details'),
+        ),
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
+
     var noteModel = NoteModel();
     noteModel.isPrivate = widget.note.isPrivate;
     noteModel.isMarkdown = widget.note.isMarkdown;
-    noteModel.content = note.content;
+    noteModel.content = note!.content;
+
     return ChangeNotifierProvider(
         create: (_) => noteModel,
         builder: (context, child) {
@@ -115,7 +125,7 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
                   padding: const EdgeInsets.all(16.0),
                   child: Consumer<NoteModel>(
                     builder: (context, noteModel, child) {
-                      return _controller.isEditing ? NoteEdit(note: note) : NoteView(note: note);
+                      return _controller.isEditing ? NoteEdit(note: note!) : NoteView(note: note!);
                     },
                   ),
                 ),

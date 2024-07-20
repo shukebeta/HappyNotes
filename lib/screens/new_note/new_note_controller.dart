@@ -12,8 +12,6 @@ class NewNoteController {
   final NotesService _notesService;
 
   NewNoteController({required NotesService notesService}) : _notesService = notesService;
-  final TextEditingController noteController = TextEditingController();
-  final FocusNode noteFocusNode = FocusNode();
 
   Future<void> saveNote(BuildContext context, SaveNoteCallback? onNoteSaved) async {
     final scaffoldContext = ScaffoldMessenger.of(context);
@@ -23,7 +21,6 @@ class NewNoteController {
       return;
     }
     try {
-      var navigator = Navigator.of(context);
       var content = noteModel.content;
       var isLong = content.length < 1024;
       final noteId = await _notesService.post(content, noteModel.isPrivate, noteModel.isMarkdown);

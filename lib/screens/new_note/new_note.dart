@@ -23,15 +23,6 @@ class NewNoteState extends State<NewNote> {
   @override
   void initState() {
     super.initState();
-    setFocus(true);
-  }
-
-  void setFocus(bool targetFocusStatus) {
-    if (targetFocusStatus) {
-      _newNoteController.noteFocusNode.requestFocus();
-    } else {
-      _newNoteController.noteFocusNode.unfocus();
-    }
   }
 
   @override

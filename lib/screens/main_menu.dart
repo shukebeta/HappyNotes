@@ -95,15 +95,11 @@ class MainMenuState extends State<MainMenu> {
   }
 
   void switchToPage(int index) {
-    if (_selectedIndex == indexNewNote && index != indexNewNote) {
-      newNoteKey.currentState?.setFocus(false);
-    }
     setState(() {
       _selectedIndex = index;
     });
     switch (index) {
       case indexNewNote:
-        Future.delayed(const Duration(milliseconds: 550), () => newNoteKey.currentState?.setFocus(true));
         break;
       case indexNotes:
         homePageKey.currentState?.refreshPage();
@@ -128,7 +124,6 @@ class MainMenuState extends State<MainMenu> {
       canPop: false,
       onPopInvoked: (bool didPop) async {
         if (!didPop) {
-          final navigator = Navigator.of(context);
           if (true == await DialogService.showConfirmDialog(context, title: 'Yes to quit Happy Notes')) {
             SystemNavigator.pop();
           }
