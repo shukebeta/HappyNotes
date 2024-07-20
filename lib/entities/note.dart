@@ -43,7 +43,7 @@ class Note {
       isLong: json['isLong'],
       isMarkdown: json['isMarkdown'],
       createAt: json['createAt'],
-      user: User.fromJson(json['user']), // Parsing User object from JSON
+      user: json['user'] != null ? User.fromJson(json['user']) : null, // Parsing User object from JSON
       tags: json['tags']?.split(' ') ?? [],
     );
   }
