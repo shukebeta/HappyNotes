@@ -20,13 +20,11 @@ class NoteEdit extends StatefulWidget {
 class NoteEditState extends State<NoteEdit> {
   late String prompt;
   late TextEditingController controller;
-  late FocusNode focusNode;
 
   @override
   void initState() {
     super.initState();
     controller = TextEditingController();
-    focusNode = FocusNode();
     final noteModel = context.read<NoteModel>();
     if (noteModel.initialTag != '' && widget.note == null) {
       noteModel.content = '#${noteModel.initialTag}\n';
@@ -41,14 +39,14 @@ class NoteEditState extends State<NoteEdit> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    focusNode.requestFocus();
+    final noteModel = context.read<NoteModel>();
+    noteModel.requestFocus();
   }
 
   @override
   void dispose() {
-    controller.dispose();
-    focusNode.dispose();
     super.dispose();
+    controller.dispose();
   }
 
   @override
@@ -115,7 +113,7 @@ class NoteEditState extends State<NoteEdit> {
   TextField _buildEditor(NoteModel noteModel) {
     return TextField(
       controller: controller,
-      focusNode: focusNode,
+      focusNode: noteModel.focusNode,
       keyboardType: TextInputType.multiline,
       maxLines: null,
       expands: true,
