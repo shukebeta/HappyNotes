@@ -36,9 +36,12 @@ class NoteEditState extends State<NoteEdit> {
     }
     controller.text = noteModel.content;
     prompt = HappyNotesPrompts.getRandom(noteModel.isPrivate);
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-       focusNode.requestFocus();
-    });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    focusNode.requestFocus();
   }
 
   @override
