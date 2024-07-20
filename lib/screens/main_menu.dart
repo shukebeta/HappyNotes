@@ -95,11 +95,13 @@ class MainMenuState extends State<MainMenu> {
   }
 
   void switchToPage(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
+    if (_selectedIndex == indexNewNote && index != indexNewNote) {
+      // Unfocus when switching away from NewNote page
+      FocusScope.of(context).unfocus();
+    }
     switch (index) {
       case indexNewNote:
+        Future.delayed(const Duration(milliseconds: 150), () => FocusScope.of(context).requestFocus());
         break;
       case indexNotes:
         homePageKey.currentState?.refreshPage();
@@ -114,6 +116,10 @@ class MainMenuState extends State<MainMenu> {
         settingsKey.currentState?.setState(() {});
         break;
     }
+
+    setState(() {
+      _selectedIndex = index;
+    });
   }
 
   @override

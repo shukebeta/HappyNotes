@@ -26,6 +26,13 @@ class NewNoteState extends State<NewNote> {
   }
 
   @override
+  void dispose() {
+    final noteModel = context.read<NoteModel>();
+    noteModel.unfocus();  // Unfocus the text field when the widget is disposed
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     var noteModel = NoteModel();
     noteModel.isPrivate = widget.isPrivate;

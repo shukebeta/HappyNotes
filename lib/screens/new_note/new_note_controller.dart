@@ -24,6 +24,8 @@ class NewNoteController {
       var content = noteModel.content;
       var isLong = content.length < 1024;
       final noteId = await _notesService.post(content, noteModel.isPrivate, noteModel.isMarkdown);
+      noteModel.content = '';
+      noteModel.unfocus();
       if (onNoteSaved != null) {
         final note = Note(
             id: noteId,
@@ -44,8 +46,10 @@ class NewNoteController {
     if (!didPop) {
       final noteModel = context.read<NoteModel>();
       final navigator = Navigator.of(context);
+      var focusScopeNode = FocusScope.of(context);
       if (noteModel.content.isEmpty ||
           (noteModel.content.isNotEmpty && (await DialogService.showUnsavedChangesDialog(context) ?? false))) {
+        focusScopeNode.unfocus();
         navigator.pop();
       }
     }

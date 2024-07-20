@@ -19,11 +19,11 @@ class MemoriesState extends State<Memories> with RouteAware {
 
   @override
   void initState() {
+    super.initState();
     _memoriesController = MemoriesController(locator<NotesService>());
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       UserSession.routeObserver.subscribe(this, ModalRoute.of(context)!);
     });
-    super.initState();
   }
 
   @override
