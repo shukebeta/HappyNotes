@@ -3,8 +3,10 @@ import 'package:happy_notes/services/dialog_services.dart';
 import 'package:flutter/material.dart';
 import 'package:happy_notes/typedefs.dart';
 import '../../entities/note.dart';
+import '../../models/note_model.dart';
 import '../../services/notes_services.dart';
 import '../../utils/util.dart';
+import 'package:provider/provider.dart';
 
 class NewNoteController {
   final NotesService _notesService;
@@ -13,30 +15,27 @@ class NewNoteController {
   final TextEditingController noteController = TextEditingController();
   final FocusNode noteFocusNode = FocusNode();
 
-  bool get nothingToSave => noteController.text.trim().isEmpty;
-
-  Future<void> saveNote(BuildContext context, bool isPrivate, bool isMarkdown, SaveNoteCallback? onNoteSaved) async {
+  Future<void> saveNote(BuildContext context, SaveNoteCallback? onNoteSaved) async {
     final scaffoldContext = ScaffoldMessenger.of(context);
-    if (nothingToSave) {
+    final noteModel = context.read<NoteModel>();
+    if (noteModel.content.trim() == '') {
       Util.showInfo(scaffoldContext, 'Please write something');
       return;
     }
     try {
       var navigator = Navigator.of(context);
-      var content = noteController.text;
+      var content = noteModel.content;
       var isLong = content.length < 1024;
-      final noteId = await _notesService.post(noteController.text, isPrivate, isMarkdown);
+      final noteId = await _notesService.post(content, noteModel.isPrivate, noteModel.isMarkdown);
       if (onNoteSaved != null) {
         final note = Note(
             id: noteId,
             userId: UserSession().id!,
             content: content,
             isLong: isLong,
-            isPrivate: isPrivate,
-            isMarkdown: isMarkdown,
+            isPrivate: noteModel.isPrivate,
+            isMarkdown: noteModel.isMarkdown,
             createAt: (DateTime.now().millisecondsSinceEpoch / 1000).round());
-        noteController.text = '';
-        noteFocusNode.unfocus();
         onNoteSaved(note);
       }
     } catch (error) {
@@ -46,16 +45,12 @@ class NewNoteController {
 
   onPopHandler(BuildContext context, bool didPop) async {
     if (!didPop) {
+      final noteModel = context.read<NoteModel>();
       final navigator = Navigator.of(context);
-      if (noteController.text.isEmpty ||
-          (noteController.text.isNotEmpty && (await DialogService.showUnsavedChangesDialog(context) ?? false))) {
+      if (noteModel.content.isEmpty ||
+          (noteModel.content.isNotEmpty && (await DialogService.showUnsavedChangesDialog(context) ?? false))) {
         navigator.pop();
       }
     }
-  }
-
-  void dispose() {
-    noteController.dispose();
-    noteFocusNode.dispose();
   }
 }

@@ -4,30 +4,27 @@ import '../../models/note_model.dart';
 import '../../services/dialog_services.dart';
 import '../../services/notes_services.dart';
 import '../../utils/util.dart';
+import 'package:provider/provider.dart';
 
 class NoteDetailController {
   final NotesService _notesService;
-  final TextEditingController noteController = TextEditingController();
-  final FocusNode noteFocusNode = FocusNode();
   late Note _originalNote;
 
-  NoteDetailController({required NotesService notesService})
-      : _notesService = notesService;
+  NoteDetailController({required NotesService notesService}) : _notesService = notesService;
 
   bool isPrivate = false;
   bool isEditing = false;
 
   Future<Note> fetchNote(int noteId) async {
     _originalNote = await _notesService.get(noteId);
-    noteController.text = isEditing? _originalNote.content : _originalNote.formattedContent;
-    isPrivate = _originalNote.isPrivate;
     return _originalNote;
   }
 
-  Future<void> saveNote(BuildContext context, int noteId, bool isPrivate, bool isMarkdown, void Function() onSuccess) async {
+  Future<void> saveNote(BuildContext context, int noteId, void Function() onSuccess) async {
     final scaffoldContext = ScaffoldMessenger.of(context);
+    var noteModel = context.read<NoteModel>();
     try {
-      await _notesService.update(noteId, noteController.text, isPrivate, isMarkdown);
+      await _notesService.update(noteId, noteModel.content, noteModel.isPrivate, noteModel.isMarkdown);
       isEditing = false;
       onSuccess();
       Util.showInfo(scaffoldContext, 'Note successfully updated.');
@@ -50,17 +47,13 @@ class NoteDetailController {
 
   onPopHandler(BuildContext context, bool didPop) async {
     if (!didPop) {
+      final noteModel = context.read<NoteModel>();
       final navigator = Navigator.of(context);
-      if (!isEditing || noteController.text == _originalNote.content ||
-          (await DialogService.showUnsavedChangesDialog(context) ?? false)
-      ) {
+      if (!isEditing ||
+          noteModel.content == _originalNote.content ||
+          (await DialogService.showUnsavedChangesDialog(context) ?? false)) {
         navigator.pop();
       }
     }
-  }
-
-  void dispose() {
-    noteController.dispose();
-    noteFocusNode.dispose();
   }
 }

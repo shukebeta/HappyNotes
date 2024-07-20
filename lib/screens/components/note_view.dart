@@ -28,7 +28,7 @@ class NoteView extends StatelessWidget {
                     data: note.content
                   )
                       : Text(
-                    note.content,
+                    note.formattedContent,
                     style: const TextStyle(fontSize: 16.0),
                   );
                 },

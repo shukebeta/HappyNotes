@@ -66,8 +66,6 @@ class NewNoteState extends State<NewNote> {
                   final noteModel = context.read<NoteModel>();
                   _newNoteController.saveNote(
                     context,
-                    noteModel.isPrivate,
-                    noteModel.isMarkdown,
                     widget.onNoteSaved,
                   );
                 },
@@ -76,11 +74,5 @@ class NewNoteState extends State<NewNote> {
             ),
           );
         });
-  }
-
-  @override
-  void dispose() {
-    _newNoteController.dispose();
-    super.dispose();
   }
 }

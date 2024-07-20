@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:happy_notes/screens/components/note_edit.dart';
 import 'package:provider/provider.dart';
-import '../../app_config.dart';
 import '../../dependency_injection.dart';
 import '../../entities/note.dart';
 import '../../models/note_model.dart';
@@ -24,21 +23,19 @@ class NoteDetail extends StatefulWidget {
 
 class NoteDetailState extends State<NoteDetail> with RouteAware {
   late NoteDetailController _controller;
+  late Note note;
 
   @override
   void initState() {
     _controller = NoteDetailController(notesService: locator<NotesService>());
     _controller.isEditing = widget.enterEditing ?? false;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_controller.isEditing) _controller.noteFocusNode.requestFocus();
-    });
     super.initState();
   }
 
   @override
   void didChangeDependencies() async {
     super.didChangeDependencies();
-    await _controller.fetchNote(widget.note.id);
+    note = await _controller.fetchNote(widget.note.id);
     setState(() {});
   }
 
@@ -46,9 +43,7 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
     if (widget.note.userId != UserSession().id) return;
     if (!_controller.isEditing) {
       _controller.isEditing = true;
-      _controller.noteFocusNode.requestFocus();
     }
-    await _controller.fetchNote(widget.note.id);
     setState(() {});
   }
 
@@ -63,6 +58,7 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
     var noteModel = NoteModel();
     noteModel.isPrivate = widget.note.isPrivate;
     noteModel.isMarkdown = widget.note.isMarkdown;
+    noteModel.setContent(note.content);
     return ChangeNotifierProvider(
         create: (_) => noteModel,
         builder: (context, child) {
@@ -78,12 +74,9 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
                       IconButton(
                         icon: const Icon(Icons.check),
                         onPressed: () {
-                          final noteModel = context.read<NoteModel>();
                           _controller.saveNote(
                             context,
                             widget.note.id,
-                            noteModel.isPrivate,
-                            noteModel.isMarkdown,
                             Navigator.of(context).pop,
                           );
                         },
@@ -122,7 +115,7 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
                   padding: const EdgeInsets.all(16.0),
                   child: Consumer<NoteModel>(
                     builder: (context, noteModel, child) {
-                      return _controller.isEditing ? NoteEdit(note: widget.note) : NoteView(note: widget.note);
+                      return _controller.isEditing ? NoteEdit(note: note) : NoteView(note: note);
                     },
                   ),
                 ),
