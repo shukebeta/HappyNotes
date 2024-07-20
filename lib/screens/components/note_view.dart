@@ -1,17 +1,16 @@
 // note_view.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../entities/note.dart';
 import '../../models/note_model.dart';
 import 'markdown_body_here.dart';
 
 class NoteView extends StatelessWidget {
-  final TextEditingController controller;
-  final bool isMarkdown;
+  final Note note;
 
   const NoteView({
     Key? key,
-    required this.controller,
-    required this.isMarkdown,
+    required this.note,
   }) : super(key: key);
 
   @override
@@ -24,12 +23,12 @@ class NoteView extends StatelessWidget {
               alignment: Alignment.topLeft,
               child: Consumer<NoteModel>(
                 builder: (context, noteModel, child) {
-                  return isMarkdown
+                  return note.isMarkdown
                       ? MarkdownBodyHere(
-                    data: controller.text
+                    data: note.content
                   )
                       : Text(
-                    controller.text,
+                    note.content,
                     style: const TextStyle(fontSize: 16.0),
                   );
                 },

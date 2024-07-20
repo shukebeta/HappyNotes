@@ -2,16 +2,15 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:happy_notes/utils/happy_notes_prompts.dart';
+import '../../entities/note.dart';
 import '../../models/note_model.dart';
 
 class NoteEdit extends StatefulWidget {
-  final TextEditingController controller;
-  final FocusNode focusNode;
+  final Note? note;
 
   const NoteEdit({
     Key? key,
-    required this.controller,
-    required this.focusNode,
+    this.note,
   }) : super(key: key);
 
   @override
@@ -20,30 +19,29 @@ class NoteEdit extends StatefulWidget {
 
 class NoteEditState extends State<NoteEdit> {
   late String prompt;
+  late TextEditingController controller;
+  late FocusNode focusNode;
 
   @override
   void initState() {
     super.initState();
+    controller = TextEditingController();
+    focusNode = FocusNode();
     final noteModel = context.read<NoteModel>();
-    if (noteModel.initialTag != null) {
-      widget.controller.text = '#${noteModel.initialTag}\n${widget.controller.text}';
+    if (noteModel.initialTag != null && widget.note == null) {
+      controller.text = '#${noteModel.initialTag}\n';
       noteModel.resetInitialTag(); // Reset after use
+    } else if (widget.note != null) {
+      controller.text = widget.note!.content;
     }
     prompt = HappyNotesPrompts.getRandom(noteModel.isPrivate);
-    widget.focusNode.addListener(_onFocusChange);
   }
 
   @override
   void dispose() {
-    widget.focusNode.removeListener(_onFocusChange);
+    controller.dispose();
+    focusNode.dispose();
     super.dispose();
-  }
-
-  void _onFocusChange() {
-    if (widget.focusNode.hasFocus) {
-      setState(() {
-      });
-    }
   }
 
   @override
@@ -105,8 +103,8 @@ class NoteEditState extends State<NoteEdit> {
 
   TextField _buildEditor() {
     return TextField(
-      controller: widget.controller,
-      focusNode: widget.focusNode,
+      controller: controller,
+      focusNode: focusNode,
       keyboardType: TextInputType.multiline,
       maxLines: null,
       expands: true,

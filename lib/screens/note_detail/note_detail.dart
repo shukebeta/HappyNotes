@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:happy_notes/screens/components/note_edit.dart';
 import 'package:provider/provider.dart';
+import '../../app_config.dart';
 import '../../dependency_injection.dart';
 import '../../entities/note.dart';
 import '../../models/note_model.dart';
 import '../../services/dialog_services.dart';
 import '../account/user_session.dart';
-import '../components/note_view_edit.dart';
+import '../components/note_view.dart';
 import '../../services/notes_services.dart';
 import 'note_detail_controller.dart';
 
@@ -58,72 +60,75 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
 
   @override
   Widget build(BuildContext context) {
-    return PopScope(
-      canPop: false,
-      onPopInvoked: (didPop) => _controller.onPopHandler(context, didPop),
-      child: Scaffold(
-        appBar: AppBar(
-      title: const Text('Note Details'),
-      actions: [
-        if (widget.note.userId == UserSession().id) ...[
-          if (_controller.isEditing)
-            IconButton(
-              icon: const Icon(Icons.check),
-              onPressed: () {
-                final noteModel = context.read<NoteModel>();
-                _controller.saveNote(
-                  context,
-                  widget.note.id,
-                  noteModel.isPrivate,
-                  noteModel.isMarkdown,
-                  Navigator.of(context).pop,
-                );
-              },
-            )
-          else
-            IconButton(
-              icon: const Icon(Icons.edit),
-              onPressed: _enterEditingMode,
-            ),
-          PopupMenuButton<String>(
-            onSelected: (value) async {
-              if (value == 'delete') {
-                await DialogService.showConfirmDialog(
-                  context,
-                  title: 'Delete note',
-                  text: 'Each note is a story, are you sure you want to delete it?',
-                  yesCallback: () => _controller.deleteNote(context, widget.note.id),
-                );
-              }
-            },
-            itemBuilder: (BuildContext context) {
-              return [
-                const PopupMenuItem<String>(
-                  value: 'delete',
-                  child: Text('Delete'),
+    var noteModel = NoteModel();
+    noteModel.isPrivate = widget.note.isPrivate;
+    noteModel.isMarkdown = widget.note.isMarkdown;
+    return ChangeNotifierProvider(
+        create: (_) => noteModel,
+        builder: (context, child) {
+          return PopScope(
+            canPop: false,
+            onPopInvoked: (didPop) => _controller.onPopHandler(context, didPop),
+            child: Scaffold(
+              appBar: AppBar(
+                title: const Text('Note Details'),
+                actions: [
+                  if (widget.note.userId == UserSession().id) ...[
+                    if (_controller.isEditing)
+                      IconButton(
+                        icon: const Icon(Icons.check),
+                        onPressed: () {
+                          final noteModel = context.read<NoteModel>();
+                          _controller.saveNote(
+                            context,
+                            widget.note.id,
+                            noteModel.isPrivate,
+                            noteModel.isMarkdown,
+                            Navigator.of(context).pop,
+                          );
+                        },
+                      )
+                    else
+                      IconButton(
+                        icon: const Icon(Icons.edit),
+                        onPressed: _enterEditingMode,
+                      ),
+                    PopupMenuButton<String>(
+                      onSelected: (value) async {
+                        if (value == 'delete') {
+                          await DialogService.showConfirmDialog(
+                            context,
+                            title: 'Delete note',
+                            text: 'Each note is a story, are you sure you want to delete it?',
+                            yesCallback: () => _controller.deleteNote(context, widget.note.id),
+                          );
+                        }
+                      },
+                      itemBuilder: (BuildContext context) {
+                        return [
+                          const PopupMenuItem<String>(
+                            value: 'delete',
+                            child: Text('Delete'),
+                          ),
+                        ];
+                      },
+                    ),
+                  ],
+                ],
+              ),
+              body: GestureDetector(
+                onDoubleTap: _enterEditingMode,
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Consumer<NoteModel>(
+                    builder: (context, noteModel, child) {
+                      return _controller.isEditing ? NoteEdit(note: widget.note) : NoteView(note: widget.note);
+                    },
+                  ),
                 ),
-              ];
-            },
-          ),
-        ],
-      ],
-    ),
-    body: GestureDetector(
-          onDoubleTap: _enterEditingMode,
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Consumer<NoteModel>(
-              builder: (context, noteModel, child) {
-                return NoteViewEdit(
-                  controller: _controller.noteController,
-                  focusNode: _controller.noteFocusNode,
-                  isEditing: _controller.isEditing,
-                );
-              },
+              ),
             ),
-          ),
-        ),
-      ),
-    );
+          );
+        });
   }
 }

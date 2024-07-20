@@ -5,7 +5,7 @@ import 'package:happy_notes/screens/new_note/new_note_controller.dart';
 import '../../dependency_injection.dart';
 import '../../models/note_model.dart';
 import '../../typedefs.dart';
-import '../components/note_view_edit.dart';
+import '../components/note_edit.dart';
 
 class NewNote extends StatefulWidget {
   final bool isPrivate;
@@ -57,11 +57,7 @@ class NewNoteState extends State<NewNote> {
                 padding: const EdgeInsets.fromLTRB(4.0, 0, 4.0, 4.0),
                 child: Consumer<NoteModel>(
                   builder: (context, noteModel, child) {
-                    return NoteViewEdit(
-                      controller: _newNoteController.noteController,
-                      focusNode: _newNoteController.noteFocusNode,
-                      isEditing: true,
-                    );
+                    return const NoteEdit();
                   },
                 ),
               ),
