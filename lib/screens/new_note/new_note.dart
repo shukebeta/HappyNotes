@@ -9,9 +9,10 @@ import '../components/note_edit.dart';
 
 class NewNote extends StatefulWidget {
   final bool isPrivate;
+  String? initialTag;
   final SaveNoteCallback? onNoteSaved;
 
-  const NewNote({Key? key, required this.isPrivate, this.onNoteSaved}) : super(key: key);
+  NewNote({Key? key, required this.isPrivate, this.initialTag, this.onNoteSaved}) : super(key: key);
 
   @override
   NewNoteState createState() => NewNoteState();
@@ -38,6 +39,9 @@ class NewNoteState extends State<NewNote> {
     noteModel.isPrivate = widget.isPrivate;
     noteModel.isMarkdown = AppConfig.markdownIsEnabled;
     noteModel.content = '';
+    if (widget.initialTag != null) {
+      noteModel.initialTag = widget.initialTag!;
+    }
     return ChangeNotifierProvider(
         create: (_) => noteModel,
         builder: (context, child) {

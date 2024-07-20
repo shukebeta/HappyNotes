@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:happy_notes/app_config.dart';
 import 'package:happy_notes/screens/note_detail/note_detail.dart';
 import 'package:happy_notes/screens/tag_notes/tag_notes_controller.dart';
+import 'package:provider/provider.dart';
 import '../../models/note_model.dart';
 import '../components/floating_pagination.dart';
 import '../components/note_list.dart';
@@ -9,11 +10,11 @@ import '../components/pagination_controls.dart';
 import '../../dependency_injection.dart';
 import '../account/user_session.dart';
 import '../new_note/new_note.dart';
-import 'package:provider/provider.dart';
 
 class TagNotes extends StatefulWidget {
   final String tag;
   final bool myNotesOnly;
+
   const TagNotes({super.key, required this.tag, required this.myNotesOnly});
 
   @override
@@ -33,8 +34,6 @@ class TagNotesState extends State<TagNotes> {
   void initState() {
     super.initState();
     _tagNotesController = locator<TagNotesController>();
-    var noteModel = context.read<NoteModel>();
-    noteModel.initialTag = widget.tag;
   }
 
   @override
@@ -92,6 +91,7 @@ class TagNotesState extends State<TagNotes> {
           MaterialPageRoute(
             builder: (context) => NewNote(
               isPrivate: AppConfig.privateNoteOnlyIsEnabled,
+              initialTag: widget.tag,
               onNoteSaved: (note) async {
                 navigator.pop();
                 if (isFirstPage) {
