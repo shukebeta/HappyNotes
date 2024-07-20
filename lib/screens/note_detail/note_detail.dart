@@ -31,9 +31,6 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
       if (_controller.isEditing) _controller.noteFocusNode.requestFocus();
     });
     super.initState();
-    final noteModel = context.read<NoteModel>();
-    noteModel.isPrivate = widget.note.isPrivate;
-    noteModel.isMarkdown = widget.note.isMarkdown;
   }
 
   @override

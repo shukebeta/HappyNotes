@@ -83,12 +83,11 @@ class HomePageState extends State<HomePage> {
       onPressed: () async {
         final scaffoldContext = ScaffoldMessenger.of(context);
         final navigator = Navigator.of(context);
-        var noteModel = context.read<NoteModel>();
-        noteModel.isPrivate = AppConfig.privateNoteOnlyIsEnabled;
         await Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => NewNote(
+              isPrivate: AppConfig.privateNoteOnlyIsEnabled,
               onNoteSaved: (note) async {
                 navigator.pop();
                 if (isFirstPage) {

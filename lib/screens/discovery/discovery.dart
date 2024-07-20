@@ -83,6 +83,7 @@ class DiscoveryState extends State<Discovery> {
         await navigator.push(
           MaterialPageRoute(
             builder: (context) => NewNote(
+              isPrivate: false,
               onNoteSaved: (Note note) async {
                 navigator.pop();
                 if (isFirstPage && !note.isPrivate) {

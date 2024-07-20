@@ -25,10 +25,7 @@ void main() async {
 
   // Run the app
   runApp(
-    ChangeNotifierProvider(
-      create: (context) => NoteModel(),
-      child: const HappyNotesApp(),
-    ),
+    const HappyNotesApp(),
   );
 }
 

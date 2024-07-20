@@ -63,6 +63,7 @@ class MemoriesState extends State<Memories> with RouteAware {
         await navigator.push(
           MaterialPageRoute(
             builder: (context) => NewNote(
+              isPrivate: AppConfig.privateNoteOnlyIsEnabled,
               onNoteSaved: (note) async {
                 navigator.pop();
                 await refreshPage();

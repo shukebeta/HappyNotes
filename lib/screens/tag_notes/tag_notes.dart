@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:happy_notes/app_config.dart';
 import 'package:happy_notes/screens/note_detail/note_detail.dart';
 import 'package:happy_notes/screens/tag_notes/tag_notes_controller.dart';
 import '../../models/note_model.dart';
@@ -90,6 +91,7 @@ class TagNotesState extends State<TagNotes> {
           context,
           MaterialPageRoute(
             builder: (context) => NewNote(
+              isPrivate: AppConfig.privateNoteOnlyIsEnabled,
               onNoteSaved: (note) async {
                 navigator.pop();
                 if (isFirstPage) {

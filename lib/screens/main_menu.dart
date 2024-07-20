@@ -5,7 +5,6 @@ import 'package:happy_notes/screens/initial_page.dart';
 import 'package:happy_notes/screens/navigation/rail_navigation.dart';
 import 'package:happy_notes/screens/settings/settings.dart';
 import 'package:lazy_load_indexed_stack/lazy_load_indexed_stack.dart';
-import '../app_config.dart';
 import '../entities/note.dart';
 import '../services/dialog_services.dart';
 import 'home_page/home_page.dart';
@@ -50,6 +49,7 @@ class MainMenuState extends State<MainMenu> {
         Memories(key: memoriesKey),
         NewNote(
           key: newNoteKey,
+          isPrivate: true,
           onNoteSaved: _onNoteSaved,
         ),
         const Discovery(),
