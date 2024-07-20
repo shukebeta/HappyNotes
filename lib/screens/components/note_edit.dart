@@ -29,10 +29,10 @@ class NoteEditState extends State<NoteEdit> {
     focusNode = FocusNode();
     final noteModel = context.read<NoteModel>();
     if (noteModel.initialTag != '' && widget.note == null) {
-      noteModel.setContent('#${noteModel.initialTag}\n');
-      noteModel.resetInitialTag(); // Reset after use
+      noteModel.content = '#${noteModel.initialTag}\n';
+      noteModel.initialTag = ''; // Reset after use
     } else if (widget.note != null) {
-      noteModel.setContent(widget.note!.content);
+      noteModel.content = widget.note!.content;
     }
     controller.text = noteModel.content;
     prompt = HappyNotesPrompts.getRandom(noteModel.isPrivate);
@@ -133,7 +133,7 @@ class NoteEditState extends State<NoteEdit> {
         ),
       ),
       onChanged: (text) {
-        noteModel.setContent(text);
+        noteModel.content = text;
       },
     );
   }

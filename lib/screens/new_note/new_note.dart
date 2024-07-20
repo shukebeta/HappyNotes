@@ -39,6 +39,7 @@ class NewNoteState extends State<NewNote> {
     var noteModel = NoteModel();
     noteModel.isPrivate = widget.isPrivate;
     noteModel.isMarkdown = AppConfig.markdownIsEnabled;
+    noteModel.content = '';
     return ChangeNotifierProvider(
         create: (_) => noteModel,
         builder: (context, child) {

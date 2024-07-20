@@ -35,12 +35,7 @@ class NoteModel with ChangeNotifier {
     notifyListeners();
   }
 
-  void resetInitialTag() {
-    _initialTag = '';
-    notifyListeners();
-  }
-
-  void setContent(String value) {
+  set content(String value) {
     // Add this method
     _content = value;
     notifyListeners();

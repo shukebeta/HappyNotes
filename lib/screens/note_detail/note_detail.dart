@@ -58,7 +58,7 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
     var noteModel = NoteModel();
     noteModel.isPrivate = widget.note.isPrivate;
     noteModel.isMarkdown = widget.note.isMarkdown;
-    noteModel.setContent(note.content);
+    noteModel.content = note.content;
     return ChangeNotifierProvider(
         create: (_) => noteModel,
         builder: (context, child) {
