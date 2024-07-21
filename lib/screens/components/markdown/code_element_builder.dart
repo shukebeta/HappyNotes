@@ -13,7 +13,7 @@ class CodeElementBuilder extends MarkdownElementBuilder {
   Widget? visitElementAfter(md.Element element, TextStyle? preferredStyle) {
     if (_isMutipleLine(element)) {
       return Container(
-        margin: const EdgeInsets.fromLTRB(10, 20, 10, 0),
+        margin: const EdgeInsets.fromLTRB(7, 20, 10, 0),
         width: MediaQueryData.fromView(WidgetsBinding.instance.window).size.width,
         child: Text(
           element.textContent,
