@@ -6,6 +6,7 @@ import '../components/note_list.dart';
 import '../components/pagination_controls.dart';
 import '../../entities/note.dart';
 import '../account/user_session.dart';
+import '../tag_notes/tag_notes.dart';
 import 'discovery_controller.dart';
 import '../new_note/new_note.dart';
 
@@ -147,6 +148,14 @@ class DiscoveryState extends State<Discovery> {
                 ),
               );
               navigateToPage(currentPageNumber);
+            },
+            onTagTap: (tag) async {
+              await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => TagNotes(tag: tag, myNotesOnly: false,),
+                ),
+              );
             },
             onRefresh: () async => await navigateToPage(currentPageNumber),
           ),

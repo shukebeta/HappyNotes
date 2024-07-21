@@ -61,9 +61,10 @@ class TagNotesState extends State<TagNotes> {
   @override
   Widget build(BuildContext context) {
     var isDesktop = MediaQuery.of(context).size.width >= 600;
+    var suffix = widget.myNotesOnly ? 'my notes' : 'public notes';
 
     return Scaffold(
-      appBar: AppBar(title: Text('My Tag: ${widget.tag}'), actions: [
+      appBar: AppBar(title: Text('Tag: ${widget.tag} - $suffix'), actions: [
         _buildNewNoteButton(context),
       ]),
       body: Stack(
@@ -155,6 +156,14 @@ class TagNotesState extends State<TagNotes> {
                 ),
               );
               navigateToPage(currentPageNumber);
+            },
+            onTagTap: (tag) async {
+              await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => TagNotes(tag: tag, myNotesOnly: widget.myNotesOnly,),
+                ),
+              );
             },
             onRefresh: () async => await navigateToPage(currentPageNumber),
           ),

@@ -8,6 +8,7 @@ import '../../dependency_injection.dart';
 import '../../entities/note.dart';
 import '../../services/notes_services.dart';
 import '../note_detail/note_detail.dart';
+import '../tag_notes/tag_notes.dart';
 import 'memories_on_day_controller.dart';
 
 class MemoriesOnDay extends StatefulWidget {
@@ -82,6 +83,14 @@ class MemoriesOnDayState extends State<MemoriesOnDay> with RouteAware {
                   context,
                   MaterialPageRoute(
                     builder: (context) => NoteDetail(note: note, enterEditing: true),
+                  ),
+                );
+              },
+              onTagTap: (tag) async {
+                await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => TagNotes(tag: tag, myNotesOnly: true,),
                   ),
                 );
               },

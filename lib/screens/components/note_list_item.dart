@@ -85,11 +85,11 @@ class NoteListItem extends StatelessWidget {
               children: [
                 note.isMarkdown
                     ? MarkdownBodyHere(
-                        data: note.content + (note.isLong ? '...more' : ''),
+                        data: note.content + (note.isLong ? '...' : ''),
                       )
                     : RichText(
                         text: TextSpan(
-                          text: note.content + (note.isLong ? '...more' : ''),
+                          text: note.content + (note.isLong ? '...' : ''),
                           style: const TextStyle(
                             fontStyle: FontStyle.normal,
                             fontWeight: FontWeight.normal,
@@ -105,12 +105,21 @@ class NoteListItem extends StatelessWidget {
                   children: [
                     Wrap(
                       spacing: 8,
-                      children: note.tags!.map((tag) {
-                        return TagWidget(
-                          tag: tag,
-                          onTap: () => onTagTap == null ? () {} : onTagTap!(tag),
-                        );
-                      }).toList(),
+                      children: [
+                        if (note.isLong)
+                          const Text(
+                            'View more',
+                            style: TextStyle(
+                              color: Colors.blue,
+                            ),
+                          ),
+                        ...note.tags!.map((tag) {
+                          return TagWidget(
+                            tag: tag,
+                            onTap: () => onTagTap == null ? () {} : onTagTap!(tag),
+                          );
+                        }).toList(),
+                      ],
                     ),
                   ],
                 ),
