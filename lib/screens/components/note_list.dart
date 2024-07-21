@@ -34,7 +34,7 @@ class NoteList extends StatelessWidget {
     // Group notes by date
     final notesByDate = <String, List<Note>>{};
     for (var note in notes) {
-      final dateKey = note.createDate!;
+      final dateKey = note.createDate;
       notesByDate[dateKey] = notesByDate[dateKey] ?? [];
       notesByDate[dateKey]!.add(note);
     }
@@ -68,20 +68,14 @@ class NoteList extends StatelessWidget {
               // List of notes for that date with combined time and separator
               ...dayNotes.asMap().entries.map((entry) {
                 final note = entry.value;
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    CombinedTimeSeparator(note: note),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 1.0),
-                      child: NoteListItem(
-                        note: note,
-                        onTap: () => onTap(note),
-                        onDoubleTap: onDoubleTap != null ? () => onDoubleTap!(note) : null,
-                        onTagTap: onTagTap,
-                      ),
-                    ),
-                  ],
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 1.0),
+                  child: NoteListItem(
+                    note: note,
+                    onTap: () => onTap(note),
+                    onDoubleTap: onDoubleTap != null ? () => onDoubleTap!(note) : null,
+                    onTagTap: onTagTap,
+                  ),
                 );
               }).toList(),
             ],
@@ -93,40 +87,5 @@ class NoteList extends StatelessWidget {
 
   String _formatDate(DateTime date) {
     return '- ${DateFormat('EEEE, MMM d, yyyy').format(date)} -';
-  }
-
-  String _formatTime(String createDate) {
-    final dateTime = DateTime.parse(createDate);
-    return DateFormat('HH:mm').format(dateTime);
-  }
-}
-
-class CombinedTimeSeparator extends StatelessWidget {
-  final Note note;
-
-  const CombinedTimeSeparator({Key? key, required this.note}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-      child: Row(
-        children: [
-          Text(
-            '- ${note.createTime} ${note.isPrivate ? '🔒' : ''}  ',
-            style: const TextStyle(
-              fontWeight: FontWeight.w300,
-              fontSize: 12,
-            ),
-          ),
-          Expanded(
-            child: Divider(
-              color: Colors.grey.shade200,
-              thickness: 1,
-            ),
-          ),
-        ],
-      ),
-    );
   }
 }

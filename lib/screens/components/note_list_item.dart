@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:happy_notes/screens/account/user_session.dart';
 import 'package:happy_notes/typedefs.dart';
 import '../../entities/note.dart';
 import 'markdown_body_here.dart';
@@ -20,11 +21,63 @@ class NoteListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
+    return GestureDetector(
       onTap: onTap,
       onDoubleTap: onDoubleTap,
-      child:  Stack(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Row(
+              children: [
+                Text(
+                  '- ${note.createTime}  ',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w300,
+                    fontSize: 12,
+                  ),
+                ),
+                if (note.isPrivate)
+                  const Icon(
+                    Icons.lock,
+                    color: Colors.blueGrey,
+                    size: 14,
+                  ),
+                Expanded(
+                  child: Divider(
+                    color: Colors.grey.shade300,
+                    thickness: 1,
+                  ),
+                ),
+                if (note.user != null && note.user!.email != UserSession().email)
+                  Positioned(
+                    top: 2,
+                    right: 56,
+                    child: Image.network(
+                      note.user!.gravatar,
+                      width: 25,
+                      loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+                        if (loadingProgress == null) {
+                          return child;
+                        } else {
+                          return Center(
+                            child: CircularProgressIndicator(
+                              value: loadingProgress.expectedTotalBytes != null
+                                  ? loadingProgress.cumulativeBytesLoaded / (loadingProgress.expectedTotalBytes ?? 1)
+                                  : null,
+                            ),
+                          );
+                        }
+                      },
+                      errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
+                        return const Text('Failed to load image');
+                      },
+                    ),
+                  ),
+              ],
+            ),
+          ),
           Padding(
             padding: const EdgeInsets.all(4),
             child: Column(
@@ -64,16 +117,6 @@ class NoteListItem extends StatelessWidget {
               ],
             ),
           ),
-          if (note.isPrivate)
-            const Positioned(
-              top: 8,
-              right: 8,
-              child: Icon(
-                Icons.lock,
-                color: Colors.blueGrey,
-                size: 20,
-              ),
-            ),
         ],
       ),
     );
