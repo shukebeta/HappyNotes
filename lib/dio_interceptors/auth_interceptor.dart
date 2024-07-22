@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import 'package:happy_notes/utils/token_utils.dart';
 import '../dependency_injection.dart';
 import '../services/account_service.dart';
 

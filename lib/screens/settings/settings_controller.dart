@@ -1,9 +1,7 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:happy_notes/services/account_service.dart';
 import 'package:happy_notes/services/user_settings_service.dart';
 
-import '../../entities/user_settings.dart';
 import '../../utils/util.dart';
 
 class SettingsController {

@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_highlighter/flutter_highlighter.dart';
-import 'package:flutter_highlighter/themes/github.dart';
 import 'package:flutter_markdown_selectionarea/flutter_markdown.dart';
 import 'package:markdown/markdown.dart' as md;
 

@@ -5,13 +5,11 @@ import 'package:happy_notes/screens/account/user_session.dart';
 import 'package:happy_notes/screens/initial_page.dart';
 import 'package:happy_notes/screens/main_menu.dart';
 import 'package:happy_notes/screens/navigation/bottom_navigation.dart';
-import 'package:provider/provider.dart';
 import 'package:quick_actions/quick_actions.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'dart:io' show Platform;
 
 import 'app_config.dart';
-import 'models/note_model.dart';
 
 void main() async {
   // Ensure Flutter binding is initialized

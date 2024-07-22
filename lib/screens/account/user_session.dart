@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:happy_notes/entities/user_settings.dart';
 
-import '../../app_config.dart';
 
 class UserSession {
   static final UserSession _instance = UserSession._internal();

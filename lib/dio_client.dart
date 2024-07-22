@@ -1,5 +1,4 @@
 import 'package:happy_notes/dio_interceptors/auth_interceptor.dart';
-import 'package:happy_notes/utils/app_logger.dart';
 import 'package:dio/dio.dart';
 
 import 'app_config.dart';
