@@ -21,6 +21,7 @@ class NoteListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var author = (note.user == null || note.userId == UserSession().id) ? '' : '${note.user!.username} ';
     return GestureDetector(
       onTap: onTap,
       onDoubleTap: onDoubleTap,
@@ -32,30 +33,32 @@ class NoteListItem extends StatelessWidget {
             child: Row(
               children: [
                 Text(
-                  '- ${note.createTime}  ',
+                  '- ${note.createTime} $author',
                   style: const TextStyle(
                     fontWeight: FontWeight.w300,
                     fontSize: 12,
                   ),
                 ),
-                if (note.isPrivate)
-                  const Icon(
-                    Icons.lock,
-                    color: Colors.blueGrey,
-                    size: 14,
+                ...[
+                  if (note.isPrivate)
+                    const Icon(
+                      Icons.lock,
+                      color: Colors.blueGrey,
+                      size: 14,
+                    ),
+                  const Text(
+                    ' ',
+                    style: TextStyle(
+                      fontSize: 12,
+                    ),
                   ),
+                ],
                 Expanded(
                   child: Divider(
                     color: Colors.grey.shade300,
                     thickness: 1,
                   ),
                 ),
-                if (note.user != null && note.user!.email != UserSession().email)
-                  Positioned(
-                    top: 2,
-                    right: 56,
-                    child: Text(note.user!.username)
-                  ),
               ],
             ),
           ),
