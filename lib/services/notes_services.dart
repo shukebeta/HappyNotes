@@ -22,7 +22,7 @@ class NotesService {
   // fetch tag notes (mine or all)
   Future<NotesResult> tagNotes(String tag, int pageSize, int pageNumber, bool myNotesOnly) async {
     var params = {'tag': tag, 'pageSize': pageSize, 'pageNumber': pageNumber};
-    var apiResult = myNotesOnly ? (await NotesApi.myTagNotes(params)).data : (await NotesApi.tagNotes(params));
+    var apiResult = myNotesOnly ? (await NotesApi.myTagNotes(params)).data : (await NotesApi.tagNotes(params)).data;
     return _getPagedNotesResult(apiResult);
   }
 

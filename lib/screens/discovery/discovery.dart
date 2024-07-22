@@ -157,7 +157,7 @@ class DiscoveryState extends State<Discovery> {
                 ),
               );
             },
-            onRefresh: () async => await navigateToPage(currentPageNumber),
+            onRefresh: () async => await refreshPage(),
           ),
         ),
         if (_discoveryController.totalPages > 1 && isDesktop)
