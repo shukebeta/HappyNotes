@@ -54,26 +54,7 @@ class NoteListItem extends StatelessWidget {
                   Positioned(
                     top: 2,
                     right: 56,
-                    child: Image.network(
-                      note.user!.gravatar,
-                      width: 25,
-                      loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
-                        if (loadingProgress == null) {
-                          return child;
-                        } else {
-                          return Center(
-                            child: CircularProgressIndicator(
-                              value: loadingProgress.expectedTotalBytes != null
-                                  ? loadingProgress.cumulativeBytesLoaded / (loadingProgress.expectedTotalBytes ?? 1)
-                                  : null,
-                            ),
-                          );
-                        }
-                      },
-                      errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
-                        return const Text('Failed to load image');
-                      },
-                    ),
+                    child: Text(note.user!.username)
                   ),
               ],
             ),
