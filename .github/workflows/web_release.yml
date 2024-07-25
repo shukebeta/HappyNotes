@@ -29,7 +29,7 @@ jobs:
         run: |
           COMMIT_HASH=${{ steps.get_commit.outputs.commit_hash }}
           BUILD_DATE=${{ steps.get_commit.outputs.build_date }}
-          VERSION_INFO="Version: $COMMIT_HASH ($BUILD_DATE)"
+          VERSION_INFO="$COMMIT_HASH ($BUILD_DATE)"
           sed -i "s/VERSION_PLACEHOLDER/$VERSION_INFO/" lib/screens/settings/settings.dart
 
       - name: Build web
