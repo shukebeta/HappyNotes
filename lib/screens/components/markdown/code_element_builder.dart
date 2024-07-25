@@ -15,15 +15,18 @@ class CodeElementBuilder extends MarkdownElementBuilder {
         width: MediaQueryData.fromView(WidgetsBinding.instance.window).size.width,
         child: Text(
           element.textContent,
-          style: TextStyle(fontSize: preferredStyle!.fontSize, height: preferredStyle.height, color: preferredStyle.color),
+          style:
+              TextStyle(fontSize: preferredStyle!.fontSize, height: preferredStyle.height, color: preferredStyle.color),
         ),
       );
     } else {
-      return Container(
-        padding: const EdgeInsets.all(2),
-        child: Text(
-          element.textContent,
-          style: TextStyle(fontSize: preferredStyle!.fontSize, height: preferredStyle.height, color: preferredStyle.color),
+      return RichText(
+        textAlign: TextAlign.center,
+        text: TextSpan(
+          text: element.textContent,
+          style: preferredStyle?.copyWith(
+            backgroundColor: Colors.grey[200], // Optional: to highlight the inline code background
+          ),
         ),
       );
     }

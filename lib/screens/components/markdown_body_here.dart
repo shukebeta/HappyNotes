@@ -26,7 +26,7 @@ class MarkdownBodyHereState extends State<MarkdownBodyHere> {
             fontSize: 16,
             height: 1.6,
           ),
-          code: const TextStyle(fontSize: 16, height: 1.4, color: Colors.black87),
+          code: const TextStyle(fontSize: 16, height: 1.6, color: Colors.black87, fontFamily: 'monospace'),
           codeblockDecoration: BoxDecoration(
             borderRadius: BorderRadius.circular(8),
             color: Colors.grey.shade200,
