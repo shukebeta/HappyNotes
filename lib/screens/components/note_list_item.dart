@@ -89,23 +89,21 @@ class NoteListItem extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
+                      if (note.isLong)
+                        const Text(
+                          'View more',
+                          style: TextStyle(
+                            color: Colors.blue,
+                          ),
+                        ),
                       Wrap(
                         spacing: 8,
-                        children: [
-                          if (note.isLong)
-                            const Text(
-                              'View more',
-                              style: TextStyle(
-                                color: Colors.blue,
-                              ),
-                            ),
-                          ...note.tags!.map((tag) {
-                            return TagWidget(
-                              tag: tag,
-                              onTap: () => onTagTap == null ? () {} : onTagTap!(tag),
-                            );
-                          }).toList(),
-                        ],
+                        children: note.tags!.map((tag) {
+                          return TagWidget(
+                            tag: tag,
+                            onTap: () => onTagTap == null ? () {} : onTagTap!(tag),
+                          );
+                        }).toList(),
                       ),
                     ],
                   ),
