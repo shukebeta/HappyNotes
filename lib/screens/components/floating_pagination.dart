@@ -33,28 +33,43 @@ class FloatingPaginationState extends State<FloatingPagination> {
     });
   }
 
+  void _showPageSelector() {
+    setState(() {
+      showPageSelector = true;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Positioned(
-      right: 6,
-      top: 100,
-      bottom: 100,
-      child: showPageSelector
-          ? PageSelector(
-              totalPages: widget.totalPages,
-              onPageSelected: _handlePageSelected,
-              onCancel: _handleCancel,
-            )
-          : GestureDetector(
-              onLongPress: () {
-                setState(() {
-                  showPageSelector = true;
-                });
-              },
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Opacity(
+    return Stack(
+      children: [
+        if (showPageSelector)
+          GestureDetector(
+            onTap: _handleCancel,
+            child: Container(
+              color: Colors.black54,
+              child: Center(
+                child: Material(
+                  color: Colors.transparent,
+                  child: PageSelector(
+                    totalPages: widget.totalPages,
+                    onPageSelected: _handlePageSelected,
+                    onCancel: _handleCancel,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        Positioned(
+          right: 16,
+          top: 100,
+          child: Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                GestureDetector(
+                  onLongPress: _showPageSelector,
+                  child: Opacity(
                     opacity: 0.5,
                     child: FloatingActionButton(
                       heroTag: 'prevPage',
@@ -64,27 +79,30 @@ class FloatingPaginationState extends State<FloatingPagination> {
                       child: const Icon(Icons.arrow_upward),
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 4.0,
-                      horizontal: 8.0,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.lightBlue.withOpacity(0.5),
-                      borderRadius: BorderRadius.circular(4.0),
-                    ),
-                    child: Text(
-                      '${widget.currentPage}',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 16.0,
-                        fontWeight: FontWeight.w500,
+                ),
+                const SizedBox(height: 15),
+                GestureDetector(
+                  onLongPress: _showPageSelector,
+                  child: Opacity(
+                    opacity: 0.5,
+                    child: FloatingActionButton(
+                      heroTag: 'nextPage',
+                      mini: true,
+                      onPressed: null,
+                      backgroundColor: const Color(0xFFEBDDFF),
+                      child: Text(
+                        '${widget.currentPage}',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w900,
+                        ),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  Opacity(
+                ),
+                const SizedBox(height: 15),
+                GestureDetector(
+                  onLongPress: _showPageSelector,
+                  child: Opacity(
                     opacity: 0.5,
                     child: FloatingActionButton(
                       heroTag: 'nextPage',
@@ -97,9 +115,12 @@ class FloatingPaginationState extends State<FloatingPagination> {
                       child: const Icon(Icons.arrow_downward),
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
+          ),
+        ),
+      ],
     );
   }
 }
