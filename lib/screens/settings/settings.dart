@@ -23,6 +23,9 @@ class SettingsState extends State<Settings> {
   String? selectedTimezone = AppConfig.timezone;
   final SettingsController _settingsController = locator<SettingsController>();
 
+  // Placeholder for version info
+  static const String version = 'VERSION_PLACEHOLDER';
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -108,6 +111,14 @@ class SettingsState extends State<Settings> {
                     });
                   }
                 },
+              ),
+            ),
+            // Version info block
+            const SizedBox(height: 32),
+            const Center(
+              child: Text(
+                'Version: $version',
+                style: TextStyle(fontSize: 16, color: Colors.grey),
               ),
             ),
             const SizedBox(height: 32),
