@@ -22,19 +22,15 @@ jobs:
       - name: Fetch Git Commit Hash
         id: get_commit
         run: |
-          COMMIT_HASH=$(git rev-parse --short HEAD)
-          BUILD_DATE=$(date '+%Y-%b-%d')
-          echo "COMMIT_HASH=$COMMIT_HASH"
-          echo "BUILD_DATE=$BUILD_DATE"
-          echo "::set-output name=commit_hash::$COMMIT_HASH"
-          echo "::set-output name=build_date::$BUILD_DATE"
+          echo "::set-output name=commit_hash::$(git rev-parse --short HEAD)"
+          echo "::set-output name=build_date::$(date '+%Y-%b-%d')"
 
       - name: Replace Version Placeholder
         run: |
           COMMIT_HASH=${{ steps.get_commit.outputs.commit_hash }}
           BUILD_DATE=${{ steps.get_commit.outputs.build_date }}
           VERSION_INFO="Version: $COMMIT_HASH ($BUILD_DATE)"
-          sed -i "s/VERSION_PLACEHOLDER/$COMMIT_HASH/" lib/screens/settings/settings.dart
+          sed -i "s/VERSION_PLACEHOLDER/$VERSION_INFO/" lib/screens/settings/settings.dart
 
       - name: Build web
         run: |
