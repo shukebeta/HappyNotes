@@ -14,7 +14,7 @@ class TimezoneHelper {
     {'name': 'America/Caracas', 'offset': '-04:30'},
     {'name': 'America/Santiago', 'offset': '-04:00'},
     {'name': 'America/St_Johns', 'offset': '-03:30'},
-    {'name': 'America/Argentina/Buenos_Aires', 'offset': '-03:00'},
+    {'name': 'America/Bahia', 'offset': '-03:00'},
     {'name': 'Atlantic/Azores', 'offset': '-01:00'},
     {'name': 'Europe/London', 'offset': '+00:00'},
     {'name': 'Europe/Berlin', 'offset': '+01:00'},
