@@ -61,7 +61,7 @@ class FloatingPaginationState extends State<FloatingPagination> {
             ),
           ),
         Positioned(
-          right: 16,
+          right: 4,
           top: 100,
           child: Center(
             child: Column(

@@ -15,6 +15,7 @@ class Note {
 
   // yyyy-MM-dd format
   String get createDate => Util.formatUnixTimestampToLocalDate(createAt, 'yyyy-MM-dd');
+
   // HH:mm format
   String get createTime => Util.formatUnixTimestampToLocalDate(createAt, 'HH:mm');
 
@@ -43,8 +44,9 @@ class Note {
       isLong: json['isLong'],
       isMarkdown: json['isMarkdown'],
       createAt: json['createAt'],
-      user: json['user'] != null ? User.fromJson(json['user']) : null, // Parsing User object from JSON
-      tags: json['tags']?.split(' ') ?? [],
+      user: json['user'] != null ? User.fromJson(json['user']) : null,
+      // Parsing User object from JSON
+      tags: json['tags'] == '' || json['tags'] == null ? [] : json['tags'].split(' '),
     );
   }
 }

@@ -89,13 +89,12 @@ class NoteListItem extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      if (note.isLong)
-                        const Text(
-                          'View more',
-                          style: TextStyle(
-                            color: Colors.blue,
-                          ),
+                      Text(
+                        note.isLong ? 'View more' : '',
+                        style: const TextStyle(
+                          color: Colors.blue,
                         ),
+                      ),
                       Wrap(
                         spacing: 8,
                         children: note.tags!.map((tag) {
