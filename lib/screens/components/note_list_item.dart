@@ -104,6 +104,12 @@ class NoteListItem extends StatelessWidget {
                           );
                         }).toList(),
                       ),
+                      const Text(
+                        '',
+                        style: TextStyle(
+                          color: Colors.blue,
+                        ),
+                      ),
                     ],
                   ),
                 ],
