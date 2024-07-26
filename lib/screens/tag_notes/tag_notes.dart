@@ -170,8 +170,7 @@ class TagNotesState extends State<TagNotes> {
           PaginationControls(
             currentPage: currentPageNumber,
             totalPages: _tagNotesController.totalPages,
-            onPreviousPage: () => navigateToPage(currentPageNumber - 1),
-            onNextPage: () => navigateToPage(currentPageNumber + 1),
+            navigateToPage: navigateToPage,
           ),
       ],
     );

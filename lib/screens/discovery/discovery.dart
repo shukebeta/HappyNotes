@@ -164,8 +164,7 @@ class DiscoveryState extends State<Discovery> {
           PaginationControls(
             currentPage: currentPageNumber,
             totalPages: _discoveryController.totalPages,
-            onPreviousPage: () => navigateToPage(currentPageNumber - 1),
-            onNextPage: () => navigateToPage(currentPageNumber + 1),
+            navigateToPage: navigateToPage,
           ),
       ],
     );

@@ -1,4 +1,3 @@
-// lib/page_selector.dart
 import 'package:flutter/material.dart';
 
 class PageSelector extends StatefulWidget {
@@ -38,57 +37,39 @@ class PageSelectorState extends State<PageSelector> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: widget.onCancel,
-      child: Center(
-        child: Material(
-          color: Colors.transparent,
-          child: Container(
-            constraints: const BoxConstraints(
-              maxWidth: 300,
-              maxHeight: 200,
+    return Dialog(
+      child: Container(
+        constraints: const BoxConstraints(
+          maxWidth: 300,
+          maxHeight: 200,
+        ),
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: _pageController,
+              focusNode: _pageFocusNode,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                labelText: 'Enter a page number: 1 ~ ${widget.totalPages}',
+              ),
             ),
-            padding: const EdgeInsets.all(16.0),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(8),
-              boxShadow: const [
-                BoxShadow(
-                  color: Colors.black26,
-                  blurRadius: 10,
-                  offset: Offset(0, 10),
-                ),
-              ],
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () {
+                final page = int.tryParse(_pageController.text);
+                if (page != null && page > 0 && page <= widget.totalPages) {
+                  widget.onPageSelected(page);
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Invalid page number')),
+                  );
+                }
+              },
+              child: const Text('OK'),
             ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextField(
-                  controller: _pageController,
-                  focusNode: _pageFocusNode,
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
-                    labelText:
-                    'Enter a page number: 1 ~ ${widget.totalPages}',
-                  ),
-                ),
-                const SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed: () {
-                    final page = int.tryParse(_pageController.text);
-                    if (page != null && page > 0 && page <= widget.totalPages) {
-                      widget.onPageSelected(page);
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Invalid page number')),
-                      );
-                    }
-                  },
-                  child: const Text('OK'),
-                ),
-              ],
-            ),
-          ),
+          ],
         ),
       ),
     );

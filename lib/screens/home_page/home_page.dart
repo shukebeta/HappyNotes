@@ -165,8 +165,7 @@ class HomePageState extends State<HomePage> {
           PaginationControls(
             currentPage: currentPageNumber,
             totalPages: _homePageController.totalPages,
-            onPreviousPage: () => navigateToPage(currentPageNumber - 1),
-            onNextPage: () => navigateToPage(currentPageNumber + 1),
+            navigateToPage: navigateToPage,
           ),
       ],
     );
