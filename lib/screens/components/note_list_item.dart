@@ -29,7 +29,7 @@ class NoteListItem extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            padding: const EdgeInsets.fromLTRB(4, 0, 4, 0),
             child: Row(
               children: [
                 Text(
@@ -63,7 +63,7 @@ class NoteListItem extends StatelessWidget {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(4),
+            padding: const EdgeInsets.fromLTRB(4,0, 16, 0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -89,12 +89,6 @@ class NoteListItem extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        note.isLong ? 'View more' : '',
-                        style: const TextStyle(
-                          color: Colors.blue,
-                        ),
-                      ),
                       Wrap(
                         spacing: 8,
                         children: note.tags!.map((tag) {
@@ -104,11 +98,19 @@ class NoteListItem extends StatelessWidget {
                           );
                         }).toList(),
                       ),
-                      const Text(
-                        '',
-                        style: TextStyle(
-                          color: Colors.blue,
-                        ),
+                      Wrap(
+                        spacing: 8,
+                        children: [
+                          Text(
+                            note.isLong ? 'View more' : 'View',
+                            style: const TextStyle(
+                              color: Colors.blue,
+                            ),
+                          ),
+                          const Text(
+                            '',
+                          ),
+                        ],
                       ),
                     ],
                   ),
