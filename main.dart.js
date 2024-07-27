@@ -98493,7 +98493,7 @@ a7(){return new A.EN(A.aJM(),A.a4V(),A.dS(),A.aEW(),$.eu().$1$0(t.Uh),B.i)}}
 A.EN.prototype={
 b7(){this.cr()},
 F(a){var s=this,r=null,q=A.kj(r,B.BD),p=s.f,o=t.xt
-return A.j5(q,new A.bf(B.Il,A.aM6(A.b([A.aeS(B.ZD,B.ZY,A.aLb(!1,A.a9(new A.a8(A.b([10,20,30,40,50,60],t.t),new A.aps(),o),!0,o.i("ay.E")),new A.apt(s,a),p,t.S)),A.aeS(r,B.ZE,A.dk(new A.Uf(B.M8,s.r,new A.apu(s,a),r),r,220)),A.aeS(B.a__,B.mb,A.Fe(new A.apv(s,a),s.d)),A.aeS(B.ZQ,B.ZT,A.Fe(new A.apw(s,a),s.e)),B.B2,B.Fc,B.B2,A.hg(A.AL(B.ZP,new A.apx(s)),r,r)],t.p),r,r,!1),r),r,r)}}
+return A.j5(q,new A.bf(B.Il,A.aM6(A.b([A.aeS(B.ZD,B.ZY,A.aLb(!1,A.a9(new A.a8(A.b([10,20,30,40,50,60],t.t),new A.aps(),o),!0,o.i("ay.E")),new A.apt(s,a),p,t.S)),A.aeS(r,B.ZE,A.dk(new A.Uf(B.M8,s.r,new A.apu(s,a),r),r,220)),A.aeS(B.a__,B.mb,A.Fe(new A.apv(s,a),s.d)),A.aeS(B.ZQ,B.ZU,A.Fe(new A.apw(s,a),s.e)),B.B2,B.Fc,B.B2,A.hg(A.AL(B.ZP,new A.apx(s)),r,r)],t.p),r,r,!1),r),r,r)}}
 A.apt.prototype={
 $1(a){return this.a1f(a)},
 a1f(a){var s=0,r=A.v(t.H),q=this,p
@@ -105717,6 +105717,9 @@ B.F6=new A.a1b()
 B.F7=new A.a2w()
 B.jy=new A.a5T(0,"pixel")
 B.Fb=new A.zM(null,null,null,null,null,null,null)
+B.a2w=new A.asX(0,"material")
+B.Fi=new A.lB(4,0,null,null,null,null,null,null,null,null)
+B.cR=new A.hU(B.a1,null,null,B.Fi,null)
 B.o1=new A.o(4294638330)
 B.GJ=new A.o(4294309365)
 B.jU=new A.o(4293848814)
@@ -105731,11 +105734,8 @@ B.nO=new A.o(4280361249)
 B.O1=new A.cw([50,B.o1,100,B.GJ,200,B.jU,300,B.jT,350,B.dy,400,B.ev,500,B.nX,600,B.es,700,B.fX,800,B.cp,850,B.jJ,900,B.nO],t.pl)
 B.vQ=new A.m6(B.O1,4288585374)
 B.Y3=new A.q(!0,B.vQ,null,null,null,null,16,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null)
-B.ZU=new A.bR("Version: 3a3eb13 (2024-Jul-27)",null,B.Y3,null,null,null,null,null,null,null)
-B.Fc=new A.hU(B.a1,null,null,B.ZU,null)
-B.a2w=new A.asX(0,"material")
-B.Fi=new A.lB(4,0,null,null,null,null,null,null,null,null)
-B.cR=new A.hU(B.a1,null,null,B.Fi,null)
+B.ZT=new A.bR("Version: 6725c42 (2024-Jul-27)",null,B.Y3,null,null,null,null,null,null,null)
+B.Fc=new A.hU(B.a1,null,null,B.ZT,null)
 B.ZN=new A.bR("Create a new note to get started.",null,null,null,null,null,null,null,null,null)
 B.Fd=new A.hU(B.a1,null,null,B.ZN,null)
 B.ZF=new A.bR("No notes available. Create a new note to get started.",null,null,null,null,null,null,null,null,null)
@@ -108488,7 +108488,7 @@ B.ZM=new A.bR("Shared Notes",null,null,null,null,null,null,null,null,null)
 B.ZP=new A.bR("Logout",null,null,null,null,null,null,null,null,null)
 B.ZQ=new A.bR("Enable to create all new notes as private by default.",null,null,null,null,null,null,null,null,null)
 B.ZS=new A.bR("My Notes",null,null,null,null,null,null,null,null,null)
-B.ZT=new A.bR("Private Note Only",null,null,null,null,null,null,null,null,null)
+B.ZU=new A.bR("Private Note Only",null,null,null,null,null,null,null,null,null)
 B.mb=new A.bR("Markdown",null,null,null,null,null,null,null,null,null)
 B.ZX=new A.bR("",null,null,null,null,null,null,null,null,null)
 B.ZY=new A.bR("Page Size",null,null,null,null,null,null,null,null,null)
