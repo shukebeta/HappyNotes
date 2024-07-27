@@ -36,6 +36,7 @@ class NoteListItem extends StatelessWidget {
                   '- ${note.createTime} $author',
                   style: const TextStyle(
                     fontWeight: FontWeight.w300,
+                    color: Colors.blue,
                     fontSize: 12,
                   ),
                 ),
@@ -102,7 +103,7 @@ class NoteListItem extends StatelessWidget {
                         spacing: 8,
                         children: [
                           Text(
-                            note.isLong ? 'View more' : 'View',
+                            note.isLong ? 'View more' : '',
                             style: const TextStyle(
                               color: Colors.blue,
                             ),
