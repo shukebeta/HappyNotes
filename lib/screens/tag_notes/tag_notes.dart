@@ -58,8 +58,8 @@ class TagNotesState extends State<TagNotes> {
 
   @override
   Widget build(BuildContext context) {
-    var isDesktop = MediaQuery.of(context).size.width >= 600;
     var suffix = widget.myNotesOnly ? 'my notes' : 'public notes';
+    UserSession().isDesktop = MediaQuery.of(context).size.width >= 600;
 
     return Scaffold(
       appBar: AppBar(title: Text('Tag: ${widget.tag} - $suffix'), actions: [
@@ -67,8 +67,8 @@ class TagNotesState extends State<TagNotes> {
       ]),
       body: Stack(
         children: [
-          _buildBody(isDesktop),
-          if (_tagNotesController.totalPages > 1 && !isDesktop)
+          _buildBody(),
+          if (_tagNotesController.totalPages > 1 && !UserSession().isDesktop)
             FloatingPagination(
               currentPage: currentPageNumber,
               totalPages: _tagNotesController.totalPages,
@@ -122,7 +122,7 @@ class TagNotesState extends State<TagNotes> {
     );
   }
 
-  Widget _buildBody(bool isDesktop) {
+  Widget _buildBody() {
     if (_tagNotesController.isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -166,7 +166,7 @@ class TagNotesState extends State<TagNotes> {
             onRefresh: () async => await navigateToPage(currentPageNumber),
           ),
         ),
-        if (_tagNotesController.totalPages > 1 && isDesktop)
+        if (_tagNotesController.totalPages > 1 && UserSession().isDesktop)
           PaginationControls(
             currentPage: currentPageNumber,
             totalPages: _tagNotesController.totalPages,

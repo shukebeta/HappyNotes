@@ -56,15 +56,15 @@ class DiscoveryState extends State<Discovery> {
 
   @override
   Widget build(BuildContext context) {
-    var isDesktop = MediaQuery.of(context).size.width >= 600;
+    UserSession().isDesktop = MediaQuery.of(context).size.width >= 600;
     return Scaffold(
       appBar: AppBar(title: const Text('Shared Notes'), actions: [
         _buildNewNoteButton(context),
       ]),
       body: Stack(
         children: [
-          _buildBody(isDesktop),
-          if (_discoveryController.totalPages > 1 && !isDesktop)
+          _buildBody(),
+          if (_discoveryController.totalPages > 1 && !UserSession().isDesktop)
             FloatingPagination(
               currentPage: currentPageNumber,
               totalPages: _discoveryController.totalPages,
@@ -116,7 +116,7 @@ class DiscoveryState extends State<Discovery> {
     );
   }
 
-  Widget _buildBody(bool isDesktop) {
+  Widget _buildBody() {
     if (_discoveryController.isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -160,7 +160,7 @@ class DiscoveryState extends State<Discovery> {
             onRefresh: () async => await refreshPage(),
           ),
         ),
-        if (_discoveryController.totalPages > 1 && isDesktop)
+        if (_discoveryController.totalPages > 1 && UserSession().isDesktop)
           PaginationControls(
             currentPage: currentPageNumber,
             totalPages: _discoveryController.totalPages,

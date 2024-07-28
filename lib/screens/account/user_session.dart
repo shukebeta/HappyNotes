@@ -9,6 +9,7 @@ class UserSession {
   int? id;
   String? email;
   List<UserSettings>? userSettings;
+  bool isDesktop = false;
 
   factory UserSession() {
     return _instance;

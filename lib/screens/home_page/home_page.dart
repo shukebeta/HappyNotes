@@ -56,15 +56,15 @@ class HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    var isDesktop = MediaQuery.of(context).size.width >= 600;
+    UserSession().isDesktop = MediaQuery.of(context).size.width >= 600;
     return Scaffold(
       appBar: AppBar(title: const Text('My Notes'), actions: [
         _buildNewNoteButton(context),
       ]),
       body: Stack(
         children: [
-          _buildBody(isDesktop),
-          if (_homePageController.totalPages > 1 && !isDesktop)
+          _buildBody(),
+          if (_homePageController.totalPages > 1 && !UserSession().isDesktop)
             FloatingPagination(
               currentPage: currentPageNumber,
               totalPages: _homePageController.totalPages,
@@ -117,7 +117,7 @@ class HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildBody(bool isDesktop) {
+  Widget _buildBody() {
     if (_homePageController.isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -161,7 +161,7 @@ class HomePageState extends State<HomePage> {
             onRefresh: () async => await navigateToPage(currentPageNumber),
           ),
         ),
-        if (_homePageController.totalPages > 1 && isDesktop)
+        if (_homePageController.totalPages > 1 && UserSession().isDesktop)
           PaginationControls(
             currentPage: currentPageNumber,
             totalPages: _homePageController.totalPages,

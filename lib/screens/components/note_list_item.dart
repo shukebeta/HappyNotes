@@ -64,7 +64,7 @@ class NoteListItem extends StatelessWidget {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(4,0, 16, 0),
+            padding: EdgeInsets.fromLTRB(4, 0, UserSession().isDesktop ? 4 : 16, 0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
