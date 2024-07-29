@@ -20,7 +20,7 @@ COMMIT_HASH=$(git rev-parse --short HEAD)
 BUILD_DATE=$(date '+%Y-%b-%d')
 VERSION_INFO="$COMMIT_HASH($BUILD_DATE)"
 sed -i "s/VERSION_PLACEHOLDER/$VERSION_INFO/" lib/screens/settings/settings.dart
-flutter build bundle
+flutter build appbundle
 mv .env.backup .env
-#git reset --hard
+git reset --hard
 
