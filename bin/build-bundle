@@ -1,7 +1,7 @@
 #/bin/bash
 # this file is for creating a bundle with correct version info
 # Check if the workspace is clean and on the master branch
-set -e -x
+#set -e -x
 if [ -n "$(git status --porcelain)" ]; then
   echo "Error: Your workspace has uncommitted changes. Please commit or stash them before continuing."
   exit 1
@@ -22,5 +22,5 @@ VERSION_INFO="$COMMIT_HASH($BUILD_DATE)"
 sed -i "s/VERSION_PLACEHOLDER/$VERSION_INFO/" lib/screens/settings/settings.dart
 flutter build bundle
 mv .env.backup .env
-git reset --hard
+#git reset --hard
 
