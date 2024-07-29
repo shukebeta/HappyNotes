@@ -21,7 +21,7 @@ class MarkdownBodyHereState extends State<MarkdownBodyHere> {
         builders: <String, MarkdownElementBuilder>{'code': CodeElementBuilder()},
         // Allow users to select text
         styleSheet: MarkdownStyleSheet(
-          h1: const TextStyle(fontSize: 24, color: Colors.blue),
+          h1: const TextStyle(fontSize: 20),
           p: const TextStyle(
             fontSize: 16,
             height: 1.6,
