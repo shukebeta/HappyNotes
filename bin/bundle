@@ -1,6 +1,7 @@
 #/bin/bash
 # this file is for creating a bundle with correct version info
 # Check if the workspace is clean and on the master branch
+set -e -x
 if [ -n "$(git status --porcelain)" ]; then
   echo "Error: Your workspace has uncommitted changes. Please commit or stash them before continuing."
   exit 1
