@@ -1,0 +1,25 @@
+#/bin/bash
+# this file is for creating a bundle with correct version info
+# Check if the workspace is clean and on the master branch
+if [ -n "$(git status --porcelain)" ]; then
+  echo "Error: Your workspace has uncommitted changes. Please commit or stash them before continuing."
+  exit 1
+fi
+
+if [ "$(git rev-parse --abbrev-ref HEAD)" != "master" ]; then
+  echo "Error: You are not on the master branch. Please switch to the master branch before continuing."
+  exit 1
+fi
+
+script_dir="$(dirname "$(readlink -f "$0")")"
+cd $script_dir/..
+mv .env .env.backup
+cp .env.production .env
+COMMIT_HASH=$(git rev-parse --short HEAD)
+BUILD_DATE=$(date '+%Y-%b-%d')
+VERSION_INFO="$COMMIT_HASH($BUILD_DATE)"
+sed -i "s/VERSION_PLACEHOLDER/$VERSION_INFO/" lib/screens/settings/settings.dart
+flutter build bundle
+mv .env.backup .env
+git reset --hard
+
