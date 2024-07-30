@@ -26,27 +26,33 @@ class NoteEditState extends State<NoteEdit> {
     super.initState();
     controller = TextEditingController();
     final noteModel = context.read<NoteModel>();
-    if (noteModel.initialTag != '' && widget.note == null) {
+
+    // Initialize noteModel content
+    if (noteModel.initialTag.isNotEmpty && widget.note == null) {
       noteModel.content = '#${noteModel.initialTag}\n';
       noteModel.initialTag = ''; // Reset after use
     } else if (widget.note != null) {
       noteModel.content = widget.note!.content;
     }
-    controller.text = noteModel.content;
-    prompt = HappyNotesPrompts.getRandom(noteModel.isPrivate);
-  }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    final noteModel = context.read<NoteModel>();
+    // Set the initial text in the controller
+    controller.text = noteModel.content;
+
+    // Add listener to update controller.text when noteModel.content changes
+    noteModel.addListener(() {
+      if (noteModel.content != controller.text) {
+        controller.text = noteModel.content;
+      }
+    });
+
+    prompt = HappyNotesPrompts.getRandom(noteModel.isPrivate);
     noteModel.requestFocus();
   }
 
   @override
   void dispose() {
-    super.dispose();
     controller.dispose();
+    super.dispose();
   }
 
   @override
@@ -61,46 +67,38 @@ class NoteEditState extends State<NoteEdit> {
             const SizedBox(height: 8.0),
             Row(
               children: [
-                Consumer<NoteModel>(
-                  builder: (context, noteModel, child) {
-                    return GestureDetector(
-                      onTap: () {
-                        noteModel.isPrivate = !noteModel.isPrivate;
-                      },
-                      child: Row(
-                        children: [
-                          const Text('Private'),
-                          Switch(
-                            value: noteModel.isPrivate,
-                            onChanged: (value) {
-                              noteModel.isPrivate = value;
-                            },
-                          ),
-                        ],
-                      ),
-                    );
+                GestureDetector(
+                  onTap: () {
+                    noteModel.isPrivate = !noteModel.isPrivate;
                   },
+                  child: Row(
+                    children: [
+                      const Text('Private'),
+                      Switch(
+                        value: noteModel.isPrivate,
+                        onChanged: (value) {
+                          noteModel.isPrivate = value;
+                        },
+                      ),
+                    ],
+                  ),
                 ),
                 const SizedBox(width: 24.0),
-                Consumer<NoteModel>(
-                  builder: (context, noteModel, child) {
-                    return GestureDetector(
-                      onTap: () {
-                        noteModel.isMarkdown = !noteModel.isMarkdown;
-                      },
-                      child: Row(
-                        children: [
-                          const Text('Markdown'),
-                          Switch(
-                            value: noteModel.isMarkdown,
-                            onChanged: (value) {
-                              noteModel.isMarkdown = value;
-                            },
-                          ),
-                        ],
-                      ),
-                    );
+                GestureDetector(
+                  onTap: () {
+                    noteModel.isMarkdown = !noteModel.isMarkdown;
                   },
+                  child: Row(
+                    children: [
+                      const Text('Markdown'),
+                      Switch(
+                        value: noteModel.isMarkdown,
+                        onChanged: (value) {
+                          noteModel.isMarkdown = value;
+                        },
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -110,7 +108,7 @@ class NoteEditState extends State<NoteEdit> {
     );
   }
 
-  TextField _buildEditor(NoteModel noteModel) {
+  Widget _buildEditor(NoteModel noteModel) {
     return TextField(
       controller: controller,
       focusNode: noteModel.focusNode,
@@ -122,13 +120,13 @@ class NoteEditState extends State<NoteEdit> {
         hintText: prompt,
         border: OutlineInputBorder(
           borderSide: BorderSide(
-            color: context.read<NoteModel>().isPrivate ? Colors.blue : Colors.green,
+            color: noteModel.isPrivate ? Colors.blue : Colors.green,
             width: 2.0,
           ),
         ),
         focusedBorder: OutlineInputBorder(
           borderSide: BorderSide(
-            color: context.read<NoteModel>().isPrivate ? Colors.blueAccent : Colors.greenAccent,
+            color: noteModel.isPrivate ? Colors.blueAccent : Colors.greenAccent,
             width: 2.0,
           ),
         ),

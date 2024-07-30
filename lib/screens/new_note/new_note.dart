@@ -9,10 +9,15 @@ import '../components/note_edit.dart';
 
 class NewNote extends StatefulWidget {
   final bool isPrivate;
-  String? initialTag;
+  final String? initialTag;
   final SaveNoteCallback? onNoteSaved;
 
-  NewNote({Key? key, required this.isPrivate, this.initialTag, this.onNoteSaved}) : super(key: key);
+  const NewNote({
+    Key? key,
+    required this.isPrivate,
+    this.initialTag,
+    this.onNoteSaved,
+  }) : super(key: key);
 
   @override
   NewNoteState createState() => NewNoteState();
@@ -20,28 +25,28 @@ class NewNote extends StatefulWidget {
 
 class NewNoteState extends State<NewNote> {
   final _newNoteController = locator<NewNoteController>();
+  late NoteModel noteModel;
 
   @override
   void initState() {
     super.initState();
-  }
-
-  @override
-  void dispose() {
-    final noteModel = context.read<NoteModel>();
-    noteModel.unfocus();  // Unfocus the text field when the widget is disposed
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    var noteModel = NoteModel();
+    noteModel = NoteModel();
     noteModel.isPrivate = widget.isPrivate;
     noteModel.isMarkdown = AppConfig.markdownIsEnabled;
     noteModel.content = '';
     if (widget.initialTag != null) {
       noteModel.initialTag = widget.initialTag!;
     }
+  }
+
+  @override
+  void dispose() {
+    noteModel.unfocus(); // Unfocus the text field when the widget is disposed
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return ChangeNotifierProvider(
         create: (_) => noteModel,
         builder: (context, child) {
@@ -56,17 +61,12 @@ class NewNoteState extends State<NewNote> {
                   },
                 ),
               ),
-              body: Padding(
-                padding: const EdgeInsets.fromLTRB(4.0, 0, 4.0, 4.0),
-                child: Consumer<NoteModel>(
-                  builder: (context, noteModel, child) {
-                    return const NoteEdit();
-                  },
-                ),
+              body: const Padding(
+                padding: EdgeInsets.fromLTRB(4.0, 0, 4.0, 4.0),
+                child: NoteEdit(),
               ),
               floatingActionButton: FloatingActionButton(
                 onPressed: () {
-                  final noteModel = context.read<NoteModel>();
                   _newNoteController.saveNote(
                     context,
                     widget.onNoteSaved,
