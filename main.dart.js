@@ -97448,7 +97448,7 @@ return A.u($async$dY,r)},
 F(a){var s,r,q,p=this,o=null,n=$.e_()
 n.d=A.bF(a,o,t.l).w.a.a>=600
 s=t.p
-r=A.lv(A.b([p.a8B(a)],s),B.ZN)
+r=A.lv(A.b([p.a8B(a)],s),B.ZM)
 s=A.b([p.a8s()],s)
 q=p.d
 q===$&&A.a()
@@ -97460,7 +97460,7 @@ a8s(){var s=this,r=s.d
 r===$&&A.a()
 if(r.d)return B.cR
 r=r.b
-if(r.length===0)return B.Fb
+if(r.length===0)return B.Fc
 r=A.b([A.iO(A.ajZ(r,new A.a8k(s),new A.a8l(s),new A.a8m(s),new A.a8n(s),!0),1)],t.p)
 if(B.d.c7(s.d.c/A.dS())>1&&$.e_().d)r.push(new A.r3(s.e,B.d.c7(s.d.c/A.dS()),s.gni(),null))
 return A.d8(r,B.ez,B.F,B.X)}}
@@ -98488,7 +98488,7 @@ a7(){return new A.EN(A.aJK(),A.a4V(),A.dS(),A.aEU(),$.eu().$1$0(t.Uh),B.i)}}
 A.EN.prototype={
 b9(){this.cz()},
 F(a){var s=this,r=null,q=A.lv(r,B.BD),p=s.f,o=t.xt
-return A.jR(q,new A.bf(B.Ij,A.aM4(A.b([A.aeS(B.ZD,B.ZY,A.aL9(!1,A.a9(new A.a8(A.b([10,20,30,40,50,60],t.t),new A.apq(),o),!0,o.i("ay.E")),new A.apr(s,a),p,t.S)),A.aeS(r,B.ZE,A.dk(new A.Uf(B.M6,s.r,new A.aps(s,a),r),r,220)),A.aeS(B.a__,B.mb,A.Fe(new A.apt(s,a),s.d)),A.aeS(B.ZR,B.ZU,A.Fe(new A.apu(s,a),s.e)),B.B2,B.Fc,B.B2,A.hg(A.AL(B.ZQ,new A.apv(s)),r,r)],t.p),r,r,!1),r),r,r)}}
+return A.jR(q,new A.bf(B.Ij,A.aM4(A.b([A.aeS(B.ZD,B.ZY,A.aL9(!1,A.a9(new A.a8(A.b([10,20,30,40,50,60],t.t),new A.apq(),o),!0,o.i("ay.E")),new A.apr(s,a),p,t.S)),A.aeS(r,B.ZE,A.dk(new A.Uf(B.M6,s.r,new A.aps(s,a),r),r,220)),A.aeS(B.a__,B.mb,A.Fe(new A.apt(s,a),s.d)),A.aeS(B.ZR,B.ZU,A.Fe(new A.apu(s,a),s.e)),B.B2,B.Fb,B.B2,A.hg(A.AL(B.ZQ,new A.apv(s)),r,r)],t.p),r,r,!1),r),r,r)}}
 A.apr.prototype={
 $1(a){return this.a1f(a)},
 a1f(a){var s=0,r=A.v(t.H),q=this,p
@@ -105713,11 +105713,6 @@ B.F5=new A.a1b()
 B.F6=new A.a2w()
 B.jy=new A.a5T(0,"pixel")
 B.Fa=new A.zL(null,null,null,null,null,null,null)
-B.a2w=new A.asV(0,"material")
-B.Fh=new A.lA(4,0,null,null,null,null,null,null,null,null)
-B.cR=new A.hU(B.a1,null,null,B.Fh,null)
-B.ZO=new A.bS("Create a new note to get started.",null,null,null,null,null,null,null,null,null)
-B.Fb=new A.hU(B.a1,null,null,B.ZO,null)
 B.o1=new A.o(4294638330)
 B.GI=new A.o(4294309365)
 B.jU=new A.o(4293848814)
@@ -105732,12 +105727,17 @@ B.nO=new A.o(4280361249)
 B.O_=new A.cw([50,B.o1,100,B.GI,200,B.jU,300,B.jT,350,B.dy,400,B.ev,500,B.nX,600,B.es,700,B.fX,800,B.cp,850,B.jJ,900,B.nO],t.pl)
 B.vQ=new A.m4(B.O_,4288585374)
 B.Y2=new A.q(!0,B.vQ,null,null,null,null,16,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null)
-B.ZM=new A.bS("Version: 0de0bda (2024-Aug-04)",null,B.Y2,null,null,null,null,null,null,null)
-B.Fc=new A.hU(B.a1,null,null,B.ZM,null)
+B.ZP=new A.bS("Version: 4ccc80e (2024-Aug-04)",null,B.Y2,null,null,null,null,null,null,null)
+B.Fb=new A.hU(B.a1,null,null,B.ZP,null)
+B.a2w=new A.asV(0,"material")
+B.Fh=new A.lA(4,0,null,null,null,null,null,null,null,null)
+B.cR=new A.hU(B.a1,null,null,B.Fh,null)
+B.ZN=new A.bS("Create a new note to get started.",null,null,null,null,null,null,null,null,null)
+B.Fc=new A.hU(B.a1,null,null,B.ZN,null)
 B.ZF=new A.bS("No notes available. Create a new note to get started.",null,null,null,null,null,null,null,null,null)
 B.nv=new A.hU(B.a1,null,null,B.ZF,null)
-B.ZP=new A.bS("No memories available. Compose notes from now on",null,null,null,null,null,null,null,null,null)
-B.Fd=new A.hU(B.a1,null,null,B.ZP,null)
+B.ZO=new A.bS("No memories available. Compose notes from now on",null,null,null,null,null,null,null,null,null)
+B.Fd=new A.hU(B.a1,null,null,B.ZO,null)
 B.ZS=new A.bS("No notes found on this day.",null,null,null,null,null,null,null,null,null)
 B.Fe=new A.hU(B.a1,null,null,B.ZS,null)
 B.Ff=new A.zO(null,null,null,null,null,null,null,null,null)
@@ -108480,7 +108480,7 @@ B.ZH=new A.bS("Submit",null,null,null,null,null,null,null,null,null)
 B.ZI=new A.bS("OK",null,null,null,null,null,null,null,null,null)
 B.ZJ=new A.bS("Register",null,null,null,null,null,null,null,null,null)
 B.ZL=new A.bS("Go",null,null,null,null,null,null,null,null,null)
-B.ZN=new A.bS("Shared Notes",null,null,null,null,null,null,null,null,null)
+B.ZM=new A.bS("Shared Notes",null,null,null,null,null,null,null,null,null)
 B.ZQ=new A.bS("Logout",null,null,null,null,null,null,null,null,null)
 B.ZR=new A.bS("Enable to create all new notes as private by default.",null,null,null,null,null,null,null,null,null)
 B.ZT=new A.bS("My Notes",null,null,null,null,null,null,null,null,null)
