@@ -86,7 +86,7 @@ class FloatingPaginationState extends State<FloatingPagination> {
                   child: Opacity(
                     opacity: 0.5,
                     child: FloatingActionButton(
-                      heroTag: 'nextPage',
+                      heroTag: 'currPage',
                       mini: true,
                       onPressed: null,
                       backgroundColor: const Color(0xFFEBDDFF),
