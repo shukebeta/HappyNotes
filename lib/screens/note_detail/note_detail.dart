@@ -56,11 +56,8 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
   @override
   Widget build(BuildContext context) {
     if (note == null) {
-      return Scaffold(
-        appBar: AppBar(
-          title: const Text('Note Details'),
-        ),
-        body: const Center(child: CircularProgressIndicator()),
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
       );
     }
 
@@ -77,7 +74,7 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
             onPopInvoked: (didPop) => _controller.onPopHandler(context, didPop),
             child: Scaffold(
               appBar: AppBar(
-                title: const Text('Note Details'),
+                title: Text('NoteId: ${note?.id}'),
                 actions: [
                   if (widget.note.userId == UserSession().id) ...[
                     if (_controller.isEditing)

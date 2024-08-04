@@ -33,7 +33,7 @@ class NoteListItem extends StatelessWidget {
             child: Row(
               children: [
                 Text(
-                  '- ${note.createTime} $author',
+                  '- ${note.createdTime} $author',
                   style: const TextStyle(
                     fontWeight: FontWeight.w300,
                     color: Colors.blue,

@@ -16,7 +16,7 @@ class User {
       username: json['username'],
       email: json['email'],
       gravatar: json['gravatar'],
-      createdAt: json['createAt'],
+      createdAt: json['createdAt'],
     );
   }
 
@@ -25,7 +25,7 @@ class User {
     data['username'] = username;
     data['email'] = email;
     data['gravatar'] = gravatar;
-    data['createAt'] = createdAt;
+    data['createdAt'] = createdAt;
     return data;
   }
 }

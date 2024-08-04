@@ -8,16 +8,16 @@ class Note {
   final bool isPrivate;
   final bool isLong;
   final bool isMarkdown;
-  final int createAt; // You can change the type to DateTime if needed
+  final int createdAt; // You can change the type to DateTime if needed
 
   User? user; // Adding User property
   List<String>? tags;
 
   // yyyy-MM-dd format
-  String get createDate => Util.formatUnixTimestampToLocalDate(createAt, 'yyyy-MM-dd');
+  String get createdDate => Util.formatUnixTimestampToLocalDate(createdAt, 'yyyy-MM-dd');
 
   // HH:mm format
-  String get createTime => Util.formatUnixTimestampToLocalDate(createAt, 'HH:mm');
+  String get createdTime => Util.formatUnixTimestampToLocalDate(createdAt, 'HH:mm');
 
   String get formattedContent => content
       .replaceFirst(RegExp('\n{3,}'), '\n\n')
@@ -30,7 +30,7 @@ class Note {
     required this.isPrivate,
     required this.isLong,
     required this.isMarkdown,
-    required this.createAt,
+    required this.createdAt,
     this.user,
     this.tags,
   });
@@ -43,7 +43,7 @@ class Note {
       isPrivate: json['isPrivate'],
       isLong: json['isLong'],
       isMarkdown: json['isMarkdown'],
-      createAt: json['createAt'],
+      createdAt: json['createdAt'],
       user: json['user'] != null ? User.fromJson(json['user']) : null,
       // Parsing User object from JSON
       tags: json['tags'] == '' || json['tags'] == null ? [] : json['tags'].split(' '),

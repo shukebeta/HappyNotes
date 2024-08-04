@@ -18,7 +18,7 @@ class MemoryList extends StatelessWidget {
     // Group notes by date
     final notesByDate = <String, List<Note>>{};
     for (var note in notes) {
-      final dateKey = note.createDate;
+      final dateKey = note.createdDate;
       notesByDate[dateKey] = notesByDate[dateKey] ?? [];
       notesByDate[dateKey]!.add(note);
     }

@@ -34,7 +34,7 @@ class NewNoteController {
             isLong: isLong,
             isPrivate: noteModel.isPrivate,
             isMarkdown: noteModel.isMarkdown,
-            createAt: (DateTime.now().millisecondsSinceEpoch / 1000).round());
+            createdAt: (DateTime.now().millisecondsSinceEpoch / 1000).round());
         onNoteSaved(note);
       }
     } catch (error) {
