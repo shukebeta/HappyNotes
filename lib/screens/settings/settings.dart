@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:happy_notes/screens/settings/settings_controller.dart';
+import 'package:happy_notes/screens/settings/note_sync_settings.dart'; // Import NotesSyncPage
 
 import '../../app_config.dart';
 import '../../app_constants.dart';
@@ -112,6 +113,16 @@ class SettingsState extends State<Settings> {
                   }
                 },
               ),
+            ),
+            ListTile(
+              title: const Text('Notes Sync'),
+              subtitle: const Text('Configure synchronization settings for notes.'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const NoteSyncSettings()),
+                );
+              },
             ),
             // Version info block
             const SizedBox(height: 32),
