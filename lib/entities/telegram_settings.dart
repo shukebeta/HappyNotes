@@ -1,6 +1,6 @@
 class TelegramSettings {
-  final int id;
-  final int userId;
+  int? id;
+  int? userId;
   final int syncType;
   final String syncValue;
   final String channelId ;
@@ -9,8 +9,8 @@ class TelegramSettings {
   String? channelName;
 
   TelegramSettings({
-    required this.id,
-    required this.userId,
+    this.id,
+    this.userId,
     required this.syncType,
     required this.syncValue,
     required this.channelId,
@@ -24,7 +24,7 @@ class TelegramSettings {
       id: json['id'],
       userId: json['userId'],
       syncType: json['syncType'],
-      syncValue: json['settingValue'],
+      syncValue: json['syncValue'],
       encryptedToken: json['encryptedToken'],
       tokenRemark: json['tokenRemark'],
       channelId: json['channelId'],
