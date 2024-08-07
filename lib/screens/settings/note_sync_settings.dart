@@ -14,10 +14,9 @@ class NoteSyncSettings extends StatefulWidget {
 class NoteSyncSettingsState extends State<NoteSyncSettings> {
   final NoteSyncSettingsController _settingsController = locator<NoteSyncSettingsController>();
 
-
   @override
-  void initState() {
-    super.initState();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     _loadSyncSettings();
   }
 

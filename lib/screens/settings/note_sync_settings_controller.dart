@@ -24,10 +24,9 @@ class NoteSyncSettingsController {
     }
   }
 
-  // Future<bool> addTelegramSetting(Map<String, dynamic> setting) async {
-  //   // Implement your API call to add a Telegram Sync Setting here
-  //   // Return true if the setting was added successfully
-  // }
+  Future<bool> addTelegramSetting(TelegramSettings setting) async {
+    return await _telegramSettingService.add(setting);
+  }
   //
   // Future<bool> activateTelegramSetting(int id) async {
   //   // Implement your API call to delete a Telegram Sync Setting by ID here

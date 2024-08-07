@@ -10,10 +10,26 @@ class TelegramSettingsApi {
   }
 
   Future<Response> add(TelegramSettings setting) async {
-    return await _dio.post('/telegramSettings/add', data: setting);
+    var data = {
+      'syncType': setting.syncType,
+      'syncValue': setting.syncValue,
+      'encryptedToken': setting.encryptedToken,
+      'tokenRemark': setting.tokenRemark,
+      'channelId': setting.channelId,
+      'channelName': setting.channelName,
+    };
+    return await _dio.post('/telegramSettings/add', data: data);
   }
 
   Future<Response> delete(TelegramSettings setting) async {
-    return await _dio.delete('/telegramSettings/delete', data: setting);
+    var data = {
+      'syncType': setting.syncType,
+      'syncValue': setting.syncValue,
+      'encryptedToken': setting.encryptedToken,
+      'tokenRemark': setting.tokenRemark,
+      'channelId': setting.channelId,
+      'channelName': setting.channelName,
+    };
+    return await _dio.delete('/telegramSettings/delete', data: data);
   }
 }

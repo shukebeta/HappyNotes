@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:happy_notes/entities/telegram_settings.dart';
 import '../../dependency_injection.dart';
 import 'note_sync_settings_controller.dart';
 
@@ -15,6 +15,7 @@ class AddTelegramSettingState extends State<AddTelegramSetting> {
   final TextEditingController _channelNameController = TextEditingController();
   final TextEditingController _tokenController = TextEditingController();
   final TextEditingController _remarkController = TextEditingController();
+  final TextEditingController _tagController = TextEditingController();
   int _syncType = 3;
   final NoteSyncSettingsController _settingsController = locator<NoteSyncSettingsController>();
 
@@ -27,37 +28,46 @@ class AddTelegramSettingState extends State<AddTelegramSetting> {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ListTile(
-              title: const Text('Source Note'),
-              subtitle: const Text('Select what note should be synced.'),
-              trailing: DropdownButton<int>(
-                value: _syncType,
-                onChanged: (int? newValue) {
-                  setState(() {
-                    _syncType = newValue!;
-                  });
-                },
-                items: const [
-                  DropdownMenuItem<int>(
-                    value: 1,
-                    child: Text('Public'),
-                  ),
-                  DropdownMenuItem<int>(
-                    value: 2,
-                    child: Text('Private'),
-                  ),
-                  DropdownMenuItem<int>(
-                    value: 3,
-                    child: Text('All'),
-                  ),
-                  DropdownMenuItem<int>(
-                    value: 4,
-                    child: Text('Tag'),
-                  ),
-                ],
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 8.0),
+              child: Text(
+                'Source Note',
+                style: TextStyle(fontSize: 16, color: Colors.black54),
               ),
             ),
+            DropdownButton<int>(
+              value: _syncType,
+              onChanged: (int? newValue) {
+                setState(() {
+                  _syncType = newValue!;
+                });
+              },
+              items: const [
+                DropdownMenuItem<int>(
+                  value: 1,
+                  child: Text('Public'),
+                ),
+                DropdownMenuItem<int>(
+                  value: 2,
+                  child: Text('Private'),
+                ),
+                DropdownMenuItem<int>(
+                  value: 3,
+                  child: Text('All'),
+                ),
+                DropdownMenuItem<int>(
+                  value: 4,
+                  child: Text('Tag'),
+                ),
+              ],
+            ),
+            if (_syncType == 4)
+              TextField(
+                controller: _tagController,
+                decoration: const InputDecoration(labelText: 'Tag'),
+              ),
             TextField(
               controller: _channelIdController,
               decoration: const InputDecoration(labelText: 'Channel ID'),
@@ -77,12 +87,13 @@ class AddTelegramSettingState extends State<AddTelegramSetting> {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () async {
-                // await _settingsController.addTelegramSyncSetting({
-                //   "syncType": _syncType,
-                //   "EncryptedToken": _tokenController.text,
-                //   "TokenRemark": _remarkController.text,
-                //   "channelId": _channelIdController.text,
-                // });
+                await _settingsController.addTelegramSetting(TelegramSettings(
+                    syncType: _syncType,
+                    syncValue: _syncType == 4 ? _tagController.text : '',
+                    channelId: _channelIdController.text,
+                    channelName: _channelNameController.text,
+                    tokenRemark: _remarkController.text,
+                    encryptedToken: _tokenController.text));
                 Navigator.pop(context);
               },
               child: const Text('Add Setting'),
