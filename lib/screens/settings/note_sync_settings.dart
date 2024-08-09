@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:happy_notes/screens/settings/note_sync_settings_controller.dart';
 import '../../dependency_injection.dart';
+import '../../services/dialog_services.dart';
 import '../../utils/util.dart';
 import 'add_telegram_setting.dart';
 
@@ -37,7 +38,7 @@ class NoteSyncSettingsState extends State<NoteSyncSettings> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const AddTelegramSetting()),
+                MaterialPageRoute(builder: (context) => AddTelegramSetting(setting: _settingsController.telegramSettings.lastOrNull)),
               ).then((_) {
                 _loadSyncSettings();
               });
@@ -128,23 +129,19 @@ class NoteSyncSettingsState extends State<NoteSyncSettings> {
                       if (!setting.isTested)
                         TextButton.icon(
                           onPressed: () async {
-                            final scaffoldContext = ScaffoldMessenger.of(context);
-                            if (await _settingsController.testTelegramSetting(setting)) {
-                              Util.showInfo(
-                                  scaffoldContext, "A test message has been successfully sent to your Telegram.");
-                            } else {
-                              Util.showError(
-                                  scaffoldContext, "Test failed, please check your token or try again later.");
+                            if (await _settingsController.testTelegramSetting(context, setting)) {
+                              _loadSyncSettings();
                             }
-                            _loadSyncSettings();
                           },
                           icon: const Icon(Icons.send, color: Colors.blue),
                           label: const Text('Test'),
                         ),
                       TextButton.icon(
                         onPressed: () async {
-                          await _settingsController.deleteTelegramSetting(setting);
-                          _loadSyncSettings();
+                          if (true == await DialogService.showConfirmDialog(context)) {
+                            await _settingsController.deleteTelegramSetting(setting);
+                            _loadSyncSettings();
+                          };
                         },
                         icon: const Icon(Icons.delete, color: Colors.red),
                         label: const Text(''),

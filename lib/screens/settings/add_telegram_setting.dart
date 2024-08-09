@@ -4,7 +4,8 @@ import '../../dependency_injection.dart';
 import 'note_sync_settings_controller.dart';
 
 class AddTelegramSetting extends StatefulWidget {
-  const AddTelegramSetting({super.key});
+  final TelegramSettings? setting;
+  const AddTelegramSetting({super.key, this.setting});
 
   @override
   AddTelegramSettingState createState() => AddTelegramSettingState();
@@ -18,6 +19,15 @@ class AddTelegramSettingState extends State<AddTelegramSetting> {
   final TextEditingController _tagController = TextEditingController();
   int _syncType = 3;
   final NoteSyncSettingsController _settingsController = locator<NoteSyncSettingsController>();
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.setting != null) {
+      _tokenController.text = 'the same token as the last setting';
+      _remarkController.text = widget.setting!.tokenRemark!;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

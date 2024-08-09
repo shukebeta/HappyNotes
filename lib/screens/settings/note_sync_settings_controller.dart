@@ -28,8 +28,14 @@ class NoteSyncSettingsController {
     return await _telegramSettingService.add(setting);
   }
 
-  Future<bool> testTelegramSetting(TelegramSettings setting) async {
-    return await _telegramSettingService.test(setting);
+  Future<bool> testTelegramSetting(BuildContext context, TelegramSettings setting) async {
+    final scaffoldContext = ScaffoldMessenger.of(context);
+    try {
+      return await _telegramSettingService.test(setting);
+    } catch (error) {
+      Util.showError(scaffoldContext, "Test failed: $error");
+      return false;
+    }
   }
 
   Future<bool> activateTelegramSetting(TelegramSettings setting) async {
