@@ -19,7 +19,7 @@ class TelegramSettings {
   }
 
   bool get isTested {
-    return statusText == 'Normal' || statusText!.contains('Tested');
+    return statusText == 'Normal' || statusText == 'Disabled';
   }
 
   TelegramSettings({
