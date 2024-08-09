@@ -31,7 +31,7 @@ class NoteSyncSettingsState extends State<NoteSyncSettings> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Notes Sync Settings'),
+        title: const Text('Telegram Sync'),
         actions: [
           TextButton.icon(
             onPressed: () {
@@ -47,7 +47,7 @@ class NoteSyncSettingsState extends State<NoteSyncSettings> {
               });
             },
             icon: const Icon(Icons.add),
-            label: const Text('Add setting'),
+            label: const Text('Add'),
           ),
         ],
       ),

@@ -115,8 +115,8 @@ class SettingsState extends State<Settings> {
               ),
             ),
             ListTile(
-              title: const Text('Notes Sync'),
-              subtitle: const Text('Configure synchronization settings for notes.'),
+              title: const Text('Notes Sync - Telegram'),
+              subtitle: const Text('Configure synchronization settings for Telegram.'),
               onTap: () {
                 Navigator.push(
                   context,

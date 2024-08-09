@@ -33,7 +33,7 @@ class AddTelegramSettingState extends State<AddTelegramSetting> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add Sync Setting'),
+        title: const Text('Add Sync Setting - Telegram'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -96,17 +96,16 @@ class AddTelegramSettingState extends State<AddTelegramSetting> {
             ),
             const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: () async {
-                await _settingsController.addTelegramSetting(TelegramSettings(
+              onPressed: () {
+                _settingsController.addTelegramSetting(TelegramSettings(
                     syncType: _syncType,
                     syncValue: _syncType == 4 ? _tagController.text : '',
                     channelId: _channelIdController.text,
                     channelName: _channelNameController.text,
                     tokenRemark: _remarkController.text,
-                    encryptedToken: _tokenController.text));
-                Navigator.pop(context);
+                    encryptedToken: _tokenController.text)).then(Navigator.of(context).pop);
               },
-              child: const Text('Add Setting'),
+              child: const Text('Save'),
             ),
           ],
         ),
