@@ -97099,8 +97099,8 @@ return A.t($async$jk,r)}}
 A.eD.prototype={}
 A.mC.prototype={
 gLh(){var s=this.x
-if(s!=="Disabled"){s.toString
-s=B.c.p(s,"Inactive")}else s=!0
+if(s!=="Disabled")s=B.c.p(s==null?"":s,"Inactive")
+else s=!0
 return s}}
 A.asU.prototype={
 l1(){var s=this,r=A.n(t.N,t.z)
@@ -97153,7 +97153,7 @@ this.aE()},
 F(a){var s,r=this,q=null
 r.a.toString
 s=r.d
-return A.iv(A.ju(q,A.bk("Login",q,q,q,q,q,q)),A.aM_(new A.bb(B.cd,A.cV(A.b([new A.bb(B.cd,A.Ue(s.c,B.pc,!1,q,s.gMR()),q),new A.bb(B.cd,A.Ue(s.d,B.pb,!0,new A.axP(r,a),s.gMP()),q),new A.bb(B.cd,A.hj(A.uD(B.a_o,new A.axQ(r,a)),q,q),q),new A.bb(B.cx,A.FC(!1,B.a_L,q,q,B.cz,q,q,q,q,new A.axR(a),q,q),q)],t.p),B.L,B.A,B.R),q),s.e),q,q)}}
+return A.iv(A.ju(q,A.bk("Login",q,q,q,q,q,q)),A.aM_(new A.bb(B.cd,A.cV(A.b([new A.bb(B.cd,A.Ue(s.c,B.pc,!1,q,s.gMR()),q),new A.bb(B.cd,A.Ue(s.d,B.pb,!0,new A.axP(r,a),s.gMP()),q),new A.bb(B.cd,A.hj(A.uD(B.a_o,new A.axQ(r,a)),q,q),q),new A.bb(B.cx,A.FC(!1,B.a_M,q,q,B.cz,q,q,q,q,new A.axR(a),q,q),q)],t.p),B.L,B.A,B.R),q),s.e),q,q)}}
 A.axP.prototype={
 $1(a){return this.a.d.tx(this.b)},
 $S:38}
@@ -97897,7 +97897,7 @@ return A.t($async$e_,r)},
 F(a){var s,r,q,p=this,o=null,n=$.e1()
 n.d=A.bG(a,o,t.l).w.a.a>=600
 s=t.p
-r=A.ju(A.b([p.ag5(a)],s),B.a_E)
+r=A.ju(A.b([p.ag5(a)],s),B.a_F)
 s=A.b([p.ag4()],s)
 q=p.d
 q===$&&A.a()
@@ -98739,7 +98739,7 @@ if(r.a.c!=null){r.f.scs(0,"the same token as the last setting")
 s=r.a.c.r
 s.toString
 r.r.scs(0,s)}},
-F(a){var s=this,r=null,q=A.ju(r,B.a_K),p=A.b([B.R0,A.aG7(!1,B.MB,new A.a51(s),s.x,t.S)],t.p)
+F(a){var s=this,r=null,q=A.ju(r,B.a_L),p=A.b([B.R0,A.aG7(!1,B.MB,new A.a51(s),s.x,t.S)],t.p)
 if(s.x===4)p.push(A.oS(!0,B.be,!1,r,!0,B.q,r,A.tM(),s.w,r,r,r,r,r,2,B.JY,B.E,!0,r,!0,r,!1,r,r,r,r,r,r,r,r,1,r,r,!1,"\u2022",r,r,r,r,r,!1,r,!1,r,!0,r,B.cc,r,r,B.bm,B.b7,r,r,r,r,r,r,r,B.ab,r,B.cl,r,r,r,r))
 p.push(A.oS(!0,B.be,!1,r,!0,B.q,r,A.tM(),s.d,r,r,r,r,r,2,B.JW,B.E,!0,r,!0,r,!1,r,r,r,r,r,r,r,r,1,r,r,!1,"\u2022",r,r,r,r,r,!1,r,!1,r,!0,r,B.cc,r,r,B.bm,B.b7,r,r,r,r,r,r,r,B.ab,r,B.cl,r,r,r,r))
 p.push(A.oS(!0,B.be,!1,r,!0,B.q,r,A.tM(),s.e,r,r,r,r,r,2,B.JU,B.E,!0,r,!0,r,!1,r,r,r,r,r,r,r,r,1,r,r,!1,"\u2022",r,r,r,r,r,!1,r,!1,r,!0,r,B.cc,r,r,B.bm,B.b7,r,r,r,r,r,r,r,B.ab,r,B.cl,r,r,r,r))
@@ -98829,7 +98829,7 @@ r=A.b([],n)
 j=!p
 if(!j||k.gLh()){i=p?B.Jl:B.Jm
 i=A.P4(i,p?B.bo:B.lj,m,m)
-r.push(A.arx(i,A.bk(p?"Disable":"Activate",m,m,m,m,m,m),new A.akq(l,k)))}if(!(!j||q==="Disabled"))r.push(A.arx(B.JE,B.a_D,new A.akr(l,a,k)))
+r.push(A.arx(i,A.bk(p?"Disable":"Activate",m,m,m,m,m,m),new A.akq(l,k)))}if(!(!j||q==="Disabled"))r.push(A.arx(B.JE,B.a_E,new A.akr(l,a,k)))
 r.push(A.arx(B.Js,B.BM,new A.aks(l,a,k)))
 return A.cV(A.b([new A.Mu(A.Ch(m,m,o,A.dO(r,B.L,B.A,B.aG,m)),m)],n),B.L,B.A,B.R)},
 $S:119}
@@ -98979,7 +98979,7 @@ a4(){return new A.EZ(A.aKi(),A.a5e(),A.dU(),A.aFr(),$.dI().$1$0(t.Uh),B.i)}}
 A.EZ.prototype={
 b7(){this.ct()},
 F(a){var s=this,r=null,q=A.ju(r,B.BK),p=s.f,o=t.xt
-return A.iv(q,new A.bb(B.IF,A.aMC(A.b([A.Ch(r,B.a_j,B.a_J,A.aG7(!1,A.a9(new A.a8(A.b([10,20,30,40,50,60],t.t),new A.apR(),o),!0,o.i("aw.E")),new A.apS(s,a),p,t.S)),A.Ch(r,r,B.a_k,A.d1(new A.Uu(B.MF,s.r,new A.apT(s,a),r),r,220)),A.Ch(r,B.a_N,B.mg,A.Fq(new A.apU(s,a),s.d)),A.Ch(r,B.a_B,B.a_F,A.Fq(new A.apV(s,a),s.e)),A.Ch(new A.apW(a),B.a_A,B.a_n,r),B.Ba,B.Fj,B.Ba,A.hj(A.uD(B.a_z,new A.apX(s)),r,r)],t.p),r,r,!1),r),r,r)}}
+return A.iv(q,new A.bb(B.IF,A.aMC(A.b([A.Ch(r,B.a_j,B.a_K,A.aG7(!1,A.a9(new A.a8(A.b([10,20,30,40,50,60],t.t),new A.apR(),o),!0,o.i("aw.E")),new A.apS(s,a),p,t.S)),A.Ch(r,r,B.a_k,A.d1(new A.Uu(B.MF,s.r,new A.apT(s,a),r),r,220)),A.Ch(r,B.a_N,B.mg,A.Fq(new A.apU(s,a),s.d)),A.Ch(r,B.a_C,B.a_G,A.Fq(new A.apV(s,a),s.e)),A.Ch(new A.apW(a),B.a_B,B.a_n,r),B.Ba,B.Fj,B.Ba,A.hj(A.uD(B.a_A,new A.apX(s)),r,r)],t.p),r,r,!1),r),r,r)}}
 A.apS.prototype={
 $1(a){return this.a1t(a)},
 a1t(a){var s=0,r=A.u(t.H),q=this,p
@@ -106298,6 +106298,9 @@ B.Fd=new A.a1q()
 B.Fe=new A.a2N()
 B.jD=new A.a6c(0,"pixel")
 B.Fi=new A.u3(null,null,null,null,null,null,null)
+B.a3i=new A.atn(0,"material")
+B.Fp=new A.lD(4,0,null,null,null,null,null,null,null,null)
+B.cV=new A.i_(B.a1,null,null,B.Fp,null)
 B.o7=new A.m(4294638330)
 B.GW=new A.m(4294309365)
 B.jZ=new A.m(4293848814)
@@ -106312,19 +106315,16 @@ B.nT=new A.m(4280361249)
 B.Oy=new A.cu([50,B.o7,100,B.GW,200,B.jZ,300,B.jY,350,B.dF,400,B.eA,500,B.o1,600,B.ex,700,B.h2,800,B.ct,850,B.jO,900,B.nT],t.pl)
 B.vV=new A.kP(B.Oy,4288585374)
 B.YG=new A.x(!0,B.vV,null,null,null,null,16,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null)
-B.a_M=new A.bp("Version: 7832bb3 (2024-Aug-09)",null,B.YG,null,null,null,null,null,null,null)
-B.Fj=new A.i_(B.a1,null,null,B.a_M,null)
-B.a3i=new A.atn(0,"material")
-B.Fp=new A.lD(4,0,null,null,null,null,null,null,null,null)
-B.cV=new A.i_(B.a1,null,null,B.Fp,null)
+B.a_z=new A.bp("Version: e6d7a69 (2024-Aug-09)",null,B.YG,null,null,null,null,null,null,null)
+B.Fj=new A.i_(B.a1,null,null,B.a_z,null)
 B.a_x=new A.bp("Create a new note to get started.",null,null,null,null,null,null,null,null,null)
 B.Fk=new A.i_(B.a1,null,null,B.a_x,null)
 B.a_l=new A.bp("No notes available. Create a new note to get started.",null,null,null,null,null,null,null,null,null)
 B.nA=new A.i_(B.a1,null,null,B.a_l,null)
 B.a_y=new A.bp("No memories available. Compose notes from now on",null,null,null,null,null,null,null,null,null)
 B.Fl=new A.i_(B.a1,null,null,B.a_y,null)
-B.a_C=new A.bp("No notes found on this day.",null,null,null,null,null,null,null,null,null)
-B.Fm=new A.i_(B.a1,null,null,B.a_C,null)
+B.a_D=new A.bp("No notes found on this day.",null,null,null,null,null,null,null,null,null)
+B.Fm=new A.i_(B.a1,null,null,B.a_D,null)
 B.Fn=new A.A_(null,null,null,null,null,null,null,null,null)
 B.Fo=new A.A0(null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null)
 B.nB=new A.eh(0,B.o)
@@ -106954,13 +106954,13 @@ B.PP=new A.oh(B.kF,B.JH,B.BL)
 B.p9=new A.cO(61998,!1)
 B.kB=new A.dj(B.p9,null,null,null,null)
 B.Jv=new A.dj(B.p9,null,B.aY,null,null)
-B.a_I=new A.bp("New Note",null,null,null,null,null,null,null,null,null)
-B.PT=new A.oh(B.kB,B.Jv,B.a_I)
+B.a_J=new A.bp("New Note",null,null,null,null,null,null,null,null,null)
+B.PT=new A.oh(B.kB,B.Jv,B.a_J)
 B.p6=new A.cO(58608,!1)
 B.kC=new A.dj(B.p6,null,null,null,null)
 B.JF=new A.dj(B.p6,null,B.aY,null,null)
-B.a_H=new A.bp("Discovery",null,null,null,null,null,null,null,null,null)
-B.PR=new A.oh(B.kC,B.JF,B.a_H)
+B.a_I=new A.bp("Discovery",null,null,null,null,null,null,null,null,null)
+B.PR=new A.oh(B.kC,B.JF,B.a_I)
 B.p7=new A.cO(58751,!1)
 B.kD=new A.dj(B.p7,null,null,null,null)
 B.Jw=new A.dj(B.p7,null,B.aY,null,null)
@@ -107145,8 +107145,8 @@ B.Ff=new A.u2(0,"auto")
 B.Fg=new A.u2(1,"full")
 B.Fh=new A.u2(2,"chromium")
 B.MA=A.b(s([B.Ff,B.Fg,B.Fh]),A.ak("B<u2>"))
-B.a_G=new A.bp("Public",null,null,null,null,null,null,null,null,null)
-B.I4=new A.f7(1,B.a_G,B.c8,null,t.kZ)
+B.a_H=new A.bp("Public",null,null,null,null,null,null,null,null,null)
+B.I4=new A.f7(1,B.a_H,B.c8,null,t.kZ)
 B.mf=new A.bp("Private",null,null,null,null,null,null,null,null,null)
 B.I1=new A.f7(2,B.mf,B.c8,null,t.kZ)
 B.a_e=new A.bp("All",null,null,null,null,null,null,null,null,null)
@@ -109112,17 +109112,17 @@ B.a_r=new A.bp("Add setting",null,null,null,null,null,null,null,null,null)
 B.a_t=new A.bp("Go",null,null,null,null,null,null,null,null,null)
 B.a_u=new A.bp("Add Setting",null,null,null,null,null,null,null,null,null)
 B.a_v=new A.bp("Shared Notes",null,null,null,null,null,null,null,null,null)
-B.a_z=new A.bp("Logout",null,null,null,null,null,null,null,null,null)
-B.a_A=new A.bp("Configure synchronization settings for notes.",null,null,null,null,null,null,null,null,null)
-B.a_B=new A.bp("Enable to create all new notes as private by default.",null,null,null,null,null,null,null,null,null)
-B.a_D=new A.bp("Test",null,null,null,null,null,null,null,null,null)
-B.a_E=new A.bp("My Notes",null,null,null,null,null,null,null,null,null)
-B.a_F=new A.bp("Private Note Only",null,null,null,null,null,null,null,null,null)
+B.a_A=new A.bp("Logout",null,null,null,null,null,null,null,null,null)
+B.a_B=new A.bp("Configure synchronization settings for notes.",null,null,null,null,null,null,null,null,null)
+B.a_C=new A.bp("Enable to create all new notes as private by default.",null,null,null,null,null,null,null,null,null)
+B.a_E=new A.bp("Test",null,null,null,null,null,null,null,null,null)
+B.a_F=new A.bp("My Notes",null,null,null,null,null,null,null,null,null)
+B.a_G=new A.bp("Private Note Only",null,null,null,null,null,null,null,null,null)
 B.mg=new A.bp("Markdown",null,null,null,null,null,null,null,null,null)
 B.BM=new A.bp("",null,null,null,null,null,null,null,null,null)
-B.a_J=new A.bp("Page Size",null,null,null,null,null,null,null,null,null)
-B.a_K=new A.bp("Add Sync Setting",null,null,null,null,null,null,null,null,null)
-B.a_L=new A.bp("Don't have an account? Register here",null,null,null,null,null,null,null,null,null)
+B.a_K=new A.bp("Page Size",null,null,null,null,null,null,null,null,null)
+B.a_L=new A.bp("Add Sync Setting",null,null,null,null,null,null,null,null,null)
+B.a_M=new A.bp("Don't have an account? Register here",null,null,null,null,null,null,null,null,null)
 B.a_N=new A.bp("Enable or disable markdown support.",null,null,null,null,null,null,null,null,null)
 B.iS=new A.bp("Successfully saved. Click here to view.",null,null,null,null,null,null,null,null,null)
 B.a3h=new A.asm(0,"system")
