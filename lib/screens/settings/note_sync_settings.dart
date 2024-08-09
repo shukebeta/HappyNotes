@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:happy_notes/screens/settings/note_sync_settings_controller.dart';
 import '../../dependency_injection.dart';
 import '../../services/dialog_services.dart';
-import '../../utils/util.dart';
 import 'add_telegram_setting.dart';
 
 class NoteSyncSettings extends StatefulWidget {
@@ -38,7 +37,11 @@ class NoteSyncSettingsState extends State<NoteSyncSettings> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => AddTelegramSetting(setting: _settingsController.telegramSettings.lastOrNull)),
+                MaterialPageRoute(
+                  builder: (context) => AddTelegramSetting(
+                    setting: _settingsController.telegramSettings?.lastOrNull,
+                  ),
+                ),
               ).then((_) {
                 _loadSyncSettings();
               });
@@ -49,9 +52,10 @@ class NoteSyncSettingsState extends State<NoteSyncSettings> {
         ],
       ),
       body: ListView.builder(
-        itemCount: _settingsController.telegramSettings.length,
+        itemCount: _settingsController.telegramSettings?.length ?? 0,
         itemBuilder: (context, index) {
-          final setting = _settingsController.telegramSettings[index];
+          final setting = _settingsController.telegramSettings?[index];
+          if (setting == null) return const SizedBox.shrink();
           return Column(
             children: [
               Card(
@@ -99,8 +103,8 @@ class NoteSyncSettingsState extends State<NoteSyncSettings> {
                             color: setting.isActive
                                 ? Colors.green
                                 : setting.isDisabled
-                                    ? Colors.orange
-                                    : Colors.red,
+                                ? Colors.orange
+                                : Colors.red,
                           ),
                         ),
                       ),
@@ -141,7 +145,7 @@ class NoteSyncSettingsState extends State<NoteSyncSettings> {
                           if (true == await DialogService.showConfirmDialog(context)) {
                             await _settingsController.deleteTelegramSetting(setting);
                             _loadSyncSettings();
-                          };
+                          }
                         },
                         icon: const Icon(Icons.delete, color: Colors.red),
                         label: const Text(''),
