@@ -15,7 +15,7 @@ class TelegramSettings {
   }
 
   bool get isDisabled {
-    return statusText == 'Disabled' || statusText!.contains('Inactive');
+    return statusText == 'Disabled' || (statusText ?? '').contains('Inactive');
   }
 
   bool get isTested {
