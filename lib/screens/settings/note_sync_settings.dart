@@ -26,13 +26,14 @@ class NoteSyncSettingsState extends State<NoteSyncSettings> {
       // syncSettings = settings;
     });
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Notes Sync Settings'),
         actions: [
-          FloatingActionButton(
+          TextButton.icon(
             onPressed: () {
               Navigator.push(
                 context,
@@ -41,7 +42,8 @@ class NoteSyncSettingsState extends State<NoteSyncSettings> {
                 _loadSyncSettings();
               });
             },
-            child: const Icon(Icons.add),
+            icon: const Icon(Icons.add),
+            label: const Text('Add setting'),
           ),
         ],
       ),
@@ -56,13 +58,51 @@ class NoteSyncSettingsState extends State<NoteSyncSettings> {
                   title: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                          'Sync Type: ${_getSyncTypeDescription(setting.syncType)}${setting.syncType == 4 ? ' - ${setting.syncValue}' : ''}'),
-                      Text('Channel ID: ${setting.channelId}'),
-                      Text('Channel Remark: ${setting.channelName}'),
-                      const Text('Token: encrypted token'),
-                      Text('Token Remark: ${setting.tokenRemark}'),
-                      Text('Token Status: ${setting.statusText}'),
+                      RichText(
+                        text: TextSpan(
+                          style: DefaultTextStyle.of(context).style,
+                          children: [
+                            const TextSpan(text: 'Note Type: ', style: TextStyle(fontWeight: FontWeight.bold)),
+                            TextSpan(
+                              text: '${_getSyncTypeDescription(setting.syncType)}'
+                                  '${setting.syncType == 4 ? ' - ${setting.syncValue}' : ''}',
+                            ),
+                          ],
+                        ),
+                      ),
+                      RichText(
+                        text: TextSpan(
+                          style: DefaultTextStyle.of(context).style,
+                          children: [
+                            const TextSpan(text: 'Channel: ', style: TextStyle(fontWeight: FontWeight.bold)),
+                            TextSpan(text: '${setting.channelName}'),
+                          ],
+                        ),
+                      ),
+                      RichText(
+                        text: TextSpan(
+                          style: DefaultTextStyle.of(context).style,
+                          children: [
+                            const TextSpan(text: 'Token: ', style: TextStyle(fontWeight: FontWeight.bold)),
+                            TextSpan(text: '${setting.tokenRemark}'),
+                          ],
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8.0),
+                        child: Text(
+                          setting.statusText ?? 'Unknown',
+                          style: TextStyle(
+                            fontSize: 16.0,
+                            fontWeight: FontWeight.bold,
+                            color: setting.isActive
+                                ? Colors.green
+                                : setting.isDisabled
+                                    ? Colors.orange
+                                    : Colors.red,
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                   trailing: Row(
@@ -90,9 +130,11 @@ class NoteSyncSettingsState extends State<NoteSyncSettings> {
                           onPressed: () async {
                             final scaffoldContext = ScaffoldMessenger.of(context);
                             if (await _settingsController.testTelegramSetting(setting)) {
-                              Util.showInfo(scaffoldContext, "A test message has been successfully sent to your Telegram.");
+                              Util.showInfo(
+                                  scaffoldContext, "A test message has been successfully sent to your Telegram.");
                             } else {
-                              Util.showError(scaffoldContext, "Test failed, please check your token or try again later.");
+                              Util.showError(
+                                  scaffoldContext, "Test failed, please check your token or try again later.");
                             }
                             _loadSyncSettings();
                           },
@@ -105,19 +147,19 @@ class NoteSyncSettingsState extends State<NoteSyncSettings> {
                           _loadSyncSettings();
                         },
                         icon: const Icon(Icons.delete, color: Colors.red),
-                        label: const Text('Delete'),
+                        label: const Text(''),
                       ),
                     ],
                   ),
                 ),
               ),
-              const Divider(), // Add a divider between each setting
             ],
           );
         },
       ),
     );
   }
+
   String _getSyncTypeDescription(int syncType) {
     switch (syncType) {
       case 1:
@@ -125,7 +167,7 @@ class NoteSyncSettingsState extends State<NoteSyncSettings> {
       case 2:
         return 'Private';
       case 3:
-        return 'All';
+        return 'All (Public + Private)';
       case 4:
         return 'Tag';
       default:
