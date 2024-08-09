@@ -27,21 +27,22 @@ class NoteSyncSettingsController {
   Future<bool> addTelegramSetting(TelegramSettings setting) async {
     return await _telegramSettingService.add(setting);
   }
-  //
-  // Future<bool> activateTelegramSetting(int id) async {
-  //   // Implement your API call to delete a Telegram Sync Setting by ID here
-  //   // Return true if the setting was deleted successfully
-  // }
-  //
-  // Future<bool> disableTelegramSetting(int id) async {
-  //   // Implement your API call to delete a Telegram Sync Setting by ID here
-  //   // Return true if the setting was deleted successfully
-  // }
-  //
-  // Future<bool> deleteTelegramSetting(int id) async {
-  //   // Implement your API call to delete a Telegram Sync Setting by ID here
-  //   // Return true if the setting was deleted successfully
-  // }
+
+  Future<bool> testTelegramSetting(TelegramSettings setting) async {
+    return await _telegramSettingService.test(setting);
+  }
+
+  Future<bool> activateTelegramSetting(TelegramSettings setting) async {
+    return await _telegramSettingService.activate(setting);
+  }
+
+  Future<bool> disableTelegramSetting(TelegramSettings setting) async {
+    return await _telegramSettingService.disable(setting);
+  }
+
+  Future<bool> deleteTelegramSetting(TelegramSettings setting) async {
+    return await _telegramSettingService.delete(setting);
+  }
 
 
 }

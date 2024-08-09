@@ -3,10 +3,24 @@ class TelegramSettings {
   int? userId;
   final int syncType;
   final String syncValue;
-  final String channelId ;
+  final String channelId;
+
   String? encryptedToken;
   String? tokenRemark;
   String? channelName;
+  String? statusText = '';
+
+  bool get isActive {
+    return statusText == 'Normal';
+  }
+
+  bool get isDisabled {
+    return statusText == 'Disabled' || statusText!.contains('Inactive');
+  }
+
+  bool get isTested {
+    return statusText == 'Normal' || statusText!.contains('Tested');
+  }
 
   TelegramSettings({
     this.id,
@@ -17,6 +31,7 @@ class TelegramSettings {
     this.encryptedToken,
     this.tokenRemark,
     this.channelName,
+    this.statusText,
   });
 
   factory TelegramSettings.fromJson(Map<String, dynamic> json) {
@@ -28,7 +43,8 @@ class TelegramSettings {
       encryptedToken: json['encryptedToken'],
       tokenRemark: json['tokenRemark'],
       channelId: json['channelId'],
-      channelName: json['channelRemark'],
+      channelName: json['channelName'],
+      statusText: json['statusText'],
     );
   }
 }

@@ -10,26 +10,38 @@ class TelegramSettingsApi {
   }
 
   Future<Response> add(TelegramSettings setting) async {
-    var data = {
-      'syncType': setting.syncType,
-      'syncValue': setting.syncValue,
-      'encryptedToken': setting.encryptedToken,
-      'tokenRemark': setting.tokenRemark,
-      'channelId': setting.channelId,
-      'channelName': setting.channelName,
-    };
+    var data = _getPostData(setting);
     return await _dio.post('/telegramSettings/add', data: data);
   }
 
-  Future<Response> delete(TelegramSettings setting) async {
-    var data = {
+  Future<Response> test(TelegramSettings setting) async {
+    var data = _getPostData(setting);
+    return await _dio.post('/telegramSettings/test', data: data);
+  }
+
+  Future<Response> activate(TelegramSettings setting) async {
+    var data = _getPostData(setting);
+    return await _dio.post('/telegramSettings/activate', data: data);
+  }
+
+  Map<String, Object?> _getPostData(TelegramSettings setting) {
+    return {
       'syncType': setting.syncType,
       'syncValue': setting.syncValue,
       'encryptedToken': setting.encryptedToken,
       'tokenRemark': setting.tokenRemark,
       'channelId': setting.channelId,
-      'channelName': setting.channelName,
+      'channelName': setting.channelName ?? 'default name',
     };
+  }
+
+  Future<Response> disable(TelegramSettings setting) async {
+    var data = _getPostData(setting);
+    return await _dio.post('/telegramSettings/disable', data: data);
+  }
+
+  Future<Response> delete(TelegramSettings setting) async {
+    var data = _getPostData(setting);
     return await _dio.delete('/telegramSettings/delete', data: data);
   }
 }

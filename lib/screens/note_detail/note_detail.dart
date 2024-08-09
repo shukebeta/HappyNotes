@@ -74,7 +74,7 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
             onPopInvoked: (didPop) => _controller.onPopHandler(context, didPop),
             child: Scaffold(
               appBar: AppBar(
-                title: Text('NoteId: ${note?.id}'),
+                title: Text('Note ${note?.id}'),
                 actions: [
                   if (widget.note.userId == UserSession().id) ...[
                     if (_controller.isEditing)
