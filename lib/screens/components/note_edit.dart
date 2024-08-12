@@ -26,27 +26,30 @@ class NoteEditState extends State<NoteEdit> {
     super.initState();
     controller = TextEditingController();
     final noteModel = context.read<NoteModel>();
-
-    // Initialize noteModel content
-    if (noteModel.initialTag.isNotEmpty && widget.note == null) {
-      noteModel.content = '#${noteModel.initialTag}\n';
-      noteModel.initialTag = ''; // Reset after use
-    } else if (widget.note != null) {
-      noteModel.content = widget.note!.content;
-    }
-
-    // Set the initial text in the controller
-    controller.text = noteModel.content;
-
-    // Add listener to update controller.text when noteModel.content changes
-    noteModel.addListener(() {
-      if (noteModel.content != controller.text) {
-        controller.text = noteModel.content;
-      }
-    });
-
     prompt = HappyNotesPrompts.getRandom(noteModel.isPrivate);
-    noteModel.requestFocus();
+
+    // Delay the update to avoid triggering a rebuild during the build phase
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (noteModel.initialTag.isNotEmpty && widget.note == null) {
+        noteModel.content = '#${noteModel.initialTag}\n';
+        noteModel.initialTag = ''; // Reset after use
+      } else if (widget.note != null) {
+        noteModel.content = widget.note!.content;
+      }
+
+      // Set the initial text in the controller
+      controller.text = noteModel.content;
+
+      // Add listener to update controller.text when noteModel.content changes
+      noteModel.addListener(() {
+        if (noteModel.content != controller.text) {
+          controller.text = noteModel.content;
+        }
+      });
+
+      // Request focus and set prompt
+      noteModel.requestFocus();
+    });
   }
 
   @override
