@@ -28,3 +28,8 @@ Features:
 - Set your timezone in the settings.
 - Enable Markdown support in the settings.
 
+## Happy Notes support group on telegram
+
+https://t.me/happynotes_support
+
+Welcome to join this small community!
