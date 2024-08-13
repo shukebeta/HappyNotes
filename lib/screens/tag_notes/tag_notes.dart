@@ -8,6 +8,7 @@ import '../components/pagination_controls.dart';
 import '../../dependency_injection.dart';
 import '../account/user_session.dart';
 import '../new_note/new_note.dart';
+import '../../utils/util.dart'; // Import the util.dart file
 
 class TagNotes extends StatefulWidget {
   final String tag;
@@ -56,15 +57,34 @@ class TagNotesState extends State<TagNotes> {
     return await navigateToPage(currentPageNumber);
   }
 
+  Future<void> _showTagInputDialog() async {
+    final navigator = Navigator.of(context);
+    String? newTag = await Util.showInputDialog(context, 'Enter a Tag', 'a Tag without #');
+
+    if (newTag != null && newTag.trim().isNotEmpty) {
+      navigator.pushReplacement(
+        MaterialPageRoute(
+          builder: (context) => TagNotes(tag: newTag.trim(), myNotesOnly: widget.myNotesOnly),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     var suffix = widget.myNotesOnly ? 'my notes' : 'public notes';
     UserSession().isDesktop = MediaQuery.of(context).size.width >= 600;
 
     return Scaffold(
-      appBar: AppBar(title: Text('Tag: ${widget.tag} - $suffix'), actions: [
-        _buildNewNoteButton(context),
-      ]),
+      appBar: AppBar(
+        title: GestureDetector(
+          onTap: _showTagInputDialog,
+          child: Text('Tag: ${widget.tag} - $suffix'),
+        ),
+        actions: [
+          _buildNewNoteButton(context),
+        ],
+      ),
       body: Stack(
         children: [
           _buildBody(),
@@ -159,7 +179,7 @@ class TagNotesState extends State<TagNotes> {
               await Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => TagNotes(tag: tag, myNotesOnly: widget.myNotesOnly,),
+                  builder: (context) => TagNotes(tag: tag, myNotesOnly: widget.myNotesOnly),
                 ),
               );
             },
