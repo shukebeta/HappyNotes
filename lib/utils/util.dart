@@ -65,7 +65,11 @@ class Util {
           title: Text(title),
           content: TextField(
             controller: controller,
+            autofocus: true,
             decoration: InputDecoration(hintText: hintText),
+            onSubmitted: (value) {
+              Navigator.of(context).pop(controller.text); // Submit on Enter
+            },
           ),
           actions: <Widget>[
             TextButton(
