@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:happy_notes/app_config.dart';
 import 'package:happy_notes/screens/note_detail/note_detail.dart';
 import 'package:happy_notes/screens/tag_notes/tag_notes_controller.dart';
+import '../../services/note_tag_service.dart';
 import '../components/floating_pagination.dart';
 import '../components/note_list.dart';
 import '../components/pagination_controls.dart';
 import '../../dependency_injection.dart';
 import '../account/user_session.dart';
+import '../components/tag_cloud.dart';
 import '../new_note/new_note.dart';
 import '../../utils/util.dart'; // Import the util.dart file
 
@@ -22,6 +24,7 @@ class TagNotes extends StatefulWidget {
 
 class TagNotesState extends State<TagNotes> {
   late TagNotesController _tagNotesController;
+  late NoteTagService _noteTagService;
   int currentPageNumber = 1;
   bool showPageSelector = false;
 
@@ -33,6 +36,7 @@ class TagNotesState extends State<TagNotes> {
   void initState() {
     super.initState();
     _tagNotesController = locator<TagNotesController>();
+    _noteTagService = locator<NoteTagService>();
   }
 
   @override
@@ -70,6 +74,38 @@ class TagNotesState extends State<TagNotes> {
     }
   }
 
+  void _showTagDiagram(BuildContext context, Map<String, int> tagData) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Tag Cloud'),
+          content: SingleChildScrollView(
+            child: TagCloud(
+              tagData: tagData,
+              onTagTap: (tag) {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => TagNotes(tag: tag, myNotesOnly: false),
+                  ),
+                );
+              },
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Close'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     var suffix = widget.myNotesOnly ? 'my notes' : 'public notes';
@@ -79,6 +115,12 @@ class TagNotesState extends State<TagNotes> {
       appBar: AppBar(
         title: GestureDetector(
           onTap: _showTagInputDialog,
+          onLongPress: () async {
+            var tagData = await _tagNotesController.loadTagCloud(context);
+            // Show tag diagram on long press
+            if (!mounted) return;
+            _showTagDiagram(context, tagData);
+          },
           child: Text('Tag: ${widget.tag} - $suffix'),
         ),
         actions: [

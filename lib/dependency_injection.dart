@@ -7,17 +7,22 @@ import 'package:happy_notes/screens/settings/note_sync_settings_controller.dart'
 import 'package:happy_notes/screens/settings/settings_controller.dart';
 import 'package:happy_notes/screens/tag_notes/tag_notes_controller.dart';
 import 'package:happy_notes/services/account_service.dart';
+import 'package:happy_notes/services/note_tag_service.dart';
 import 'package:happy_notes/services/notes_services.dart';
 import 'package:get_it/get_it.dart';
 import 'package:happy_notes/services/telegram_settings_service.dart';
 import 'package:happy_notes/services/user_settings_service.dart';
 import 'package:happy_notes/utils/token_utils.dart';
 
+import 'apis/note_tag_api.dart';
 import 'apis/telegram_settings_api.dart';
 
 final locator = GetIt.instance;
 
 void init() {
+  locator.registerLazySingleton<NoteTagApi>(() => NoteTagApi());
+  locator.registerLazySingleton<NoteTagService>(() => NoteTagService(noteTagApi: locator()));
+
   locator.registerLazySingleton<NotesService>(() => NotesService());
   locator.registerLazySingleton<AccountApi>(() => AccountApi());
   locator.registerLazySingleton<AccountService>(() => AccountService(accountApi: locator(), userSettingsService: locator(), tokenUtils: locator()));
@@ -32,7 +37,7 @@ void init() {
 
   locator.registerFactory<NewNoteController>(() => NewNoteController(notesService: locator()));
   locator.registerFactory<HomePageController>(() => HomePageController(notesService: locator()));
-  locator.registerFactory<TagNotesController>(() => TagNotesController(notesService: locator()));
+  locator.registerFactory<TagNotesController>(() => TagNotesController(notesService: locator(), noteTagService: locator()));
   locator.registerFactory<DiscoveryController>(() => DiscoveryController(notesService: locator()));
 
   locator.registerLazySingleton<TokenUtils>(() => TokenUtils());
