@@ -53,7 +53,7 @@ class NoteList extends StatelessWidget {
               // Date header
               if (showDate)
                 Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                  padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
                   child: Align(
                     alignment: Alignment.center,
                     child: Text(

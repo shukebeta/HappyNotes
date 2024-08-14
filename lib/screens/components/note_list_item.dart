@@ -29,7 +29,7 @@ class NoteListItem extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(4, 0, 4, 0),
+            padding: const EdgeInsets.fromLTRB(4, 0, 4, 4),
             child: Row(
               children: [
                 Text(
@@ -64,7 +64,7 @@ class NoteListItem extends StatelessWidget {
             ),
           ),
           Padding(
-            padding: EdgeInsets.fromLTRB(4, 0, UserSession().isDesktop ? 4 : 16, 0),
+            padding: EdgeInsets.fromLTRB(4, 0, UserSession().isDesktop ? 4 : 16, 10),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
