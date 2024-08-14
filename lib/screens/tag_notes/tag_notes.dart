@@ -63,14 +63,20 @@ class TagNotesState extends State<TagNotes> {
 
   Future<void> _showTagInputDialog() async {
     final navigator = Navigator.of(context);
-    String? newTag = await Util.showInputDialog(context, 'Enter a Tag', 'a Tag without #');
+    String? newTag = await Util.showInputDialog(context, 'Enter a tag', 'such as hello');
 
-    if (newTag != null && newTag.trim().isNotEmpty) {
-      navigator.pushReplacement(
-        MaterialPageRoute(
-          builder: (context) => TagNotes(tag: newTag.trim(), myNotesOnly: widget.myNotesOnly),
-        ),
-      );
+    if (newTag != null) {
+      if (newTag.startsWith('#')) {
+        newTag = newTag.replaceAll('#', '');
+      }
+      newTag = newTag.trim();
+      if (newTag.isNotEmpty) {
+        navigator.pushReplacement(
+          MaterialPageRoute(
+            builder: (context) => TagNotes(tag: newTag!, myNotesOnly: widget.myNotesOnly),
+          ),
+        );
+      }
     }
   }
 

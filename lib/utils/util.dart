@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../app_config.dart';
+
 class Util {
   static void showError(ScaffoldMessengerState scaffoldContext, String errorMessage) {
     scaffoldContext.showSnackBar(SnackBar(
@@ -65,7 +67,7 @@ class Util {
           title: Text(title),
           content: TextField(
             controller: controller,
-            autofocus: true,
+            autofocus: !AppConfig.isIOSWeb,
             decoration: InputDecoration(hintText: hintText),
             onSubmitted: (value) {
               Navigator.of(context).pop(controller.text); // Submit on Enter

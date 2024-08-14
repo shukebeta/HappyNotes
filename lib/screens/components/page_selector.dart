@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../app_config.dart';
+
 class PageSelector extends StatefulWidget {
   final int totalPages;
   final Function(int) onPageSelected;
@@ -24,7 +26,9 @@ class PageSelectorState extends State<PageSelector> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      FocusScope.of(context).requestFocus(_pageFocusNode);
+      if(!AppConfig.isIOSWeb) {
+        FocusScope.of(context).requestFocus(_pageFocusNode);
+      }
     });
   }
 

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:happy_notes/screens/account/user_session.dart';
 
@@ -23,6 +24,10 @@ class AppConfig {
   static bool get markdownIsEnabled {
     final markdownIsEnabledStr = UserSession().settings(AppConstants.markdownIsEnabled) ?? dotenv.env['MARKDOWN_IS_ENABLED'];
     return markdownIsEnabledStr != null && markdownIsEnabledStr == '1';
+  }
+
+  static bool get isIOSWeb {
+    return kIsWeb && defaultTargetPlatform == TargetPlatform.iOS;
   }
 
   // duplicate request error, which shouldn't bother to show anything

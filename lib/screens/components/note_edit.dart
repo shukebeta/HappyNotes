@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:happy_notes/utils/happy_notes_prompts.dart';
+import '../../app_config.dart';
 import '../../entities/note.dart';
 import '../../models/note_model.dart';
 
@@ -48,7 +49,9 @@ class NoteEditState extends State<NoteEdit> {
       });
 
       // Request focus and set prompt
-      noteModel.requestFocus();
+      if (!AppConfig.isIOSWeb) {
+        noteModel.requestFocus();
+      }
     });
   }
 
