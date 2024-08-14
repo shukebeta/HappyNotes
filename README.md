@@ -27,6 +27,8 @@ Features:
 - Adjust page size in the settings.
 - Set your timezone in the settings.
 - Enable Markdown support in the settings.
+- Taping the page title in the tag notes page allows you input a tag you want to view.
+- Long pressing the page title in the tag notes page will show your tag cloud.
 
 ## Happy Notes support group on telegram
 
