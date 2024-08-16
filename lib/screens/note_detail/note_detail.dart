@@ -119,7 +119,7 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
               body: GestureDetector(
                 onDoubleTap: _enterEditingMode,
                 child: Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 16.0),
                   child: Consumer<NoteModel>(
                     builder: (context, noteModel, child) {
                       return _controller.isEditing ? NoteEdit(note: note!) : NoteView(note: note!);
