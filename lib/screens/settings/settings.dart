@@ -123,10 +123,10 @@ class SettingsState extends State<Settings> {
             ),
             // Version info block
             const SizedBox(height: 32),
-            const Center(
+            Center(
               child: Text(
-                'Version: VERSION_PLACEHOLDER',
-                style: TextStyle(fontSize: 16, color: Colors.grey),
+                'Version: ${AppConfig.version}',
+                style: const TextStyle(fontSize: 16, color: Colors.grey),
               ),
             ),
             const SizedBox(height: 32),

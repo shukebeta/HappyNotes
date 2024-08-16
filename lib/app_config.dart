@@ -43,6 +43,10 @@ class AppConfig {
     return fontFamily ?? 'Varela';
   }
 
+  static String get version {
+    return dotenv.env['VERSION'] ?? 'version-place-holder';
+  }
+
   // Map to store property access functions
   static final Map<String, dynamic Function()> _propertyAccessors = {
     AppConstants.baseUrl: () => baseUrl,
@@ -52,6 +56,8 @@ class AppConfig {
     AppConstants.quietErrorCode: () => quietErrorCode,
     AppConstants.timezone: () => timezone,
     AppConstants.fontFamily: () => fontFamily,
+    AppConstants.isIOSWeb: () => isIOSWeb,
+    AppConstants.version: () => version,
   };
 
   // Method to get property value by name
