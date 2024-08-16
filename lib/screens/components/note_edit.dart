@@ -79,13 +79,13 @@ class NoteEditState extends State<NoteEdit> {
                   },
                   child: Row(
                     children: [
-                      const Text('Private'),
                       Switch(
                         value: noteModel.isPrivate,
                         onChanged: (value) {
                           noteModel.isPrivate = value;
                         },
                       ),
+                      const Text('Private'),
                     ],
                   ),
                 ),
@@ -96,13 +96,13 @@ class NoteEditState extends State<NoteEdit> {
                   },
                   child: Row(
                     children: [
-                      const Text('Markdown'),
                       Switch(
                         value: noteModel.isMarkdown,
                         onChanged: (value) {
                           noteModel.isMarkdown = value;
                         },
                       ),
+                      const Text('Markdown'),
                     ],
                   ),
                 ),
