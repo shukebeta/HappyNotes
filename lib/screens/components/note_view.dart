@@ -36,38 +36,6 @@ class NoteView extends StatelessWidget {
             ),
           ),
         ),
-        const SizedBox(height: 8.0),
-        Row(
-          children: [
-            Consumer<NoteModel>(
-              builder: (context, noteModel, child) {
-                return Row(
-                  children: [
-                    const Text('Private'),
-                    Switch(
-                      value: noteModel.isPrivate,
-                      onChanged: null, // Disable switch in view mode
-                    ),
-                  ],
-                );
-              },
-            ),
-            const SizedBox(width: 24.0),
-            Consumer<NoteModel>(
-              builder: (context, noteModel, child) {
-                return Row(
-                  children: [
-                    const Text('Markdown'),
-                    Switch(
-                      value: noteModel.isMarkdown,
-                      onChanged: null, // Disable switch in view mode
-                    ),
-                  ],
-                );
-              },
-            ),
-          ],
-        ),
       ],
     );
   }

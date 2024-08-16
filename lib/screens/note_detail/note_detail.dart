@@ -73,48 +73,58 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
             canPop: false,
             onPopInvoked: (didPop) => _controller.onPopHandler(context, didPop),
             child: Scaffold(
-              appBar: AppBar(
-                title: Text('Note ${note?.id}'),
-                actions: [
-                  if (widget.note.userId == UserSession().id) ...[
-                    if (_controller.isEditing)
-                      IconButton(
-                        icon: const Icon(Icons.check),
-                        onPressed: () {
-                          _controller.saveNote(
-                            context,
-                            widget.note.id,
-                            Navigator.of(context).pop,
-                          );
-                        },
-                      )
-                    else
-                      IconButton(
-                        icon: const Icon(Icons.edit),
-                        onPressed: _enterEditingMode,
+              appBar: PreferredSize(
+                preferredSize: const Size.fromHeight(kToolbarHeight),
+                child: Consumer<NoteModel>(builder: (context, noteModel, child) {
+                  return AppBar(
+                    title: Text(
+                      'Note ${note?.id} - ${noteModel.isPrivate ? 'Private' : 'Public'}',
+                      style: TextStyle(
+                        color: noteModel.isPrivate ? Colors.red : Colors.green, // Change colors accordingly
                       ),
-                    PopupMenuButton<String>(
-                      onSelected: (value) async {
-                        if (value == 'delete') {
-                          await DialogService.showConfirmDialog(
-                            context,
-                            title: 'Delete note',
-                            text: 'Each note is a story, are you sure you want to delete it?',
-                            yesCallback: () => _controller.deleteNote(context, widget.note.id),
-                          );
-                        }
-                      },
-                      itemBuilder: (BuildContext context) {
-                        return [
-                          const PopupMenuItem<String>(
-                            value: 'delete',
-                            child: Text('Delete'),
-                          ),
-                        ];
-                      },
                     ),
-                  ],
-                ],
+                    actions: [
+                      if (widget.note.userId == UserSession().id) ...[
+                        if (_controller.isEditing)
+                          IconButton(
+                            icon: const Icon(Icons.check),
+                            onPressed: () {
+                              _controller.saveNote(
+                                context,
+                                widget.note.id,
+                                Navigator.of(context).pop,
+                              );
+                            },
+                          )
+                        else
+                          IconButton(
+                            icon: const Icon(Icons.edit),
+                            onPressed: _enterEditingMode,
+                          ),
+                        PopupMenuButton<String>(
+                          onSelected: (value) async {
+                            if (value == 'delete') {
+                              await DialogService.showConfirmDialog(
+                                context,
+                                title: 'Delete note',
+                                text: 'Each note is a story, are you sure you want to delete it?',
+                                yesCallback: () => _controller.deleteNote(context, widget.note.id),
+                              );
+                            }
+                          },
+                          itemBuilder: (BuildContext context) {
+                            return [
+                              const PopupMenuItem<String>(
+                                value: 'delete',
+                                child: Text('Delete'),
+                              ),
+                            ];
+                          },
+                        ),
+                      ],
+                    ],
+                  );
+                }),
               ),
               body: GestureDetector(
                 onDoubleTap: _enterEditingMode,
