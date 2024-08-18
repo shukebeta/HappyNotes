@@ -20,14 +20,14 @@ class CodeElementBuilder extends MarkdownElementBuilder {
         ),
       );
     } else {
-      return RichText(
-        textAlign: TextAlign.center,
-        text: TextSpan(
+      return SelectableText.rich(
+        TextSpan(
           text: element.textContent,
           style: preferredStyle?.copyWith(
-            backgroundColor: Colors.grey[200], // Optional: to highlight the inline code background
+            backgroundColor: Colors.grey[200],
           ),
         ),
+        textAlign: TextAlign.center,
       );
     }
   }
