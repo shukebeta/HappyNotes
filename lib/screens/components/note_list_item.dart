@@ -9,7 +9,7 @@ class NoteListItem extends StatelessWidget {
   final Note note;
   final VoidCallback onTap;
   final VoidCallback? onDoubleTap;
-  final VoidTagTap? onTagTap;
+  final Function(Note note, String tag)? onTagTap;
 
   const NoteListItem({
     Key? key,
@@ -100,7 +100,7 @@ class NoteListItem extends StatelessWidget {
                         children: note.tags!.map((tag) {
                           return TagWidget(
                             tag: tag,
-                            onTap: () => onTagTap == null ? () {} : onTagTap!(tag),
+                            onTap: () => onTagTap == null ? () {} : onTagTap!(note, tag),
                           );
                         }).toList(),
                       ),

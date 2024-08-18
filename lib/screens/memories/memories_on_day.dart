@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:happy_notes/models/notes_result.dart';
 import 'package:intl/intl.dart';
 
+import '../../utils/navigation_utils.dart';
 import '../account/user_session.dart';
 import '../components/note_list.dart';
 import '../../dependency_injection.dart';
@@ -86,14 +87,7 @@ class MemoriesOnDayState extends State<MemoriesOnDay> with RouteAware {
                   ),
                 );
               },
-              onTagTap: (tag) async {
-                await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => TagNotes(tag: tag, myNotesOnly: true,),
-                  ),
-                );
-              },
+              onTagTap: (note,tag) => NoteEventHandler.onTagTap(context, note, tag),
             );
           } else {
             return const Center(child: Text('No notes found on this day.'));

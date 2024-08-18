@@ -20,11 +20,11 @@ class TagNotesController {
 
   int get totalPages => (_totalNotes / AppConfig.pageSize).ceil();
 
-  Future<void> loadNotes(BuildContext context, String tag, int pageNumber, bool myNotesOnly) async {
+  Future<void> loadNotes(BuildContext context, String tag, int pageNumber) async {
     final scaffoldContext = ScaffoldMessenger.of(context);
     try {
       isLoading = true;
-      var result = await _notesService.tagNotes(tag, AppConfig.pageSize, pageNumber, myNotesOnly);
+      var result = await _notesService.tagNotes(tag, AppConfig.pageSize, pageNumber);
       _realTotalNotes = result.totalNotes;
       notes = result.notes;
     } catch (error) {

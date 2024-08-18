@@ -7,7 +7,7 @@ class NoteList extends StatelessWidget {
   final List<Note> notes;
   final Function(Note) onTap;
   final Function(Note)? onDoubleTap;
-  final Function(String tag)? onTagTap;
+  final Function(Note note, String tag)? onTagTap;
   final Future<void> Function()? onRefresh;
   final bool showDate;
   final bool showAuthor;

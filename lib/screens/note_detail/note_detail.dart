@@ -12,10 +12,11 @@ import 'note_detail_controller.dart';
 
 // ignore: must_be_immutable
 class NoteDetail extends StatefulWidget {
-  final Note note;
+  final Note? note;
+  final int? noteId;
   bool? enterEditing;
 
-  NoteDetail({super.key, required this.note, this.enterEditing});
+  NoteDetail({super.key, this.note, this.noteId, this.enterEditing});
 
   @override
   NoteDetailState createState() => NoteDetailState();
@@ -31,13 +32,14 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
   void initState() {
     _controller = NoteDetailController(notesService: locator<NotesService>());
     _controller.isEditing = widget.enterEditing ?? false;
+    note = widget.note;
     super.initState();
   }
 
   @override
   void didChangeDependencies() async {
     super.didChangeDependencies();
-    var result = await _controller.fetchNotes(context, widget.note.id);
+    var result = await _controller.fetchNotes(context, note?.id ?? widget.noteId!);
     if (result != null) {
       note = result.$1;
       linkedNotes = result.$2;
@@ -46,7 +48,7 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
   }
 
   void _enterEditingMode() async {
-    if (widget.note.userId != UserSession().id) return;
+    if (note?.userId != UserSession().id) return;
     if (!_controller.isEditing) {
       _controller.isEditing = true;
     }
@@ -68,9 +70,9 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
     }
 
     var noteModel = NoteModel();
-    noteModel.isPrivate = widget.note.isPrivate;
-    noteModel.isMarkdown = widget.note.isMarkdown;
-    noteModel.content = note!.content;
+    noteModel.isPrivate = note?.isPrivate ?? true;
+    noteModel.isMarkdown = note?.isMarkdown ?? false;
+    noteModel.content = note?.content ?? '';
 
     return ChangeNotifierProvider(
         create: (_) => noteModel,
@@ -90,14 +92,14 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
                       ),
                     ),
                     actions: [
-                      if (widget.note.userId == UserSession().id) ...[
+                      if (note?.userId == UserSession().id) ...[
                         if (_controller.isEditing)
                           IconButton(
                             icon: const Icon(Icons.check),
                             onPressed: () {
                               _controller.saveNote(
                                 context,
-                                widget.note.id,
+                                note?.id ?? widget.noteId!,
                                 Navigator.of(context).pop,
                               );
                             },
@@ -114,7 +116,7 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
                                 context,
                                 title: 'Delete note',
                                 text: 'Each note is a story, are you sure you want to delete it?',
-                                yesCallback: () => _controller.deleteNote(context, widget.note.id),
+                                yesCallback: () => _controller.deleteNote(context, note?.id ?? widget.noteId!),
                               );
                             }
                           },

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:happy_notes/app_config.dart';
 import 'package:happy_notes/screens/note_detail/note_detail.dart';
 import 'package:happy_notes/screens/tag_notes/tag_notes.dart';
+import '../../utils/navigation_utils.dart';
 import '../components/floating_pagination.dart';
 import '../components/note_list.dart';
 import '../components/pagination_controls.dart';
@@ -150,14 +151,7 @@ class HomePageState extends State<HomePage> {
               );
               navigateToPage(currentPageNumber);
             },
-            onTagTap: (tag) async {
-              await Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => TagNotes(tag: tag, myNotesOnly: true,),
-                ),
-              );
-            },
+            onTagTap: (note,tag) => NoteEventHandler.onTagTap(context, note, tag),
             onRefresh: () async => await navigateToPage(currentPageNumber),
           ),
         ),

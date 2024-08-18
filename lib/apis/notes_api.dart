@@ -53,13 +53,6 @@ class NotesApi {
     return await _dio.get('/notes/myLatest$pager');
   }
 
-  static Future<Response> myTagNotes(Map<String, dynamic> params) async {
-    var pager = params['pageSize'] > 0 && params['pageNumber'] > 0
-        ? '/${params['pageSize']}/${params['pageNumber']}'
-        : '/${AppConfig.pageSize}/1';
-    return await _dio.get('/notes/myTag$pager', queryParameters: {'tag': params['tag']});
-  }
-
   static Future<Response> memories(Map<String, dynamic> params) async {
     return await _dio.get('/notes/memories?localTimeZone=${params['localTimeZone']}');
   }

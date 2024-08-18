@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:happy_notes/app_config.dart';
 import 'package:happy_notes/screens/note_detail/note_detail.dart';
 import 'package:happy_notes/screens/tag_notes/tag_notes_controller.dart';
-import '../../services/note_tag_service.dart';
+import '../../utils/navigation_utils.dart';
 import '../components/floating_pagination.dart';
 import '../components/note_list.dart';
 import '../components/pagination_controls.dart';
@@ -24,7 +24,6 @@ class TagNotes extends StatefulWidget {
 
 class TagNotesState extends State<TagNotes> {
   late TagNotesController _tagNotesController;
-  late NoteTagService _noteTagService;
   int currentPageNumber = 1;
   bool showPageSelector = false;
 
@@ -36,7 +35,6 @@ class TagNotesState extends State<TagNotes> {
   void initState() {
     super.initState();
     _tagNotesController = locator<TagNotesController>();
-    _noteTagService = locator<NoteTagService>();
   }
 
   @override
@@ -47,7 +45,7 @@ class TagNotesState extends State<TagNotes> {
 
   Future<bool> navigateToPage(int pageNumber) async {
     if (pageNumber >= 1 && pageNumber <= _tagNotesController.totalPages) {
-      await _tagNotesController.loadNotes(context, widget.tag, pageNumber, widget.myNotesOnly);
+      await _tagNotesController.loadNotes(context, widget.tag, pageNumber);
       setState(() {
         currentPageNumber = pageNumber;
         showPageSelector = false;
@@ -114,7 +112,6 @@ class TagNotesState extends State<TagNotes> {
 
   @override
   Widget build(BuildContext context) {
-    var suffix = widget.myNotesOnly ? 'my notes' : 'public notes';
     UserSession().isDesktop = MediaQuery.of(context).size.width >= 600;
 
     return Scaffold(
@@ -127,7 +124,7 @@ class TagNotesState extends State<TagNotes> {
             if (!mounted) return;
             _showTagDiagram(context, tagData);
           },
-          child: Text('Tag: ${widget.tag} - $suffix'),
+          child: Text('Notes with tag: ${widget.tag}'),
         ),
         actions: [
           _buildNewNoteButton(context),
@@ -223,14 +220,7 @@ class TagNotesState extends State<TagNotes> {
               );
               navigateToPage(currentPageNumber);
             },
-            onTagTap: (tag) async {
-              await Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => TagNotes(tag: tag, myNotesOnly: widget.myNotesOnly),
-                ),
-              );
-            },
+            onTagTap: (note,tag) => NoteEventHandler.onTagTap(context, note, tag),
             onRefresh: () async => await navigateToPage(currentPageNumber),
           ),
         ),
