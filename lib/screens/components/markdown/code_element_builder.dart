@@ -9,25 +9,29 @@ class CodeElementBuilder extends MarkdownElementBuilder {
 
   @override
   Widget? visitElementAfter(md.Element element, TextStyle? preferredStyle) {
+    final codeText = element.textContent;
+    
     if (_isMultipleLine(element)) {
       return Container(
         margin: const EdgeInsets.fromLTRB(7, 20, 10, 0),
         width: MediaQueryData.fromView(WidgetsBinding.instance.window).size.width,
         child: Text(
-          element.textContent,
-          style:
-              TextStyle(fontSize: preferredStyle!.fontSize, height: preferredStyle.height, color: preferredStyle.color),
+          codeText,
+          style: TextStyle(
+            fontSize: preferredStyle!.fontSize,
+            height: preferredStyle.height,
+            color: preferredStyle.color,
+            fontFamily: 'monospace',
+          ),
         ),
       );
     } else {
-      return SelectableText.rich(
-        TextSpan(
-          text: element.textContent,
-          style: preferredStyle?.copyWith(
-            backgroundColor: Colors.grey[200],
-          ),
+      return Text(
+        codeText,
+        style: preferredStyle?.copyWith(
+          backgroundColor: Colors.grey[200],
+          fontFamily: 'monospace',
         ),
-        textAlign: TextAlign.center,
       );
     }
   }
