@@ -22,8 +22,10 @@ class NoteDetail extends StatefulWidget {
 }
 
 class NoteDetailState extends State<NoteDetail> with RouteAware {
-  late NoteDetailController _controller;
   Note? note;
+  List<Note>? linkedNotes = [];
+  late NoteDetailController _controller;
+
 
   @override
   void initState() {
@@ -35,7 +37,11 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
   @override
   void didChangeDependencies() async {
     super.didChangeDependencies();
-    note = await _controller.fetchNote(widget.note.id);
+    var result = await _controller.fetchNotes(context, widget.note.id);
+    if (result != null) {
+      note = result.$1;
+      linkedNotes = result.$2;
+    }
     setState(() {});
   }
 
@@ -132,7 +138,7 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
                   padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 16.0),
                   child: Consumer<NoteModel>(
                     builder: (context, noteModel, child) {
-                      return _controller.isEditing ? NoteEdit(note: note!) : NoteView(note: note!);
+                      return _controller.isEditing ? NoteEdit(note: note!) : NoteView(note: note!, linkedNotes: linkedNotes,);
                     },
                   ),
                 ),

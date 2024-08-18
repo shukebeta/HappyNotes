@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../app_config.dart';
 import '../../entities/note.dart';
 import '../../models/note_model.dart';
 import '../../services/dialog_services.dart';
@@ -15,9 +16,16 @@ class NoteDetailController {
   bool isPrivate = false;
   bool isEditing = false;
 
-  Future<Note> fetchNote(int noteId) async {
-    _originalNote = await _notesService.get(noteId);
-    return _originalNote;
+  Future<(Note note, List<Note> linkedNotes)?> fetchNotes(BuildContext context, int noteId) async {
+    final scaffoldContext = ScaffoldMessenger.of(context);
+    try {
+      _originalNote = await _notesService.get(noteId);
+      var linkedNotes = (await _notesService.getLinkedNotes(noteId)).notes;
+      return (_originalNote, linkedNotes);
+    } catch (error) {
+      Util.showError(scaffoldContext, error.toString());
+      return null;
+    }
   }
 
   Future<void> saveNote(BuildContext context, int noteId, void Function() onSuccess) async {

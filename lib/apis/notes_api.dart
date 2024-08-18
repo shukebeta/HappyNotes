@@ -68,4 +68,7 @@ class NotesApi {
     return await _dio.get('/notes/memoriesOn?localTimeZone=${params['localTimeZone']}&yyyyMMdd=${params['yyyyMMdd']}');
   }
 
+  static Future<Response> getLinkedNotes(int noteId) async {
+    return await _dio.get('/notes/linkedNotes/$noteId');
+  }
 }

@@ -40,6 +40,12 @@ class NotesService {
     return _getNotesResult(apiResult);
   }
 
+  // fetch my latest notes (include private ones)
+  Future<NotesResult> getLinkedNotes(int noteId) async {
+    var apiResult = (await NotesApi.getLinkedNotes(noteId)).data;
+    return _getPagedNotesResult(apiResult);
+  }
+
   Future<NotesResult> _getNotesResult(apiResult) async {
     if (!apiResult['successful']) throw ApiException(apiResult);
     List<dynamic> fetchedNotesData = apiResult['data'];
