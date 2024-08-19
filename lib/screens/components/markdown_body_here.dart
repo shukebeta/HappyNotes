@@ -18,8 +18,8 @@ class MarkdownBodyHereState extends State<MarkdownBodyHere> {
     return SelectionArea(
       child: MarkdownBody(
         data: widget.data,
-        builders: <String, MarkdownElementBuilder>{'code': CodeElementBuilder()},
         // Allow users to select text
+        builders: <String, MarkdownElementBuilder>{'code': CodeElementBuilder()},
         styleSheet: MarkdownStyleSheet(
           h1: const TextStyle(fontSize: 20),
           p: const TextStyle(

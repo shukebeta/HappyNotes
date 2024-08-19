@@ -20,14 +20,14 @@ class CodeElementBuilder extends MarkdownElementBuilder {
         ),
       );
     } else {
-      return SelectableText.rich(
-        TextSpan(
-          text: element.textContent,
-          style: preferredStyle?.copyWith(
-            backgroundColor: Colors.grey[200],
-          ),
+      // fixing the issue that inline code cannot be selected
+      return Container(
+        padding: const EdgeInsets.all(2),
+        child: Text(
+          element.textContent,
+          style:
+              TextStyle(fontSize: preferredStyle!.fontSize,  height: preferredStyle.height, color: Colors.green),
         ),
-        textAlign: TextAlign.center,
       );
     }
   }
