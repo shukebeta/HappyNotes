@@ -22,7 +22,7 @@ class CodeElementBuilder extends MarkdownElementBuilder {
     } else {
       // fixing the issue that inline code cannot be selected
       return Container(
-        padding: const EdgeInsets.all(2),
+        padding: const EdgeInsets.fromLTRB(2, 0, 2, 0),
         child: Text(
           element.textContent,
           style:
