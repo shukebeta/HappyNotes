@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown_selectionarea/flutter_markdown.dart';
 import 'package:markdown/markdown.dart' as md;
@@ -12,7 +14,8 @@ class CodeElementBuilder extends MarkdownElementBuilder {
     if (_isMultipleLine(element)) {
       return Container(
         margin: const EdgeInsets.fromLTRB(7, 20, 10, 0),
-        width: MediaQueryData.fromView(WidgetsBinding.instance.window).size.width,
+        width: PlatformDispatcher.instance.views.first.physicalSize.width /
+            PlatformDispatcher.instance.views.first.devicePixelRatio,
         child: Text(
           element.textContent,
           style:
@@ -25,8 +28,7 @@ class CodeElementBuilder extends MarkdownElementBuilder {
         padding: const EdgeInsets.fromLTRB(2, 0, 2, 0),
         child: Text(
           element.textContent,
-          style:
-              TextStyle(fontSize: preferredStyle!.fontSize,  height: preferredStyle.height, color: Colors.green),
+          style: TextStyle(fontSize: preferredStyle!.fontSize, height: preferredStyle.height, color: Colors.green),
         ),
       );
     }
