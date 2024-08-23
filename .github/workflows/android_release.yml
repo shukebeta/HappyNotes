@@ -34,11 +34,6 @@ jobs:
         run: |
           echo "$KEYSTORE_BASE64" | base64 --decode > android/key.jks
 
-      - name: Extract/Update version information
-        run: |
-          echo "VERSION=$(echo $GITHUB_REF | cut -d / -f 3)" >> $GITHUB_ENV
-          sed -i "s/VERSION_PLACEHOLDER/$VERSION/" lib/screens/settings/settings.dart
-
       - name: Create key.properties
         run: |
           echo "storeFile=../key.jks" > android/key.properties
@@ -50,6 +45,8 @@ jobs:
       - name: Build APK
         run: |
           cp .env.production .env
+          echo "VERSION=$(echo $GITHUB_REF | cut -d / -f 3)" >> $GITHUB_ENV
+          sed -i "s/VERSION_PLACEHOLDER/$VERSION/" .env
           flutter build apk --release
 
       - name: Make Github release
