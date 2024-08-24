@@ -1,37 +1,35 @@
 # Happy Notes, Happy Life
 
-HappyNotes is a versatile note-taking application designed to enhance your life by capturing valuable moments effortlessly. Its key features include:
+**HappyNotes** is a versatile note-taking application designed to enhance your life by effortlessly capturing valuable moments.
 
-- Personal Growth: Write down any valuable moments to help you become a better version of yourself.
-- User-Friendly: Designed for ease of use.
-- Cross-Platform Support: Enjoy a consistent experience across Web, Android, iOS, macOS, Linux, and Windows.
+## Key Features
 
-HappyNotes is open-source and actively being developed. Currently, you can download the latest Android APK from GitHub: [HappyNotes on GitHub](https://github.com/shukebeta/HappyNotes).
+- **Personal Growth**: Document moments to help you grow.
+- **User-Friendly**: Intuitive design for ease of use.
+- **Cross-Platform Support**: Consistent experience across Web, Android, iOS, macOS, Linux, and Windows.
+- **Cloud Storage**: Access your notes anywhere, anytime.
+- **Quick Actions**: Capture notes swiftly on Android and iOS.
+- **Public & Private Notes**: Share with others or keep as a personal journal.
+- **Telegram Sync**: Sync notes to a Telegram channel/group with flexible rules.
+- **Open Source**: Contribute to the features you love.
 
-Features:
+## Tips for Using Happy Notes
 
-- Cloud Storage: Access your notes anywhere, anytime.
-- Quick Actions: Capture notes quickly on Android and iOS.
-- Public Notes: Share notes with your loved ones.
-- Private Notes: Use it as a personal journal or diary.
-- Open Source: Contribute to the features you love.
+- **Edit Notes**: Double-tap a note to make changes.
+- **Tags**: Create tags by adding `#example_tag` in your notes.
+- **Note Details**: Tap creation time or `View more` for details.
+- **Navigation**: Long press page numbers to jump to a specific page.
+- **Default Note Type**: New Notes are Private; use settings to change to Public.
+- **Settings**:
+    - Adjust page size.
+    - Set your timezone.
+    - Enable Markdown support.
+- **Tag Viewing**: Tap the page title on tag notes to view specific tags or long press for a tag cloud.
 
-## Happy Notes Tips
+## Join Our Community
 
-- Double-tap a note to edit it.
-- Create tags easily by placing `#tag1 tag2 tag3` on a separate line.
-- Tap the creation time or `View more` to enter the note detail page.
-- Long press the page number or previous/next page button to enter a specific page number.
-- The New Note button in the main menu always defaults to a Private Note.
-- The pencil icon in the top right defaults to a Public Note. Override this by enabling `Private Note only` in the settings.
-- Adjust page size in the settings.
-- Set your timezone in the settings.
-- Enable Markdown support in the settings.
-- Taping the page title in the tag notes page allows you input a tag you want to view.
-- Long pressing the page title in the tag notes page will show your tag cloud.
+Connect with us on Telegram for support and to share experiences:
 
-## Happy Notes support group on telegram
+[Happy Notes Support Group](https://t.me/happynotes_support)
 
-https://t.me/happynotes_support
-
-Welcome to join this small community!
+Let's support each other and make the most of HappyNotes!
