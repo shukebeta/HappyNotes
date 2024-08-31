@@ -60,7 +60,7 @@ class NoteListItem extends StatelessWidget {
                     thickness: 1,
                   ),
                 ),
-                Text(' ${note.id} -',
+                Text(' @${note.id} -',
                     style: const TextStyle(
                       fontWeight: FontWeight.w200,
                       fontSize: 12,
