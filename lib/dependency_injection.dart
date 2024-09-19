@@ -36,7 +36,7 @@ void init() {
   locator.registerLazySingleton<NoteSyncSettingsController>(() => NoteSyncSettingsController(telegramSettingService: locator()));
 
   locator.registerFactory<NewNoteController>(() => NewNoteController(notesService: locator()));
-  locator.registerFactory<HomePageController>(() => HomePageController(notesService: locator()));
+  locator.registerFactory<HomePageController>(() => HomePageController(notesService: locator(), noteTagService: locator()));
   locator.registerFactory<TagNotesController>(() => TagNotesController(notesService: locator(), noteTagService: locator()));
   locator.registerFactory<DiscoveryController>(() => DiscoveryController(notesService: locator()));
 

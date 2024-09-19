@@ -44,6 +44,10 @@ class TagCloud extends StatelessWidget {
     double minFontSize = 16;
     double maxFontSize = 32;
 
+    if (minCount == maxCount) {
+      // If all counts are the same, return the middle font size
+      return (minFontSize + maxFontSize) / 2;
+    }
     return minFontSize +
         ((count - minCount) / (maxCount - minCount)) * (maxFontSize - minFontSize);
   }
