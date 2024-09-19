@@ -1,6 +1,7 @@
 // note_edit.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:happy_notes/utils/happy_notes_prompts.dart';
 import '../../app_config.dart';
 import '../../entities/note.dart';
@@ -72,39 +73,32 @@ class NoteEditState extends State<NoteEdit> {
             ),
             const SizedBox(height: 8.0),
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly, // Distribute space evenly
               children: [
                 GestureDetector(
                   onTap: () {
                     noteModel.isPrivate = !noteModel.isPrivate;
                   },
-                  child: Row(
-                    children: [
-                      Switch(
-                        value: noteModel.isPrivate,
-                        onChanged: (value) {
-                          noteModel.isPrivate = value;
-                        },
-                      ),
-                      const Text('Private'),
-                    ],
+                  child: Icon(
+                    noteModel.isPrivate ? Icons.lock : Icons.lock_open,
+                    color: noteModel.isPrivate ? Colors.blue : Colors.grey,
                   ),
                 ),
-                const SizedBox(width: 24.0),
                 GestureDetector(
                   onTap: () {
                     noteModel.isMarkdown = !noteModel.isMarkdown;
                   },
-                  child: Row(
-                    children: [
-                      Switch(
-                        value: noteModel.isMarkdown,
-                        onChanged: (value) {
-                          noteModel.isMarkdown = value;
-                        },
-                      ),
-                      const Text('Markdown'),
-                    ],
+                  child: Text(
+                    "M↓",
+                    style: TextStyle(
+                      fontSize: 20.0,
+                      color: noteModel.isMarkdown ? Colors.blue : Colors.grey,
+                    ),
                   ),
+                ),
+                IconButton(
+                  onPressed: _pickAndUploadImage, // Method to handle image picking and upload
+                  icon: const Icon(Icons.add_photo_alternate),
                 ),
               ],
             ),
@@ -142,4 +136,16 @@ class NoteEditState extends State<NoteEdit> {
       },
     );
   }
+
+  Future<void> _pickAndUploadImage() async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+
+    if (image != null) {
+      // Implement your upload logic here
+      print('Picked image: ${image.path}');
+      // You can also update the NoteModel with the image path or URL
+    }
+  }
+
 }
