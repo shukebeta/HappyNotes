@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:happy_notes/app_config.dart';
 import 'package:happy_notes/screens/note_detail/note_detail.dart';
 import 'package:happy_notes/screens/tag_notes/tag_notes.dart';
-import '../../utils/navigation_utils.dart';
+import '../../utils/navigation_helper.dart';
 import '../../utils/util.dart';
 import '../components/floating_pagination.dart';
 import '../components/note_list.dart';
@@ -57,7 +57,7 @@ class HomePageState extends State<HomePage> {
     return await navigateToPage(currentPageNumber);
   }
 
-  Future<void> _showTagInputDialog() async {
+  Future<void> _showTagInputDialog({bool myNotesOnly = true}) async {
     final navigator = Navigator.of(context);
     String? newTag = await Util.showInputDialog(context, 'Enter a tag', 'such as hello');
 
@@ -69,14 +69,14 @@ class HomePageState extends State<HomePage> {
       if (newTag.isNotEmpty) {
         navigator.push(
           MaterialPageRoute(
-            builder: (context) => TagNotes(tag: newTag!, myNotesOnly: false),
+            builder: (context) => TagNotes(tag: newTag!, myNotesOnly: myNotesOnly),
           ),
         );
       }
     }
   }
 
-  void _showTagDiagram(BuildContext context, Map<String, int> tagData) {
+  void _showTagDiagram(BuildContext context, Map<String, int> tagData, {bool replaceCurrentPage = true, bool myNotesOnly = true}) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -86,12 +86,21 @@ class HomePageState extends State<HomePage> {
             child: TagCloud(
               tagData: tagData,
               onTagTap: (tag) {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => TagNotes(tag: tag, myNotesOnly: false),
-                  ),
-                );
+                if (replaceCurrentPage) {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => TagNotes(tag: tag, myNotesOnly: myNotesOnly),
+                    ),
+                  );
+                } else {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => TagNotes(tag: tag, myNotesOnly: myNotesOnly),
+                    ),
+                  );
+                }
               },
             ),
           ),
@@ -215,7 +224,7 @@ class HomePageState extends State<HomePage> {
               );
               navigateToPage(currentPageNumber);
             },
-            onTagTap: (note, tag) => NoteEventHandler.onTagTap(context, note, tag),
+            onTagTap: (note, tag) => NavigationHelper.onTagTap(context, note, tag),
             onRefresh: () async => await navigateToPage(currentPageNumber),
           ),
         ),

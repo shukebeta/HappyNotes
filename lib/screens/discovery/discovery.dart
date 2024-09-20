@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:happy_notes/screens/note_detail/note_detail.dart';
-import '../../utils/navigation_utils.dart';
+import '../../utils/navigation_helper.dart';
 import '../components/floating_pagination.dart';
 import '../../dependency_injection.dart';
 import '../components/note_list.dart';
@@ -150,7 +150,7 @@ class DiscoveryState extends State<Discovery> {
               );
               navigateToPage(currentPageNumber);
             },
-            onTagTap: (note,tag) => NoteEventHandler.onTagTap(context, note, tag),
+            onTagTap: (note,tag) => NavigationHelper.onTagTap(context, note, tag),
             onRefresh: () async => await refreshPage(),
           ),
         ),

@@ -2,15 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:happy_notes/app_config.dart';
 import 'package:happy_notes/screens/note_detail/note_detail.dart';
 import 'package:happy_notes/screens/tag_notes/tag_notes_controller.dart';
-import '../../utils/navigation_utils.dart';
+import '../../utils/navigation_helper.dart';
 import '../components/floating_pagination.dart';
 import '../components/note_list.dart';
 import '../components/pagination_controls.dart';
 import '../../dependency_injection.dart';
 import '../account/user_session.dart';
-import '../components/tag_cloud.dart';
 import '../new_note/new_note.dart';
-import '../../utils/util.dart'; // Import the util.dart file
 
 class TagNotes extends StatefulWidget {
   final String tag;
@@ -59,57 +57,6 @@ class TagNotesState extends State<TagNotes> {
     return await navigateToPage(currentPageNumber);
   }
 
-  Future<void> _showTagInputDialog() async {
-    final navigator = Navigator.of(context);
-    String? newTag = await Util.showInputDialog(context, 'Enter a tag', 'such as hello');
-
-    if (newTag != null) {
-      if (newTag.startsWith('#')) {
-        newTag = newTag.replaceAll('#', '');
-      }
-      newTag = newTag.trim();
-      if (newTag.isNotEmpty) {
-        navigator.pushReplacement(
-          MaterialPageRoute(
-            builder: (context) => TagNotes(tag: newTag!, myNotesOnly: widget.myNotesOnly),
-          ),
-        );
-      }
-    }
-  }
-
-  void _showTagDiagram(BuildContext context, Map<String, int> tagData) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Tag Cloud'),
-          content: SingleChildScrollView(
-            child: TagCloud(
-              tagData: tagData,
-              onTagTap: (tag) {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => TagNotes(tag: tag, myNotesOnly: false),
-                  ),
-                );
-              },
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('Close'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     UserSession().isDesktop = MediaQuery.of(context).size.width >= 600;
@@ -117,12 +64,12 @@ class TagNotesState extends State<TagNotes> {
     return Scaffold(
       appBar: AppBar(
         title: GestureDetector(
-          onTap: _showTagInputDialog,
+          onTap: () => NavigationHelper.showTagInputDialog(context),
           onLongPress: () async {
             var tagData = await _tagNotesController.loadTagCloud(context);
             // Show tag diagram on long press
             if (!mounted) return;
-            _showTagDiagram(context, tagData);
+            NavigationHelper.showTagDiagram(context, tagData, myNotesOnly: widget.myNotesOnly);
           },
           child: Text('Notes with tag: ${widget.tag}'),
         ),
@@ -220,7 +167,7 @@ class TagNotesState extends State<TagNotes> {
               );
               navigateToPage(currentPageNumber);
             },
-            onTagTap: (note,tag) => NoteEventHandler.onTagTap(context, note, tag),
+            onTagTap: (note,tag) => NavigationHelper.onTagTap(context, note, tag),
             onRefresh: () async => await navigateToPage(currentPageNumber),
           ),
         ),
