@@ -36,7 +36,7 @@ class NavigationHelper {
     }
   }
 
-  static void showTagDiagram(BuildContext context, Map<String, int> tagData,
+  static void showTagDiagram (BuildContext context, Map<String, int> tagData,
       {bool replacePage = true, bool myNotesOnly = true}) {
     showDialog(
       context: context,
