@@ -63,7 +63,7 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
 
   @override
   Widget build(BuildContext context) {
-    if (note == null) {
+    if (_controller.isLoading) {
       return const Scaffold(
         body: Center(child: CircularProgressIndicator()),
       );
@@ -140,6 +140,7 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
                   padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 16.0),
                   child: Consumer<NoteModel>(
                     builder: (context, noteModel, child) {
+                      if (note == null) return const Text("Note doesn't exist, or, you don't have permission to read it.");
                       return _controller.isEditing ? NoteEdit(note: note!) : NoteView(note: note!, linkedNotes: linkedNotes,);
                     },
                   ),

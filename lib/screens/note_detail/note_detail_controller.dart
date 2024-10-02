@@ -15,16 +15,22 @@ class NoteDetailController {
 
   bool isPrivate = false;
   bool isEditing = false;
+  bool isLoading = false;
 
   Future<(Note note, List<Note> linkedNotes)?> fetchNotes(BuildContext context, int noteId) async {
+    isLoading = true;
     final scaffoldContext = ScaffoldMessenger.of(context);
     try {
       _originalNote = await _notesService.get(noteId);
       var linkedNotes = (await _notesService.getLinkedNotes(noteId)).notes;
+      isLoading = false;
       return (_originalNote, linkedNotes);
     } catch (error) {
       Util.showError(scaffoldContext, error.toString());
+      isLoading = false;
       return null;
+    } finally {
+      isLoading = false;
     }
   }
 

@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:happy_notes/app_config.dart';
 import 'package:happy_notes/screens/note_detail/note_detail.dart';
-import 'package:happy_notes/screens/tag_notes/tag_notes.dart';
-import '../../utils/navigation_utils.dart';
+import '../../utils/navigation_helper.dart';
 import '../components/floating_pagination.dart';
 import '../components/note_list.dart';
 import '../components/pagination_controls.dart';
@@ -59,9 +58,20 @@ class HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     UserSession().isDesktop = MediaQuery.of(context).size.width >= 600;
     return Scaffold(
-      appBar: AppBar(title: const Text('My Notes'), actions: [
-        _buildNewNoteButton(context),
-      ]),
+      appBar: AppBar(
+        title: GestureDetector(
+          onTap: () => NavigationHelper.showTagInputDialog(context),
+          onLongPress: () async {
+            var tagData = await _homePageController.loadTagCloud(context);
+            if (!mounted) return;
+            NavigationHelper.showTagDiagram(context, tagData);
+          },
+          child: const Text('My Notes'),
+        ),
+        actions: [
+          _buildNewNoteButton(context),
+        ],
+      ),
       body: Stack(
         children: [
           _buildBody(),
@@ -151,7 +161,7 @@ class HomePageState extends State<HomePage> {
               );
               navigateToPage(currentPageNumber);
             },
-            onTagTap: (note,tag) => NoteEventHandler.onTagTap(context, note, tag),
+            onTagTap: (note, tag) => NavigationHelper.onTagTap(context, note, tag),
             onRefresh: () async => await navigateToPage(currentPageNumber),
           ),
         ),

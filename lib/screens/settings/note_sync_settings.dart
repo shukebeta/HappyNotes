@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:happy_notes/app_config.dart';
 import 'package:happy_notes/screens/settings/note_sync_settings_controller.dart';
 import '../../dependency_injection.dart';
 import '../../services/dialog_services.dart';
@@ -63,8 +64,8 @@ class NoteSyncSettingsState extends State<NoteSyncSettings> {
                   title: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      RichText(
-                        text: TextSpan(
+                      SelectableText.rich(
+                        TextSpan(
                           style: DefaultTextStyle.of(context).style,
                           children: [
                             const TextSpan(text: 'Note Type: ', style: TextStyle(fontWeight: FontWeight.bold)),
@@ -75,20 +76,20 @@ class NoteSyncSettingsState extends State<NoteSyncSettings> {
                           ],
                         ),
                       ),
-                      RichText(
-                        text: TextSpan(
+                      SelectableText.rich(
+                        TextSpan(
                           style: DefaultTextStyle.of(context).style,
                           children: [
                             const TextSpan(text: 'Channel: ', style: TextStyle(fontWeight: FontWeight.bold)),
-                            TextSpan(text: '${setting.channelName}'),
+                            TextSpan(text: AppConfig.debugging ? '${setting.channelName}/${setting.channelId}' : setting.channelName),
                           ],
                         ),
                       ),
-                      RichText(
-                        text: TextSpan(
+                      SelectableText.rich(
+                        TextSpan(
                           style: DefaultTextStyle.of(context).style,
                           children: [
-                            const TextSpan(text: 'Token: ', style: TextStyle(fontWeight: FontWeight.bold)),
+                            const TextSpan(text: 'Token Remark: ', style: TextStyle(fontWeight: FontWeight.bold)),
                             TextSpan(text: '${setting.tokenRemark}'),
                           ],
                         ),

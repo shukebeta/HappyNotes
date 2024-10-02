@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../entities/note.dart';
 import '../../models/note_model.dart';
-import '../../utils/navigation_utils.dart';
+import '../../utils/navigation_helper.dart';
 import 'markdown_body_here.dart';
 import 'note_list.dart';
 
@@ -64,7 +64,7 @@ class NoteView extends StatelessWidget {
                   onDoubleTap: (note) {
                     // Handle note double tap
                   },
-                  onTagTap: (note,tag) => NoteEventHandler.onTagTap(context, note, tag),
+                  onTagTap: (note,tag) => NavigationHelper.onTagTap(context, note, tag),
                   onRefresh: () async {
                     // Handle refresh
                   },
