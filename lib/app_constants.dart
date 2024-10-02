@@ -9,4 +9,5 @@ class AppConstants {
   static const String fontFamily = 'fontFamily';
   static const String isIOSWeb = 'isIOSWeb';
   static const String version = 'version';
+  static const String debugging = 'debugging';
 }

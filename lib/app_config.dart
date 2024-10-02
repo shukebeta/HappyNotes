@@ -47,6 +47,10 @@ class AppConfig {
     return dotenv.env['VERSION'] ?? 'version-place-holder';
   }
 
+  static bool get debugging {
+    return dotenv.env['DEBUGGING'] == '1';
+  }
+
   // Map to store property access functions
   static final Map<String, dynamic Function()> _propertyAccessors = {
     AppConstants.baseUrl: () => baseUrl,
@@ -58,6 +62,7 @@ class AppConfig {
     AppConstants.fontFamily: () => fontFamily,
     AppConstants.isIOSWeb: () => isIOSWeb,
     AppConstants.version: () => version,
+    AppConstants.debugging: () => debugging,
   };
 
   // Method to get property value by name
