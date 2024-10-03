@@ -1,9 +1,11 @@
 // note_edit.dart
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:happy_notes/utils/happy_notes_prompts.dart';
 import '../../app_config.dart';
+import '../../dio_client.dart';
 import '../../entities/note.dart';
 import '../../models/note_model.dart';
 
@@ -97,7 +99,7 @@ class NoteEditState extends State<NoteEdit> {
                   ),
                 ),
                 IconButton(
-                  onPressed: _pickAndUploadImage, // Method to handle image picking and upload
+                  onPressed: () => _pickAndUploadImage(noteModel), // Method to handle image picking and upload
                   icon: const Icon(Icons.add_photo_alternate),
                 ),
               ],
@@ -137,15 +139,45 @@ class NoteEditState extends State<NoteEdit> {
     );
   }
 
-  Future<void> _pickAndUploadImage() async {
+  Future<void> _pickAndUploadImage(NoteModel noteModel) async {
     final ImagePicker picker = ImagePicker();
     final XFile? image = await picker.pickImage(source: ImageSource.gallery);
 
     if (image != null) {
-      // Implement your upload logic here
-      print('Picked image: ${image.path}');
-      // You can also update the NoteModel with the image path or URL
+      try {
+        final dio = DioClient.getInstance();
+        // FormData to hold the image file
+        FormData formData = FormData.fromMap({
+          'img': await MultipartFile.fromFile(image.path, filename: image.name),
+        });
+
+        // Make the POST request
+        Response response = await dio.post(
+          'http://localhost:3000/api/upload',
+          data: formData,
+          options: Options(
+            headers: {
+              'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:129.0) Gecko/20100101 Firefox/129.0',
+              'Accept': '*/*',
+              'Content-Type': 'multipart/form-data',
+            },
+          ),
+        );
+
+        if (response.statusCode == 200 && response.data['errorCode'] == 0) {
+          print('Image uploaded successfully');
+          print(response.data);
+          var img = response.data['data'];
+          noteModel.content += '![image](http://localhost:3333/320${img['filePath']}${img['fileName']})';
+        } else {
+          print('Failed to upload image: ${response.statusCode}');
+        }
+      } catch (e) {
+        print('Error occurred: $e');
+      }
     }
   }
+
+
 
 }
