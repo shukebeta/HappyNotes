@@ -7,8 +7,16 @@ import 'app_constants.dart';
 class AppConfig {
   AppConfig._();
 
-  static String get baseUrl {
-    return dotenv.env['BASE_URL'] ?? 'https://staging.dev.shukebeta.com';
+  static String get apiBaseUrl {
+    return dotenv.env['API_BASE_URL'] ?? 'https://staging-happynotes-api.dev.shukebeta.com';
+  }
+
+  static String get imgBaseUrl {
+    return dotenv.env['IMG_BASE_URL'] ?? 'https://staging-happynotes-img.dev.shukebeta.com';
+  }
+
+  static String get uploaderBaseUrl {
+    return dotenv.env['UPLOADER_BASE_URL'] ?? 'https://staging-happynotes-uploader.dev.shukebeta.com';
   }
 
   static int get pageSize {
@@ -53,7 +61,9 @@ class AppConfig {
 
   // Map to store property access functions
   static final Map<String, dynamic Function()> _propertyAccessors = {
-    AppConstants.baseUrl: () => baseUrl,
+    AppConstants.apiBaseUrl: () => apiBaseUrl,
+    AppConstants.imgBaseUrl: () => imgBaseUrl,
+    AppConstants.uploaderBaseUrl: () => uploaderBaseUrl,
     AppConstants.pageSize: () => pageSize,
     AppConstants.markdownIsEnabled: () => markdownIsEnabled,
     AppConstants.privateNoteOnlyIsEnabled: () => privateNoteOnlyIsEnabled,

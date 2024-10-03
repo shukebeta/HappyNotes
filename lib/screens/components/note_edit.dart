@@ -1,10 +1,12 @@
 // note_edit.dart
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:happy_notes/apis/file_uploader_api.dart';
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:happy_notes/utils/happy_notes_prompts.dart';
 import '../../app_config.dart';
+import '../../dependency_injection.dart';
 import '../../dio_client.dart';
 import '../../entities/note.dart';
 import '../../models/note_model.dart';
@@ -142,27 +144,12 @@ class NoteEditState extends State<NoteEdit> {
   Future<void> _pickAndUploadImage(NoteModel noteModel) async {
     final ImagePicker picker = ImagePicker();
     final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+    final fileUploaderApi = locator<FileUploaderApi>();
 
     if (image != null) {
       try {
-        final dio = DioClient.getInstance();
-        // FormData to hold the image file
-        FormData formData = FormData.fromMap({
-          'img': await MultipartFile.fromFile(image.path, filename: image.name),
-        });
-
         // Make the POST request
-        Response response = await dio.post(
-          'http://localhost:3000/api/upload',
-          data: formData,
-          options: Options(
-            headers: {
-              'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:129.0) Gecko/20100101 Firefox/129.0',
-              'Accept': '*/*',
-              'Content-Type': 'multipart/form-data',
-            },
-          ),
-        );
+        Response response = await fileUploaderApi.upload(image);
 
         if (response.statusCode == 200 && response.data['errorCode'] == 0) {
           print('Image uploaded successfully');
