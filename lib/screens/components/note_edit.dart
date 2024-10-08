@@ -158,7 +158,7 @@ class NoteEditState extends State<NoteEdit> {
         MultipartFile? imageFile;
         if (_platformSupportCompress()) {
           // always use CompressFormat.jpeg as it has best compatibility
-          Uint8List? compressedImage = await _compressImage(image, CompressFormat.jpeg, maxPixel: 900);
+          Uint8List? compressedImage = await _compressImage(image, CompressFormat.jpeg, maxPixel: AppConfig.imageMaxDimension);
           if (compressedImage != null) {
             imageFile = MultipartFile.fromBytes(compressedImage, filename: image.name);
           }
@@ -169,7 +169,8 @@ class NoteEditState extends State<NoteEdit> {
 
         if (response.statusCode == 200 && response.data['errorCode'] == 0) {
           var img = response.data['data'];
-          noteModel.content += '![image](${img['url']})';
+          var image = '![image](${AppConfig.imgBaseUrl}/640${img['path']}${img['md5']}${img['fileExt']})\n';
+          noteModel.content += noteModel.content.isEmpty ? image : '\n$image';
         } else {
           throw Exception('Failed to upload image: ${response.statusCode}');
         }

@@ -16,7 +16,15 @@ class AppConfig {
   }
 
   static String get uploaderBaseUrl {
-    return dotenv.env['UPLOADER_BASE_URL'] ?? 'https://staging-happynotes-uploader.dev.shukebeta.com';
+    return dotenv.env['UPLOADER_BASE_URL'] ?? 'https://staging-happynotes-img-uploader.dev.shukebeta.com';
+  }
+
+  /// Returns the maximum dimension (width or height) for image processing.
+  ///
+  /// This value is used to determine the size limit for the longer side of an image.
+  /// It's retrieved from the environment variable 'IMG_MAX_DIMENSION' or defaults to 1600.
+  static int get imageMaxDimension {
+    return int.parse(dotenv.env['IMG_MAX_DIMENSION'] ?? '1600');
   }
 
   static int get pageSize {
@@ -73,6 +81,7 @@ class AppConfig {
     AppConstants.isIOSWeb: () => isIOSWeb,
     AppConstants.version: () => version,
     AppConstants.debugging: () => debugging,
+    AppConstants.imageMaxDimension: () => imageMaxDimension,
   };
 
   // Method to get property value by name
