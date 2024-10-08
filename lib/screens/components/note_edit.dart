@@ -123,6 +123,18 @@ class NoteEditState extends State<NoteEdit> {
                     padding: const EdgeInsets.all(12.0),
                   ),
                 ),
+                const Visibility( // a placeholder
+                  visible: false,
+                  maintainSize: true,
+                  maintainAnimation: true,
+                  maintainState: true,
+                  child: IconButton(
+                    onPressed: null,
+                    icon: Icon(Icons.add_photo_alternate),
+                    iconSize: 24.0,
+                    padding: EdgeInsets.all(12.0),
+                  ),
+                ),
               ],
             ),
           ],
