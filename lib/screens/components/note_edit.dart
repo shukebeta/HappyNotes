@@ -117,9 +117,7 @@ class NoteEditState extends State<NoteEdit> {
                   maintainAnimation: true,
                   maintainState: true,
                   child: IconButton(
-                    onPressed: noteModel.isMarkdown
-                        ? () => _pickAndUploadImage(context, noteModel)
-                        : null,
+                    onPressed: noteModel.isMarkdown ? () => _pickAndUploadImage(context, noteModel) : null,
                     icon: const Icon(Icons.add_photo_alternate),
                     iconSize: 24.0,
                     padding: const EdgeInsets.all(12.0),
@@ -197,9 +195,10 @@ class NoteEditState extends State<NoteEdit> {
   }
 
   bool _platformSupportCompress() {
-    return defaultTargetPlatform == TargetPlatform.iOS ||
-        defaultTargetPlatform == TargetPlatform.android ||
-        defaultTargetPlatform == TargetPlatform.macOS;
+    return !kIsWeb &&
+        (defaultTargetPlatform == TargetPlatform.iOS ||
+            defaultTargetPlatform == TargetPlatform.android ||
+            defaultTargetPlatform == TargetPlatform.macOS);
   }
 
   Future<Uint8List?> _compressImage(
