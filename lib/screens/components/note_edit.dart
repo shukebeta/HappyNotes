@@ -1,10 +1,17 @@
 // note_edit.dart
+import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:happy_notes/apis/file_uploader_api.dart';
 import 'package:provider/provider.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:happy_notes/utils/happy_notes_prompts.dart';
 import '../../app_config.dart';
+import '../../dependency_injection.dart';
 import '../../entities/note.dart';
 import '../../models/note_model.dart';
+import '../../utils/util.dart';
 
 class NoteEdit extends StatefulWidget {
   final Note? note;
@@ -72,38 +79,50 @@ class NoteEditState extends State<NoteEdit> {
             ),
             const SizedBox(height: 8.0),
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 GestureDetector(
                   onTap: () {
-                    noteModel.isPrivate = !noteModel.isPrivate;
+                    noteModel.togglePrivate();
                   },
-                  child: Row(
-                    children: [
-                      Switch(
-                        value: noteModel.isPrivate,
-                        onChanged: (value) {
-                          noteModel.isPrivate = value;
-                        },
-                      ),
-                      const Text('Private'),
-                    ],
+                  behavior: HitTestBehavior.opaque,
+                  child: Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: Icon(
+                      noteModel.isPrivate ? Icons.lock : Icons.lock_open,
+                      color: noteModel.isPrivate ? Colors.blue : Colors.grey,
+                      size: 24.0,
+                    ),
                   ),
                 ),
-                const SizedBox(width: 24.0),
                 GestureDetector(
                   onTap: () {
-                    noteModel.isMarkdown = !noteModel.isMarkdown;
+                    noteModel.toggleMarkdown();
                   },
-                  child: Row(
-                    children: [
-                      Switch(
-                        value: noteModel.isMarkdown,
-                        onChanged: (value) {
-                          noteModel.isMarkdown = value;
-                        },
+                  behavior: HitTestBehavior.opaque,
+                  child: Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: Text(
+                      "M↓",
+                      style: TextStyle(
+                        fontSize: 20.0,
+                        color: noteModel.isMarkdown ? Colors.blue : Colors.grey,
                       ),
-                      const Text('Markdown'),
-                    ],
+                    ),
+                  ),
+                ),
+                Visibility(
+                  visible: noteModel.isMarkdown,
+                  maintainSize: true,
+                  maintainAnimation: true,
+                  maintainState: true,
+                  child: IconButton(
+                    onPressed: noteModel.isMarkdown
+                        ? () => _pickAndUploadImage(context, noteModel)
+                        : null,
+                    icon: const Icon(Icons.add_photo_alternate),
+                    iconSize: 24.0,
+                    padding: const EdgeInsets.all(12.0),
                   ),
                 ),
               ],
@@ -140,6 +159,61 @@ class NoteEditState extends State<NoteEdit> {
       onChanged: (text) {
         noteModel.content = text;
       },
+    );
+  }
+
+  Future<void> _pickAndUploadImage(BuildContext context, NoteModel noteModel) async {
+    final ScaffoldMessengerState scaffoldMessengerState = ScaffoldMessenger.of(context);
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+    final fileUploaderApi = locator<FileUploaderApi>();
+
+    if (image != null) {
+      try {
+        MultipartFile? imageFile;
+        if (_platformSupportCompress()) {
+          // always use CompressFormat.jpeg as it has best compatibility
+          Uint8List? compressedImage =
+              await _compressImage(image, CompressFormat.jpeg, maxPixel: AppConfig.imageMaxDimension);
+          if (compressedImage != null) {
+            imageFile = MultipartFile.fromBytes(compressedImage, filename: image.name);
+          }
+        }
+        imageFile ??= MultipartFile.fromBytes(await image.readAsBytes(), filename: image.name);
+        // Make the POST request
+        Response response = await fileUploaderApi.upload(imageFile);
+
+        if (response.statusCode == 200 && response.data['errorCode'] == 0) {
+          var img = response.data['data'];
+          var image = '![image](${AppConfig.imgBaseUrl}/640${img['path']}${img['md5']}${img['fileExt']})\n';
+          noteModel.content += noteModel.content.isEmpty ? image : '\n$image';
+        } else {
+          throw Exception('Failed to upload image: ${response.statusCode}');
+        }
+      } catch (e) {
+        Util.showError(scaffoldMessengerState, e.toString());
+      }
+    }
+  }
+
+  bool _platformSupportCompress() {
+    return defaultTargetPlatform == TargetPlatform.iOS ||
+        defaultTargetPlatform == TargetPlatform.android ||
+        defaultTargetPlatform == TargetPlatform.macOS;
+  }
+
+  Future<Uint8List?> _compressImage(
+    XFile image,
+    CompressFormat format, {
+    int maxPixel = 3333,
+  }) async {
+    var imageData = await image.readAsBytes();
+    return await FlutterImageCompress.compressWithList(
+      imageData,
+      minWidth: maxPixel,
+      minHeight: maxPixel,
+      quality: 85,
+      format: format,
     );
   }
 }

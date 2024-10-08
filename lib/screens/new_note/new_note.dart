@@ -57,7 +57,7 @@ class NewNoteState extends State<NewNote> {
               appBar: AppBar(
                 title: Consumer<NoteModel>(
                   builder: (context, noteModel, child) {
-                    return Text(noteModel.isPrivate ? 'Private Note' : 'Public Note');
+                    return Text(_getNoteTitle(noteModel));
                   },
                 ),
               ),
@@ -78,5 +78,12 @@ class NewNoteState extends State<NewNote> {
             ),
           );
         });
+  }
+
+  String _getNoteTitle(NoteModel noteModel) {
+    String privacyStatus = noteModel.isPrivate ? 'Private' : 'Public';
+    String markdownIndicator = noteModel.isMarkdown ? ' with M↓' : '';
+
+    return '$privacyStatus note$markdownIndicator';
   }
 }

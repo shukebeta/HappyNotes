@@ -11,7 +11,7 @@ class DioClient {
   static Dio getInstance() {
     if (_dio == null) {
       _dio = Dio(); // Create Dio instance if not already created
-      _dio!.options.baseUrl = AppConfig.baseUrl;
+      _dio!.options.baseUrl = AppConfig.apiBaseUrl;
       _dio!.interceptors.add(LogInterceptor(requestBody: true, responseBody: true)); // Add logging interceptor
       _dio!.interceptors.add(AuthInterceptor());
       _dio!.interceptors.add(InterceptorsWrapper(

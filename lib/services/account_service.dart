@@ -63,7 +63,7 @@ class AccountService {
   Future<void> _storeToken(String token) async {
     final prefs = await SharedPreferences.getInstance();
     await setUserSession(token: token);
-    await prefs.setString(_baseUrlKey, AppConfig.baseUrl);
+    await prefs.setString(_baseUrlKey, AppConfig.apiBaseUrl);
     await prefs.setString(_tokenKey, token);
   }
 
@@ -120,6 +120,6 @@ class AccountService {
   Future<bool> _isSameEnv() async {
     final prefs = await SharedPreferences.getInstance();
     final previousBaseUrl = prefs.getString(_baseUrlKey);
-    return previousBaseUrl == AppConfig.baseUrl;
+    return previousBaseUrl == AppConfig.apiBaseUrl;
   }
 }

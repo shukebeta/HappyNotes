@@ -1,4 +1,5 @@
 import 'package:happy_notes/apis/account_api.dart';
+import 'package:happy_notes/apis/file_uploader_api.dart';
 import 'package:happy_notes/apis/user_settings_api.dart';
 import 'package:happy_notes/screens/discovery/discovery_controller.dart';
 import 'package:happy_notes/screens/home_page/home_page_controller.dart';
@@ -24,6 +25,7 @@ void init() {
   locator.registerLazySingleton<NoteTagService>(() => NoteTagService(noteTagApi: locator()));
 
   locator.registerLazySingleton<NotesService>(() => NotesService());
+  locator.registerLazySingleton<FileUploaderApi>(() => FileUploaderApi());
   locator.registerLazySingleton<AccountApi>(() => AccountApi());
   locator.registerLazySingleton<AccountService>(() => AccountService(accountApi: locator(), userSettingsService: locator(), tokenUtils: locator()));
 
