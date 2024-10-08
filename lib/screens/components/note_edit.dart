@@ -167,26 +167,37 @@ class NoteEditState extends State<NoteEdit> {
     final fileUploaderApi = locator<FileUploaderApi>();
 
     if (image != null) {
+      MultipartFile? imageFile;
+
       try {
-        MultipartFile? imageFile;
         if (_platformSupportCompress()) {
-          // always use CompressFormat.jpeg as it has best compatibility
           Uint8List? compressedImage =
               await _compressImage(image, CompressFormat.jpeg, maxPixel: AppConfig.imageMaxDimension);
           if (compressedImage != null) {
             imageFile = MultipartFile.fromBytes(compressedImage, filename: image.name);
           }
         }
-        imageFile ??= MultipartFile.fromBytes(await image.readAsBytes(), filename: image.name);
-        // Make the POST request
-        Response response = await fileUploaderApi.upload(imageFile);
 
-        if (response.statusCode == 200 && response.data['errorCode'] == 0) {
-          var img = response.data['data'];
-          var image = '![image](${AppConfig.imgBaseUrl}/640${img['path']}${img['md5']}${img['fileExt']})\n';
-          noteModel.content += noteModel.content.isEmpty ? image : '\n$image';
-        } else {
-          throw Exception('Failed to upload image: ${response.statusCode}');
+        if (imageFile == null) {
+          final bytes = await image.readAsBytes();
+          if (bytes != null) {
+            imageFile = MultipartFile.fromBytes(bytes, filename: image.name);
+          } else {
+            throw Exception('Failed to read image bytes');
+          }
+          if (imageFile != null) {
+            // Make the POST request if imageFile is not null
+            Response response = await fileUploaderApi.upload(imageFile);
+            if (response.statusCode == 200 && response.data['errorCode'] == 0) {
+              var img = response.data['data'];
+              var image = '![image](${AppConfig.imgBaseUrl}/640${img['path']}${img['md5']}${img['fileExt']})\n';
+              noteModel.content += noteModel.content.isEmpty ? image : '\n$image';
+            } else {
+              throw Exception('Failed to upload image: ${response.statusCode}');
+            }
+          } else {
+            throw Exception('Image file is null, cannot upload');
+          }
         }
       } catch (e) {
         Util.showError(scaffoldMessengerState, e.toString());
