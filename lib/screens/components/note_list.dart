@@ -25,7 +25,7 @@ class NoteList extends StatelessWidget {
   }) : super(key: key) {
     // Scroll to the top position when the widget is built or updated
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _scrollController.jumpTo(0);
+      // _scrollController.jumpTo(0);
     });
   }
 

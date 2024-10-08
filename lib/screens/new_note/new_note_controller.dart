@@ -14,10 +14,10 @@ class NewNoteController {
   NewNoteController({required NotesService notesService}) : _notesService = notesService;
 
   Future<void> saveNote(BuildContext context, SaveNoteCallback? onNoteSaved) async {
-    final scaffoldContext = ScaffoldMessenger.of(context);
+    final scaffoldMessengerSate = ScaffoldMessenger.of(context);
     final noteModel = context.read<NoteModel>();
     if (noteModel.content.trim() == '') {
-      Util.showInfo(scaffoldContext, 'Please write something');
+      Util.showInfo(scaffoldMessengerSate, 'Please write something');
       return;
     }
     try {
@@ -38,7 +38,7 @@ class NewNoteController {
         onNoteSaved(note);
       }
     } catch (error) {
-      Util.showError(scaffoldContext, error.toString());
+      Util.showError(scaffoldMessengerSate, error.toString());
     }
   }
 

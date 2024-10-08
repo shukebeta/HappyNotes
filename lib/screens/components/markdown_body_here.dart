@@ -37,9 +37,9 @@ class MarkdownBodyHereState extends State<MarkdownBodyHere> {
             launchUrlString(url); // Assuming you have the url_launcher package added
           }
         },
-        imageBuilder: (uri, title, alt) {
-          return Image.network(uri.toString());
-        },
+        // imageBuilder: (uri, title, alt) {
+        //   return Image.network(uri.toString());
+        // },
       ),
     );
   }

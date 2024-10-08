@@ -50,6 +50,7 @@ dependencies:
   provider: ^6.1.2
   url_launcher: ^6.3.0
   image_picker: ^1.1.2
+  flutter_image_compress: ^2.3.0
 #  markdown_editor_plus: ^0.2.15
 
 dev_dependencies:

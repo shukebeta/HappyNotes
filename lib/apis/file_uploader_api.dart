@@ -6,17 +6,17 @@ import '../dio_client.dart';
 class FileUploaderApi {
   static final Dio _dio = DioClient.getInstance();
 
-  Future<Response> upload(XFile image) async {
+  Future<Response> upload(MultipartFile imageFile) async {
     // FormData to hold the image file
     FormData formData = FormData.fromMap({
-      'img': await MultipartFile.fromFile(image.path, filename: image.name),
+      'img': imageFile,
     });
     return await _dio.post('${AppConfig.uploaderBaseUrl}/api/upload',
         data: formData,
         options: Options(
           headers: {
             'Accept': '*/*',
-            'Content-Type': 'multipart/form-data',
+            'Content-Type': 'application/octet-stream',
           },
         ));
   }

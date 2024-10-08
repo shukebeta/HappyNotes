@@ -1,6 +1,11 @@
 // note_edit.dart
+import 'dart:io';
+import 'dart:typed_data';
+
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:happy_notes/apis/file_uploader_api.dart';
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
@@ -10,6 +15,7 @@ import '../../dependency_injection.dart';
 import '../../dio_client.dart';
 import '../../entities/note.dart';
 import '../../models/note_model.dart';
+import '../../utils/util.dart';
 
 class NoteEdit extends StatefulWidget {
   final Note? note;
@@ -101,7 +107,7 @@ class NoteEditState extends State<NoteEdit> {
                   ),
                 ),
                 IconButton(
-                  onPressed: () => _pickAndUploadImage(noteModel), // Method to handle image picking and upload
+                  onPressed: () => _pickAndUploadImage(context, noteModel), // Method to handle image picking and upload
                   icon: const Icon(Icons.add_photo_alternate),
                 ),
               ],
@@ -141,30 +147,56 @@ class NoteEditState extends State<NoteEdit> {
     );
   }
 
-  Future<void> _pickAndUploadImage(NoteModel noteModel) async {
+  Future<void> _pickAndUploadImage(BuildContext context, NoteModel noteModel) async {
+    final ScaffoldMessengerState scaffoldMessengerState = ScaffoldMessenger.of(context);
     final ImagePicker picker = ImagePicker();
     final XFile? image = await picker.pickImage(source: ImageSource.gallery);
     final fileUploaderApi = locator<FileUploaderApi>();
 
     if (image != null) {
       try {
+        MultipartFile? imageFile;
+        if (_platformSupportCompress()) {
+          // always use CompressFormat.jpeg as it has best compatibility
+          Uint8List? compressedImage = await _compressImage(image, CompressFormat.jpeg, maxPixel: 900);
+          if (compressedImage != null) {
+            imageFile = MultipartFile.fromBytes(compressedImage, filename: image.name);
+          }
+        }
+        imageFile ??= MultipartFile.fromBytes(await image.readAsBytes(), filename: image.name);
         // Make the POST request
-        Response response = await fileUploaderApi.upload(image);
+        Response response = await fileUploaderApi.upload(imageFile);
 
         if (response.statusCode == 200 && response.data['errorCode'] == 0) {
-          print('Image uploaded successfully');
-          print(response.data);
           var img = response.data['data'];
-          noteModel.content += '![image](http://localhost:3333/320${img['filePath']}${img['fileName']})';
+          noteModel.content += '![image](${img['url']})';
         } else {
-          print('Failed to upload image: ${response.statusCode}');
+          throw Exception('Failed to upload image: ${response.statusCode}');
         }
       } catch (e) {
-        print('Error occurred: $e');
+        Util.showError(scaffoldMessengerState, e.toString());
       }
     }
   }
 
+  bool _platformSupportCompress() {
+    return defaultTargetPlatform == TargetPlatform.iOS ||
+        defaultTargetPlatform == TargetPlatform.android ||
+        defaultTargetPlatform == TargetPlatform.macOS;
+  }
 
-
+  Future<Uint8List?> _compressImage(
+    XFile image,
+    CompressFormat format, {
+    int maxPixel = 3333,
+  }) async {
+    var imageData = await image.readAsBytes();
+    return await FlutterImageCompress.compressWithList(
+      imageData,
+      minWidth: maxPixel,
+      minHeight: maxPixel,
+      quality: 85,
+      format: format,
+    );
+  }
 }
