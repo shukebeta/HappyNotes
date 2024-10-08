@@ -7,8 +7,12 @@ class NoteModel with ChangeNotifier {
   String _content;
   late FocusNode focusNode;
 
-  NoteModel({bool isPrivate = true, bool isMarkdown = false, String initialTag = '', String content = ''})
-      : _isPrivate = isPrivate,
+  NoteModel({
+    bool isPrivate = true,
+    bool isMarkdown = false,
+    String initialTag = '',
+    String content = ''
+  })  : _isPrivate = isPrivate,
         _isMarkdown = isMarkdown,
         _initialTag = initialTag,
         _content = content {
@@ -16,32 +20,36 @@ class NoteModel with ChangeNotifier {
   }
 
   bool get isPrivate => _isPrivate;
-
   bool get isMarkdown => _isMarkdown;
-
   String get initialTag => _initialTag;
-
   String get content => _content;
 
   set isPrivate(bool value) {
-    _isPrivate = value;
-    notifyListeners();
+    if (_isPrivate != value) {
+      _isPrivate = value;
+      notifyListeners();
+    }
   }
 
   set isMarkdown(bool value) {
-    _isMarkdown = value;
-    notifyListeners();
+    if (_isMarkdown != value) {
+      _isMarkdown = value;
+      notifyListeners();
+    }
   }
 
   set initialTag(String value) {
-    _initialTag = value;
-    notifyListeners();
+    if (_initialTag != value) {
+      _initialTag = value;
+      notifyListeners();
+    }
   }
 
   set content(String value) {
-    // Add this method
-    _content = value;
-    notifyListeners();
+    if (_content != value) {
+      _content = value;
+      notifyListeners();
+    }
   }
 
   void requestFocus() {
@@ -51,6 +59,16 @@ class NoteModel with ChangeNotifier {
 
   void unfocus() {
     focusNode.unfocus();
+    notifyListeners();
+  }
+
+  void togglePrivate() {
+    _isPrivate = !_isPrivate;
+    notifyListeners();
+  }
+
+  void toggleMarkdown() {
+    _isMarkdown = !_isMarkdown;
     notifyListeners();
   }
 

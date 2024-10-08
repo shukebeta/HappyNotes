@@ -1,7 +1,4 @@
 // note_edit.dart
-import 'dart:io';
-import 'dart:typed_data';
-
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -12,7 +9,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:happy_notes/utils/happy_notes_prompts.dart';
 import '../../app_config.dart';
 import '../../dependency_injection.dart';
-import '../../dio_client.dart';
 import '../../entities/note.dart';
 import '../../models/note_model.dart';
 import '../../utils/util.dart';
@@ -83,32 +79,51 @@ class NoteEditState extends State<NoteEdit> {
             ),
             const SizedBox(height: 8.0),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly, // Distribute space evenly
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 GestureDetector(
                   onTap: () {
-                    noteModel.isPrivate = !noteModel.isPrivate;
+                    noteModel.togglePrivate();
                   },
-                  child: Icon(
-                    noteModel.isPrivate ? Icons.lock : Icons.lock_open,
-                    color: noteModel.isPrivate ? Colors.blue : Colors.grey,
+                  behavior: HitTestBehavior.opaque,
+                  child: Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: Icon(
+                      noteModel.isPrivate ? Icons.lock : Icons.lock_open,
+                      color: noteModel.isPrivate ? Colors.blue : Colors.grey,
+                      size: 24.0,
+                    ),
                   ),
                 ),
                 GestureDetector(
                   onTap: () {
-                    noteModel.isMarkdown = !noteModel.isMarkdown;
+                    noteModel.toggleMarkdown();
                   },
-                  child: Text(
-                    "M↓",
-                    style: TextStyle(
-                      fontSize: 20.0,
-                      color: noteModel.isMarkdown ? Colors.blue : Colors.grey,
+                  behavior: HitTestBehavior.opaque,
+                  child: Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: Text(
+                      "M↓",
+                      style: TextStyle(
+                        fontSize: 20.0,
+                        color: noteModel.isMarkdown ? Colors.blue : Colors.grey,
+                      ),
                     ),
                   ),
                 ),
-                IconButton(
-                  onPressed: () => _pickAndUploadImage(context, noteModel), // Method to handle image picking and upload
-                  icon: const Icon(Icons.add_photo_alternate),
+                Visibility(
+                  visible: noteModel.isMarkdown,
+                  maintainSize: true,
+                  maintainAnimation: true,
+                  maintainState: true,
+                  child: IconButton(
+                    onPressed: noteModel.isMarkdown
+                        ? () => _pickAndUploadImage(context, noteModel)
+                        : null,
+                    icon: const Icon(Icons.add_photo_alternate),
+                    iconSize: 24.0,
+                    padding: const EdgeInsets.all(12.0),
+                  ),
                 ),
               ],
             ),
@@ -158,7 +173,8 @@ class NoteEditState extends State<NoteEdit> {
         MultipartFile? imageFile;
         if (_platformSupportCompress()) {
           // always use CompressFormat.jpeg as it has best compatibility
-          Uint8List? compressedImage = await _compressImage(image, CompressFormat.jpeg, maxPixel: AppConfig.imageMaxDimension);
+          Uint8List? compressedImage =
+              await _compressImage(image, CompressFormat.jpeg, maxPixel: AppConfig.imageMaxDimension);
           if (compressedImage != null) {
             imageFile = MultipartFile.fromBytes(compressedImage, filename: image.name);
           }
