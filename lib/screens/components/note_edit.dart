@@ -193,7 +193,7 @@ class NoteEditState extends State<NoteEdit> {
               var image = '![image](${AppConfig.imgBaseUrl}/640${img['path']}${img['md5']}${img['fileExt']})\n';
               noteModel.content += noteModel.content.isEmpty ? image : '\n$image';
             } else {
-              throw Exception('Failed to upload image: ${response.statusCode}');
+              throw Exception('Failed to upload image: ${response.statusCode}/${response.data['msg']}');
             }
           } else {
             throw Exception('Image file is null, cannot upload');
