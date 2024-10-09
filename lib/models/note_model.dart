@@ -15,6 +15,22 @@ class NoteModel with ChangeNotifier {
     focusNode = FocusNode();
   }
 
+  bool isPasting = false;
+  void setPasting(bool value) {
+    if (isPasting != value) {
+      isPasting = value;
+      notifyListeners();
+    }
+  }
+
+  bool isUploading = false;
+  void setUploading(bool value) {
+    if (isUploading != value) {
+      isUploading = value;
+      notifyListeners();
+    }
+  }
+
   bool get isPrivate => _isPrivate;
 
   bool get isMarkdown => _isMarkdown;

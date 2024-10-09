@@ -152,7 +152,7 @@ class NoteEditState extends State<NoteEdit> {
           maintainState: true,
           child: IconButton(
             onPressed: noteModel.isMarkdown ? () => _pickAndUploadImage(context, noteModel) : null,
-            icon: const Icon(Icons.add_photo_alternate),
+            icon: noteModel.isUploading ? const CircularProgressIndicator() : const Icon(Icons.add_photo_alternate),
             iconSize: 24.0,
             padding: const EdgeInsets.all(12.0),
           ),
@@ -166,7 +166,7 @@ class NoteEditState extends State<NoteEdit> {
             onPressed: () async {
               await _pasteFromClipboard(context, noteModel);
             },
-            icon: const Icon(Icons.paste),
+            icon: noteModel.isPasting ? const CircularProgressIndicator() : const Icon(Icons.paste),
             iconSize: 24.0,
             padding: const EdgeInsets.all(12.0),
           ),
@@ -180,12 +180,15 @@ class NoteEditState extends State<NoteEdit> {
     MultipartFile? imageFile = await imageService.pickImage();
 
     if (imageFile != null) {
+      noteModel.setUploading(true);
       await imageService.uploadImage(
         imageFile,
         (text) {
+          noteModel.setUploading(false);
           noteModel.content += noteModel.content.isEmpty ? text : '\n$text';
         },
         (error) {
+          noteModel.setUploading(false);
           Util.showError(scaffoldMessengerState, error);
         },
       );
@@ -194,11 +197,14 @@ class NoteEditState extends State<NoteEdit> {
 
   Future<void> _pasteFromClipboard(BuildContext context, NoteModel noteModel) async {
     final scaffoldMessengerState = ScaffoldMessenger.of(context);
+    noteModel.setPasting(true);
     await imageService.pasteFromClipboard(
       (text) {
+        noteModel.setPasting(false);
         noteModel.content += noteModel.content.isEmpty ? text : '\n$text';
       },
       (error) {
+        noteModel.setPasting(false);
         Util.showError(scaffoldMessengerState, error);
       },
     );
