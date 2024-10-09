@@ -8,6 +8,7 @@ import 'package:happy_notes/screens/settings/note_sync_settings_controller.dart'
 import 'package:happy_notes/screens/settings/settings_controller.dart';
 import 'package:happy_notes/screens/tag_notes/tag_notes_controller.dart';
 import 'package:happy_notes/services/account_service.dart';
+import 'package:happy_notes/services/image_service.dart';
 import 'package:happy_notes/services/note_tag_service.dart';
 import 'package:happy_notes/services/notes_services.dart';
 import 'package:get_it/get_it.dart';
@@ -21,26 +22,51 @@ import 'apis/telegram_settings_api.dart';
 final locator = GetIt.instance;
 
 void init() {
-  locator.registerLazySingleton<NoteTagApi>(() => NoteTagApi());
-  locator.registerLazySingleton<NoteTagService>(() => NoteTagService(noteTagApi: locator()));
+  _registerApis();
+  _registerServices();
+  _registerControllers();
+  _registerUtils();
+}
 
-  locator.registerLazySingleton<NotesService>(() => NotesService());
-  locator.registerLazySingleton<FileUploaderApi>(() => FileUploaderApi());
-  locator.registerLazySingleton<AccountApi>(() => AccountApi());
-  locator.registerLazySingleton<AccountService>(() => AccountService(accountApi: locator(), userSettingsService: locator(), tokenUtils: locator()));
+void _registerApis() {
+  locator.registerLazySingleton(() => NoteTagApi());
+  locator.registerLazySingleton(() => FileUploaderApi());
+  locator.registerLazySingleton(() => AccountApi());
+  locator.registerLazySingleton(() => UserSettingsApi());
+  locator.registerLazySingleton(() => TelegramSettingsApi());
+}
 
-  locator.registerLazySingleton<UserSettingsApi>(() => UserSettingsApi());
-  locator.registerLazySingleton<UserSettingsService>(() => UserSettingsService(userSettingsApi: locator()));
-  locator.registerFactory<SettingsController>(() => SettingsController(accountService: locator(), userSettingsService: locator()));
+void _registerServices() {
+  locator.registerLazySingleton(() => NoteTagService(noteTagApi: locator()));
+  locator.registerLazySingleton(() => NotesService());
+  locator.registerLazySingleton(() => ImageService());
+  locator.registerLazySingleton(() => AccountService(
+    accountApi: locator(),
+    userSettingsService: locator(),
+    tokenUtils: locator(),
+  ));
+  locator.registerLazySingleton(() => UserSettingsService(userSettingsApi: locator()));
+  locator.registerLazySingleton(() => TelegramSettingsService(telegramSettingsApi: locator()));
+}
 
-  locator.registerLazySingleton<TelegramSettingsApi>(() => TelegramSettingsApi());
-  locator.registerLazySingleton<TelegramSettingsService>(() => TelegramSettingsService(telegramSettingsApi: locator()));
-  locator.registerLazySingleton<NoteSyncSettingsController>(() => NoteSyncSettingsController(telegramSettingService: locator()));
+void _registerControllers() {
+  locator.registerFactory(() => SettingsController(
+    accountService: locator(),
+    userSettingsService: locator(),
+  ));
+  locator.registerLazySingleton(() => NoteSyncSettingsController(telegramSettingService: locator()));
+  locator.registerFactory(() => NewNoteController(notesService: locator()));
+  locator.registerFactory(() => HomePageController(
+    notesService: locator(),
+    noteTagService: locator(),
+  ));
+  locator.registerFactory(() => TagNotesController(
+    notesService: locator(),
+    noteTagService: locator(),
+  ));
+  locator.registerFactory(() => DiscoveryController(notesService: locator()));
+}
 
-  locator.registerFactory<NewNoteController>(() => NewNoteController(notesService: locator()));
-  locator.registerFactory<HomePageController>(() => HomePageController(notesService: locator(), noteTagService: locator()));
-  locator.registerFactory<TagNotesController>(() => TagNotesController(notesService: locator(), noteTagService: locator()));
-  locator.registerFactory<DiscoveryController>(() => DiscoveryController(notesService: locator()));
-
-  locator.registerLazySingleton<TokenUtils>(() => TokenUtils());
+void _registerUtils() {
+  locator.registerLazySingleton(() => TokenUtils());
 }
