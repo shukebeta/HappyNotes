@@ -1,4 +1,6 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:intl/intl.dart';
 
 import '../app_config.dart';
@@ -31,8 +33,8 @@ class Util {
     );
   }
 
-  static void showInfo(ScaffoldMessengerState scaffoldContext, String message) {
-    scaffoldContext.showSnackBar(SnackBar(
+  static void showInfo(ScaffoldMessengerState scaffoldMessengerState, String message) {
+    scaffoldMessengerState.showSnackBar(SnackBar(
       content: Text(message),
       backgroundColor: Colors.blue, // Optional: Set a different background color for info messages
     ));
@@ -105,6 +107,35 @@ class Util {
   }
 
   static String getErrorMessage(dynamic apiResult) {
-    return '${apiResult['errorCode']}: ' + apiResult['message'];
+    return '${apiResult['errorCode']}: ${apiResult['message']}';
+  }
+
+  static bool isPasteBoardSupported() {
+    return kIsWeb ||
+        (defaultTargetPlatform == TargetPlatform.iOS ||
+            defaultTargetPlatform == TargetPlatform.linux ||
+            defaultTargetPlatform == TargetPlatform.windows ||
+            defaultTargetPlatform == TargetPlatform.macOS);
+  }
+
+  static bool isImageCompressionSupported() {
+    return !kIsWeb &&
+        (defaultTargetPlatform == TargetPlatform.iOS ||
+            defaultTargetPlatform == TargetPlatform.android ||
+            defaultTargetPlatform == TargetPlatform.macOS);
+  }
+
+  static Future<Uint8List?> compressImage(
+      Uint8List imageData,
+      CompressFormat format, {
+        int maxPixel = 3333,
+      }) async {
+    return await FlutterImageCompress.compressWithList(
+      imageData,
+      minWidth: maxPixel,
+      minHeight: maxPixel,
+      quality: 85,
+      format: format,
+    );
   }
 }

@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:happy_notes/apis/file_uploader_api.dart';
+import 'package:pasteboard/pasteboard.dart';
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:happy_notes/utils/happy_notes_prompts.dart';
@@ -28,6 +29,7 @@ class NoteEdit extends StatefulWidget {
 class NoteEditState extends State<NoteEdit> {
   late String prompt;
   late TextEditingController controller;
+  final fileUploaderApi = locator<FileUploaderApi>();
 
   @override
   void initState() {
@@ -79,7 +81,7 @@ class NoteEditState extends State<NoteEdit> {
             ),
             const SizedBox(height: 8.0),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 GestureDetector(
                   onTap: () {
@@ -123,16 +125,20 @@ class NoteEditState extends State<NoteEdit> {
                     padding: const EdgeInsets.all(12.0),
                   ),
                 ),
-                const Visibility( // a placeholder
-                  visible: false,
+                Visibility(
+                  // paste image from clipboard
+                  visible: noteModel.isMarkdown && Util.isPasteBoardSupported(),
                   maintainSize: true,
                   maintainAnimation: true,
                   maintainState: true,
                   child: IconButton(
-                    onPressed: null,
-                    icon: Icon(Icons.add_photo_alternate),
+                    onPressed: () async {
+                      noteModel.requestFocus();
+                      await _getImageFromClipboard(context, noteModel);
+                    },
+                    icon: const Icon(Icons.paste),
                     iconSize: 24.0,
-                    padding: EdgeInsets.all(12.0),
+                    padding: const EdgeInsets.all(12.0),
                   ),
                 ),
               ],
@@ -176,15 +182,15 @@ class NoteEditState extends State<NoteEdit> {
     final ScaffoldMessengerState scaffoldMessengerState = ScaffoldMessenger.of(context);
     final ImagePicker picker = ImagePicker();
     final XFile? image = await picker.pickImage(source: ImageSource.gallery);
-    final fileUploaderApi = locator<FileUploaderApi>();
 
     if (image != null) {
       MultipartFile? imageFile;
 
       try {
-        if (_platformSupportCompress()) {
+        if (Util.isImageCompressionSupported()) {
+          var imageData = await image.readAsBytes();
           Uint8List? compressedImage =
-              await _compressImage(image, CompressFormat.jpeg, maxPixel: AppConfig.imageMaxDimension);
+              await Util.compressImage(imageData, CompressFormat.jpeg, maxPixel: AppConfig.imageMaxDimension);
           if (compressedImage != null) {
             imageFile = MultipartFile.fromBytes(compressedImage, filename: image.name);
           }
@@ -192,24 +198,16 @@ class NoteEditState extends State<NoteEdit> {
 
         if (imageFile == null) {
           final bytes = await image.readAsBytes();
-          if (bytes != null) {
-            imageFile = MultipartFile.fromBytes(bytes, filename: image.name);
-          } else {
-            throw Exception('Failed to read image bytes');
-          }
-          if (imageFile != null) {
-            // Make the POST request if imageFile is not null
-            Response response = await fileUploaderApi.upload(imageFile);
-            if (response.statusCode == 200 && response.data['errorCode'] == 0) {
-              var img = response.data['data'];
-              var image = '![image](${AppConfig.imgBaseUrl}/640${img['path']}${img['md5']}${img['fileExt']})\n';
-              noteModel.content += noteModel.content.isEmpty ? image : '\n$image';
-            } else {
-              throw Exception('Failed to upload image: ${response.statusCode}/${response.data['msg']}');
-            }
-          } else {
-            throw Exception('Image file is null, cannot upload');
-          }
+          imageFile = MultipartFile.fromBytes(bytes, filename: image.name);
+        }
+        // Make the POST request if imageFile is not null
+        Response response = await fileUploaderApi.upload(imageFile);
+        if (response.statusCode == 200 && response.data['errorCode'] == 0) {
+          var img = response.data['data'];
+          var image = '![image](${AppConfig.imgBaseUrl}/640${img['path']}${img['md5']}${img['fileExt']})\n';
+          noteModel.content += noteModel.content.isEmpty ? image : '\n$image';
+        } else {
+          throw Exception('Failed to upload image: ${response.statusCode}/${response.data['msg']}');
         }
       } catch (e) {
         Util.showError(scaffoldMessengerState, e.toString());
@@ -217,25 +215,42 @@ class NoteEditState extends State<NoteEdit> {
     }
   }
 
-  bool _platformSupportCompress() {
-    return !kIsWeb &&
-        (defaultTargetPlatform == TargetPlatform.iOS ||
-            defaultTargetPlatform == TargetPlatform.android ||
-            defaultTargetPlatform == TargetPlatform.macOS);
+  Future<void> _getImageFromClipboard(BuildContext context, NoteModel noteModel) async {
+    var scaffoldMessengerState = ScaffoldMessenger.of(context);
+    try {
+      final imageBytes = await Pasteboard.image;
+      if (imageBytes != null) {
+        var image = await _getPossiblyCompressedMultipartFile(imageBytes);
+        _uploadImage(image, noteModel);
+      } else {
+        Util.showInfo(scaffoldMessengerState, 'No image found in clipboard');
+      }
+    } catch (e) {
+      Util.showError(scaffoldMessengerState, 'Error accessing clipboard: $e');
+    }
   }
 
-  Future<Uint8List?> _compressImage(
-    XFile image,
-    CompressFormat format, {
-    int maxPixel = 3333,
-  }) async {
-    var imageData = await image.readAsBytes();
-    return await FlutterImageCompress.compressWithList(
-      imageData,
-      minWidth: maxPixel,
-      minHeight: maxPixel,
-      quality: 85,
-      format: format,
-    );
+  Future<void> _uploadImage(MultipartFile imageFile, NoteModel noteModel) async {
+    Response response = await fileUploaderApi.upload(imageFile);
+
+    if (response.statusCode == 200 && response.data['errorCode'] == 0) {
+      var img = response.data['data'];
+      var imageMarkdown = '![image](${AppConfig.imgBaseUrl}/640${img['path']}${img['md5']}${img['fileExt']})\n';
+      noteModel.content += noteModel.content.isEmpty ? imageMarkdown : '\n$imageMarkdown';
+    } else {
+      throw Exception('Failed to upload image: ${response.statusCode}/${response.data['msg']}');
+    }
+  }
+
+  Future<MultipartFile> _getPossiblyCompressedMultipartFile(Uint8List imageBytes) async {
+    var filename = 'image_${DateTime.now().millisecondsSinceEpoch}.jpeg';
+    if (Util.isImageCompressionSupported()) {
+      Uint8List? compressedImageBytes =
+          await Util.compressImage(imageBytes, CompressFormat.jpeg, maxPixel: AppConfig.imageMaxDimension);
+      if (compressedImageBytes != null) {
+        return MultipartFile.fromBytes(compressedImageBytes, filename: filename);
+      }
+    }
+    return MultipartFile.fromBytes(imageBytes, filename: filename);
   }
 }

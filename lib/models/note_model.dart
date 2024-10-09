@@ -7,12 +7,8 @@ class NoteModel with ChangeNotifier {
   String _content;
   late FocusNode focusNode;
 
-  NoteModel({
-    bool isPrivate = true,
-    bool isMarkdown = false,
-    String initialTag = '',
-    String content = ''
-  })  : _isPrivate = isPrivate,
+  NoteModel({bool isPrivate = true, bool isMarkdown = false, String initialTag = '', String content = ''})
+      : _isPrivate = isPrivate,
         _isMarkdown = isMarkdown,
         _initialTag = initialTag,
         _content = content {
@@ -20,8 +16,11 @@ class NoteModel with ChangeNotifier {
   }
 
   bool get isPrivate => _isPrivate;
+
   bool get isMarkdown => _isMarkdown;
+
   String get initialTag => _initialTag;
+
   String get content => _content;
 
   set isPrivate(bool value) {
