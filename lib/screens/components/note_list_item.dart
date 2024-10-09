@@ -77,8 +77,8 @@ class NoteListItem extends StatelessWidget {
                     ? MarkdownBodyHere(
                         data: note.content + (note.isLong ? '...' : ''),
                       )
-                    : RichText(
-                        text: TextSpan(
+                    : SelectableText.rich(
+                        TextSpan(
                           text: note.content + (note.isLong ? '...' : ''),
                           style: const TextStyle(
                             fontStyle: FontStyle.normal,

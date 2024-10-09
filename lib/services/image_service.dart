@@ -40,8 +40,8 @@ class ImageService {
       Response response = await fileUploaderApi.upload(imageFile);
       if (response.statusCode == 200 && response.data['errorCode'] == 0) {
         var img = response.data['data'];
-        var imageUrl = '${AppConfig.imgBaseUrl}/640${img['path']}${img['md5']}${img['fileExt']}';
-        onSuccess(imageUrl);
+        var text = '![image](${AppConfig.imgBaseUrl}/640${img['path']}${img['md5']}${img['fileExt']})';
+        onSuccess(text);
       } else {
         onError('Failed to upload image: ${response.statusCode}/${response.data['msg']}');
       }
@@ -50,7 +50,7 @@ class ImageService {
     }
   }
 
-  Future<void> uploadImageFromClipboard(Function(String) onSuccess, Function(String) onError) async {
+  Future<void> pasteFromClipboard(Function(String) onSuccess, Function(String) onError) async {
     try {
       final imageBytes = await Pasteboard.image;
       if (imageBytes != null) {
@@ -60,7 +60,12 @@ class ImageService {
           await uploadImage(imageFile, onSuccess, onError);
         }
       } else {
-        onError('No image found in clipboard');
+        String? text = await Pasteboard.text;
+        if (text != null) {
+           onSuccess(text);
+        } else {
+          onError('No image/text found in clipboard');
+        }
       }
     } catch (e) {
       onError('Error accessing clipboard: $e');

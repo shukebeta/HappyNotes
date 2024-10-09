@@ -164,7 +164,7 @@ class NoteEditState extends State<NoteEdit> {
           maintainState: true,
           child: IconButton(
             onPressed: () async {
-              await _getImageFromClipboard(context, noteModel);
+              await _pasteFromClipboard(context, noteModel);
             },
             icon: const Icon(Icons.paste),
             iconSize: 24.0,
@@ -182,9 +182,8 @@ class NoteEditState extends State<NoteEdit> {
     if (imageFile != null) {
       await imageService.uploadImage(
         imageFile,
-        (imageUrl) {
-          var imageMarkdown = '![image]($imageUrl)\n';
-          noteModel.content += noteModel.content.isEmpty ? imageMarkdown : '\n$imageMarkdown';
+        (text) {
+          noteModel.content += noteModel.content.isEmpty ? text : '\n$text';
         },
         (error) {
           Util.showError(scaffoldMessengerState, error);
@@ -193,12 +192,11 @@ class NoteEditState extends State<NoteEdit> {
     }
   }
 
-  Future<void> _getImageFromClipboard(BuildContext context, NoteModel noteModel) async {
+  Future<void> _pasteFromClipboard(BuildContext context, NoteModel noteModel) async {
     final scaffoldMessengerState = ScaffoldMessenger.of(context);
-    await imageService.uploadImageFromClipboard(
-      (imageUrl) {
-        var imageMarkdown = '![image]($imageUrl)\n';
-        noteModel.content += noteModel.content.isEmpty ? imageMarkdown : '\n$imageMarkdown';
+    await imageService.pasteFromClipboard(
+      (text) {
+        noteModel.content += noteModel.content.isEmpty ? text : '\n$text';
       },
       (error) {
         Util.showError(scaffoldMessengerState, error);
