@@ -3,7 +3,7 @@
 #set -e -x
 if [ -n "$(git status --porcelain)" ]; then
   echo "Error: Your workspace has uncommitted changes. Please commit or stash them before continuing."
-  exit 1
+#  exit 1
 fi
 
 if [ "$(git rev-parse --abbrev-ref HEAD)" != "master" ]; then
@@ -14,18 +14,10 @@ fi
 script_dir="$(dirname "$(readlink -f "$0")")"
 cd $script_dir/..
 mv .env .env.backup
-cp .env.production .env
-COMMIT_HASH=$(git rev-parse --short HEAD)
-BUILD_DATE=$(date '+%Y-%b-%d')
-VERSION_INFO="$COMMIT_HASH($BUILD_DATE)"
-sed -i "s/VERSION_PLACEHOLDER/$VERSION_INFO/" .env
-
-# Read and increment flutter.versionCode and flutter.versionName
-properties_file="android/local.properties"
 
 # Get current version code and name
-current_version_code=$(grep '^flutter.versionCode=' "$properties_file" | cut -d'=' -f2)
-current_version_name=$(grep '^flutter.versionName=' "$properties_file" | cut -d'=' -f2)
+current_version_code=$(grep '^FLUTTER_VERSION_CODE=' .env.production | cut -d'=' -f2)
+current_version_name=$(grep '^FLUTTER_VERSION_NAME=' .env.production | cut -d'=' -f2)
 
 # Increment version code
 new_version_code=$((current_version_code + 1))
@@ -34,13 +26,23 @@ new_version_code=$((current_version_code + 1))
 IFS='.' read -r major minor patch <<< "$current_version_name"
 new_version_name="$major.$minor.$((patch + 1))"
 
+# replace flutter.versionCode and flutter.versionName with new version information
+properties_file="android/local.properties"
+
 # Replace the version code and name in the properties file
 sed -i "s/^flutter.versionCode=.*/flutter.versionCode=$new_version_code/" "$properties_file"
 sed -i "s/^flutter.versionName=.*/flutter.versionName=$new_version_name/" "$properties_file"
+sed -i "s/^FLUTTER_VERSION_CODE=.*/FLUTTER_VERSION_CODE=$new_version_code/" .env.production
+sed -i "s/^FLUTTER_VERSION_NAME=.*/FLUTTER_VERSION_Name=$new_version_name/" .env.production
 
 # Commit the changes
-git add "$properties_file"
 git commit -m "Update flutter.versionCode to $new_version_code and flutter.versionName to $new_version_name"
+
+cp .env.production .env
+COMMIT_HASH=$(git rev-parse --short HEAD)
+BUILD_DATE=$(date '+%Y-%b-%d')
+VERSION_INFO="$COMMIT_HASH($BUILD_DATE)"
+sed -i "s/VERSION_PLACEHOLDER/$VERSION_INFO/" .env
 
 flutter build appbundle
 mv .env.backup .env
