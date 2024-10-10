@@ -1,6 +1,5 @@
-#/bin/bash
-# this file is for creating a bundle with correct version info
-# Check if the workspace is clean and on the master branch
+#!/bin/bash
+# This file is for creating a bundle with correct version info
 #set -e -x
 if [ -n "$(git status --porcelain)" ]; then
   echo "Error: Your workspace has uncommitted changes. Please commit or stash them before continuing."
@@ -19,8 +18,29 @@ cp .env.production .env
 COMMIT_HASH=$(git rev-parse --short HEAD)
 BUILD_DATE=$(date '+%Y-%b-%d')
 VERSION_INFO="$COMMIT_HASH($BUILD_DATE)"
-sed -i "s/VERSION_PLACEHOLDER/$VERSION_INFO/" lib/screens/settings/settings.dart
+sed -i "s/VERSION_PLACEHOLDER/$VERSION_INFO/" .env
+
+# Read and increment flutter.versionCode and flutter.versionName
+properties_file="android/local.properties"
+
+# Get current version code and name
+current_version_code=$(grep '^flutter.versionCode=' "$properties_file" | cut -d'=' -f2)
+current_version_name=$(grep '^flutter.versionName=' "$properties_file" | cut -d'=' -f2)
+
+# Increment version code
+new_version_code=$((current_version_code + 1))
+
+# Update version name (for example, incrementing the patch version)
+IFS='.' read -r major minor patch <<< "$current_version_name"
+new_version_name="$major.$minor.$((patch + 1))"
+
+# Replace the version code and name in the properties file
+sed -i "s/^flutter.versionCode=.*/flutter.versionCode=$new_version_code/" "$properties_file"
+sed -i "s/^flutter.versionName=.*/flutter.versionName=$new_version_name/" "$properties_file"
+
+# Commit the changes
+git add "$properties_file"
+git commit -m "Update flutter.versionCode to $new_version_code and flutter.versionName to $new_version_name"
+
 flutter build appbundle
 mv .env.backup .env
-git reset --hard
-
