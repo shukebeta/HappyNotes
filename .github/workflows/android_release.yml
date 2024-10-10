@@ -42,11 +42,19 @@ jobs:
           echo "keyPassword=${{ secrets.KEYSTORE_PASSWORD }}" >> android/key.properties
           cat android/key.properties
 
+      - name: Fetch Git Commit Hash
+        id: get_commit
+        run: |
+          echo "::set-output name=commit_hash::$(git rev-parse --short HEAD)"
+          echo "::set-output name=build_date::$(date '+%Y-%b-%d')"
+
       - name: Build APK
         run: |
           cp .env.production .env
-          echo "VERSION=$(echo $GITHUB_REF | cut -d / -f 3)" >> $GITHUB_ENV
-          sed -i "s/VERSION_PLACEHOLDER/$VERSION/" .env
+          COMMIT_HASH=${{ steps.get_commit.outputs.commit_hash }}
+          BUILD_DATE=${{ steps.get_commit.outputs.build_date }}
+          VERSION_INFO="$COMMIT_HASH ($BUILD_DATE)"
+          sed -i "s/VERSION_PLACEHOLDER/$VERSION_INFO/" .env
           flutter build apk --release
 
       - name: Make Github release
