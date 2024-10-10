@@ -36,6 +36,7 @@ sed -i "s/^FLUTTER_VERSION_CODE=.*/FLUTTER_VERSION_CODE=$new_version_code/" .env
 sed -i "s/^FLUTTER_VERSION_NAME=.*/FLUTTER_VERSION_Name=$new_version_name/" .env.production
 
 # Commit the changes
+git add .env.production
 git commit -m "Update flutter.versionCode to $new_version_code and flutter.versionName to $new_version_name"
 
 cp .env.production .env
