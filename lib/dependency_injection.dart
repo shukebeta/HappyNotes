@@ -4,7 +4,7 @@ import 'package:happy_notes/apis/user_settings_api.dart';
 import 'package:happy_notes/screens/discovery/discovery_controller.dart';
 import 'package:happy_notes/screens/home_page/home_page_controller.dart';
 import 'package:happy_notes/screens/new_note/new_note_controller.dart';
-import 'package:happy_notes/screens/settings/note_sync_settings_controller.dart';
+import 'package:happy_notes/screens/settings/telegram_sync_settings_controller.dart';
 import 'package:happy_notes/screens/settings/settings_controller.dart';
 import 'package:happy_notes/screens/tag_notes/tag_notes_controller.dart';
 import 'package:happy_notes/services/account_service.dart';
@@ -54,7 +54,7 @@ void _registerControllers() {
     accountService: locator(),
     userSettingsService: locator(),
   ));
-  locator.registerLazySingleton(() => NoteSyncSettingsController(telegramSettingService: locator()));
+  locator.registerLazySingleton(() => TelegramSyncSettingsController(telegramSettingService: locator()));
   locator.registerFactory(() => NewNoteController(notesService: locator()));
   locator.registerFactory(() => HomePageController(
     notesService: locator(),

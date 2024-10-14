@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:happy_notes/app_config.dart';
-import 'package:happy_notes/screens/settings/note_sync_settings_controller.dart';
+import 'package:happy_notes/screens/settings/telegram_sync_settings_controller.dart';
 import '../../dependency_injection.dart';
 import '../../services/dialog_services.dart';
 import 'add_telegram_setting.dart';
 
-class NoteSyncSettings extends StatefulWidget {
-  const NoteSyncSettings({super.key});
+class TelegramSyncSettings extends StatefulWidget {
+  const TelegramSyncSettings({super.key});
 
   @override
-  NoteSyncSettingsState createState() => NoteSyncSettingsState();
+  TelegramSyncSettingsState createState() => TelegramSyncSettingsState();
 }
 
-class NoteSyncSettingsState extends State<NoteSyncSettings> {
-  final NoteSyncSettingsController _settingsController = locator<NoteSyncSettingsController>();
+class TelegramSyncSettingsState extends State<TelegramSyncSettings> {
+  final TelegramSyncSettingsController _settingsController = locator<TelegramSyncSettingsController>();
 
   @override
   void didChangeDependencies() {

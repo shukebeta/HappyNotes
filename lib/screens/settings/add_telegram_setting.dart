@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:happy_notes/entities/telegram_settings.dart';
 import '../../dependency_injection.dart';
-import 'note_sync_settings_controller.dart';
+import 'telegram_sync_settings_controller.dart';
 
 class AddTelegramSetting extends StatefulWidget {
   final TelegramSettings? setting;
@@ -18,7 +18,7 @@ class AddTelegramSettingState extends State<AddTelegramSetting> {
   final TextEditingController _remarkController = TextEditingController();
   final TextEditingController _tagController = TextEditingController();
   int _syncType = 3;
-  final NoteSyncSettingsController _settingsController = locator<NoteSyncSettingsController>();
+  final TelegramSyncSettingsController _settingsController = locator<TelegramSyncSettingsController>();
 
   @override
   void initState() {

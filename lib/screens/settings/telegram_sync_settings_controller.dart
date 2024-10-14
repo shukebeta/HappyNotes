@@ -4,12 +4,12 @@ import 'package:happy_notes/entities/telegram_settings.dart';
 import '../../services/telegram_settings_service.dart';
 import '../../utils/util.dart';
 
-class NoteSyncSettingsController {
+class TelegramSyncSettingsController {
   final TelegramSettingsService _telegramSettingService;
   bool isLoading = false;
   List<TelegramSettings> telegramSettings = [];
 
-  NoteSyncSettingsController({required TelegramSettingsService telegramSettingService})
+  TelegramSyncSettingsController({required TelegramSettingsService telegramSettingService})
       :_telegramSettingService = telegramSettingService;
 
   Future<void> getTelegramSettings(BuildContext context) async {
