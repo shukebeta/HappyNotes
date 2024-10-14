@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:happy_notes/screens/settings/mastodon_sync_settings.dart';
 import 'package:happy_notes/screens/settings/settings_controller.dart';
 import 'package:happy_notes/screens/settings/telegram_sync_settings.dart'; // Import NotesSyncPage
 
@@ -118,6 +119,16 @@ class SettingsState extends State<Settings> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const TelegramSyncSettings()),
+                );
+              },
+            ),
+            ListTile(
+              title: const Text('Notes Sync - Mastodon'),
+              subtitle: const Text('Configure synchronization settings for Mastodon.'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const MastodonSyncSettings()),
                 );
               },
             ),
