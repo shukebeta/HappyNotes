@@ -40,7 +40,7 @@ class MastodonSyncSettingsState extends State<MastodonSyncSettings> {
                 context,
                 MaterialPageRoute(
                   builder: (context) => AddMastodonUserAccount(
-                    setting: _settingsController.mastodonSettings?.lastOrNull,
+                    setting: _settingsController.mastodonSettings.lastOrNull,
                   ),
                 ),
               ).then((_) {
@@ -53,10 +53,9 @@ class MastodonSyncSettingsState extends State<MastodonSyncSettings> {
         ],
       ),
       body: ListView.builder(
-        itemCount: _settingsController.mastodonSettings?.length ?? 0,
+        itemCount: _settingsController.mastodonSettings.length,
         itemBuilder: (context, index) {
-          final setting = _settingsController.mastodonSettings?[index];
-          if (setting == null) return const SizedBox.shrink();
+          final setting = _settingsController.mastodonSettings[index];
           return Column(
             children: [
               Card(
@@ -67,11 +66,10 @@ class MastodonSyncSettingsState extends State<MastodonSyncSettings> {
                       SelectableText.rich(
                         TextSpan(
                           style: DefaultTextStyle.of(context).style,
-                          children: [
-                            const TextSpan(text: 'Note Type: ', style: TextStyle(fontWeight: FontWeight.bold)),
+                          children: const [
+                            TextSpan(text: 'Note Type: ', style: TextStyle(fontWeight: FontWeight.bold)),
                             TextSpan(
-                              text: '${_getSyncTypeDescription(setting.applicationId)}'
-                                  '${setting.applicationId == 4 ? ' - ${setting.instanceUrl}' : ''}',
+                              text: 'All',
                             ),
                           ],
                         ),
@@ -80,17 +78,8 @@ class MastodonSyncSettingsState extends State<MastodonSyncSettings> {
                         TextSpan(
                           style: DefaultTextStyle.of(context).style,
                           children: [
-                            const TextSpan(text: 'Channel: ', style: TextStyle(fontWeight: FontWeight.bold)),
-                            TextSpan(text: AppConfig.debugging ? '${setting.tokenType}/${setting.scope}' : setting.tokenType),
-                          ],
-                        ),
-                      ),
-                      SelectableText.rich(
-                        TextSpan(
-                          style: DefaultTextStyle.of(context).style,
-                          children: [
-                            const TextSpan(text: 'Token Remark: ', style: TextStyle(fontWeight: FontWeight.bold)),
-                            TextSpan(text: '${setting.refreshToken}'),
+                            const TextSpan(text: 'Instance: ', style: TextStyle(fontWeight: FontWeight.bold)),
+                            TextSpan(text: setting.instanceUrl),
                           ],
                         ),
                       ),
@@ -160,20 +149,5 @@ class MastodonSyncSettingsState extends State<MastodonSyncSettings> {
         },
       ),
     );
-  }
-
-  String _getSyncTypeDescription(int syncType) {
-    switch (syncType) {
-      case 1:
-        return 'Public';
-      case 2:
-        return 'Private';
-      case 3:
-        return 'All (Public + Private)';
-      case 4:
-        return 'Tag';
-      default:
-        return 'Unknown';
-    }
   }
 }

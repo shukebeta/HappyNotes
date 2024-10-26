@@ -6,8 +6,8 @@ import 'package:intl/intl.dart';
 import '../app_config.dart';
 
 class Util {
-  static void showError(ScaffoldMessengerState scaffoldContext, String errorMessage) {
-    scaffoldContext.showSnackBar(SnackBar(
+  static void showError(ScaffoldMessengerState scaffoldMessengerState, String errorMessage) {
+    scaffoldMessengerState.showSnackBar(SnackBar(
       content: Text(errorMessage),
       backgroundColor: Colors.orange,
     ));

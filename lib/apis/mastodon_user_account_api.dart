@@ -5,6 +5,14 @@ import '../dio_client.dart';
 class MastodonUserAccountApi {
   static final Dio _dio = DioClient.getInstance();
 
+  Future<Response> setState(String state) async {
+    final  options = Options(
+      headers: {'X-State': state},
+    );
+    // we don't have a separate api file for mastodon auth
+    return await _dio.post('/mastodonAuth/setState', options: options);
+  }
+
   Future<Response> getAll() async {
     return await _dio.get('/mastodonUserAccount/getAll');
   }
@@ -26,16 +34,12 @@ class MastodonUserAccountApi {
 
   Map<String, Object?> _getPostData(MastodonUserAccount account) {
     return {
-      'applicationId': account.applicationId,
       'userId': account.userId,
       'instanceUrl': account.instanceUrl,
       'scope': account.scope,
       'accessToken': account.accessToken,
       'refreshToken': account.refreshToken,
       'tokenType': account.tokenType,
-      'userName': account.userName,
-      'displayName': account.displayName,
-      'avatarUrl': account.avatarUrl,
     };
   }
 
