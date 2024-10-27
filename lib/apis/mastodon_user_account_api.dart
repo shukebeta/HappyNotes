@@ -38,7 +38,6 @@ class MastodonUserAccountApi {
       'instanceUrl': account.instanceUrl,
       'scope': account.scope,
       'accessToken': account.accessToken,
-      'refreshToken': account.refreshToken,
       'tokenType': account.tokenType,
     };
   }

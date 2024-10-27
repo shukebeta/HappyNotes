@@ -6,7 +6,6 @@ class MastodonUserAccount {
   final String? scope;
 
   String accessToken;
-  String refreshToken;
   String tokenType;
   String? statusText = '';
 
@@ -19,7 +18,7 @@ class MastodonUserAccount {
   }
 
   bool get isTested {
-    return statusText == 'Normal' || statusText == 'Disabled';
+    return statusText == 'Created' || statusText == 'Normal' || statusText == 'Disabled';
   }
 
   MastodonUserAccount({
@@ -28,7 +27,6 @@ class MastodonUserAccount {
     required this.instanceUrl,
     required this.scope,
     required this.accessToken,
-    required this.refreshToken,
     required this.tokenType,
     this.status,
     this.statusText,
@@ -41,7 +39,6 @@ class MastodonUserAccount {
       instanceUrl: json['instanceUrl'],
       scope: json['scope'],
       accessToken: json['accessToken'],
-      refreshToken: json['refreshToken'] ?? '',
       tokenType: json['tokenType'],
       status: json['status'],
       statusText: json['statusText'],
