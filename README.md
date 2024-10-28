@@ -11,6 +11,7 @@
 - **Quick Actions**: Capture notes swiftly on Android and iOS.
 - **Public & Private Notes**: Share with others or keep as a personal journal.
 - **Telegram Sync**: Sync notes to a Telegram channel/group with flexible rules.
+- **Mastodon Sync**: Sync all notes or public notes or notes with mastodon tag to your Mastodon account.
 - **Open Source**: Contribute to the features you love.
 
 ## Tips for Using Happy Notes
