@@ -2,12 +2,26 @@ class MastodonUserAccount {
   int? id;
   int? userId;
   final int? status;
+  final int syncType;
   final String? instanceUrl;
   final String? scope;
 
   String accessToken;
   String tokenType;
   String? statusText = '';
+
+  String? get syncTypeText {
+    switch (syncType) {
+      case 1:
+        return 'All';
+      case 2:
+        return 'Public note only';
+      case 3:
+        return 'Note with tag Mastodon only';
+      default:
+        return 'Unknown';
+    }
+  }
 
   bool get isActive {
     return statusText == 'Normal';
@@ -28,6 +42,7 @@ class MastodonUserAccount {
     required this.scope,
     required this.accessToken,
     required this.tokenType,
+    required this.syncType,
     this.status,
     this.statusText,
   });
@@ -41,6 +56,7 @@ class MastodonUserAccount {
       accessToken: json['accessToken'],
       tokenType: json['tokenType'],
       status: json['status'],
+      syncType: json['syncType'],
       statusText: json['statusText'],
     );
   }

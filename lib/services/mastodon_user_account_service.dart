@@ -17,10 +17,9 @@ class MastodonUserAccountService {
     return true;
   }
 
-  Future<bool> test(MastodonUserAccount setting) async {
-    final apiResult = (await _mastodonUserAccountApi.test(setting)).data;
+  Future<void> nextSyncType(MastodonUserAccount setting) async {
+    final apiResult = (await _mastodonUserAccountApi.nextSyncType(setting)).data;
     if(!apiResult['successful']) throw ApiException(apiResult);
-    return true;
   }
 
   Future<bool> delete(MastodonUserAccount setting) async {

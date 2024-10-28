@@ -22,9 +22,9 @@ class MastodonUserAccountApi {
     return await _dio.post('/mastodonUserAccount/add', data: data);
   }
 
-  Future<Response> test(MastodonUserAccount account) async {
+  Future<Response> nextSyncType(MastodonUserAccount account) async {
     var data = _getPostData(account);
-    return await _dio.post('/mastodonUserAccount/test', data: data);
+    return await _dio.post('/mastodonUserAccount/nextSyncType', data: data);
   }
 
   Future<Response> activate(MastodonUserAccount account) async {

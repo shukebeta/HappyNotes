@@ -28,13 +28,12 @@ class MastodonSyncSettingsController {
     return await _mastodonSettingService.add(setting);
   }
 
-  Future<bool> testMastodonSetting(BuildContext context, MastodonUserAccount setting) async {
+  Future<void> nextSyncType(BuildContext context, MastodonUserAccount setting) async {
     final scaffoldContext = ScaffoldMessenger.of(context);
     try {
-      return await _mastodonSettingService.test(setting);
+      await _mastodonSettingService.nextSyncType(setting);
     } catch (error) {
       Util.showError(scaffoldContext, "Test failed: $error");
-      return false;
     }
   }
 
