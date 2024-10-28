@@ -1,19 +1,21 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:happy_notes/app_config.dart';
-import 'package:happy_notes/screens/settings/note_sync_settings_controller.dart';
+import 'package:happy_notes/screens/settings/mastodon_sync_settings_controller.dart';
 import '../../dependency_injection.dart';
 import '../../services/dialog_services.dart';
-import 'add_telegram_setting.dart';
+import '../../utils/util.dart';
+import 'add_mastodon_user_account.dart';
 
-class NoteSyncSettings extends StatefulWidget {
-  const NoteSyncSettings({super.key});
+class MastodonSyncSettings extends StatefulWidget {
+  const MastodonSyncSettings({super.key});
 
   @override
-  NoteSyncSettingsState createState() => NoteSyncSettingsState();
+  MastodonSyncSettingsState createState() => MastodonSyncSettingsState();
 }
 
-class NoteSyncSettingsState extends State<NoteSyncSettings> {
-  final NoteSyncSettingsController _settingsController = locator<NoteSyncSettingsController>();
+class MastodonSyncSettingsState extends State<MastodonSyncSettings> {
+  final MastodonSyncSettingsController _settingsController = locator<MastodonSyncSettingsController>();
 
   @override
   void didChangeDependencies() {
@@ -22,7 +24,7 @@ class NoteSyncSettingsState extends State<NoteSyncSettings> {
   }
 
   Future<void> _loadSyncSettings() async {
-    await _settingsController.getTelegramSettings(context);
+    await _settingsController.getMastodonSettings(context);
     setState(() {
       // syncSettings = settings;
     });
@@ -32,15 +34,15 @@ class NoteSyncSettingsState extends State<NoteSyncSettings> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Telegram Sync'),
+        title: const Text('Mastodon Sync'),
         actions: [
           TextButton.icon(
             onPressed: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => AddTelegramSetting(
-                    setting: _settingsController.telegramSettings?.lastOrNull,
+                  builder: (context) => AddMastodonUserAccount(
+                    setting: _settingsController.mastodonSettings.lastOrNull,
                   ),
                 ),
               ).then((_) {
@@ -53,10 +55,9 @@ class NoteSyncSettingsState extends State<NoteSyncSettings> {
         ],
       ),
       body: ListView.builder(
-        itemCount: _settingsController.telegramSettings?.length ?? 0,
+        itemCount: _settingsController.mastodonSettings.length,
         itemBuilder: (context, index) {
-          final setting = _settingsController.telegramSettings?[index];
-          if (setting == null) return const SizedBox.shrink();
+          final setting = _settingsController.mastodonSettings[index];
           return Column(
             children: [
               Card(
@@ -68,10 +69,14 @@ class NoteSyncSettingsState extends State<NoteSyncSettings> {
                         TextSpan(
                           style: DefaultTextStyle.of(context).style,
                           children: [
-                            const TextSpan(text: 'Note Type: ', style: TextStyle(fontWeight: FontWeight.bold)),
+                            const TextSpan(text: 'Sync Type: ', style: TextStyle(fontWeight: FontWeight.bold)),
                             TextSpan(
-                              text: '${_getSyncTypeDescription(setting.syncType)}'
-                                  '${setting.syncType == 4 ? ' - ${setting.syncValue}' : ''}',
+                              text: setting.syncTypeText,
+                              style: const TextStyle(color: Colors.blue, fontSize: 16),
+                              recognizer: TapGestureRecognizer()..onTap = () async {
+                                await _settingsController.nextSyncType(context, setting);
+                                _loadSyncSettings();
+                              },
                             ),
                           ],
                         ),
@@ -80,17 +85,8 @@ class NoteSyncSettingsState extends State<NoteSyncSettings> {
                         TextSpan(
                           style: DefaultTextStyle.of(context).style,
                           children: [
-                            const TextSpan(text: 'Channel: ', style: TextStyle(fontWeight: FontWeight.bold)),
-                            TextSpan(text: AppConfig.debugging ? '${setting.channelName}/${setting.channelId}' : setting.channelName),
-                          ],
-                        ),
-                      ),
-                      SelectableText.rich(
-                        TextSpan(
-                          style: DefaultTextStyle.of(context).style,
-                          children: [
-                            const TextSpan(text: 'Token Remark: ', style: TextStyle(fontWeight: FontWeight.bold)),
-                            TextSpan(text: '${setting.tokenRemark}'),
+                            const TextSpan(text: 'Instance: ', style: TextStyle(fontWeight: FontWeight.bold)),
+                            TextSpan(text: setting.instanceUrl),
                           ],
                         ),
                       ),
@@ -104,8 +100,8 @@ class NoteSyncSettingsState extends State<NoteSyncSettings> {
                             color: setting.isActive
                                 ? Colors.green
                                 : setting.isDisabled
-                                ? Colors.orange
-                                : Colors.red,
+                                    ? Colors.orange
+                                    : Colors.red,
                           ),
                         ),
                       ),
@@ -117,11 +113,18 @@ class NoteSyncSettingsState extends State<NoteSyncSettings> {
                       if (setting.isActive || setting.isDisabled)
                         TextButton.icon(
                           onPressed: () async {
-                            if (setting.isDisabled) {
-                              await _settingsController.activateTelegramSetting(setting);
-                            }
-                            if (setting.isActive) {
-                              await _settingsController.disableTelegramSetting(setting);
+                            try {
+                              if (setting.isDisabled) {
+                                await _settingsController.activateMastodonSetting(setting);
+                              }
+                              if (setting.isActive) {
+                                await _settingsController.disableMastodonSetting(setting);
+                              }
+                            } catch (e) {
+                              Util.showError(
+                                ScaffoldMessenger.of(context),
+                                e.toString(),
+                              );
                             }
                             _loadSyncSettings();
                           },
@@ -131,25 +134,15 @@ class NoteSyncSettingsState extends State<NoteSyncSettings> {
                           ),
                           label: Text(setting.isActive ? 'Disable' : 'Activate'),
                         ),
-                      if (!setting.isTested)
-                        TextButton.icon(
-                          onPressed: () async {
-                            if (await _settingsController.testTelegramSetting(context, setting)) {
-                              _loadSyncSettings();
-                            }
-                          },
-                          icon: const Icon(Icons.send, color: Colors.blue),
-                          label: const Text('Test'),
-                        ),
                       TextButton.icon(
                         onPressed: () async {
                           if (true == await DialogService.showConfirmDialog(context)) {
-                            await _settingsController.deleteTelegramSetting(setting);
+                            await _settingsController.deleteMastodonSetting(setting);
                             _loadSyncSettings();
                           }
                         },
                         icon: const Icon(Icons.delete, color: Colors.red),
-                        label: const Text(''),
+                        label: const Text('Delete'),
                       ),
                     ],
                   ),
@@ -160,20 +153,5 @@ class NoteSyncSettingsState extends State<NoteSyncSettings> {
         },
       ),
     );
-  }
-
-  String _getSyncTypeDescription(int syncType) {
-    switch (syncType) {
-      case 1:
-        return 'Public';
-      case 2:
-        return 'Private';
-      case 3:
-        return 'All (Public + Private)';
-      case 4:
-        return 'Tag';
-      default:
-        return 'Unknown';
-    }
   }
 }

@@ -93,4 +93,8 @@ class AppConfig {
       throw ArgumentError('No such property: $name');
     }
   }
+
+  static String mastodonRedirectUri(String instanceUrl) {
+    return '$apiBaseUrl/mastodonAuth/callback?instanceUrl=${Uri.encodeFull(instanceUrl)}';
+  }
 }
