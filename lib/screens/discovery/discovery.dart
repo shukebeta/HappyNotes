@@ -7,7 +7,6 @@ import '../components/note_list.dart';
 import '../components/pagination_controls.dart';
 import '../../entities/note.dart';
 import '../account/user_session.dart';
-import '../tag_notes/tag_notes.dart';
 import 'discovery_controller.dart';
 import '../new_note/new_note.dart';
 

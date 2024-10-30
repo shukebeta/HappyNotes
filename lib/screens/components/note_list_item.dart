@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:happy_notes/screens/account/user_session.dart';
-import 'package:happy_notes/typedefs.dart';
 import '../../entities/note.dart';
 import 'markdown_body_here.dart';
 import 'tag_widget.dart'; // Import your TagWidget

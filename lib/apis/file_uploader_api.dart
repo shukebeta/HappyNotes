@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import 'package:image_picker/image_picker.dart';
 import '../app_config.dart';
 import '../dio_client.dart';
 

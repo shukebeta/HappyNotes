@@ -1,6 +1,5 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:happy_notes/app_config.dart';
 import 'package:happy_notes/screens/settings/mastodon_sync_settings_controller.dart';
 import '../../dependency_injection.dart';
 import '../../services/dialog_services.dart';

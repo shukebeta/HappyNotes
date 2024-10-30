@@ -1,7 +1,6 @@
 import 'package:happy_notes/apis/account_api.dart';
 import 'package:happy_notes/apis/file_uploader_api.dart';
 import 'package:happy_notes/apis/user_settings_api.dart';
-import 'package:happy_notes/entities/mastodon_user_account.dart';
 import 'package:happy_notes/screens/discovery/discovery_controller.dart';
 import 'package:happy_notes/screens/home_page/home_page_controller.dart';
 import 'package:happy_notes/screens/new_note/new_note_controller.dart';
