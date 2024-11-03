@@ -25,14 +25,12 @@ class MemoriesOnDay extends StatefulWidget {
 }
 
 class MemoriesOnDayState extends State<MemoriesOnDay> with RouteAware {
-  late Future<NotesResult> _notesFuture;
   late List<Note> _notes;
   late MemoriesOnDayController _controller;
 
   @override
   void initState() {
     _controller = MemoriesOnDayController(notesService: locator<NotesService>());
-    _notesFuture = _controller.fetchMemories(widget.date);
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       UserSession.routeObserver.subscribe(this, ModalRoute.of(context)!);
     });

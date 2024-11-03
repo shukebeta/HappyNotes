@@ -15,7 +15,7 @@ class AccountApi {
     final options = Options(
       headers: {'AllowAnonymous': true},
     );
-    return await _dio.post('/account/register', data: params);
+    return await _dio.post('/account/register', data: params, options: options);
   }
 
   Future<Response> refreshToken() async {

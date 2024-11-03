@@ -7,9 +7,6 @@ class MastodonApplicationApi {
   static final Dio _dio = DioClient.getInstance();
  
   Future<Response> createApplication(String instanceUrl) async {
-    final  options = Options(
-      headers: {'AllowAnonymous': true},
-    );
     // register an application on the instance
     return await _dio.post('$instanceUrl/api/v1/apps', data: {
       'client_name': 'Happy Notes',

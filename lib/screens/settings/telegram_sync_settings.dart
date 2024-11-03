@@ -40,7 +40,7 @@ class TelegramSyncSettingsState extends State<TelegramSyncSettings> {
                 context,
                 MaterialPageRoute(
                   builder: (context) => AddTelegramSetting(
-                    setting: _settingsController.telegramSettings?.lastOrNull,
+                    setting: _settingsController.telegramSettings.lastOrNull,
                   ),
                 ),
               ).then((_) {
@@ -53,10 +53,9 @@ class TelegramSyncSettingsState extends State<TelegramSyncSettings> {
         ],
       ),
       body: ListView.builder(
-        itemCount: _settingsController.telegramSettings?.length ?? 0,
+        itemCount: _settingsController.telegramSettings.length,
         itemBuilder: (context, index) {
-          final setting = _settingsController.telegramSettings?[index];
-          if (setting == null) return const SizedBox.shrink();
+          final setting = _settingsController.telegramSettings[index];
           return Column(
             children: [
               Card(

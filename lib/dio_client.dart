@@ -12,9 +12,9 @@ class DioClient {
     if (_dio == null) {
       _dio = Dio(); // Create Dio instance if not already created
       _dio!.options.baseUrl = AppConfig.apiBaseUrl;
-      _dio!.options.connectTimeout = const Duration(seconds: 10);
-      _dio!.options.receiveTimeout = const Duration(seconds: 15);
-      _dio!.options.sendTimeout = const Duration(seconds: 10);
+      _dio!.options.connectTimeout = const Duration(seconds: 20);
+      _dio!.options.receiveTimeout = const Duration(seconds: 25);
+      _dio!.options.sendTimeout = const Duration(seconds: 20);
 
       _dio!.interceptors.add(LogInterceptor(requestBody: true, responseBody: true)); // Add logging interceptor
       _dio!.interceptors.add(AuthInterceptor());

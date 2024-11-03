@@ -58,7 +58,6 @@ class MemoriesState extends State<Memories> with RouteAware {
     return IconButton(
       icon: const Icon(Icons.edit),
       onPressed: () async {
-        final scaffoldContext = ScaffoldMessenger.of(context);
         final navigator = Navigator.of(context);
         await navigator.push(
           MaterialPageRoute(
