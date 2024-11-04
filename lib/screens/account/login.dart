@@ -1,8 +1,6 @@
-
-import 'package:happy_notes/screens/account/registration.dart';
 import 'package:flutter/material.dart';
-
 import 'login_controller.dart';
+import 'package:happy_notes/screens/account/registration.dart';
 
 class Login extends StatefulWidget {
   const Login({Key? key, required this.title}) : super(key: key);
@@ -15,6 +13,7 @@ class Login extends StatefulWidget {
 
 class _LoginState extends State<Login> {
   final _formModel = LoginController();
+  bool _isPasswordVisible = false;
 
   @override
   void dispose() {
@@ -28,59 +27,58 @@ class _LoginState extends State<Login> {
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body: Form(
-        key: _formModel.formKey,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+        child: Form(
+          key: _formModel.formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-                child: TextFormField(
-                  controller: _formModel.emailController,
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: "Username",
-                  ),
-                  validator: _formModel.validateUsername,
+              TextFormField(
+                controller: _formModel.emailController,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: "Username",
                 ),
+                validator: _formModel.validateUsername,
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-                child: TextFormField(
-                  controller: _formModel.passwordController,
-                  obscureText: true,
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: "Password",
-                  ),
-                  validator: _formModel.validatePassword,
-                  onFieldSubmitted: (_) => _formModel.submitForm(context),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16.0),
-                child: Center(
-                  child: ElevatedButton(
+              const SizedBox(height: 12),
+              TextFormField(
+                controller: _formModel.passwordController,
+                obscureText: !_isPasswordVisible,
+                decoration: InputDecoration(
+                  border: const OutlineInputBorder(),
+                  labelText: "Password",
+                  suffixIcon: IconButton(
+                    icon: Icon(_isPasswordVisible
+                        ? Icons.visibility
+                        : Icons.visibility_off),
                     onPressed: () {
-                      _formModel.submitForm(context);
+                      setState(() {
+                        _isPasswordVisible = !_isPasswordVisible;
+                      });
                     },
-                    child: const Text('Submit'),
                   ),
                 ),
+                validator: _formModel.validatePassword,
+                onFieldSubmitted: (_) => _formModel.submitForm(context),
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8.0),
-                child: TextButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const Registration(title: 'Registration')),
-                    );
-                  },
-                  child: const Text('Don\'t have an account? Register here'),
-                ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () => _formModel.submitForm(context),
+                child: const Text('Submit'),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const Registration(title: 'Registration'),
+                    ),
+                  );
+                },
+                child: const Text("Don't have an account? Register here"),
               ),
             ],
           ),
