@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../app_config.dart';
 import '../../entities/note.dart';
 import '../../models/note_model.dart';
 import '../../services/dialog_services.dart';

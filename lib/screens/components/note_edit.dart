@@ -1,4 +1,5 @@
 // NoteEdit.dart
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:provider/provider.dart';
@@ -145,7 +146,7 @@ class NoteEditState extends State<NoteEdit> {
             ),
           ),
         ),
-        Visibility(
+        if (defaultTargetPlatform != TargetPlatform.macOS) Visibility(
           visible: noteModel.isMarkdown,
           maintainSize: true,
           maintainAnimation: true,
