@@ -86,7 +86,7 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
                 child: Consumer<NoteModel>(builder: (context, noteModel, child) {
                   return AppBar(
                     title: Text(
-                      'Note ${note?.id} - ${noteModel.isPrivate ? 'Private' : 'Public'}',
+                      'Note ${note?.id} - ${noteModel.isPrivate ? 'Private' : 'Public'}${noteModel.isMarkdown ? ' with M↓'  : ''}',
                       style: TextStyle(
                         color: noteModel.isPrivate ? Colors.red : Colors.green, // Change colors accordingly
                       ),

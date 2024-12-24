@@ -28,11 +28,6 @@ class NoteView extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      note.isMarkdown ? 'Markdown Note' : 'Plain Text Note',
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                    const SizedBox(height: 10),
                     note.isMarkdown
                         ? MarkdownBodyHere(data: note.content)
                         : Text(
