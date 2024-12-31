@@ -146,18 +146,19 @@ class NoteEditState extends State<NoteEdit> {
             ),
           ),
         ),
-        if (defaultTargetPlatform != TargetPlatform.macOS) Visibility(
-          visible: noteModel.isMarkdown,
-          maintainSize: true,
-          maintainAnimation: true,
-          maintainState: true,
-          child: IconButton(
-            onPressed: noteModel.isMarkdown ? () => _pickAndUploadImage(context, noteModel) : null,
-            icon: noteModel.isUploading ? const CircularProgressIndicator() : const Icon(Icons.add_photo_alternate),
-            iconSize: 24.0,
-            padding: const EdgeInsets.all(12.0),
+        if (defaultTargetPlatform != TargetPlatform.macOS)
+          Visibility(
+            visible: noteModel.isMarkdown,
+            maintainSize: true,
+            maintainAnimation: true,
+            maintainState: true,
+            child: IconButton(
+              onPressed: noteModel.isMarkdown ? () => _pickAndUploadImage(context, noteModel) : null,
+              icon: noteModel.isUploading ? const CircularProgressIndicator() : const Icon(Icons.add_photo_alternate),
+              iconSize: 24.0,
+              padding: const EdgeInsets.all(12.0),
+            ),
           ),
-        ),
         Visibility(
           visible: noteModel.isMarkdown && Util.isPasteBoardSupported(),
           maintainSize: true,
@@ -196,18 +197,37 @@ class NoteEditState extends State<NoteEdit> {
     }
   }
 
+  final _urlPattern = RegExp(r'^https?://[^\s<>]+$', caseSensitive: false);
+  final _imageUrlPattern = RegExp(
+    r'https?://[^\s<>]+\.(png|jpg|jpeg|gif|webp|bmp)(\?.*)?$',
+    caseSensitive: false,
+  );
+
   Future<void> _pasteFromClipboard(BuildContext context, NoteModel noteModel) async {
     final scaffoldMessengerState = ScaffoldMessenger.of(context);
-    noteModel.setPasting(true);
-    await imageService.pasteFromClipboard(
-      (text) {
-        noteModel.setPasting(false);
-        noteModel.content += noteModel.content.isEmpty ? text : '\n$text';
-      },
-      (error) {
-        noteModel.setPasting(false);
-        Util.showError(scaffoldMessengerState, error);
-      },
-    );
+    try {
+      noteModel.setPasting(true);
+      await imageService.pasteFromClipboard(
+        (text) {
+          text = text.trim();
+          if (text.isEmpty) return;
+
+          final processedText =
+              noteModel.isMarkdown && _urlPattern.hasMatch(text) ? _processUrl(text) : text;
+
+          final separator = noteModel.content.isEmpty || noteModel.content.endsWith('\n') ? '' : '\n';
+          noteModel.content += separator + processedText;
+        },
+        (error) {
+          Util.showError(scaffoldMessengerState, error);
+        },
+      );
+    } finally {
+      noteModel.setPasting(false);
+    }
+  }
+
+  String _processUrl(String url) {
+    return _imageUrlPattern.hasMatch(url) ? '![image]($url)' : '<$url>';
   }
 }

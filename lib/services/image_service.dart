@@ -43,13 +43,14 @@ class ImageService {
         var text = '![image](${AppConfig.imgBaseUrl}/640${img['path']}${img['md5']}${img['fileExt']})';
         onSuccess(text);
       } else {
-        onError('Failed to upload image: ${response.statusCode}/${response.data['msg']}');
+        onError('Failed to upload image ${imageFile.filename}: ${response.data['msg']} (${response.statusCode})');
       }
     } catch (e) {
       onError(e.toString());
     }
   }
 
+  /// Paste image or text from Clipboard
   Future<void> pasteFromClipboard(Function(String) onSuccess, Function(String) onError) async {
     try {
       final imageBytes = await Pasteboard.image;
