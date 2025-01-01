@@ -20,23 +20,22 @@ class NavigationHelper {
 
   static Future<void> showTagInputDialog(BuildContext context) async {
     final navigator = Navigator.of(context);
-    String? newTag = await Util.showInputDialog(context, 'Enter a tag', 'such as hello');
-
-    if (newTag != null) {
-      newTag = _cleanTag(newTag);
-      if (newTag.isNotEmpty) {
-        navigator.push(
-          MaterialPageRoute(
-            builder: (context) => newTag!.startsWith('@')
-                ? NoteDetail(noteId: int.parse(newTag.substring(1)))
-                : TagNotes(tag: newTag, myNotesOnly: true),
-          ),
-        );
-      }
+    var newTag = await Util.showInputDialog(context, 'Type a tag', 'such as laugh');
+    if (newTag == null) return;
+    newTag = newTag.isEmpty ? 'laugh' : newTag;
+    newTag = _cleanTag(newTag);
+    if (newTag.isNotEmpty) {
+      navigator.push(
+        MaterialPageRoute(
+          builder: (context) => newTag!.startsWith('@')
+              ? NoteDetail(noteId: int.parse(newTag.substring(1)))
+              : TagNotes(tag: newTag, myNotesOnly: true),
+        ),
+      );
     }
   }
 
-  static void showTagDiagram (BuildContext context, Map<String, int> tagData,
+  static void showTagDiagram(BuildContext context, Map<String, int> tagData,
       {bool replacePage = true, bool myNotesOnly = true}) {
     showDialog(
       context: context,
