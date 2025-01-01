@@ -4,6 +4,7 @@ import 'package:happy_notes/utils/util.dart';
 
 import '../entities/note.dart';
 import '../screens/components/tag_cloud.dart';
+import '../screens/memories/memories_on_day.dart';
 import '../screens/tag_notes/tag_notes.dart';
 
 class NavigationHelper {
@@ -24,15 +25,61 @@ class NavigationHelper {
     if (newTag == null) return;
     newTag = newTag.isEmpty ? 'laugh' : newTag;
     newTag = _cleanTag(newTag);
-    if (newTag.isNotEmpty) {
-      navigator.push(
-        MaterialPageRoute(
-          builder: (context) => newTag!.startsWith('@')
-              ? NoteDetail(noteId: int.parse(newTag.substring(1)))
-              : TagNotes(tag: newTag, myNotesOnly: true),
-        ),
-      );
+    if (newTag.isEmpty) return;
+    // First try to parse any date format
+    final dateString = _normalizeDateString(newTag);
+    if (dateString != null) {
+      try {
+        final date = DateTime.parse(dateString);
+        navigator.push(
+          MaterialPageRoute(
+            builder: (context) => MemoriesOnDay(date: date),
+          ),
+        );
+        return;
+      } catch (e) {
+        // If date parsing fails, continue with tag processing
+      }
     }
+    // else
+    navigator.push(
+      MaterialPageRoute(
+        builder: (context) => newTag!.startsWith('@')
+            ? NoteDetail(noteId: int.parse(newTag.substring(1)))
+            : TagNotes(tag: newTag, myNotesOnly: true),
+      ),
+    );
+  }
+
+  static String? _normalizeDateString(String input) {
+    // Match yyyy-MMM-dd or yyyy-M-d format
+    final monthNames = {
+      'jan': '01', 'feb': '02', 'mar': '03', 'apr': '04',
+      'may': '05', 'jun': '06', 'jul': '07', 'aug': '08',
+      'sep': '09', 'oct': '10', 'nov': '11', 'dec': '12'
+    };
+
+    // Try yyyy-MMM-dd format
+    final monthNamePattern = RegExp(r'^(\d{4})-(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)-(\d{2})$', caseSensitive: false);
+    final monthMatch = monthNamePattern.firstMatch(input);
+    if (monthMatch != null) {
+      final year = monthMatch.group(1);
+      final month = monthNames[monthMatch.group(2)?.toLowerCase()];
+      final day = monthMatch.group(3);
+      return '$year-$month-$day';
+    }
+
+    // Try yyyy-M-d format
+    final numericPattern = RegExp(r'^(\d{4})-([1-9]|1[0-2])-([1-9]|[12]\d|3[01])$');
+    final numericMatch = numericPattern.firstMatch(input);
+    if (numericMatch != null) {
+      final year = numericMatch.group(1);
+      final month = numericMatch.group(2)!.padLeft(2, '0');
+      final day = numericMatch.group(3)!.padLeft(2, '0');
+      return '$year-$month-$day';
+    }
+
+    return null;
   }
 
   static void showTagDiagram(BuildContext context, Map<String, int> tagData,
