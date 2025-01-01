@@ -27864,20 +27864,24 @@ return A.r(A.bE(a,!1).d2(q),$async$r9)
 case 2:return A.n(null,r)}})
 return A.o($async$r9,r)},
 Qb(a){return A.aZV(a)},
-aZV(a){var s=0,r=A.p(t.H),q,p,o,n,m
+aZV(a){var s=0,r=A.p(t.H),q,p,o,n,m,l
 var $async$Qb=A.q(function(b,c){if(b===1)return A.m(c,r)
-while(true)switch(s){case 0:p={}
-o=A.bE(a,!1)
-m=p
-s=2
-return A.r(A.aI0(a,"Enter a tag","such as hello"),$async$Qb)
-case 2:n=m.a=c
-if(n!=null){if(A.Ru(n,null)!=null)q="@"+n
-else if(B.c.bN(n,"#"))q=A.cM(n,"#","")
-else q=n
-n=B.c.d3(q)
-p.a=n
-if(n.length!==0)o.d2(A.d5(new A.ajL(p),null,t.z))}return A.n(null,r)}})
+while(true)switch(s){case 0:o={}
+n=A.bE(a,!1)
+l=o
+s=3
+return A.r(A.aI0(a,"Type a tag","such as laugh"),$async$Qb)
+case 3:m=l.a=c
+if(m==null){s=1
+break}if(m.length===0)m="laugh"
+o.a=m
+if(A.Ru(m,null)!=null)p="@"+m
+else if(B.c.bN(m,"#"))p=A.cM(m,"#","")
+else p=m
+m=B.c.d3(p)
+o.a=m
+if(m.length!==0)n.d2(A.d5(new A.ajL(o),null,t.z))
+case 1:return A.n(q,r)}})
 return A.o($async$Qb,r)},
 aNo(a,b,c){A.aJr(new A.ajK(b,!0,!0),a,t.z)},
 aZU(a,b,c,d){A.aNt(a,A.d5(new A.ajG(b,!0),null,t.z))},
