@@ -70,7 +70,7 @@ class NavigationHelper {
     }
 
     // Try yyyy-M-d format
-    final numericPattern = RegExp(r'^(\d{4})-([1-9]|1[0-2])-([1-9]|[12]\d|3[01])$');
+    final numericPattern = RegExp(r'^(\d{4})-(0?[1-9]|1[0-2])-(0?[1-9]|[12]\d|3[01])$');
     final numericMatch = numericPattern.firstMatch(input);
     if (numericMatch != null) {
       final year = numericMatch.group(1);
