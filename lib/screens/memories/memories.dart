@@ -47,7 +47,7 @@ class MemoriesState extends State<Memories> with RouteAware {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Memories'),
+        title: const Text('My Memories'),
         actions: [_buildNewNoteButton(context)],
       ),
       body: _buildBody(),
