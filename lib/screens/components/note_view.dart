@@ -3,8 +3,10 @@ import 'package:provider/provider.dart';
 import '../../entities/note.dart';
 import '../../models/note_model.dart';
 import '../../utils/navigation_helper.dart';
+import '../account/user_session.dart';
+import '../note_detail/note_detail.dart';
 import 'markdown_body_here.dart';
-import 'note_list.dart';
+import 'note_list_item.dart'; // Import NoteListItem instead of NoteList
 
 class NoteView extends StatelessWidget {
   final Note note;
@@ -22,6 +24,7 @@ class NoteView extends StatelessWidget {
       builder: (context, noteModel, child) {
         return CustomScrollView(
           slivers: [
+            // Original note content
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
@@ -38,7 +41,10 @@ class NoteView extends StatelessWidget {
                 ),
               ),
             ),
+
+            // Linked notes section
             if (linkedNotes != null && linkedNotes!.isNotEmpty) ...[
+              // "Linked Notes" header
               SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
@@ -48,21 +54,31 @@ class NoteView extends StatelessWidget {
                   ),
                 ),
               ),
-              SliverFillRemaining(
-                child: NoteList(
-                  showDate: false,
-                  notes: linkedNotes!,
-                  // Pass your list of notes here
-                  onTap: (note) {
-                    // Handle note tap
-                  },
-                  onDoubleTap: (note) {
-                    // Handle note double tap
-                  },
-                  onTagTap: (note,tag) => NavigationHelper.onTagTap(context, note, tag),
-                  onRefresh: () async {
-                    // Handle refresh
-                  },
+
+              // Linked notes list
+              SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) => Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 1.0),
+                    child: NoteListItem(
+                      note: linkedNotes![index],
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => NoteDetail(note: linkedNotes![index]),
+                        ),
+                      ),
+                      onDoubleTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              NoteDetail(note: linkedNotes![index], enterEditing: note.userId == UserSession().id),
+                        ),
+                      ),
+                      onTagTap: (note, tag) => NavigationHelper.onTagTap(context, note, tag),
+                    ),
+                  ),
+                  childCount: linkedNotes!.length,
                 ),
               ),
             ],

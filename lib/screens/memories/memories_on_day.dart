@@ -94,7 +94,6 @@ class MemoriesOnDayState extends State<MemoriesOnDay> with RouteAware {
                   bottom: 16,
                   child: FloatingActionButton(
                     onPressed: () async {
-                      final scaffoldContext = ScaffoldMessenger.of(context);
                       final navigator = Navigator.of(context);
                       final newNote = await Navigator.push(
                         context,
