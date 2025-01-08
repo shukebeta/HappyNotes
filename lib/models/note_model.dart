@@ -5,17 +5,25 @@ class NoteModel with ChangeNotifier {
   bool _isMarkdown;
   String _initialTag;
   String _content;
+  String _publishDateTime;
   late FocusNode focusNode;
 
-  NoteModel({bool isPrivate = true, bool isMarkdown = false, String initialTag = '', String content = ''})
+  NoteModel(
+      {bool isPrivate = true,
+      bool isMarkdown = false,
+      String initialTag = '',
+      String content = '',
+      String publishDateTime = ''})
       : _isPrivate = isPrivate,
         _isMarkdown = isMarkdown,
         _initialTag = initialTag,
-        _content = content {
+        _content = content,
+        _publishDateTime = publishDateTime {
     focusNode = FocusNode();
   }
 
   bool isPasting = false;
+
   void setPasting(bool value) {
     if (isPasting != value) {
       isPasting = value;
@@ -24,6 +32,7 @@ class NoteModel with ChangeNotifier {
   }
 
   bool isUploading = false;
+
   void setUploading(bool value) {
     if (isUploading != value) {
       isUploading = value;
@@ -38,6 +47,8 @@ class NoteModel with ChangeNotifier {
   String get initialTag => _initialTag;
 
   String get content => _content;
+
+  String get publishDateTime => _publishDateTime;
 
   set isPrivate(bool value) {
     if (_isPrivate != value) {
@@ -65,6 +76,13 @@ class NoteModel with ChangeNotifier {
       _content = value;
       notifyListeners();
     }
+  }
+
+  set publishDateTime(String value) {
+    if (_publishDateTime != value) {
+      _publishDateTime = value;
+    }
+    notifyListeners();
   }
 
   void requestFocus() {

@@ -21,9 +21,8 @@ class NewNoteController {
       return;
     }
     try {
+      final noteId = await _notesService.post(noteModel);
       var content = noteModel.content;
-      var isLong = content.length < 1024;
-      final noteId = await _notesService.post(content, noteModel.isPrivate, noteModel.isMarkdown);
       noteModel.content = '';
       noteModel.unfocus();
       if (onNoteSaved != null) {
@@ -31,16 +30,34 @@ class NewNoteController {
             id: noteId,
             userId: UserSession().id!,
             content: content,
-            isLong: isLong,
+            isLong: content.length < 1024,
             isPrivate: noteModel.isPrivate,
             isMarkdown: noteModel.isMarkdown,
-            createdAt: (DateTime.now().millisecondsSinceEpoch / 1000).round());
+            createdAt: _getCreatedAt(noteModel.publishDateTime));
         onNoteSaved(note);
       }
     } catch (error) {
       Util.showError(scaffoldMessengerSate, error.toString());
     }
   }
+
+  int _getCreatedAt(String publishDate) {
+    var now = DateTime.now();
+    // If the publishDate is empty, use DateTime.now()
+    final sourceDateTime = publishDate.isEmpty
+        ? now
+        : DateTime.parse(publishDate).add(
+      Duration(
+        hours: now.hour,
+        minutes: now.minute,
+        seconds: now.second,
+      ),
+    );
+
+    // Return the Unix timestamp
+    return sourceDateTime.toUtc().millisecondsSinceEpoch ~/ 1000;
+  }
+
 
   onPopHandler(BuildContext context, bool didPop) async {
     if (!didPop) {

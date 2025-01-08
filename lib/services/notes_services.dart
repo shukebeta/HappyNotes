@@ -1,4 +1,6 @@
 import 'package:happy_notes/apis/notes_api.dart';
+import 'package:happy_notes/models/note_model.dart';
+import 'package:intl/intl.dart';
 import '../app_config.dart';
 import '../entities/note.dart';
 import '../exceptions/api_exception.dart';
@@ -67,11 +69,16 @@ class NotesService {
   }
 
   // post a note and get its noteId
-  Future<int> post(String content, bool isPrivate, bool isMarkdown) async {
+  Future<int> post(NoteModel noteModel) async {
+    var now = DateTime.now();
     var params = {
-      'content': content,
-      'isPrivate': isPrivate,
-      'isMarkdown': isMarkdown,
+      'content': noteModel.content,
+      'isPrivate': noteModel.isPrivate,
+      'isMarkdown': noteModel.isMarkdown,
+      'publishDateTime': noteModel.publishDateTime.isEmpty ? '' : DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.parse(noteModel.publishDateTime).add(
+        Duration(hours: now.hour, minutes: now.minute, seconds: now.second,)),
+      ),
+      'timezoneId': AppConfig.timezone,
     };
     var apiResult = (await NotesApi.post(params)).data;
     if (!apiResult['successful'] && apiResult['errorCode'] != AppConfig.quietErrorCode) throw ApiException(apiResult);

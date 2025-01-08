@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:happy_notes/app_config.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:happy_notes/screens/new_note/new_note_controller.dart';
 import '../../dependency_injection.dart';
@@ -9,6 +10,7 @@ import '../components/note_edit.dart';
 
 class NewNote extends StatefulWidget {
   final bool isPrivate;
+  final DateTime? date;
   final String? initialTag;
   final SaveNoteCallback? onNoteSaved;
 
@@ -17,6 +19,7 @@ class NewNote extends StatefulWidget {
     required this.isPrivate,
     this.initialTag,
     this.onNoteSaved,
+    this.date,
   }) : super(key: key);
 
   @override
@@ -34,6 +37,7 @@ class NewNoteState extends State<NewNote> {
     noteModel.isPrivate = widget.isPrivate;
     noteModel.isMarkdown = AppConfig.markdownIsEnabled;
     noteModel.content = '';
+    noteModel.publishDateTime = widget.date != null ? DateFormat('yyyy-MM-dd').format(widget.date!) : '';
     if (widget.initialTag != null) {
       noteModel.initialTag = widget.initialTag!;
     }
@@ -77,7 +81,8 @@ class NewNoteState extends State<NewNote> {
   String _getNoteTitle(NoteModel noteModel) {
     String privacyStatus = noteModel.isPrivate ? 'Private' : 'Public';
     String markdownIndicator = noteModel.isMarkdown ? ' with M↓' : '';
+    String onDate = widget.date != null ? ' on ${DateFormat('dd-MMM-yyyy').format(widget.date!)}' : '';
 
-    return '$privacyStatus note$markdownIndicator';
+    return '$privacyStatus note$markdownIndicator$onDate';
   }
 }
