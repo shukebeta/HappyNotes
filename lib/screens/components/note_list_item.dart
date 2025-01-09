@@ -6,14 +6,14 @@ import 'tag_widget.dart'; // Import your TagWidget
 
 class NoteListItem extends StatelessWidget {
   final Note note;
-  final VoidCallback onTap;
-  final VoidCallback? onDoubleTap;
+  final Function(Note)? onTap;
+  final Function(Note)? onDoubleTap;
   final Function(Note note, String tag)? onTagTap;
 
   const NoteListItem({
     Key? key,
     required this.note,
-    required this.onTap,
+    this.onTap,
     this.onDoubleTap,
     this.onTagTap,
   }) : super(key: key);
@@ -22,8 +22,8 @@ class NoteListItem extends StatelessWidget {
   Widget build(BuildContext context) {
     var author = (note.user == null || note.userId == UserSession().id) ? '' : '${note.user!.username} ';
     return GestureDetector(
-      onTap: onTap,
-      onDoubleTap: onDoubleTap,
+      onTap: onTap != null ? () => onTap!(note) : null,
+      onDoubleTap: onDoubleTap != null ? () => onDoubleTap!(note) : null,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

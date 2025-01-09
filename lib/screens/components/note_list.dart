@@ -72,8 +72,8 @@ class NoteList extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 1.0),
                   child: NoteListItem(
                     note: note,
-                    onTap: () => onTap(note),
-                    onDoubleTap: onDoubleTap != null ? () => onDoubleTap!(note) : null,
+                    onTap: onTap,
+                    onDoubleTap: onDoubleTap,
                     onTagTap: onTagTap,
                   ),
                 );

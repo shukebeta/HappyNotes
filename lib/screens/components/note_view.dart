@@ -62,17 +62,17 @@ class NoteView extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 1.0),
                     child: NoteListItem(
                       note: linkedNotes![index],
-                      onTap: () => Navigator.push(
+                      onTap: (note) => Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => NoteDetail(note: linkedNotes![index]),
+                          builder: (context) => NoteDetail(note: note),
                         ),
                       ),
-                      onDoubleTap: () => Navigator.push(
+                      onDoubleTap: (note) => Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) =>
-                              NoteDetail(note: linkedNotes![index], enterEditing: note.userId == UserSession().id),
+                              NoteDetail(note: note, enterEditing: note.userId == UserSession().id),
                         ),
                       ),
                       onTagTap: (note, tag) => NavigationHelper.onTagTap(context, note, tag),
