@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../entities/note.dart';
+import '../memories/memories_on_day.dart';
 import 'note_list_item.dart';
 
 class NoteList extends StatelessWidget {
@@ -56,11 +57,18 @@ class NoteList extends StatelessWidget {
                   padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
                   child: Align(
                     alignment: Alignment.center,
-                    child: Text(
-                      _formatDate(DateTime.parse(dateKey)),
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w300,
-                        fontSize: 16,
+                    child: InkWell(
+                      onTap: onTagTap != null ? () => Navigator.push(context,
+                        MaterialPageRoute(
+                          builder: (context) => MemoriesOnDay(date: DateTime.parse(dateKey)),
+                        ),
+                      ) : null,
+                      child: Text(
+                        _formatDate(DateTime.parse(dateKey)),
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w300,
+                          fontSize: 16,
+                        ),
                       ),
                     ),
                   ),
