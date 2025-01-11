@@ -9,5 +9,9 @@ class NoteTagService {
   Future<Map<String, int>> getMyTagCloud() async {
     var apiResult = (await _noteTagApi.getMyTagCloud()).data;
     if (!apiResult['successful']) throw ApiException(apiResult);
-    return { for (var item in apiResult['data']) item['tag'] as String : item['count'] as int };  }
+    return {
+      for (var item in apiResult['data'])
+        if (!(item['tag'] as String).startsWith('@')) item['tag'] as String: item['count'] as int
+    };
+  }
 }
