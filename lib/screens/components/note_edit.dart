@@ -40,7 +40,6 @@ class NoteEditState extends State<NoteEdit> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (noteModel.initialTag.isNotEmpty && widget.note == null) {
         noteModel.content = '#${noteModel.initialTag}\n';
-        noteModel.initialTag = ''; // Reset after use
       } else if (widget.note != null) {
         noteModel.content = widget.note!.content;
       }

@@ -23,6 +23,7 @@ class NewNoteController {
     try {
       final noteId = await _notesService.post(noteModel);
       var content = noteModel.content;
+      noteModel.initialTag = '';
       noteModel.content = '';
       noteModel.unfocus();
       if (onNoteSaved != null) {
@@ -47,17 +48,16 @@ class NewNoteController {
     final sourceDateTime = publishDate.isEmpty
         ? now
         : DateTime.parse(publishDate).add(
-      Duration(
-        hours: now.hour,
-        minutes: now.minute,
-        seconds: now.second,
-      ),
-    );
+            Duration(
+              hours: now.hour,
+              minutes: now.minute,
+              seconds: now.second,
+            ),
+          );
 
     // Return the Unix timestamp
     return sourceDateTime.toUtc().millisecondsSinceEpoch ~/ 1000;
   }
-
 
   onPopHandler(BuildContext context, bool didPop) async {
     if (!didPop) {
@@ -65,7 +65,9 @@ class NewNoteController {
       final navigator = Navigator.of(context);
       var focusScopeNode = FocusScope.of(context);
       if (noteModel.content.isEmpty ||
-          (noteModel.content.isNotEmpty && (await DialogService.showUnsavedChangesDialog(context) ?? false))) {
+          noteModel.content.trim() == '#${noteModel.initialTag}' ||
+          (await DialogService.showUnsavedChangesDialog(context) ?? false)) {
+        noteModel.initialTag = '';
         focusScopeNode.unfocus();
         navigator.pop();
       }
