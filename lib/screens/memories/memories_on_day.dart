@@ -28,6 +28,25 @@ class MemoriesOnDayState extends State<MemoriesOnDay> with RouteAware {
   late List<Note> _notes;
   late MemoriesOnDayController _controller;
 
+  void _navigateToDate(DateTime date) {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => MemoriesOnDay(date: date),
+      ),
+    );
+  }
+
+  void _goToPreviousDay() {
+    final previousDay = widget.date.subtract(const Duration(days: 1));
+    _navigateToDate(previousDay);
+  }
+
+  void _goToNextDay() {
+    final nextDay = widget.date.add(const Duration(days: 1));
+    _navigateToDate(nextDay);
+  }
+
   @override
   void initState() {
     _controller = MemoriesOnDayController(notesService: locator<NotesService>());
@@ -89,6 +108,38 @@ class MemoriesOnDayState extends State<MemoriesOnDay> with RouteAware {
                   },
                   onTagTap: (note, tag) => NavigationHelper.onTagTap(context, note, tag),
                 ),
+                // Navigation Buttons
+                Positioned(
+                  right: 0,
+                  top: 100,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Opacity(
+                        opacity: 0.5,
+                        child: FloatingActionButton(
+                          heroTag: 'prevDay',
+                          mini: true,
+                          onPressed: _goToPreviousDay,
+                          backgroundColor: const Color(0xFFEBDDFF),
+                          child: const Icon(Icons.arrow_upward),
+                        ),
+                      ),
+                      const SizedBox(height: 15),
+                      Opacity(
+                        opacity: 0.5,
+                        child: FloatingActionButton(
+                          heroTag: 'nextDay',
+                          mini: true,
+                          onPressed: _goToNextDay,
+                          backgroundColor: const Color(0xFFEBDDFF),
+                          child: const Icon(Icons.arrow_downward),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                // Add Note Button
                 Positioned(
                   right: 16,
                   bottom: 16,
@@ -108,7 +159,7 @@ class MemoriesOnDayState extends State<MemoriesOnDay> with RouteAware {
                         ),
                       );
                       if (newNote != null) {
-                        setState(() {}); // Refresh the list when a new note is added
+                        setState(() {});
                       }
                     },
                     child: const Icon(Icons.add),
