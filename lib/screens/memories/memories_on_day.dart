@@ -71,7 +71,18 @@ class MemoriesOnDayState extends State<MemoriesOnDay> with RouteAware {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         title: Text(DateFormat('EEEE, MMM d, yyyy').format(widget.date)),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.chevron_left),
+            onPressed: _goToPreviousDay,
+          ),
+          IconButton(
+            icon: const Icon(Icons.chevron_right),
+            onPressed: _goToNextDay,
+          ),
+        ],
       ),
       body: FutureBuilder<NotesResult>(
         future: _controller.fetchMemories(widget.date),
@@ -107,37 +118,6 @@ class MemoriesOnDayState extends State<MemoriesOnDay> with RouteAware {
                     );
                   },
                   onTagTap: (note, tag) => NavigationHelper.onTagTap(context, note, tag),
-                ),
-                // Navigation Buttons
-                Positioned(
-                  right: 0,
-                  top: 100,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Opacity(
-                        opacity: 0.5,
-                        child: FloatingActionButton(
-                          heroTag: 'prevDay',
-                          mini: true,
-                          onPressed: _goToPreviousDay,
-                          backgroundColor: const Color(0xFFEBDDFF),
-                          child: const Icon(Icons.arrow_upward),
-                        ),
-                      ),
-                      const SizedBox(height: 15),
-                      Opacity(
-                        opacity: 0.5,
-                        child: FloatingActionButton(
-                          heroTag: 'nextDay',
-                          mini: true,
-                          onPressed: _goToNextDay,
-                          backgroundColor: const Color(0xFFEBDDFF),
-                          child: const Icon(Icons.arrow_downward),
-                        ),
-                      ),
-                    ],
-                  ),
                 ),
                 // Add Note Button
                 Positioned(
