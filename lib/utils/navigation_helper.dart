@@ -21,7 +21,7 @@ class NavigationHelper {
 
   static Future<void> showTagInputDialog(BuildContext context) async {
     final navigator = Navigator.of(context);
-    var newTag = await Util.showInputDialog(context, 'Type a tag or a date', 'such as laugh or 2025-01-01');
+    var newTag = await Util.showInputDialog(context, 'Type a tag or a date', 'such as laugh or 2025-01-19');
     if (newTag == null) return;
     newTag = newTag.isEmpty ? 'laugh' : newTag;
     newTag = _cleanTag(newTag);
