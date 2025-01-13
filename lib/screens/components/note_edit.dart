@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../app_config.dart';
 import '../../dependency_injection.dart';
 import '../../entities/note.dart';
@@ -10,6 +11,7 @@ import '../../models/note_model.dart';
 import '../../services/image_service.dart';
 import '../../utils/happy_notes_prompts.dart';
 import '../../utils/util.dart';
+import 'image_warning_dialog.dart';
 
 class NoteEdit extends StatefulWidget {
   final Note? note;
@@ -176,19 +178,43 @@ class NoteEditState extends State<NoteEdit> {
     );
   }
 
+  Future<bool> _shouldShowWarning() async {
+    final prefs = await SharedPreferences.getInstance();
+    return !(prefs.getBool('hideImageWarning') ?? false);
+  }
+
+  Future<bool> _showWarningDialog() async {
+    if (!await _shouldShowWarning()) {
+      return true;
+    }
+
+    final result = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) => const ImageWarningDialog(),
+    );
+
+    return result ?? false;
+  }
+
   Future<void> _pickAndUploadImage(BuildContext context, NoteModel noteModel) async {
     final scaffoldMessengerState = ScaffoldMessenger.of(context);
+
+    // Show warning dialog first
+    final proceed = await _showWarningDialog();
+    if (!proceed) return;
+
     MultipartFile? imageFile = await imageService.pickImage();
 
     if (imageFile != null) {
       noteModel.setUploading(true);
       await imageService.uploadImage(
         imageFile,
-        (text) {
+            (text) {
           noteModel.setUploading(false);
           noteModel.content += noteModel.content.isEmpty ? text : '\n$text';
         },
-        (error) {
+            (error) {
           noteModel.setUploading(false);
           Util.showError(scaffoldMessengerState, error);
         },
