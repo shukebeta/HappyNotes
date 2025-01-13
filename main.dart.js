@@ -27868,7 +27868,7 @@ while(true)switch(s){case 0:l={}
 k=A.bp(a,!1)
 i=l
 s=3
-return A.r(A.aIc(a,"Type a tag or a date","such as laugh or 2025-01-01"),$async$Qg)
+return A.r(A.aIc(a,"Type a tag or a date","such as laugh or 2025-01-19"),$async$Qg)
 case 3:j=i.a=c
 if(j==null){s=1
 break}if(j.length===0)j="laugh"
