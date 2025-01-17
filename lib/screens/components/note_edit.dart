@@ -212,7 +212,7 @@ class NoteEditState extends State<NoteEdit> {
         imageFile,
             (text) {
           noteModel.setUploading(false);
-          noteModel.content += noteModel.content.isEmpty ? text : '\n$text';
+          noteModel.content += noteModel.content.isEmpty ? text : '\n\n$text';
         },
             (error) {
           noteModel.setUploading(false);
