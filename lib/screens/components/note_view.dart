@@ -29,10 +29,13 @@ class NoteView extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     note.isMarkdown
-                        ? MarkdownBodyHere(data: note.content)
+                        ? MarkdownBodyHere(data: note.content, isPrivate: note.isPrivate)
                         : Text(
                             note.formattedContent,
-                            style: const TextStyle(fontSize: 16.0),
+                            style: TextStyle(
+                                fontSize: 16.0,
+                                color: note.isPrivate ? Colors.grey : Colors.black,
+                            ),
                           ),
                   ],
                 ),

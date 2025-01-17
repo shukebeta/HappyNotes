@@ -75,16 +75,17 @@ class NoteListItem extends StatelessWidget {
                 note.isMarkdown
                     ? MarkdownBodyHere(
                         data: note.content + (note.isLong ? '...' : ''),
+                        isPrivate: note.isPrivate,
                       )
                     : SelectableText.rich(
                         TextSpan(
                           text: note.content + (note.isLong ? '...' : ''),
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontStyle: FontStyle.normal,
                             fontWeight: FontWeight.normal,
                             fontSize: 16,
                             height: 1.6,
-                            color: Colors.black,
+                            color: note.isPrivate ?  Colors.grey : Colors.black,
                           ),
                         ),
                       ),
