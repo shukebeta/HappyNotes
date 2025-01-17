@@ -55,7 +55,12 @@ class NewNoteState extends State<NewNote> {
               appBar: AppBar(
                 title: Consumer<NoteModel>(
                   builder: (context, noteModel, child) {
-                    return Text(_getNoteTitle(noteModel));
+                    return Text(
+                      _getNoteTitle(noteModel),
+                      style: TextStyle(
+                        color: noteModel.isPrivate ? Colors.red : Colors.green, // Change colors accordingly
+                      ),
+                    );
                   },
                 ),
               ),
