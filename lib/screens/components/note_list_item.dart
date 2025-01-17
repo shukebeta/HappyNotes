@@ -36,7 +36,7 @@ class NoteListItem extends StatelessWidget {
                   style: const TextStyle(
                     fontWeight: FontWeight.w300,
                     color: Colors.blue,
-                    fontSize: 12,
+                    fontSize: 13,
                   ),
                 ),
                 ...[
@@ -59,10 +59,11 @@ class NoteListItem extends StatelessWidget {
                     thickness: 1,
                   ),
                 ),
-                Text('- ${note.id} -',
-                    style: const TextStyle(
+                Text(' ${note.id} ',
+                    style: TextStyle(
                       fontWeight: FontWeight.w100,
-                      fontSize: 12,
+                      color: Colors.grey.shade300,
+                      fontSize: 13,
                     ))
               ],
             ),
