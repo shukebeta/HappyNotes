@@ -30,6 +30,7 @@ class MarkdownBodyHereState extends State<MarkdownBodyHere> {
         styleSheet: MarkdownStyleSheet(
           // Update all text elements to use the dynamic color
           h1: TextStyle(
+            fontSize: 20,
             color: textColor,
           ),
           h2: TextStyle(color: textColor),
@@ -38,6 +39,7 @@ class MarkdownBodyHereState extends State<MarkdownBodyHere> {
           h5: TextStyle(color: textColor),
           h6: TextStyle(color: textColor),
           p: TextStyle(
+            fontSize: 16,
             height: 1.6,
             color: textColor,
           ),
