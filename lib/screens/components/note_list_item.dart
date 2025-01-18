@@ -49,7 +49,7 @@ class NoteListItem extends StatelessWidget {
                   const Text(
                     ' ',
                     style: TextStyle(
-                      fontSize: 12,
+                      fontSize: 13,
                     ),
                   ),
                 ],
