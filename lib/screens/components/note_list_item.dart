@@ -41,9 +41,9 @@ class NoteListItem extends StatelessWidget {
                 ),
                 ...[
                   if (note.isPrivate)
-                    const Icon(
+                    Icon(
                       Icons.lock,
-                      color: Colors.blueGrey,
+                      color: Colors.grey.shade300,
                       size: 14,
                     ),
                   const Text(
@@ -86,7 +86,7 @@ class NoteListItem extends StatelessWidget {
                             fontWeight: FontWeight.normal,
                             fontSize: 16,
                             height: 1.6,
-                            color: note.isPrivate ?  Colors.grey : Colors.black,
+                            color: note.isPrivate ?  Colors.black54 : Colors.black87,
                           ),
                         ),
                       ),

@@ -21,7 +21,7 @@ class MarkdownBodyHereState extends State<MarkdownBodyHere> {
   @override
   Widget build(BuildContext context) {
     // Define base color based on isPrivate flag
-    final textColor = widget.isPrivate ? Colors.grey : Colors.black87;
+    final textColor = widget.isPrivate ? Colors.black54 : Colors.black87;
 
     return SelectionArea(
       child: MarkdownBody(
