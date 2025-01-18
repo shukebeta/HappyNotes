@@ -6,7 +6,7 @@ if [ -n "$(git status --porcelain)" ]; then
 #  exit 1
 fi
 
-if [ "$(git rev-parse --abbrev-ref HEAD)" != "master" ]; then
+if [ "$(git rev-parse --abbrev-ref HEAD)" != "heads/master" ]; then
   echo "Error: You are not on the master branch. Please switch to the master branch before continuing."
   exit 1
 fi
