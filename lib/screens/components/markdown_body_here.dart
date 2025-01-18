@@ -44,6 +44,7 @@ class MarkdownBodyHereState extends State<MarkdownBodyHere> {
             color: textColor,
           ),
           code: TextStyle(
+            fontSize: 16,
             height: 1.6,
             color: textColor,
             fontFamily: 'monospace',
