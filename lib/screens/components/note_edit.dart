@@ -12,6 +12,8 @@ import '../../services/image_service.dart';
 import '../../utils/happy_notes_prompts.dart';
 import '../../utils/util.dart';
 import 'image_warning_dialog.dart';
+import 'markdown/format_markdown.dart';
+import 'markdown/markdown_text_input.dart';
 
 class NoteEdit extends StatefulWidget {
   final Note? note;
@@ -85,31 +87,26 @@ class NoteEditState extends State<NoteEdit> {
   }
 
   Widget _buildEditor(NoteModel noteModel) {
-    return TextField(
-      controller: controller,
-      focusNode: noteModel.focusNode,
-      keyboardType: TextInputType.multiline,
+    return MarkdownTextInput(
+          (text) => noteModel.content = text,
+      noteModel.content,
+      label: prompt,
+      textDirection: TextDirection.ltr,
+      actions: const [
+        MarkdownType.bold,
+        MarkdownType.italic,
+        MarkdownType.title,
+        MarkdownType.link,
+        MarkdownType.list,
+        MarkdownType.strikethrough,
+        MarkdownType.code,
+        MarkdownType.blockquote,
+        MarkdownType.separator,
+        MarkdownType.image
+      ],
+      controller: TextEditingController(text: noteModel.content),
+      insertLinksByDialog: true,
       maxLines: null,
-      expands: true,
-      textAlignVertical: TextAlignVertical.top,
-      decoration: InputDecoration(
-        hintText: prompt,
-        border: OutlineInputBorder(
-          borderSide: BorderSide(
-            color: noteModel.isPrivate ? Colors.blue : Colors.green,
-            width: 2.0,
-          ),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderSide: BorderSide(
-            color: noteModel.isPrivate ? Colors.blueAccent : Colors.greenAccent,
-            width: 2.0,
-          ),
-        ),
-      ),
-      onChanged: (text) {
-        noteModel.content = text;
-      },
     );
   }
 
