@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_markdown_selectionarea/flutter_markdown.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import 'markdown/code_element_builder.dart';
+import 'markdown/image_builder.dart';
 
 class MarkdownBodyHere extends StatefulWidget {
   final String data;
@@ -26,7 +27,10 @@ class MarkdownBodyHereState extends State<MarkdownBodyHere> {
     return SelectionArea(
       child: MarkdownBody(
         data: widget.data,
-        builders: <String, MarkdownElementBuilder>{'code': CodeElementBuilder()},
+        builders: <String, MarkdownElementBuilder>{
+          'code': CodeElementBuilder(),
+          'img': ImageBuilder(context),
+        },
         styleSheet: MarkdownStyleSheet(
           // Update all text elements to use the dynamic color
           h1: TextStyle(
