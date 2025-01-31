@@ -17,6 +17,7 @@ class FileUploaderApi {
             'Accept': '*/*',
             'Content-Type': 'application/octet-stream',
           },
+          sendTimeout: const Duration(seconds: 1800),
         ));
   }
 }
