@@ -52,6 +52,18 @@ class ImageService {
 
   /// Paste image or text from Clipboard
   Future<void> pasteFromClipboard(Function(String) onSuccess, Function(String) onError) async {
+    // First try to get text since it's more common and faster
+    try {
+      String? text = await Pasteboard.text;
+      if (text != null) {
+        onSuccess(text);
+        return;
+      }
+    } catch (e) {
+      print('Debug: Text clipboard access error: $e'); // Add logging for debugging
+    }
+
+    // If no text found, try image
     try {
       final imageBytes = await Pasteboard.image;
       if (imageBytes != null) {
@@ -59,17 +71,14 @@ class ImageService {
         final imageFile = await compressImageIfNeeded(imageBytes, filename);
         if (imageFile != null) {
           await uploadImage(imageFile, onSuccess, onError);
-        }
-      } else {
-        String? text = await Pasteboard.text;
-        if (text != null) {
-           onSuccess(text);
-        } else {
-          onError('No image/text found in clipboard');
+          return;
         }
       }
     } catch (e) {
-      onError('Error accessing clipboard: $e');
+      print('Debug: Image clipboard access error: $e'); // Add logging for debugging
     }
+
+    // If we get here, neither text nor image was successfully processed
+    onError('No valid content found in clipboard');
   }
 }
