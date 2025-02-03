@@ -72,7 +72,7 @@ class MemoriesOnDayState extends State<MemoriesOnDay> with RouteAware {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text(DateFormat('EEEE, MMM d, yyyy').format(widget.date)),
+        title: Text(DateFormat('EEE, MMM d, yyyy').format(widget.date)),
         actions: [
           IconButton(
             icon: const Icon(Icons.chevron_left),
