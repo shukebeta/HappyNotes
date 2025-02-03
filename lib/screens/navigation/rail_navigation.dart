@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class RailNavigation extends StatelessWidget {
@@ -32,7 +33,7 @@ class RailNavigation extends StatelessWidget {
           selectedIcon: Icon(Icons.note_add_outlined, color: Colors.blue),
           label: Text('New Note'),
         ),
-        NavigationRailDestination(
+        if (kIsWeb) NavigationRailDestination(
           icon: Icon(Icons.public),
           selectedIcon: Icon(Icons.public, color: Colors.blue),
           label: Text('Discovery'),

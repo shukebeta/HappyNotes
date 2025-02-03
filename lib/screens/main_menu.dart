@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:happy_notes/screens/discovery/discovery.dart';
@@ -53,7 +54,7 @@ class MainMenuState extends State<MainMenu> {
           isPrivate: true,
           onNoteSaved: _onNoteSaved,
         ),
-        const Discovery(),
+        if (kIsWeb) const Discovery(),
         Settings(
           key: settingsKey,
           onLogout: _onLogout,
@@ -98,7 +99,7 @@ class MainMenuState extends State<MainMenu> {
   void switchToPage(int index) {
     final focusNode = FocusScope.of(context);
     if (_selectedIndex == indexNewNote && index != indexNewNote) {
-      // Unfocus when switching away from NewNote page
+      // Remove focus when switching away from NewNote page
       focusNode.unfocus();
     }
     switch (index) {
