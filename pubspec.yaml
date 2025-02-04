@@ -32,7 +32,7 @@ dependencies:
   flutter:
     sdk: flutter
   dio: ^5.7.0
-  shared_preferences: ^2.4.0
+  shared_preferences: ^2.3.0
   flutter_dotenv: ^5.2.1
   logger: ^2.5.0
   path_provider: ^2.1.5
@@ -58,9 +58,9 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_launcher_icons: ^0.14.3
+  flutter_launcher_icons: ^0.13.1
   cider: ^0.2.7
-  mockito: ^5.4.5
+  mockito: ^5.4.4
   build_runner: ^2.4.11
 
 
@@ -69,7 +69,7 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^5.0.0
+  flutter_lints: ^2.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
