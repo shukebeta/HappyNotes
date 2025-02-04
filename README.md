@@ -34,3 +34,7 @@ Connect with us on Telegram for support and to share experiences:
 [Happy Notes Support Group](https://t.me/happynotes_support)
 
 Let's support each other and make the most of HappyNotes!
+
+## About Licence
+
+This project uses MIT licence.
