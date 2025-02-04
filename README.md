@@ -1,4 +1,5 @@
 # Happy Notes, Happy Life
+[中文](./README.cn.md)
 
 **HappyNotes** is a versatile note-taking application designed to enhance your life by effortlessly capturing valuable moments.
 
@@ -35,6 +36,6 @@ Connect with us on Telegram for support and to share experiences:
 
 Let's support each other and make the most of HappyNotes!
 
-## About Licence
+## License
 
-This project uses MIT licence.
+This project is licensed under the MIT License. See the [LICENSE](./LICENSE) file for details.
