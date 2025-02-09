@@ -17,7 +17,7 @@ class HomePage extends StatefulWidget {
   HomePageState createState() => HomePageState();
 }
 
-class HomePageState extends State<HomePage> with RouteAware {
+class HomePageState extends State<HomePage> {
   late HomePageController _homePageController;
   int currentPageNumber = 1;
   bool showPageSelector = false;
@@ -30,21 +30,7 @@ class HomePageState extends State<HomePage> with RouteAware {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      UserSession.routeObserver.subscribe(this, ModalRoute.of(context)!);
-    });
     _homePageController = locator<HomePageController>();
-  }
-
-  @override
-  void didPopNext() {
-    refreshPage();
-  }
-
-  @override
-  void dispose() {
-    UserSession.routeObserver.unsubscribe(this);
-    super.dispose();
   }
 
   @override
@@ -162,20 +148,26 @@ class HomePageState extends State<HomePage> with RouteAware {
           child: NoteList(
             notes: _homePageController.notes,
             onTap: (note) async {
-              await Navigator.push(
+              var needRefresh = await Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) => NoteDetail(note: note),
                 ),
-              );
+              ) ?? false;
+              if (needRefresh) {
+                refreshPage();
+              }
             },
             onDoubleTap: (note) async {
-              await Navigator.push(
+              var needRefresh = await Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) => NoteDetail(note: note, enterEditing: note.userId == UserSession().id),
                 ),
-              );
+              ) ?? false;
+              if (needRefresh) {
+                refreshPage();
+              }
             },
             onTagTap: (note, tag) => NavigationHelper.onTagTap(context, note, tag),
             onRefresh: () async => await navigateToPage(currentPageNumber),

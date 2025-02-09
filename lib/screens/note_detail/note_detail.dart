@@ -101,7 +101,7 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
                               _controller.saveNote(
                                 context,
                                 note?.id ?? widget.noteId!,
-                                navigator.pop,
+                                  () => navigator.pop(true),
                               );
                             },
                           )
