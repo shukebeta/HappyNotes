@@ -97,10 +97,11 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
                           IconButton(
                             icon: const Icon(Icons.check),
                             onPressed: () {
+                              var navigator = Navigator.of(context);
                               _controller.saveNote(
                                 context,
                                 note?.id ?? widget.noteId!,
-                                Navigator.of(context).pop,
+                                navigator.pop,
                               );
                             },
                           )

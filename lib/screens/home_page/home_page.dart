@@ -17,7 +17,7 @@ class HomePage extends StatefulWidget {
   HomePageState createState() => HomePageState();
 }
 
-class HomePageState extends State<HomePage> {
+class HomePageState extends State<HomePage> with RouteAware {
   late HomePageController _homePageController;
   int currentPageNumber = 1;
   bool showPageSelector = false;
@@ -25,17 +25,35 @@ class HomePageState extends State<HomePage> {
   bool get isFirstPage => currentPageNumber == 1;
 
   bool get isLastPage => currentPageNumber == _homePageController.totalPages;
+  bool _isInitialized = false;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      UserSession.routeObserver.subscribe(this, ModalRoute.of(context)!);
+    });
     _homePageController = locator<HomePageController>();
+  }
+
+  @override
+  void didPopNext() {
+    refreshPage();
+  }
+
+  @override
+  void dispose() {
+    UserSession.routeObserver.unsubscribe(this);
+    super.dispose();
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    navigateToPage(currentPageNumber);
+    if (!_isInitialized) {
+      _isInitialized = true;
+      navigateToPage(currentPageNumber);
+    }
   }
 
   Future<bool> navigateToPage(int pageNumber) async {
@@ -150,7 +168,6 @@ class HomePageState extends State<HomePage> {
                   builder: (context) => NoteDetail(note: note),
                 ),
               );
-              await navigateToPage(currentPageNumber);
             },
             onDoubleTap: (note) async {
               await Navigator.push(
@@ -159,7 +176,6 @@ class HomePageState extends State<HomePage> {
                   builder: (context) => NoteDetail(note: note, enterEditing: note.userId == UserSession().id),
                 ),
               );
-              navigateToPage(currentPageNumber);
             },
             onTagTap: (note, tag) => NavigationHelper.onTagTap(context, note, tag),
             onRefresh: () async => await navigateToPage(currentPageNumber),
