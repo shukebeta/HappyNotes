@@ -1,6 +1,6 @@
-# HappyNotes, Happy Life
+# HappyNotes - 像发微博一样轻松记笔记
 
-一款支持所有平台的力图保持简单同时功能强大的笔记app。
+HappyNotes是一款支持所有平台的力图保持简单同时功能强大的笔记app。
 
 ## 为什么叫 HappyNotes？
 
