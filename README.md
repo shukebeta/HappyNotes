@@ -1,9 +1,7 @@
-# Happy Notes, Happy Life
+# Happy Notes - Take notes as easily as tweeting
 [中文](./README.cn.md)
 
-# HappyNotes, Happy Life
-
-A simple yet powerful note-taking app that supports all platforms.
+HappyNotes is a simple yet powerful note-taking app that supports all platforms.
 
 ## Why is it called HappyNotes?
 
