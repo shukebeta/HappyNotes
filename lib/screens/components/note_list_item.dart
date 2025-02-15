@@ -62,7 +62,7 @@ class NoteListItem extends StatelessWidget {
                 Text(' ${note.id} ',
                     style: TextStyle(
                       fontWeight: FontWeight.w100,
-                      color: Colors.grey.shade300,
+                      color: Colors.blue.shade300,
                       fontSize: 13,
                     ))
               ],

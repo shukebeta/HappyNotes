@@ -23,7 +23,7 @@ class NewNoteController {
     try {
       final noteId = await _notesService.post(noteModel);
       var content = noteModel.content;
-      noteModel.initialTag = '';
+      noteModel.initialContent = '';
       noteModel.content = '';
       noteModel.unfocus();
       if (onNoteSaved != null) {
@@ -65,9 +65,9 @@ class NewNoteController {
       final navigator = Navigator.of(context);
       var focusScopeNode = FocusScope.of(context);
       if (noteModel.content.isEmpty ||
-          noteModel.content.trim() == '#${noteModel.initialTag}' ||
+          noteModel.content.trim() == '#${noteModel.initialContent}' ||
           (await DialogService.showUnsavedChangesDialog(context) ?? false)) {
-        noteModel.initialTag = '';
+        noteModel.initialContent = '';
         focusScopeNode.unfocus();
         navigator.pop();
       }

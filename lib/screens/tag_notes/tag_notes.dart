@@ -24,10 +24,9 @@ class TagNotesState extends State<TagNotes> {
   late TagNotesController _tagNotesController;
   int currentPageNumber = 1;
   bool showPageSelector = false;
-
   bool get isFirstPage => currentPageNumber == 1;
-
   bool get isLastPage => currentPageNumber == _tagNotesController.totalPages;
+  bool _isInitialized = false;
 
   @override
   void initState() {
@@ -38,7 +37,10 @@ class TagNotesState extends State<TagNotes> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    navigateToPage(currentPageNumber);
+    if (!_isInitialized) {
+      _isInitialized = true;
+      navigateToPage(currentPageNumber);
+    }
   }
 
   Future<bool> navigateToPage(int pageNumber) async {

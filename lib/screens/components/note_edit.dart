@@ -40,8 +40,8 @@ class NoteEditState extends State<NoteEdit> {
 
     // Delay the update to avoid triggering a rebuild during the build phase
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (noteModel.initialTag.isNotEmpty && widget.note == null) {
-        noteModel.content = '#${noteModel.initialTag}\n';
+      if (noteModel.initialContent.isNotEmpty && widget.note == null) {
+        noteModel.content = noteModel.initialContent;
       } else if (widget.note != null) {
         noteModel.content = widget.note!.content;
       }

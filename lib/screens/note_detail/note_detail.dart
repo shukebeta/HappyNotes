@@ -26,6 +26,7 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
   Note? note;
   List<Note>? linkedNotes = [];
   late NoteDetailController _controller;
+  bool _initialized = false;
 
 
   @override
@@ -39,12 +40,13 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
   @override
   void didChangeDependencies() async {
     super.didChangeDependencies();
-    var result = await _controller.fetchNotes(context, note?.id ?? widget.noteId!);
-    if (result != null) {
-      note = result.$1;
-      linkedNotes = result.$2;
+    if (!_initialized) {
+      note = await _controller.fetchNote(context, note?.id ?? widget.noteId!);
+      _initialized = true;
+      setState(() {
+
+      });
     }
-    setState(() {});
   }
 
   void _enterEditingMode() async {
@@ -142,7 +144,7 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
                   child: Consumer<NoteModel>(
                     builder: (context, noteModel, child) {
                       if (note == null) return const Text("Note doesn't exist, or, you don't have permission to read it.");
-                      return _controller.isEditing ? NoteEdit(note: note!) : NoteView(note: note!, linkedNotes: linkedNotes,);
+                      return _controller.isEditing ? NoteEdit(note: note!) : NoteView(note: note!);
                     },
                   ),
                 ),

@@ -39,7 +39,7 @@ class NewNoteState extends State<NewNote> {
     noteModel.content = '';
     noteModel.publishDateTime = widget.date != null ? DateFormat('yyyy-MM-dd').format(widget.date!) : '';
     if (widget.initialTag != null) {
-      noteModel.initialTag = widget.initialTag!;
+      noteModel.initialContent = widget.initialTag!;
     }
   }
 

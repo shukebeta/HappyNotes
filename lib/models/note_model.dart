@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class NoteModel with ChangeNotifier {
   bool _isPrivate;
   bool _isMarkdown;
-  String _initialTag;
+  String _initialContent;
   String _content;
   String _publishDateTime;
   late FocusNode focusNode;
@@ -16,7 +16,7 @@ class NoteModel with ChangeNotifier {
       String publishDateTime = ''})
       : _isPrivate = isPrivate,
         _isMarkdown = isMarkdown,
-        _initialTag = initialTag,
+        _initialContent = initialTag,
         _content = content,
         _publishDateTime = publishDateTime {
     focusNode = FocusNode();
@@ -44,7 +44,7 @@ class NoteModel with ChangeNotifier {
 
   bool get isMarkdown => _isMarkdown;
 
-  String get initialTag => _initialTag;
+  String get initialContent => _initialContent;
 
   String get content => _content;
 
@@ -64,9 +64,11 @@ class NoteModel with ChangeNotifier {
     }
   }
 
-  set initialTag(String value) {
-    if (_initialTag != value) {
-      _initialTag = value;
+  set initialContent(String value) {
+    // here content can be a tag, or a note id
+    var content = value.startsWith('@') ? '$value ' : '#$value ';
+    if (_initialContent != content) {
+      _initialContent = content;
       notifyListeners();
     }
   }
