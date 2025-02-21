@@ -123,26 +123,29 @@ class MemoriesOnDayState extends State<MemoriesOnDay> with RouteAware {
                 Positioned(
                   right: 16,
                   bottom: 16,
-                  child: FloatingActionButton(
-                    onPressed: () async {
-                      final navigator = Navigator.of(context);
-                      final newNote = await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => NewNote(
-                            date: widget.date,
-                            isPrivate: true,
-                            onNoteSaved: (note) async {
-                              navigator.pop();
-                            },
+                  child: Opacity(
+                    opacity: 0.5,
+                    child: FloatingActionButton(
+                      onPressed: () async {
+                        final navigator = Navigator.of(context);
+                        final newNote = await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => NewNote(
+                              date: widget.date,
+                              isPrivate: true,
+                              onNoteSaved: (note) async {
+                                navigator.pop();
+                              },
+                            ),
                           ),
-                        ),
-                      );
-                      if (newNote != null) {
-                        setState(() {});
-                      }
-                    },
-                    child: const Icon(Icons.add),
+                        );
+                        if (newNote != null) {
+                          setState(() {});
+                        }
+                      },
+                      child: const Icon(Icons.add),
+                    ),
                   ),
                 ),
               ],

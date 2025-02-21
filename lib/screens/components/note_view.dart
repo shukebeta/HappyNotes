@@ -71,17 +71,14 @@ class NoteViewState extends State<NoteView> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         widget.note.isMarkdown
-                            ? MarkdownBodyHere(
-                            data: widget.note.content,
-                            isPrivate: widget.note.isPrivate
-                        )
+                            ? MarkdownBodyHere(data: widget.note.content, isPrivate: widget.note.isPrivate)
                             : Text(
-                          widget.note.formattedContent,
-                          style: TextStyle(
-                            fontSize: 16.0,
-                            color: widget.note.isPrivate ? Colors.grey : Colors.black,
-                          ),
-                        ),
+                                widget.note.formattedContent,
+                                style: TextStyle(
+                                  fontSize: 16.0,
+                                  color: widget.note.isPrivate ? Colors.grey : Colors.black,
+                                ),
+                              ),
                       ],
                     ),
                   ),
@@ -101,24 +98,27 @@ class NoteViewState extends State<NoteView> {
             Positioned(
               right: 16,
               bottom: 16,
-              child: FloatingActionButton(
-                onPressed: () async {
-                  final navigator = Navigator.of(context);
-                  final newNote = await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => NewNote(
-                        isPrivate: widget.note.isPrivate,
-                        initialTag: '@${widget.note.id}',
-                        onNoteSaved: navigator.pop,
+              child: Opacity(
+                opacity: 0.5,
+                child: FloatingActionButton(
+                  onPressed: () async {
+                    final navigator = Navigator.of(context);
+                    final newNote = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => NewNote(
+                          isPrivate: widget.note.isPrivate,
+                          initialTag: '@${widget.note.id}',
+                          onNoteSaved: navigator.pop,
+                        ),
                       ),
-                    ),
-                  );
-                  if (newNote != null) {
-                    await _loadLinkedNotes();
-                  }
-                },
-                child: const Icon(Icons.add),
+                    );
+                    if (newNote != null) {
+                      await _loadLinkedNotes();
+                    }
+                  },
+                  child: const Icon(Icons.add),
+                ),
               ),
             ),
           ],
