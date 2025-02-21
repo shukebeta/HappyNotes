@@ -65,22 +65,19 @@ class NoteViewState extends State<NoteView> {
               slivers: [
                 // Original note content
                 SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        widget.note.isMarkdown
-                            ? MarkdownBodyHere(data: widget.note.content, isPrivate: widget.note.isPrivate)
-                            : Text(
-                                widget.note.formattedContent,
-                                style: TextStyle(
-                                  fontSize: 16.0,
-                                  color: widget.note.isPrivate ? Colors.grey : Colors.black,
-                                ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      widget.note.isMarkdown
+                          ? MarkdownBodyHere(data: widget.note.content, isPrivate: widget.note.isPrivate)
+                          : Text(
+                              widget.note.formattedContent,
+                              style: TextStyle(
+                                fontSize: 16.0,
+                                color: widget.note.isPrivate ? Colors.grey : Colors.black,
                               ),
-                      ],
-                    ),
+                            ),
+                    ],
                   ),
                 ),
 
@@ -96,7 +93,7 @@ class NoteViewState extends State<NoteView> {
 
             // Add Note Button
             Positioned(
-              right: 16,
+              right: 0,
               bottom: 16,
               child: Opacity(
                 opacity: 0.5,

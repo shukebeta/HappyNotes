@@ -31,28 +31,27 @@ class LinkedNotes extends StatelessWidget {
         ),
 
         // Linked notes list
-        ...linkedNotes.map((note) => Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 1.0),
-          child: NoteListItem(
-            note: note,
-            onTap: (note) => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => NoteDetail(note: note),
-              ),
-            ),
-            onDoubleTap: (note) => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => NoteDetail(
+        ...linkedNotes
+            .map((note) => NoteListItem(
                   note: note,
-                  enterEditing: parentNote.userId == UserSession().id,
-                ),
-              ),
-            ),
-            onTagTap: (note, tag) => NavigationHelper.onTagTap(context, note, tag),
-          ),
-        )).toList(),
+                  onTap: (note) => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => NoteDetail(note: note),
+                    ),
+                  ),
+                  onDoubleTap: (note) => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => NoteDetail(
+                        note: note,
+                        enterEditing: parentNote.userId == UserSession().id,
+                      ),
+                    ),
+                  ),
+                  onTagTap: (note, tag) => NavigationHelper.onTagTap(context, note, tag),
+                ))
+            .toList(),
       ]),
     );
   }

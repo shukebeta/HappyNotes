@@ -121,7 +121,7 @@ class MemoriesOnDayState extends State<MemoriesOnDay> with RouteAware {
                 ),
                 // Add Note Button
                 Positioned(
-                  right: 16,
+                  right: 0,
                   bottom: 16,
                   child: Opacity(
                     opacity: 0.5,
