@@ -29,6 +29,7 @@ class NewNote extends StatefulWidget {
 class NewNoteState extends State<NewNote> {
   final _newNoteController = locator<NewNoteController>();
   late NoteModel noteModel;
+  bool isSaving = false;  // Add saving state flag
 
   @override
   void initState() {
@@ -70,13 +71,29 @@ class NewNoteState extends State<NewNote> {
               ),
               floatingActionButton: FloatingActionButton(
                 mini: true,
-                onPressed: () {
-                  _newNoteController.saveNote(
-                    context,
-                    widget.onNoteSaved,
-                  );
+                onPressed: isSaving ? null : () async {
+                  setState(() => isSaving = true);
+                  try {
+                    await _newNoteController.saveNote(
+                      context,
+                      widget.onNoteSaved,
+                    );
+                  } finally {
+                    if (mounted) {
+                      setState(() => isSaving = false);
+                    }
+                  }
                 },
-                child: const Icon(Icons.save),
+                child: isSaving
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 2.0,
+                        ),
+                      )
+                    : const Icon(Icons.save),
               ),
             ),
           );
