@@ -6,21 +6,24 @@ import 'tag_widget.dart'; // Import your TagWidget
 
 class NoteListItem extends StatelessWidget {
   final Note note;
+  final bool showDate;
   final Function(Note)? onTap;
   final Function(Note)? onDoubleTap;
   final Function(Note note, String tag)? onTagTap;
 
-  const NoteListItem({
+ const NoteListItem({
     Key? key,
     required this.note,
     this.onTap,
     this.onDoubleTap,
     this.onTagTap,
+    this.showDate = false,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     var author = (note.user == null || note.userId == UserSession().id) ? '' : '${note.user!.username} ';
+    var date = showDate ? '${note.createdDate} ' : '';
     return GestureDetector(
       onTap: onTap != null ? () => onTap!(note) : null,
       onDoubleTap: onDoubleTap != null ? () => onDoubleTap!(note) : null,
@@ -32,7 +35,7 @@ class NoteListItem extends StatelessWidget {
             child: Row(
               children: [
                 Text(
-                  '- ${note.createdTime} $author - ',
+                  '- $date${note.createdTime} $author - ',
                   style: const TextStyle(
                     fontWeight: FontWeight.w300,
                     color: Colors.blue,

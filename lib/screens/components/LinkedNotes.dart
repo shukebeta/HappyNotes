@@ -50,6 +50,7 @@ class LinkedNotes extends StatelessWidget {
                     ),
                   ),
                   onTagTap: (note, tag) => NavigationHelper.onTagTap(context, note, tag),
+                  showDate: true,
                 ))
             .toList(),
       ]),
