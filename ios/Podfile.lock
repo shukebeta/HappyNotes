@@ -1,42 +1,96 @@
 PODS:
   - Flutter (1.0.0)
-  - flutter_secure_storage (6.0.0):
+  - flutter_image_compress_common (1.0.0):
+    - Flutter
+    - Mantle
+    - SDWebImage
+    - SDWebImageWebPCoder
+  - image_picker_ios (0.0.1):
+    - Flutter
+  - libwebp (1.5.0):
+    - libwebp/demux (= 1.5.0)
+    - libwebp/mux (= 1.5.0)
+    - libwebp/sharpyuv (= 1.5.0)
+    - libwebp/webp (= 1.5.0)
+  - libwebp/demux (1.5.0):
+    - libwebp/webp
+  - libwebp/mux (1.5.0):
+    - libwebp/demux
+  - libwebp/sharpyuv (1.5.0)
+  - libwebp/webp (1.5.0):
+    - libwebp/sharpyuv
+  - Mantle (2.2.0):
+    - Mantle/extobjc (= 2.2.0)
+  - Mantle/extobjc (2.2.0)
+  - pasteboard (0.0.1):
     - Flutter
   - path_provider_foundation (0.0.1):
     - Flutter
     - FlutterMacOS
   - quick_actions_ios (0.0.1):
     - Flutter
+  - SDWebImage (5.21.0):
+    - SDWebImage/Core (= 5.21.0)
+  - SDWebImage/Core (5.21.0)
+  - SDWebImageWebPCoder (0.14.6):
+    - libwebp (~> 1.0)
+    - SDWebImage/Core (~> 5.17)
   - shared_preferences_foundation (0.0.1):
     - Flutter
     - FlutterMacOS
+  - url_launcher_ios (0.0.1):
+    - Flutter
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
-  - flutter_secure_storage (from `.symlinks/plugins/flutter_secure_storage/ios`)
+  - flutter_image_compress_common (from `.symlinks/plugins/flutter_image_compress_common/ios`)
+  - image_picker_ios (from `.symlinks/plugins/image_picker_ios/ios`)
+  - pasteboard (from `.symlinks/plugins/pasteboard/ios`)
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
   - quick_actions_ios (from `.symlinks/plugins/quick_actions_ios/ios`)
+  - SDWebImage (~> 5.17)
   - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
+  - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
+
+SPEC REPOS:
+  trunk:
+    - libwebp
+    - Mantle
+    - SDWebImage
+    - SDWebImageWebPCoder
 
 EXTERNAL SOURCES:
   Flutter:
     :path: Flutter
-  flutter_secure_storage:
-    :path: ".symlinks/plugins/flutter_secure_storage/ios"
+  flutter_image_compress_common:
+    :path: ".symlinks/plugins/flutter_image_compress_common/ios"
+  image_picker_ios:
+    :path: ".symlinks/plugins/image_picker_ios/ios"
+  pasteboard:
+    :path: ".symlinks/plugins/pasteboard/ios"
   path_provider_foundation:
     :path: ".symlinks/plugins/path_provider_foundation/darwin"
   quick_actions_ios:
     :path: ".symlinks/plugins/quick_actions_ios/ios"
   shared_preferences_foundation:
     :path: ".symlinks/plugins/shared_preferences_foundation/darwin"
+  url_launcher_ios:
+    :path: ".symlinks/plugins/url_launcher_ios/ios"
 
 SPEC CHECKSUMS:
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
-  flutter_secure_storage: d33dac7ae2ea08509be337e775f6b59f1ff45f12
-  path_provider_foundation: 2b6b4c569c0fb62ec74538f866245ac84301af46
-  quick_actions_ios: 56f3cbaa71e94f212838d1f9fe354bd0734779bf
-  shared_preferences_foundation: fcdcbc04712aee1108ac7fda236f363274528f78
+  flutter_image_compress_common: 1697a328fd72bfb335507c6bca1a65fa5ad87df1
+  image_picker_ios: 7fe1ff8e34c1790d6fff70a32484959f563a928a
+  libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
+  Mantle: c5aa8794a29a022dfbbfc9799af95f477a69b62d
+  pasteboard: 49088aeb6119d51f976a421db60d8e1ab079b63c
+  path_provider_foundation: 080d55be775b7414fd5a5ef3ac137b97b097e564
+  quick_actions_ios: 4b07fb49d8d8f3518d7565fbb7a91014067a7d82
+  SDWebImage: f84b0feeb08d2d11e6a9b843cb06d75ebf5b8868
+  SDWebImageWebPCoder: e38c0a70396191361d60c092933e22c20d5b1380
+  shared_preferences_foundation: 9e1978ff2562383bd5676f64ec4e9aa8fa06a6f7
+  url_launcher_ios: 694010445543906933d732453a59da0a173ae33d
 
-PODFILE CHECKSUM: 819463e6a0290f5a72f145ba7cde16e8b6ef0796
+PODFILE CHECKSUM: 2671b89a886ebd6ebcdf03c1b4a5ab3273ae5619
 
-COCOAPODS: 1.15.2
+COCOAPODS: 1.16.2
