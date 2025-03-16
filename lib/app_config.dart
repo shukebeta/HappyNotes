@@ -56,7 +56,7 @@ class AppConfig {
 
   static String get fontFamily {
     final fontFamily = UserSession().settings(AppConstants.fontFamily);
-    return fontFamily ?? 'Varela';
+    return fontFamily ?? 'Noto Sans';
   }
 
   static String get version {
