@@ -147,7 +147,7 @@ class NoteEditState extends State<NoteEdit> {
             ),
           ),
         ),
-        if (defaultTargetPlatform != TargetPlatform.macOS)
+        if (kIsWeb || defaultTargetPlatform != TargetPlatform.macOS)
           Visibility(
             visible: noteModel.isMarkdown,
             maintainSize: true,
