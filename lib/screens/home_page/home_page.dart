@@ -92,7 +92,17 @@ class HomePageState extends State<HomePage> {
 
   IconButton _buildNewNoteButton(BuildContext context) {
     return IconButton(
-      icon: const Icon(Icons.edit),
+      icon: Stack(
+        children: [
+          const Icon(Icons.edit, size: 28),
+          Positioned(
+            right: 0,
+            bottom: 0,
+            child: Icon(AppConfig.privateNoteOnlyIsEnabled ? Icons.lock : Icons.public, size: 12, color: Colors.green),
+          ),
+        ],
+      ),
+      tooltip: AppConfig.privateNoteOnlyIsEnabled ? 'New Private Note' : 'New Public Note',
       onPressed: () async {
         final scaffoldContext = ScaffoldMessenger.of(context);
         final navigator = Navigator.of(context);
@@ -149,22 +159,24 @@ class HomePageState extends State<HomePage> {
             notes: _homePageController.notes,
             onTap: (note) async {
               var needRefresh = await Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => NoteDetail(note: note),
-                ),
-              ) ?? false;
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => NoteDetail(note: note),
+                    ),
+                  ) ??
+                  false;
               if (needRefresh) {
                 refreshPage();
               }
             },
             onDoubleTap: (note) async {
               var needRefresh = await Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => NoteDetail(note: note, enterEditing: note.userId == UserSession().id),
-                ),
-              ) ?? false;
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => NoteDetail(note: note, enterEditing: note.userId == UserSession().id),
+                    ),
+                  ) ??
+                  false;
               if (needRefresh) {
                 refreshPage();
               }
