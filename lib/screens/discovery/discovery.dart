@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:happy_notes/screens/note_detail/note_detail.dart';
 import '../../utils/navigation_helper.dart';
+import '../../utils/util.dart';
 import '../components/floating_pagination.dart';
 import '../../dependency_injection.dart';
 import '../components/note_list.dart';
@@ -9,6 +10,7 @@ import '../../entities/note.dart';
 import '../account/user_session.dart';
 import 'discovery_controller.dart';
 import '../new_note/new_note.dart';
+import '../../app_config.dart';
 
 class Discovery extends StatefulWidget {
   const Discovery({super.key});
@@ -77,7 +79,8 @@ class DiscoveryState extends State<Discovery> {
 
   IconButton _buildNewNoteButton(BuildContext context) {
     return IconButton(
-      icon: const Icon(Icons.edit),
+      icon: Util.writeNoteIcon(),
+      tooltip: AppConfig.privateNoteOnlyIsEnabled ? 'New Private Note' : 'New Public Note',
       onPressed: () async {
         final scaffoldContext = ScaffoldMessenger.of(context);
         final navigator = Navigator.of(context);

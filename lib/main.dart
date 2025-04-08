@@ -80,6 +80,7 @@ class HappyNotesState extends State<HappyNotesApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       navigatorKey: navigatorKey,
       title: 'Happy Notes',
       theme: ThemeData(

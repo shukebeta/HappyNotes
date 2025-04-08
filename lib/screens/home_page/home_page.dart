@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:happy_notes/app_config.dart';
 import 'package:happy_notes/screens/note_detail/note_detail.dart';
 import '../../utils/navigation_helper.dart';
+import '../../utils/util.dart';
 import '../components/floating_pagination.dart';
 import '../components/note_list.dart';
 import '../components/pagination_controls.dart';
@@ -92,16 +93,7 @@ class HomePageState extends State<HomePage> {
 
   IconButton _buildNewNoteButton(BuildContext context) {
     return IconButton(
-      icon: Stack(
-        children: [
-          const Icon(Icons.edit, size: 28),
-          Positioned(
-            right: 0,
-            bottom: 0,
-            child: Icon(AppConfig.privateNoteOnlyIsEnabled ? Icons.lock : Icons.public, size: 12, color: Colors.green),
-          ),
-        ],
-      ),
+      icon: Util.writeNoteIcon(),
       tooltip: AppConfig.privateNoteOnlyIsEnabled ? 'New Private Note' : 'New Public Note',
       onPressed: () async {
         final scaffoldContext = ScaffoldMessenger.of(context);

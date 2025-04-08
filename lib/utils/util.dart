@@ -138,4 +138,17 @@ class Util {
       format: format,
     );
   }
+
+  static Stack writeNoteIcon() {
+    return Stack(
+      children: [
+        const Icon(Icons.edit, size: 28),
+        Positioned(
+          right: 0,
+          bottom: 0,
+          child: Icon(AppConfig.privateNoteOnlyIsEnabled ? Icons.lock : Icons.public, size: 12),
+        ),
+      ],
+    );
+  }
 }
