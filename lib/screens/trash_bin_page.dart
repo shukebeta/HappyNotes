@@ -106,13 +106,13 @@ class TrashBinPageState extends State<TrashBinPage> {
   }
 
   Widget _buildNoteContent(Note note) {
-    if (note.isLong) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            note.content.length > 100 ? '${note.content.substring(0, 100)}...' : note.content,
-          ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          note.content.length > 100 ? '${note.content.substring(0, 100)}...' : note.content,
+        ),
+        if (note.isLong)
           TextButton(
             onPressed: () async {
               try {
@@ -127,11 +127,13 @@ class TrashBinPageState extends State<TrashBinPage> {
             },
             child: const Text('View more'),
           ),
-        ],
-      );
-    } else {
-      return Text(note.content);
-    }
+        if (note.deletedDate != null)
+          Text(
+            'Deleted on: ${note.deletedDate}',
+            style: TextStyle(fontSize: 12, color: Colors.grey),
+          ),
+      ],
+    );
   }
 
   Widget _buildPurgeDeletedButton() {

@@ -41,11 +41,14 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
   void didChangeDependencies() async {
     super.didChangeDependencies();
     if (!_initialized) {
-      note = await _controller.fetchNote(context, note?.id ?? widget.noteId!);
+      bool includeDeleted = widget.note?.deletedAt != null;
+      note = await _controller.fetchNote(
+        context,
+        note?.id ?? widget.noteId!,
+        includeDeleted: includeDeleted,
+      );
       _initialized = true;
-      setState(() {
-
-      });
+      setState(() {});
     }
   }
 
@@ -144,7 +147,26 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
                   child: Consumer<NoteModel>(
                     builder: (context, noteModel, child) {
                       if (note == null) return const Text("Note doesn't exist, or, you don't have permission to read it.");
-                      return _controller.isEditing ? NoteEdit(note: note!) : NoteView(note: note!);
+                      return Column(
+                        children: [
+                          if (widget.note?.deletedAt != null)
+                            Container(
+                              width: double.infinity,
+                              color: Colors.red.withOpacity(0.2),
+                              padding: const EdgeInsets.all(8.0),
+                              child: const Text(
+                                'You are viewing a deleted note',
+                                style: TextStyle(color: Colors.red),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          Expanded(
+                            child: _controller.isEditing
+                                ? NoteEdit(note: note!)
+                                : NoteView(note: note!),
+                          ),
+                        ],
+                      );
                     },
                   ),
                 ),

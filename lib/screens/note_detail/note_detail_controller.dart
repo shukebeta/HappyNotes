@@ -16,11 +16,11 @@ class NoteDetailController {
   bool isEditing = false;
   bool isLoading = false;
 
-  Future<Note?> fetchNote(BuildContext context, int noteId) async {
+  Future<Note?> fetchNote(BuildContext context, int noteId, {bool includeDeleted = false}) async {
     isLoading = true;
     final scaffoldContext = ScaffoldMessenger.of(context);
     try {
-      _originalNote = await _notesService.get(noteId);
+      _originalNote = await _notesService.get(noteId, includeDeleted: includeDeleted);
       return _originalNote;
     } catch (error) {
       Util.showError(scaffoldContext, error.toString());
