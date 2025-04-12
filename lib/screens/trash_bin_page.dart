@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:happy_notes/services/notes_services.dart';
 import 'package:happy_notes/dependency_injection.dart';
 import 'package:happy_notes/entities/note.dart';
+import 'package:happy_notes/screens/note_detail/note_detail.dart';
 
 class TrashBinPage extends StatefulWidget {
   const TrashBinPage({super.key});
@@ -48,12 +49,12 @@ class TrashBinPageState extends State<TrashBinPage> {
         children: [
           Expanded(
             child: _trashedNotes.isEmpty
-                ? const Center(child: Text('Currently no deleted note here.'))
+                ? const Center(child: Text('No notes in the trash bin.'))
                 : ListView.builder(
                     itemCount: _trashedNotes.length,
                     itemBuilder: (context, index) {
                       return ListTile(
-                        title: Text(_trashedNotes[index].content),
+                        title: _buildNoteContent(_trashedNotes[index]),
                         trailing: IconButton(
                           icon: const Icon(Icons.restore),
                           tooltip: 'Restore note',
@@ -102,6 +103,35 @@ class TrashBinPageState extends State<TrashBinPage> {
         ],
       ),
     );
+  }
+
+  Widget _buildNoteContent(Note note) {
+    if (note.isLong) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            note.content.length > 100 ? '${note.content.substring(0, 100)}...' : note.content,
+          ),
+          TextButton(
+            onPressed: () async {
+              try {
+                Note fullNote = await _notesService.get(note.id, includeDeleted: true);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => NoteDetail(note: fullNote)),
+                );
+              } catch (e) {
+                // Handle error
+              }
+            },
+            child: const Text('View more'),
+          ),
+        ],
+      );
+    } else {
+      return Text(note.content);
+    }
   }
 
   Widget _buildPurgeDeletedButton() {

@@ -110,10 +110,10 @@ class NotesService {
     return apiResult['data']; //note id
   }
 
-  Future<Note> get(int noteId) async {
-    var apiResult = (await NotesApi.get(noteId)).data;
+  Future<Note> get(int noteId, {bool includeDeleted = false}) async {
+    var apiResult = (await NotesApi.get(noteId, includeDeleted: includeDeleted)).data;
     if (!apiResult['successful']) throw ApiException(apiResult);
-    return Note.fromJson(apiResult['data']); //note id
+    return Note.fromJson(apiResult['data']);
   }
 
   Future<NotesResult> latestDeleted(int pageSize, int pageNumber) async {
