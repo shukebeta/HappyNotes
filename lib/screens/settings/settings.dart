@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:happy_notes/screens/settings/mastodon_sync_settings.dart';
 import 'package:happy_notes/screens/settings/settings_controller.dart';
-import 'package:happy_notes/screens/settings/telegram_sync_settings.dart'; // Import NotesSyncPage
+import 'package:happy_notes/screens/settings/telegram_sync_settings.dart';
+import 'package:happy_notes/screens/settings/profile_page.dart';
 
 import '../../app_config.dart';
 import '../../app_constants.dart';
@@ -35,6 +36,24 @@ class SettingsState extends State<Settings> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Settings'),
+        actions: [
+          PopupMenuButton(
+            itemBuilder: (context) => [
+              const PopupMenuItem(
+                value: 'profile',
+                child: Text('Profile'),
+              ),
+            ],
+            onSelected: (value) {
+              if (value == 'profile') {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const ProfilePage()),
+                );
+              }
+            },
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.fromLTRB(4, 12, 4, 12),

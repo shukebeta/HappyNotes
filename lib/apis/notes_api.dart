@@ -64,4 +64,12 @@ class NotesApi {
   static Future<Response> getLinkedNotes(int noteId) async {
     return await _dio.get('/notes/linkedNotes/$noteId');
   }
+
+  static Future<Response> latestDeleted(int pageSize, int pageNumber) async {
+    return await _dio.get('/notes/latestDeleted/$pageSize/$pageNumber');
+  }
+
+  static Future<Response> purgeDeleted() async {
+    return await _dio.delete('/notes/purgeDeleted');
+  }
 }

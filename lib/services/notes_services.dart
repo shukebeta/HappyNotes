@@ -58,8 +58,8 @@ class NotesService {
   Future<NotesResult> _getPagedNotesResult(apiResult) async {
     if (!apiResult['successful']) throw ApiException(apiResult);
     var notes = apiResult['data'];
-    int totalNotes = notes['totalCount'];
-    List<Note> fetchedNotes = _convertNotes(notes['dataList']);
+    int totalNotes = notes['totalCount'] ?? 0;
+    List<Note> fetchedNotes = _convertNotes(notes['dataList'] ?? []);
     return NotesResult(fetchedNotes, totalNotes);
   }
 
@@ -114,5 +114,16 @@ class NotesService {
     var apiResult = (await NotesApi.get(noteId)).data;
     if (!apiResult['successful']) throw ApiException(apiResult);
     return Note.fromJson(apiResult['data']); //note id
+  }
+
+  Future<NotesResult> latestDeleted(int pageSize, int pageNumber) async {
+    var apiResult = (await NotesApi.latestDeleted(pageSize, pageNumber)).data;
+    return _getPagedNotesResult(apiResult);
+  }
+
+  Future<int> purgeDeleted() async {
+    var apiResult = (await NotesApi.purgeDeleted()).data;
+    if (!apiResult['successful']) throw ApiException(apiResult);
+    return apiResult['data']; 
   }
 }
