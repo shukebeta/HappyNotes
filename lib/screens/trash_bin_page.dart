@@ -15,6 +15,7 @@ class TrashBinPageState extends State<TrashBinPage> {
   List<Note> _trashedNotes = [];
   int _currentPageNumber = 1;
   int _totalPages = 1;
+  bool _isPurging = false;
 
   @override
   void initState() {
@@ -40,41 +41,34 @@ class TrashBinPageState extends State<TrashBinPage> {
       appBar: AppBar(
         title: const Text('Trash Bin'),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.delete_forever),
-            onPressed: () async {
-              try {
-                await _notesService.purgeDeleted();
-                _fetchTrashedNotes();
-              } catch (e) {
-                // Handle error
-              }
-            },
-          ),
+          _buildPurgeDeletedButton(),
         ],
       ),
       body: Column(
         children: [
           Expanded(
-            child: ListView.builder(
-              itemCount: _trashedNotes.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(_trashedNotes[index].content),
-                  trailing: IconButton(
-                    icon: const Icon(Icons.restore),
-                    onPressed: () async {
-                      try {
-                        await _notesService.undelete(_trashedNotes[index].id);
-                        _fetchTrashedNotes();
-                      } catch (e) {
-                        // Handle error
-                      }
+            child: _trashedNotes.isEmpty
+                ? const Center(child: Text('Currently no deleted note here.'))
+                : ListView.builder(
+                    itemCount: _trashedNotes.length,
+                    itemBuilder: (context, index) {
+                      return ListTile(
+                        title: Text(_trashedNotes[index].content),
+                        trailing: IconButton(
+                          icon: const Icon(Icons.restore),
+                          tooltip: 'Restore note',
+                          onPressed: () async {
+                            try {
+                              await _notesService.undelete(_trashedNotes[index].id);
+                              _fetchTrashedNotes();
+                            } catch (e) {
+                              // Handle error
+                            }
+                          },
+                        ),
+                      );
                     },
                   ),
-                );
-              },
-            ),
           ),
           if (_totalPages > 1)
             Row(
@@ -107,6 +101,31 @@ class TrashBinPageState extends State<TrashBinPage> {
             ),
         ],
       ),
+    );
+  }
+
+  Widget _buildPurgeDeletedButton() {
+    return IconButton(
+      icon: _isPurging ? const Icon(Icons.hourglass_top) : const Icon(Icons.delete_forever),
+      onPressed: _isPurging
+          ? null
+          : () async {
+              setState(() {
+                _isPurging = true;
+              });
+              try {
+                await _notesService.purgeDeleted();
+              } catch (e) {
+                // Handle error
+              } finally {
+                if (mounted) {
+                  setState(() {
+                    _isPurging = false;
+                  });
+                  _fetchTrashedNotes();
+                }
+              }
+            },
     );
   }
 }
