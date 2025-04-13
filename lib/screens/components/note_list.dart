@@ -15,6 +15,7 @@ class NoteList extends StatelessWidget {
   final bool showRestoreButton;
   final Function(Note)? onRestoreTap;
   final Function(Note)? onDelete;
+  final Future<bool> Function(DismissDirection)? confirmDismiss;
   final ScrollController _scrollController = ScrollController();
 
   NoteList({
@@ -26,6 +27,7 @@ class NoteList extends StatelessWidget {
     this.onRefresh,
     this.onRestoreTap,
     this.onDelete,
+    this.confirmDismiss = null,
     this.showDate = false,
     this.showAuthor = false,
     this.showRestoreButton = false,
@@ -79,28 +81,17 @@ class NoteList extends StatelessWidget {
                 final note = entry.value;
                 return Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 1.0),
-                  child: Dismissible(
-                    key: Key(note.id.toString()),
-                    direction: onDelete != null ? DismissDirection.endToStart : DismissDirection.none,
-                    background: Container(
-                      alignment: Alignment.centerRight,
-                      padding: const EdgeInsets.only(right: 20.0),
-                      color: Colors.red,
-                      child: const Icon(Icons.delete, color: Colors.white),
-                    ),
-                    onDismissed: (direction) {
-                      onDelete?.call(note);
-                    },
-                    child: NoteListItem(
-                      note: note,
-                      onTap: onTap,
-                      onDoubleTap: onDoubleTap,
-                      onTagTap: onTagTap,
-                      onRestoreTap: onRestoreTap,
-                      showDate: showDate,
-                      showAuthor: showAuthor,
-                      showRestoreButton: showRestoreButton,
-                    ),
+                  child: NoteListItem(
+                    note: note,
+                    onTap: onTap,
+                    onDoubleTap: onDoubleTap,
+                    onTagTap: onTagTap,
+                    onRestoreTap: onRestoreTap,
+                    onDelete: onDelete,
+                    confirmDismiss: confirmDismiss,
+                    showDate: showDate,
+                    showAuthor: showAuthor,
+                    showRestoreButton: showRestoreButton,
                   ),
                 );
               }).toList(),

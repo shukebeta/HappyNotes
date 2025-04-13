@@ -175,6 +175,10 @@ class HomePageState extends State<HomePage> {
             },
             onTagTap: (note, tag) => NavigationHelper.onTagTap(context, note, tag),
             onRefresh: () async => await navigateToPage(currentPageNumber),
+            onDelete: (note) async {
+              await _homePageController.deleteNote(note.id);
+              refreshPage();
+            },
           ),
         ),
         if (_homePageController.totalPages > 1 && UserSession().isDesktop)

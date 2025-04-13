@@ -14,40 +14,56 @@ class NoteListItem extends StatelessWidget {
   final Function(Note note, String tag)? onTagTap;
   final Function(Note)? onRestoreTap;
   final Function(Note)? onDelete;
+  final Future<bool> Function(DismissDirection)? confirmDismiss;
 
-NoteListItem({
-  super.key,
-  required this.note,
-  this.onTap,
-  this.onDoubleTap,
-  this.onTagTap,
-  this.onRestoreTap,
-  this.onDelete,
-  this.showDate = false,
-  this.showAuthor = false,
-  this.showRestoreButton = false,
-});
+  NoteListItem({
+    super.key,
+    required this.note,
+    this.onTap,
+    this.onDoubleTap,
+    this.onTagTap,
+    this.onRestoreTap,
+    this.onDelete,
+    this.confirmDismiss,
+    this.showDate = false,
+    this.showAuthor = false,
+    this.showRestoreButton = false,
+  });
 
   @override
   Widget build(BuildContext context) {
     var author = (note.user == null || note.userId == UserSession().id || !showAuthor) ? '' : '${note.user!.username} ';
     var date = showDate ? '${note.createdDate} ' : '';
 
-    return Dismissible(
-      key: Key(note.id.toString()),
-      direction: DismissDirection.endToStart, // Swipe from right to left
-      onDismissed: (direction) {
-        if (onDelete != null) {
+    Widget child = _buildChild(context);
+
+    if (onDelete != null) {
+      return Dismissible(
+        key: Key(note.id.toString()),
+        direction: DismissDirection.endToStart,
+        // Swipe from right to left
+        confirmDismiss: confirmDismiss,
+        onDismissed: (direction) {
           onDelete!(note);
-        }
-      },
-      background: Container(
-        alignment: Alignment.centerRight,
-        padding: const EdgeInsets.only(right: 20.0),
-        color: Colors.red,
-        child: const Icon(Icons.delete, color: Colors.white),
-      ),
-      child: GestureDetector(
+        },
+        background: Container(
+          alignment: Alignment.centerRight,
+          padding: const EdgeInsets.only(right: 20.0),
+          color: Colors.red,
+          child: const Icon(Icons.delete, color: Colors.white),
+        ),
+        child: child,
+      );
+    } else {
+      return child;
+    }
+  }
+
+  Widget _buildChild(BuildContext context) {
+    var author = (note.user == null || note.userId == UserSession().id || !showAuthor) ? '' : '${note.user!.username} ';
+    var date = showDate ? '${note.createdDate} ' : '';
+
+    return GestureDetector(
         onTap: onTap != null ? () => onTap!(note) : null,
         onDoubleTap: onDoubleTap != null ? () => onDoubleTap!(note) : null,
         child: Stack(
@@ -173,8 +189,6 @@ NoteListItem({
                 ),
               ),
           ],
-        ),
-      ),
-    );
+        ));
   }
 }

@@ -46,4 +46,12 @@ class HomePageController {
     }
     return {};
   }
+
+  Future<void> deleteNote(int noteId) async {
+    try {
+      await _notesService.delete(noteId);
+    } catch (error) {
+      // Handle error
+    }
+  }
 }
