@@ -11,6 +11,8 @@ class RegistrationController {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  void Function(bool)? onSubmittingStateChanged;
+  bool _isSubmitting = false;
 
   String? validateUsername(String? value) {
     if (value == null || value.isEmpty) {
@@ -42,15 +44,17 @@ class RegistrationController {
   }
 
   Future<void> registerUser(BuildContext context) async {
+    if (_isSubmitting) return;
     if (formKey.currentState!.validate()) {
+      _isSubmitting = true;
+      onSubmittingStateChanged?.call(true);
       final username = usernameController.text;
       final email = emailController.text;
       final password = passwordController.text;
 
       // Make API call to register user
-      final scaffoldContext = ScaffoldMessenger.of(context); // Capture the context
+      final scaffoldContext = ScaffoldMessenger.of(context); 
       final navigator = Navigator.of(context);
-      // Call AuthService for login
       try {
         final apiResponse = await accountService.register(username, email, password);
         if (apiResponse['successful']) {
@@ -63,12 +67,10 @@ class RegistrationController {
         scaffoldContext.showSnackBar(
           SnackBar(content: Text(e.toString())),
         );
+      } finally {
+        _isSubmitting = false;
+        onSubmittingStateChanged?.call(false);
       }
-    } else {
-      // Form validation failed
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill all input fields')),
-      );
     }
   }
 

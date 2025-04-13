@@ -11,6 +11,8 @@ class LoginController {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  void Function(bool)? onSubmittingStateChanged;
+  bool _isSubmitting = false;
 
   String? validateUsername(String? value) {
     if (value == null || value.isEmpty) {
@@ -27,12 +29,15 @@ class LoginController {
   }
   // Function to make API call
   Future<void> submitForm(BuildContext context) async {
+    if (_isSubmitting) return;
     if (formKey.currentState!.validate()) {
+      _isSubmitting = true;
+      onSubmittingStateChanged?.call(true);
       final username = emailController.text;
       final password = passwordController.text;
 
       // capture the context before entering await
-      final scaffoldContext = ScaffoldMessenger.of(context); // Capture the context
+      final scaffoldContext = ScaffoldMessenger.of(context); 
       final navigator = Navigator.of(context);
       try {
         // Call AuthService for login
@@ -51,6 +56,9 @@ class LoginController {
 
       } catch (e) {
         Util.showError(scaffoldContext, e.toString());
+      } finally {
+        _isSubmitting = false;
+        onSubmittingStateChanged?.call(false);
       }
     }
   }

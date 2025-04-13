@@ -12,6 +12,17 @@ class Registration extends StatefulWidget {
 
 class _RegistrationState extends State<Registration> {
   final _formModel = RegistrationController();
+  bool _isSubmitting = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _formModel.onSubmittingStateChanged = (isSubmitting) {
+      setState(() {
+        _isSubmitting = isSubmitting;
+      });
+    };
+  }
 
   @override
   void dispose() {
@@ -71,10 +82,14 @@ class _RegistrationState extends State<Registration> {
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16.0),
                 child: Center(
                   child: ElevatedButton(
-                    onPressed: () {
-                      _formModel.registerUser(context);
-                    },
-                    child: const Text('Register'),
+                    onPressed: _isSubmitting
+                        ? null
+                        : () {
+                            _formModel.registerUser(context);
+                          },
+                    child: _isSubmitting
+                        ? const CircularProgressIndicator(color: Colors.white)
+                        : const Text('Register'),
                   ),
                 ),
               ),

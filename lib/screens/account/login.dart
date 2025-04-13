@@ -14,6 +14,17 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   final _formModel = LoginController();
   bool _isPasswordVisible = false;
+  bool _isSubmitting = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _formModel.onSubmittingStateChanged = (isSubmitting) {
+      setState(() {
+        _isSubmitting = isSubmitting;
+      });
+    };
+  }
 
   @override
   void dispose() {
@@ -66,8 +77,12 @@ class _LoginState extends State<Login> {
               ),
               const SizedBox(height: 16),
               ElevatedButton(
-                onPressed: () => _formModel.submitForm(context),
-                child: const Text('Submit'),
+                onPressed: _isSubmitting
+                    ? null
+                    : () => _formModel.submitForm(context),
+                child: _isSubmitting
+                    ? const CircularProgressIndicator(color: Colors.white)
+                    : const Text('Submit'),
               ),
               TextButton(
                 onPressed: () {
