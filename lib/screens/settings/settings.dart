@@ -3,13 +3,13 @@ import 'package:happy_notes/screens/settings/mastodon_sync_settings.dart';
 import 'package:happy_notes/screens/settings/settings_controller.dart';
 import 'package:happy_notes/screens/settings/telegram_sync_settings.dart';
 import 'package:happy_notes/screens/settings/profile_page.dart';
-import 'package:happy_notes/screens/trash_bin_page.dart';
 
 import '../../app_config.dart';
 import '../../app_constants.dart';
 import '../../dependency_injection.dart';
 import '../../utils/timezone_helper.dart';
 import '../components/timezone-dropdown-item.dart';
+import '../trash_bin/trash_bin_page.dart';
 
 class Settings extends StatefulWidget {
   final VoidCallback? onLogout;

@@ -8,7 +8,7 @@ import '../../services/dialog_services.dart';
 import '../account/user_session.dart';
 import '../components/note_view.dart';
 import '../../services/notes_services.dart';
-import '../trash_bin_page.dart';
+import '../trash_bin/trash_bin_page.dart';
 import 'note_detail_controller.dart';
 
 // ignore: must_be_immutable
