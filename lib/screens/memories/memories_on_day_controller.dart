@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:happy_notes/models/notes_result.dart';
 import 'package:intl/intl.dart';
 import '../../services/notes_services.dart';
@@ -9,7 +10,16 @@ class MemoriesOnDayController {
       : _notesService = notesService;
 
   Future<NotesResult> fetchMemories(DateTime date) async {
-    var notes = await _notesService.memoriesOn(DateFormat('yyyyMMdd').format(date));
-    return notes;
+    var notesResult = await _notesService.memoriesOn(DateFormat('yyyyMMdd').format(date));
+    return notesResult;
+  }
+
+  Future<void> deleteNote(BuildContext context, int noteId, Function(bool needRefresh) onSuccess) async {
+    try {
+      await _notesService.delete(noteId);
+      onSuccess(true);
+    } catch (error) {
+      onSuccess(false);
+    }
   }
 }

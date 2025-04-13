@@ -108,6 +108,7 @@ class TrashBinPageState extends State<TrashBinPage> {
                 // Handle error
               }
             },
+            onDelete: (note) async {},
             showDate: true,
             showRestoreButton: true,
           );

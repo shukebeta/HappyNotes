@@ -27,4 +27,15 @@ class DiscoveryController {
       isLoading = false;
     }
   }
+
+  Future<void> deleteNote(BuildContext context, int noteId) async {
+    final scaffoldContext = ScaffoldMessenger.of(context);
+    try {
+      await _notesService.delete(noteId);
+      await loadNotes(context, 1); // Reload notes after deletion
+      Util.showInfo(scaffoldContext, 'Note successfully deleted.');
+    } catch (error) {
+      Util.showError(scaffoldContext, error.toString());
+    }
+  }
 }
