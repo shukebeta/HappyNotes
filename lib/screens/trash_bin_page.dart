@@ -5,7 +5,7 @@ import 'package:happy_notes/entities/note.dart';
 import 'package:happy_notes/screens/note_detail/note_detail.dart';
 import '../../app_config.dart';
 import 'components/pagination_controls.dart';
-import 'components/note_list.dart';
+import 'components/note_list_item.dart';
 
 class TrashBinPage extends StatefulWidget {
   const TrashBinPage({super.key});
@@ -53,29 +53,36 @@ class TrashBinPageState extends State<TrashBinPage> {
           Expanded(
             child: _trashedNotes.isEmpty
                 ? const Center(child: Text('No notes in the trash bin.'))
-                : NoteList(
-                    notes: _trashedNotes,
-                    onTap: (note) async {
-                      try {
-                        Note fullNote = await _notesService.get(note.id, includeDeleted: true);
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => NoteDetail(note: fullNote)),
-                        );
-                      } catch (e) {
-                        // Handle error
-                      }
-                    },
-                    onRestoreTap: (note) async {
-                      try {
-                        await _notesService.undelete(note.id);
-                        _fetchTrashedNotes();
-                      } catch (e) {
-                        // Handle error
-                      }
-                    },
-                    showRestoreButton: true,
+                : RefreshIndicator(
                     onRefresh: _fetchTrashedNotes,
+                    child: ListView(
+                      children: _trashedNotes.map((note) {
+                        return NoteListItem(
+                          note: note,
+                          onTap: (note) async {
+                            try {
+                              Note fullNote = await _notesService.get(note.id, includeDeleted: true);
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => NoteDetail(note: fullNote)),
+                              );
+                            } catch (e) {
+                              // Handle error
+                            }
+                          },
+                          onRestoreTap: (note) async {
+                            try {
+                              await _notesService.undelete(note.id);
+                              _fetchTrashedNotes();
+                            } catch (e) {
+                              // Handle error
+                            }
+                          },
+                          showDate: true,
+                          showRestoreButton: true,
+                        );
+                      }).toList(),
+                    ),
                   ),
           ),
           if (_totalPages > 1)
