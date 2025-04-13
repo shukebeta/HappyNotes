@@ -29,15 +29,6 @@ class ProfilePageState extends State<ProfilePage> {
                 );
               },
             ),
-            ListTile(
-              title: const Text('Trash bin'),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const TrashBinPage()),
-                );
-              },
-            ),
           ],
         ),
       ),

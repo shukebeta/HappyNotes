@@ -3,6 +3,7 @@ import 'package:happy_notes/screens/settings/mastodon_sync_settings.dart';
 import 'package:happy_notes/screens/settings/settings_controller.dart';
 import 'package:happy_notes/screens/settings/telegram_sync_settings.dart';
 import 'package:happy_notes/screens/settings/profile_page.dart';
+import 'package:happy_notes/screens/trash_bin_page.dart';
 
 import '../../app_config.dart';
 import '../../app_constants.dart';
@@ -43,12 +44,21 @@ class SettingsState extends State<Settings> {
                 value: 'profile',
                 child: Text('Profile'),
               ),
+              const PopupMenuItem(
+                value: 'trash_bin',
+                child: Text('Trash Bin'),
+              ),
             ],
             onSelected: (value) {
               if (value == 'profile') {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const ProfilePage()),
+                );
+              } else if (value == 'trash_bin') {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const TrashBinPage()),
                 );
               }
             },
