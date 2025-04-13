@@ -141,13 +141,17 @@ class NoteListItem extends StatelessWidget {
           ),
           if (showRestoreButton && note.isDeleted)
             Positioned(
-              top: 4,
+              top: 0,
+              left: 0,
               right: 0,
-              child: TextButton(
-                onPressed: () => onRestoreTap?.call(note),
-                child: const Text(
-                  'Undelete',
-                  style: TextStyle(fontSize: 16, color: Colors.blue),
+              child: Align(
+                alignment: Alignment.center,
+                child: TextButton(
+                  onPressed: () => onRestoreTap?.call(note),
+                  child: const Text(
+                    'Restore',
+                    style: TextStyle(fontSize: 16, color: Colors.blue),
+                  ),
                 ),
               ),
             ),
