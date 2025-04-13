@@ -71,11 +71,11 @@ class NoteDetailController {
     if (!didPop) {
       final noteModel = context.read<NoteModel>();
       final navigator = Navigator.of(context);
-      if (!isEditing ||
-          noteModel.content == _originalNote.content ||
-          (await DialogService.showUnsavedChangesDialog(context) ?? false)) {
-        navigator.pop();
+      bool needRefresh = false;
+      if (isEditing && noteModel.content != _originalNote.content) {
+        needRefresh = (await DialogService.showUnsavedChangesDialog(context)) ?? false;
       }
+      navigator.pop(needRefresh);
     }
   }
 }

@@ -87,10 +87,15 @@ class TrashBinPageState extends State<TrashBinPage> {
             onTap: (note) async {
               try {
                 Note fullNote = await _controller.getNote(note.id);
-                Navigator.push(
+                final bool? needRefresh = await Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => NoteDetail(note: fullNote)),
                 );
+
+                if (needRefresh ?? false) {
+                  await _controller.fetchTrashedNotes();
+                  setState(() {});
+                }
               } catch (e) {
                 // Handle error
               }
