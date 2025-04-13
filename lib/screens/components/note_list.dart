@@ -24,7 +24,7 @@ class NoteList extends StatelessWidget {
     this.onTagTap,
     this.onRefresh,
     this.onRestoreTap,
-    this.showDate = true,
+    this.showDate = false,
     this.showAuthor = false,
     this.showRestoreButton = false,
   }) : super(key: key);

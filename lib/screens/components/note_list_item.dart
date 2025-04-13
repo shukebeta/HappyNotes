@@ -14,7 +14,7 @@ class NoteListItem extends StatelessWidget {
   final Function(Note note, String tag)? onTagTap;
   final Function(Note)? onRestoreTap;
 
- const NoteListItem({
+  const NoteListItem({
     Key? key,
     required this.note,
     this.onTap,
@@ -50,24 +50,32 @@ class NoteListItem extends StatelessWidget {
                         fontSize: 13,
                       ),
                     ),
-                if (note.isPrivate)
-                  Icon(
-                    Icons.lock,
-                    color: Colors.grey.shade300,
-                    size: 14,
-                  ),
-                Expanded(
-                  child: Divider(
-                    color: Colors.grey.shade300,
-                    thickness: 1,
-                  ),
-                ),
-                Text(' ${note.id} ',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w100,
-                      color: Colors.blue.shade300,
-                      fontSize: 13,
-                    ))
+                    ...[
+                      if (note.isPrivate)
+                        Icon(
+                          Icons.lock,
+                          color: Colors.grey.shade300,
+                          size: 14,
+                        ),
+                      const Text(
+                        ' ',
+                        style: TextStyle(
+                          fontSize: 13,
+                        ),
+                      ),
+                    ],
+                    Expanded(
+                      child: Divider(
+                        color: Colors.grey.shade300,
+                        thickness: 1,
+                      ),
+                    ),
+                    Text(' ${note.id} ',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w100,
+                          color: Colors.blue.shade300,
+                          fontSize: 13,
+                        ))
                   ],
                 ),
               ),
