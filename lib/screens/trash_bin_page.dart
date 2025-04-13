@@ -3,6 +3,9 @@ import 'package:happy_notes/services/notes_services.dart';
 import 'package:happy_notes/dependency_injection.dart';
 import 'package:happy_notes/entities/note.dart';
 import 'package:happy_notes/screens/note_detail/note_detail.dart';
+import '../../app_config.dart';
+import 'components/pagination_controls.dart';
+import 'components/note_list.dart';
 
 class TrashBinPage extends StatefulWidget {
   const TrashBinPage({super.key});
@@ -26,10 +29,10 @@ class TrashBinPageState extends State<TrashBinPage> {
 
   Future<void> _fetchTrashedNotes() async {
     try {
-      var result = await _notesService.latestDeleted(10, _currentPageNumber);
+      var result = await _notesService.latestDeleted(AppConfig.pageSize, _currentPageNumber);
       setState(() {
         _trashedNotes = result.notes;
-        _totalPages = (result.totalNotes / 10).ceil();
+        _totalPages = (result.totalNotes / AppConfig.pageSize).ceil();
       });
     } catch (e) {
       // Handle error
@@ -50,55 +53,41 @@ class TrashBinPageState extends State<TrashBinPage> {
           Expanded(
             child: _trashedNotes.isEmpty
                 ? const Center(child: Text('No notes in the trash bin.'))
-                : ListView.builder(
-                    itemCount: _trashedNotes.length,
-                    itemBuilder: (context, index) {
-                      return ListTile(
-                        title: _buildNoteContent(_trashedNotes[index]),
-                        trailing: IconButton(
-                          icon: const Icon(Icons.restore),
-                          tooltip: 'Restore note',
-                          onPressed: () async {
-                            try {
-                              await _notesService.undelete(_trashedNotes[index].id);
-                              _fetchTrashedNotes();
-                            } catch (e) {
-                              // Handle error
-                            }
-                          },
-                        ),
-                      );
+                : NoteList(
+                    notes: _trashedNotes,
+                    onTap: (note) async {
+                      try {
+                        Note fullNote = await _notesService.get(note.id, includeDeleted: true);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => NoteDetail(note: fullNote)),
+                        );
+                      } catch (e) {
+                        // Handle error
+                      }
                     },
+                    onRestoreTap: (note) async {
+                      try {
+                        await _notesService.undelete(note.id);
+                        _fetchTrashedNotes();
+                      } catch (e) {
+                        // Handle error
+                      }
+                    },
+                    showRestoreButton: true,
+                    onRefresh: _fetchTrashedNotes,
                   ),
           ),
           if (_totalPages > 1)
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                ElevatedButton(
-                  onPressed: _currentPageNumber > 1
-                      ? () async {
-                          setState(() {
-                            _currentPageNumber--;
-                          });
-                          await _fetchTrashedNotes();
-                        }
-                      : null,
-                  child: const Text('Previous'),
-                ),
-                Text('Page: $_currentPageNumber/$_totalPages'),
-                ElevatedButton(
-                  onPressed: _currentPageNumber < _totalPages
-                      ? () async {
-                          setState(() {
-                            _currentPageNumber++;
-                          });
-                          await _fetchTrashedNotes();
-                        }
-                      : null,
-                  child: const Text('Next'),
-                ),
-              ],
+            PaginationControls(
+              currentPage: _currentPageNumber,
+              totalPages: _totalPages,
+              navigateToPage: (pageNumber) async {
+                setState(() {
+                  _currentPageNumber = pageNumber;
+                });
+                await _fetchTrashedNotes();
+              },
             ),
         ],
       ),
@@ -130,7 +119,7 @@ class TrashBinPageState extends State<TrashBinPage> {
         if (note.deletedDate != null)
           Text(
             'Deleted on: ${note.deletedDate}',
-            style: TextStyle(fontSize: 12, color: Colors.grey),
+            style: const TextStyle(fontSize: 12, color: Colors.grey),
           ),
       ],
     );

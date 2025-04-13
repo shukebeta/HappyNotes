@@ -124,13 +124,20 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
                                 text: 'Each note is a story, are you sure you want to delete it?',
                                 yesCallback: () => _controller.deleteNote(context, note?.id ?? widget.noteId!),
                               );
+                            } else if (value == 'undelete') {
+                              await DialogService.showConfirmDialog(
+                                context,
+                                title: 'Undelete note',
+                                text: 'Are you sure you want to undelete this note?',
+                                yesCallback: () => _controller.undeleteNote(context, note?.id ?? widget.noteId!),
+                              );
                             }
                           },
                           itemBuilder: (BuildContext context) {
                             return [
-                              const PopupMenuItem<String>(
-                                value: 'delete',
-                                child: Text('Delete'),
+                              PopupMenuItem<String>(
+                                value: note?.deletedAt != null ? 'undelete' : 'delete',
+                                child: Text(note?.deletedAt != null ? 'Undelete' : 'Delete'),
                               ),
                             ];
                           },
@@ -149,7 +156,7 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
                       if (note == null) return const Text("Note doesn't exist, or, you don't have permission to read it.");
                       return Column(
                         children: [
-                          if (widget.note?.deletedAt != null)
+                          if (note?.deletedAt != null)
                             Container(
                               width: double.infinity,
                               color: Colors.red.withOpacity(0.2),

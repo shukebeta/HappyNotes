@@ -7,9 +7,12 @@ import 'tag_widget.dart'; // Import your TagWidget
 class NoteListItem extends StatelessWidget {
   final Note note;
   final bool showDate;
+  final bool showAuthor;
+  final bool showRestoreButton;
   final Function(Note)? onTap;
   final Function(Note)? onDoubleTap;
   final Function(Note note, String tag)? onTagTap;
+  final Function(Note)? onRestoreTap;
 
  const NoteListItem({
     Key? key,
@@ -17,12 +20,15 @@ class NoteListItem extends StatelessWidget {
     this.onTap,
     this.onDoubleTap,
     this.onTagTap,
+    this.onRestoreTap,
     this.showDate = false,
+    this.showAuthor = false,
+    this.showRestoreButton = false,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    var author = (note.user == null || note.userId == UserSession().id) ? '' : '${note.user!.username} ';
+    var author = (note.user == null || note.userId == UserSession().id || !showAuthor) ? '' : '${note.user!.username} ';
     var date = showDate ? '${note.createdDate} ' : '';
     return GestureDetector(
       onTap: onTap != null ? () => onTap!(note) : null,
@@ -42,20 +48,12 @@ class NoteListItem extends StatelessWidget {
                     fontSize: 13,
                   ),
                 ),
-                ...[
-                  if (note.isPrivate)
-                    Icon(
-                      Icons.lock,
-                      color: Colors.grey.shade300,
-                      size: 14,
-                    ),
-                  const Text(
-                    ' ',
-                    style: TextStyle(
-                      fontSize: 13,
-                    ),
+                if (note.isPrivate)
+                  Icon(
+                    Icons.lock,
+                    color: Colors.grey.shade300,
+                    size: 14,
                   ),
-                ],
                 Expanded(
                   child: Divider(
                     color: Colors.grey.shade300,
@@ -125,6 +123,17 @@ class NoteListItem extends StatelessWidget {
                     ],
                   ),
                 ],
+                if (showRestoreButton && note.isDeleted)
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 16.0),
+                      child: ElevatedButton(
+                        onPressed: () => onRestoreTap?.call(note),
+                        child: const Text('Restore'),
+                      ),
+                    ),
+                  ),
               ],
             ),
           ),

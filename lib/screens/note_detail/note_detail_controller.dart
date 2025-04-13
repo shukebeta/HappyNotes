@@ -55,6 +55,18 @@ class NoteDetailController {
     }
   }
 
+  Future<void> undeleteNote(BuildContext context, int noteId) async {
+    final scaffoldContext = ScaffoldMessenger.of(context);
+    final navigator = Navigator.of(context);
+    try {
+      await _notesService.undelete(noteId);
+      navigator.pop();
+      Util.showInfo(scaffoldContext, 'Note successfully undeleted.');
+    } catch (error) {
+      Util.showError(scaffoldContext, error.toString());
+    }
+  }
+
   onPopHandler(BuildContext context, bool didPop) async {
     if (!didPop) {
       final noteModel = context.read<NoteModel>();
