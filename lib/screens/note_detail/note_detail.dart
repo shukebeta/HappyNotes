@@ -8,6 +8,7 @@ import '../../services/dialog_services.dart';
 import '../account/user_session.dart';
 import '../components/note_view.dart';
 import '../../services/notes_services.dart';
+import '../trash_bin_page.dart';
 import 'note_detail_controller.dart';
 
 // ignore: must_be_immutable
@@ -131,6 +132,11 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
                                 text: 'Are you sure you want to undelete this note?',
                                 yesCallback: () => _controller.undeleteNote(context, note?.id ?? widget.noteId!),
                               );
+                            } else if (value == 'trash_bin') {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => const TrashBinPage()),
+                              );
                             }
                           },
                           itemBuilder: (BuildContext context) {
@@ -138,6 +144,11 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
                               PopupMenuItem<String>(
                                 value: note?.deletedAt != null ? 'undelete' : 'delete',
                                 child: Text(note?.deletedAt != null ? 'Undelete' : 'Delete'),
+                              ),
+                              const PopupMenuDivider(),
+                              const PopupMenuItem<String>(
+                                value: 'trash_bin',
+                                child: Text('Trash Bin'),
                               ),
                             ];
                           },

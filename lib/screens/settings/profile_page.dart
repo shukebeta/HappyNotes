@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:happy_notes/screens/trash_bin_page.dart';
 import 'package:happy_notes/screens/settings/account_settings_page.dart';
 
 class ProfilePage extends StatefulWidget {
