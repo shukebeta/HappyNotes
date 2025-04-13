@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:happy_notes/screens/settings/mastodon_sync_settings.dart';
 import 'package:happy_notes/screens/settings/settings_controller.dart';
-import 'package:happy_notes/screens/settings/telegram_sync_settings.dart'; // Import NotesSyncPage
+import 'package:happy_notes/screens/settings/telegram_sync_settings.dart';
+import 'package:happy_notes/screens/settings/profile_page.dart';
 
 import '../../app_config.dart';
 import '../../app_constants.dart';
 import '../../dependency_injection.dart';
 import '../../utils/timezone_helper.dart';
 import '../components/timezone-dropdown-item.dart';
+import '../trash_bin/trash_bin_page.dart';
 
 class Settings extends StatefulWidget {
   final VoidCallback? onLogout;
@@ -35,6 +37,33 @@ class SettingsState extends State<Settings> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Settings'),
+        actions: [
+          PopupMenuButton(
+            itemBuilder: (context) => [
+              const PopupMenuItem(
+                value: 'profile',
+                child: Text('Profile'),
+              ),
+              const PopupMenuItem(
+                value: 'trash_bin',
+                child: Text('Trash Bin'),
+              ),
+            ],
+            onSelected: (value) {
+              if (value == 'profile') {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const ProfilePage()),
+                );
+              } else if (value == 'trash_bin') {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const TrashBinPage()),
+                );
+              }
+            },
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.fromLTRB(4, 12, 4, 12),

@@ -7,9 +7,12 @@ import 'tag_widget.dart'; // Import your TagWidget
 class NoteListItem extends StatelessWidget {
   final Note note;
   final bool showDate;
+  final bool showAuthor;
+  final bool showRestoreButton;
   final Function(Note)? onTap;
   final Function(Note)? onDoubleTap;
   final Function(Note note, String tag)? onTagTap;
+  final Function(Note)? onRestoreTap;
 
  const NoteListItem({
     Key? key,
@@ -17,45 +20,42 @@ class NoteListItem extends StatelessWidget {
     this.onTap,
     this.onDoubleTap,
     this.onTagTap,
+    this.onRestoreTap,
     this.showDate = false,
+    this.showAuthor = false,
+    this.showRestoreButton = false,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    var author = (note.user == null || note.userId == UserSession().id) ? '' : '${note.user!.username} ';
+    var author = (note.user == null || note.userId == UserSession().id || !showAuthor) ? '' : '${note.user!.username} ';
     var date = showDate ? '${note.createdDate} ' : '';
     return GestureDetector(
       onTap: onTap != null ? () => onTap!(note) : null,
       onDoubleTap: onDoubleTap != null ? () => onDoubleTap!(note) : null,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Stack(
         children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(4, 0, 4, 4),
-            child: Row(
-              children: [
-                Text(
-                  '- $date${note.createdTime} $author - ',
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w300,
-                    color: Colors.blue,
-                    fontSize: 13,
-                  ),
-                ),
-                ...[
-                  if (note.isPrivate)
-                    Icon(
-                      Icons.lock,
-                      color: Colors.grey.shade300,
-                      size: 14,
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(4, 0, 4, 4),
+                child: Row(
+                  children: [
+                    Text(
+                      '- $date${note.createdTime} $author - ',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w300,
+                        color: Colors.blue,
+                        fontSize: 13,
+                      ),
                     ),
-                  const Text(
-                    ' ',
-                    style: TextStyle(
-                      fontSize: 13,
-                    ),
+                if (note.isPrivate)
+                  Icon(
+                    Icons.lock,
+                    color: Colors.grey.shade300,
+                    size: 14,
                   ),
-                ],
                 Expanded(
                   child: Divider(
                     color: Colors.grey.shade300,
@@ -68,66 +68,81 @@ class NoteListItem extends StatelessWidget {
                       color: Colors.blue.shade300,
                       fontSize: 13,
                     ))
-              ],
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.fromLTRB(4, 0, UserSession().isDesktop ? 4 : 16, 10),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                note.isMarkdown
-                    ? MarkdownBodyHere(
-                        data: note.content + (note.isLong ? '...' : ''),
-                        isPrivate: note.isPrivate,
-                      )
-                    : SelectableText.rich(
-                        TextSpan(
-                          text: note.content + (note.isLong ? '...' : ''),
-                          style: TextStyle(
-                            fontStyle: FontStyle.normal,
-                            fontWeight: FontWeight.normal,
-                            fontSize: 16,
-                            height: 1.6,
-                            color: note.isPrivate ?  Colors.black54 : Colors.black87,
-                          ),
-                        ),
-                      ),
-                // fix #18 only show the tags row when necessary
-                if (note.isLong || note.tags!.isNotEmpty) ...[
-                  const SizedBox(height: 8),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Wrap(
-                        spacing: 8,
-                        children: note.tags!.map((tag) {
-                          return TagWidget(
-                            tag: tag,
-                            onTap: () => onTagTap == null ? () {} : onTagTap!(note, tag),
-                          );
-                        }).toList(),
-                      ),
-                      Wrap(
-                        spacing: 8,
-                        children: [
-                          Text(
-                            note.isLong ? 'View more' : '',
-                            style: const TextStyle(
-                              color: Colors.blue,
+                  ],
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.fromLTRB(4, 0, UserSession().isDesktop ? 4 : 16, 10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    note.isMarkdown
+                        ? MarkdownBodyHere(
+                            data: note.content + (note.isLong ? '...' : ''),
+                            isPrivate: note.isPrivate,
+                          )
+                        : SelectableText.rich(
+                            TextSpan(
+                              text: note.content + (note.isLong ? '...' : ''),
+                              style: TextStyle(
+                                fontStyle: FontStyle.normal,
+                                fontWeight: FontWeight.normal,
+                                fontSize: 16,
+                                height: 1.6,
+                                color: note.isPrivate ? Colors.black54 : Colors.black87,
+                              ),
                             ),
                           ),
-                          const Text(
-                            '',
+                    // fix #18 only show the tags row when necessary
+                    if (note.isLong || note.tags!.isNotEmpty)
+                      Column(
+                        children: [
+                          const SizedBox(height: 8),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Wrap(
+                                spacing: 8,
+                                children: note.tags!.map((tag) {
+                                  return TagWidget(
+                                    tag: tag,
+                                    onTap: () => onTagTap == null ? () {} : onTagTap!(note, tag),
+                                  );
+                                }).toList(),
+                              ),
+                              Wrap(
+                                spacing: 8,
+                                children: [
+                                  Text(
+                                    note.isLong ? 'View more' : '',
+                                    style: const TextStyle(
+                                      color: Colors.blue,
+                                    ),
+                                  ),
+                                  const Text(''),
+                                ],
+                              ),
+                            ],
                           ),
                         ],
                       ),
-                    ],
-                  ),
-                ],
-              ],
-            ),
+                  ],
+                ),
+              ),
+            ],
           ),
+          if (showRestoreButton && note.isDeleted)
+            Positioned(
+              top: 4,
+              right: 0,
+              child: TextButton(
+                onPressed: () => onRestoreTap?.call(note),
+                child: const Text(
+                  'Undelete',
+                  style: TextStyle(fontSize: 16, color: Colors.blue),
+                ),
+              ),
+            ),
         ],
       ),
     );

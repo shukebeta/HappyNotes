@@ -16,11 +16,11 @@ class NoteDetailController {
   bool isEditing = false;
   bool isLoading = false;
 
-  Future<Note?> fetchNote(BuildContext context, int noteId) async {
+  Future<Note?> fetchNote(BuildContext context, int noteId, {bool includeDeleted = false}) async {
     isLoading = true;
     final scaffoldContext = ScaffoldMessenger.of(context);
     try {
-      _originalNote = await _notesService.get(noteId);
+      _originalNote = await _notesService.get(noteId, includeDeleted: includeDeleted);
       return _originalNote;
     } catch (error) {
       Util.showError(scaffoldContext, error.toString());
@@ -43,15 +43,27 @@ class NoteDetailController {
     }
   }
 
-  Future<void> deleteNote(BuildContext context, int noteId) async {
+  Future<void> deleteNote(BuildContext context, int noteId, void Function(bool needRefresh) onSuccess) async {
     final scaffoldContext = ScaffoldMessenger.of(context);
-    final navigator = Navigator.of(context);
     try {
       await _notesService.delete(noteId);
-      navigator.pop();
+      onSuccess(true);
       Util.showInfo(scaffoldContext, 'Note successfully deleted.');
     } catch (error) {
       Util.showError(scaffoldContext, error.toString());
+      onSuccess(false);
+    }
+  }
+
+  Future<void> undeleteNote(BuildContext context, int noteId, void Function(bool needRefresh) onSuccess) async {
+    final scaffoldContext = ScaffoldMessenger.of(context);
+    try {
+      await _notesService.undelete(noteId);
+      onSuccess(true);
+      Util.showInfo(scaffoldContext, 'Note successfully undeleted.');
+    } catch (error) {
+      Util.showError(scaffoldContext, error.toString());
+      onSuccess(false);
     }
   }
 

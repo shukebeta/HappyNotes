@@ -8,6 +8,7 @@ import '../../services/dialog_services.dart';
 import '../account/user_session.dart';
 import '../components/note_view.dart';
 import '../../services/notes_services.dart';
+import '../trash_bin/trash_bin_page.dart';
 import 'note_detail_controller.dart';
 
 // ignore: must_be_immutable
@@ -41,11 +42,14 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
   void didChangeDependencies() async {
     super.didChangeDependencies();
     if (!_initialized) {
-      note = await _controller.fetchNote(context, note?.id ?? widget.noteId!);
+      bool includeDeleted = widget.note?.deletedAt != null;
+      note = await _controller.fetchNote(
+        context,
+        note?.id ?? widget.noteId!,
+        includeDeleted: includeDeleted,
+      );
       _initialized = true;
-      setState(() {
-
-      });
+      setState(() {});
     }
   }
 
@@ -119,15 +123,42 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
                                 context,
                                 title: 'Delete note',
                                 text: 'Each note is a story, are you sure you want to delete it?',
-                                yesCallback: () => _controller.deleteNote(context, note?.id ?? widget.noteId!),
+                                yesCallback: () => _controller.deleteNote(
+                                  context,
+                                  note?.id ?? widget.noteId!,
+                                  (needRefresh) => Navigator.of(context).pop(needRefresh),
+                                ),
+                              );
+                            } else if (value == 'undelete') {
+                              await DialogService.showConfirmDialog(
+                                context,
+                                title: 'Undelete note',
+                                text: 'Are you sure you want to undelete this note?',
+                                yesCallback: () async {
+                                  _controller.undeleteNote(
+                                    context,
+                                    note?.id ?? widget.noteId!,
+                                    (needRefresh) => Navigator.of(context).pop(needRefresh),
+                                  );
+                                },
+                              );
+                            } else if (value == 'trash_bin') {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => const TrashBinPage()),
                               );
                             }
                           },
                           itemBuilder: (BuildContext context) {
                             return [
+                              PopupMenuItem<String>(
+                                value: note?.deletedAt != null ? 'undelete' : 'delete',
+                                child: Text(note?.deletedAt != null ? 'Undelete' : 'Delete'),
+                              ),
+                              const PopupMenuDivider(),
                               const PopupMenuItem<String>(
-                                value: 'delete',
-                                child: Text('Delete'),
+                                value: 'trash_bin',
+                                child: Text('Trash Bin'),
                               ),
                             ];
                           },
@@ -144,7 +175,26 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
                   child: Consumer<NoteModel>(
                     builder: (context, noteModel, child) {
                       if (note == null) return const Text("Note doesn't exist, or, you don't have permission to read it.");
-                      return _controller.isEditing ? NoteEdit(note: note!) : NoteView(note: note!);
+                      return Column(
+                        children: [
+                          if (note?.deletedAt != null)
+                            Container(
+                              width: double.infinity,
+                              color: Colors.red.withOpacity(0.2),
+                              padding: const EdgeInsets.all(8.0),
+                              child: const Text(
+                                'You are viewing a deleted note',
+                                style: TextStyle(color: Colors.red),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          Expanded(
+                            child: _controller.isEditing
+                                ? NoteEdit(note: note!)
+                                : NoteView(note: note!),
+                          ),
+                        ],
+                      );
                     },
                   ),
                 ),
