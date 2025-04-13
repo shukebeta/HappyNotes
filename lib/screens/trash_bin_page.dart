@@ -20,6 +20,7 @@ class TrashBinPageState extends State<TrashBinPage> {
   int _currentPageNumber = 1;
   int _totalPages = 1;
   bool _isPurging = false;
+  bool _isLoading = true;
 
   @override
   void initState() {
@@ -28,13 +29,22 @@ class TrashBinPageState extends State<TrashBinPage> {
   }
 
   Future<void> _fetchTrashedNotes() async {
+    if (_isLoading) {
+      setState(() {
+        _isLoading = true;
+      });
+    }
     try {
       var result = await _notesService.latestDeleted(AppConfig.pageSize, _currentPageNumber);
       setState(() {
         _trashedNotes = result.notes;
         _totalPages = (result.totalNotes / AppConfig.pageSize).ceil();
+        _isLoading = false;
       });
     } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
       // Handle error
     }
   }
@@ -51,41 +61,43 @@ class TrashBinPageState extends State<TrashBinPage> {
       body: Column(
         children: [
           Expanded(
-            child: _trashedNotes.isEmpty
-                ? const Center(child: Text('No notes in the trash bin.'))
-                : RefreshIndicator(
-                    onRefresh: _fetchTrashedNotes,
-                    child: ListView(
-                      children: _trashedNotes.map((note) {
-                        return NoteListItem(
-                          note: note,
-                          onTap: (note) async {
-                            try {
-                              Note fullNote = await _notesService.get(note.id, includeDeleted: true);
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) => NoteDetail(note: fullNote)),
-                              );
-                            } catch (e) {
-                              // Handle error
-                            }
-                          },
-                          onRestoreTap: (note) async {
-                            try {
-                              await _notesService.undelete(note.id);
-                              _fetchTrashedNotes();
-                            } catch (e) {
-                              // Handle error
-                            }
-                          },
-                          showDate: true,
-                          showRestoreButton: true,
-                        );
-                      }).toList(),
-                    ),
-                  ),
+            child: _isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : _trashedNotes.isEmpty
+                    ? const Center(child: Text('No notes in the trash bin.'))
+                    : RefreshIndicator(
+                        onRefresh: _fetchTrashedNotes,
+                        child: ListView(
+                          children: _trashedNotes.map((note) {
+                            return NoteListItem(
+                              note: note,
+                              onTap: (note) async {
+                                try {
+                                  Note fullNote = await _notesService.get(note.id, includeDeleted: true);
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => NoteDetail(note: fullNote)),
+                                  );
+                                } catch (e) {
+                                  // Handle error
+                                }
+                              },
+                              onRestoreTap: (note) async {
+                                try {
+                                  await _notesService.undelete(note.id);
+                                  _fetchTrashedNotes();
+                                } catch (e) {
+                                  // Handle error
+                                }
+                              },
+                              showDate: true,
+                              showRestoreButton: true,
+                            );
+                          }).toList(),
+                        ),
+                      ),
           ),
-          if (_totalPages > 1)
+          if (_totalPages > 1 && !_isLoading)
             PaginationControls(
               currentPage: _currentPageNumber,
               totalPages: _totalPages,
