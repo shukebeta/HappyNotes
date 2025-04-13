@@ -43,27 +43,27 @@ class NoteDetailController {
     }
   }
 
-  Future<void> deleteNote(BuildContext context, int noteId) async {
+  Future<void> deleteNote(BuildContext context, int noteId, void Function(bool needRefresh) onSuccess) async {
     final scaffoldContext = ScaffoldMessenger.of(context);
-    final navigator = Navigator.of(context);
     try {
       await _notesService.delete(noteId);
-      navigator.pop();
+      onSuccess(true);
       Util.showInfo(scaffoldContext, 'Note successfully deleted.');
     } catch (error) {
       Util.showError(scaffoldContext, error.toString());
+      onSuccess(false);
     }
   }
 
-  Future<void> undeleteNote(BuildContext context, int noteId) async {
+  Future<void> undeleteNote(BuildContext context, int noteId, void Function(bool needRefresh) onSuccess) async {
     final scaffoldContext = ScaffoldMessenger.of(context);
-    final navigator = Navigator.of(context);
     try {
       await _notesService.undelete(noteId);
-      navigator.pop();
+      onSuccess(true);
       Util.showInfo(scaffoldContext, 'Note successfully undeleted.');
     } catch (error) {
       Util.showError(scaffoldContext, error.toString());
+      onSuccess(false);
     }
   }
 

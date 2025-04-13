@@ -123,14 +123,24 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
                                 context,
                                 title: 'Delete note',
                                 text: 'Each note is a story, are you sure you want to delete it?',
-                                yesCallback: () => _controller.deleteNote(context, note?.id ?? widget.noteId!),
+                                yesCallback: () => _controller.deleteNote(
+                                  context,
+                                  note?.id ?? widget.noteId!,
+                                  (needRefresh) => Navigator.of(context).pop(needRefresh),
+                                ),
                               );
                             } else if (value == 'undelete') {
                               await DialogService.showConfirmDialog(
                                 context,
                                 title: 'Undelete note',
                                 text: 'Are you sure you want to undelete this note?',
-                                yesCallback: () => _controller.undeleteNote(context, note?.id ?? widget.noteId!),
+                                yesCallback: () async {
+                                  _controller.undeleteNote(
+                                    context,
+                                    note?.id ?? widget.noteId!,
+                                    (needRefresh) => Navigator.of(context).pop(needRefresh),
+                                  );
+                                },
                               );
                             } else if (value == 'trash_bin') {
                               Navigator.push(
