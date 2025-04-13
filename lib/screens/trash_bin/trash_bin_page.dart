@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:happy_notes/entities/note.dart';
 import 'package:happy_notes/screens/note_detail/note_detail.dart';
 import 'package:happy_notes/screens/trash_bin/trash_bin_controller.dart';
+import 'package:happy_notes/services/dialog_services.dart';
 import '../components/pagination_controls.dart';
 import '../components/note_list_item.dart';
 import '../account/user_session.dart';
@@ -116,8 +117,18 @@ class TrashBinPageState extends State<TrashBinPage> {
       onPressed: _controller.isPurging
           ? null
           : () async {
-              await _controller.purgeDeleted();
-              setState(() {});
+              final bool? shouldPurge = await DialogService.showConfirmDialog(
+                context,
+                title: 'Empty Trash Bin',
+                text: 'Are you sure you want to empty the trash bin? This action cannot be undone.',
+                noText: 'Cancel',
+                yesText: 'Empty',
+              );
+
+              if (shouldPurge ?? false) {
+                await _controller.purgeDeleted();
+                setState(() {});
+              }
             },
     );
   }
