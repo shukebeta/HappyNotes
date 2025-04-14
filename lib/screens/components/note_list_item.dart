@@ -37,7 +37,7 @@ class NoteListItem extends StatelessWidget {
 
     Widget child = _buildChild(context);
 
-    if (onDelete != null) {
+    if (onDelete != null && note.userId == UserSession().id) {
       return Dismissible(
         key: Key(note.id.toString()),
         direction: DismissDirection.endToStart,

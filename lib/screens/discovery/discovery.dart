@@ -133,6 +133,7 @@ class DiscoveryState extends State<Discovery> {
       children: [
         Expanded(
           child: NoteList(
+            showAuthor: true,
             notes: _discoveryController.notes,
             onTap: (note) async {
               await Navigator.push(
@@ -152,8 +153,13 @@ class DiscoveryState extends State<Discovery> {
               );
               navigateToPage(currentPageNumber);
             },
-            onTagTap: (note,tag) => NavigationHelper.onTagTap(context, note, tag),
+            onTagTap: (note, tag) => NavigationHelper.onTagTap(context, note, tag),
             onRefresh: () async => await refreshPage(),
+            onDelete: (note) async {
+              if (note.userId == UserSession().id) {
+                await _discoveryController.deleteNote(context, note.id);
+              }
+            },
           ),
         ),
         if (_discoveryController.totalPages > 1 && UserSession().isDesktop)
