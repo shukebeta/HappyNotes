@@ -14,17 +14,21 @@ class TagNotesController {
   int get _totalNotes => _realTotalNotes <= 0 ? 1 : _realTotalNotes;
   bool isLoading = false;
 
-  TagNotesController({required NotesService notesService, required NoteTagService noteTagService})
+  TagNotesController(
+      {required NotesService notesService,
+      required NoteTagService noteTagService})
       : _notesService = notesService,
         _noteTagService = noteTagService;
 
   int get totalPages => (_totalNotes / AppConfig.pageSize).ceil();
 
-  Future<void> loadNotes(BuildContext context, String tag, int pageNumber) async {
+  Future<void> loadNotes(
+      BuildContext context, String tag, int pageNumber) async {
     final scaffoldContext = ScaffoldMessenger.of(context);
     try {
       isLoading = true;
-      var result = await _notesService.tagNotes(tag, AppConfig.pageSize, pageNumber);
+      var result =
+          await _notesService.tagNotes(tag, AppConfig.pageSize, pageNumber);
       _realTotalNotes = result.totalNotes;
       notes = result.notes;
     } catch (error) {
@@ -45,5 +49,17 @@ class TagNotesController {
       isLoading = false;
     }
     return {};
+  }
+
+  Future<void> deleteNote(BuildContext context, int noteId) async {
+    final scaffoldContext = ScaffoldMessenger.of(context);
+    try {
+      isLoading = true;
+      await _notesService.delete(noteId);
+    } catch (error) {
+      Util.showError(scaffoldContext, error.toString());
+    } finally {
+      isLoading = false;
+    }
   }
 }

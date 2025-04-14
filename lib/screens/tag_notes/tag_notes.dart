@@ -71,7 +71,8 @@ class TagNotesState extends State<TagNotes> {
             var tagData = await _tagNotesController.loadTagCloud(context);
             // Show tag diagram on long press
             if (!mounted) return;
-            NavigationHelper.showTagDiagram(context, tagData, myNotesOnly: widget.myNotesOnly);
+            NavigationHelper.showTagDiagram(context, tagData,
+                myNotesOnly: widget.myNotesOnly);
           },
           child: Text('Notes with tag: ${widget.tag}'),
         ),
@@ -113,7 +114,8 @@ class TagNotesState extends State<TagNotes> {
                 }
                 scaffoldContext.showSnackBar(
                   SnackBar(
-                    content: const Text('Successfully saved. Click here to view.'),
+                    content:
+                        const Text('Successfully saved. Click here to view.'),
                     duration: const Duration(seconds: 5),
                     action: SnackBarAction(
                       label: 'View',
@@ -142,7 +144,8 @@ class TagNotesState extends State<TagNotes> {
     }
 
     if (_tagNotesController.notes.isEmpty) {
-      return const Center(child: Text('No notes available. Create a new note to get started.'));
+      return const Center(
+          child: Text('No notes available. Create a new note to get started.'));
     }
 
     return Column(
@@ -164,13 +167,22 @@ class TagNotesState extends State<TagNotes> {
               await Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => NoteDetail(note: note, enterEditing: note.userId == UserSession().id),
+                  builder: (context) => NoteDetail(
+                      note: note,
+                      enterEditing: note.userId == UserSession().id),
                 ),
               );
               navigateToPage(currentPageNumber);
             },
-            onTagTap: (note,tag) => NavigationHelper.onTagTap(context, note, tag),
+            onTagTap: (note, tag) =>
+                NavigationHelper.onTagTap(context, note, tag),
             onRefresh: () async => await navigateToPage(currentPageNumber),
+            onDelete: (note) async {
+              await _tagNotesController.deleteNote(context, note.id);
+            },
+            confirmDismiss: (direction) async {
+              return true;
+            },
           ),
         ),
         if (_tagNotesController.totalPages > 1 && UserSession().isDesktop)
