@@ -177,7 +177,6 @@ class HomePageState extends State<HomePage> {
             onRefresh: () async => await navigateToPage(currentPageNumber),
             onDelete: (note) async {
               await _homePageController.deleteNote(note.id);
-              refreshPage();
             },
           ),
         ),

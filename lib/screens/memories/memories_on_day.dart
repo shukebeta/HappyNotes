@@ -119,11 +119,7 @@ class MemoriesOnDayState extends State<MemoriesOnDay> with RouteAware {
                   },
                   onTagTap: (note, tag) => NavigationHelper.onTagTap(context, note, tag),
                   onDelete: (note) async {
-                    await _controller.deleteNote(context, note.id, (needRefresh) {
-                      if (needRefresh) {
-                        setState(() {});
-                      }
-                    });
+                    await _controller.deleteNote(context, note.id);
                   },
                 ),
                 // Add Note Button

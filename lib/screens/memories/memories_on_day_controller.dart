@@ -14,12 +14,7 @@ class MemoriesOnDayController {
     return notesResult;
   }
 
-  Future<void> deleteNote(BuildContext context, int noteId, Function(bool needRefresh) onSuccess) async {
-    try {
-      await _notesService.delete(noteId);
-      onSuccess(true);
-    } catch (error) {
-      onSuccess(false);
-    }
+  Future<void> deleteNote(BuildContext context, int noteId) async {
+    await _notesService.delete(noteId);
   }
 }
