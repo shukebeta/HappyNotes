@@ -71,6 +71,8 @@ class NoteEditState extends State<NoteEdit> {
 
   @override
   void dispose() {
+    _tagListTimer?.cancel();
+    _tagListOverlay?.remove();
     controller.dispose();
     super.dispose();
   }
@@ -91,44 +93,50 @@ class NoteEditState extends State<NoteEdit> {
   }
 
   Widget _buildEditor(NoteModel noteModel) {
-    return TextField(
-      controller: controller,
-      focusNode: noteModel.focusNode,
-      keyboardType: TextInputType.multiline,
-      maxLines: null,
-      expands: true,
-      textAlignVertical: TextAlignVertical.top,
-      decoration: InputDecoration(
-        hintText: prompt,
-        border: OutlineInputBorder(
-          borderSide: BorderSide(
-            color: noteModel.isPrivate ? Colors.blue : Colors.green,
-            width: 2.0,
-          ),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderSide: BorderSide(
-            color: noteModel.isPrivate ? Colors.blueAccent : Colors.greenAccent,
-            width: 2.0,
-          ),
-        ),
-      ),
-      onChanged: (text) {
-        noteModel.content = text;
-        _handleTextChanged(text, controller.selection, noteModel);
+    return Listener(
+      onPointerDown: (event) {
+        if (_tagListOverlay != null) {
+          _tagListOverlay?.remove();
+          _tagListOverlay = null;
+        }
       },
+      child: TextField(
+        controller: controller,
+        focusNode: noteModel.focusNode,
+        keyboardType: TextInputType.multiline,
+        maxLines: null,
+        expands: true,
+        textAlignVertical: TextAlignVertical.top,
+        decoration: InputDecoration(
+          hintText: prompt,
+          border: OutlineInputBorder(
+            borderSide: BorderSide(
+              color: noteModel.isPrivate ? Colors.blue : Colors.green,
+              width: 2.0,
+            ),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+              color: noteModel.isPrivate ? Colors.blueAccent : Colors.greenAccent,
+              width: 2.0,
+            ),
+          ),
+        ),
+        onChanged: (text) {
+          noteModel.content = text;
+          _handleTextChanged(text, controller.selection, noteModel);
+        },
+      ),
     );
   }
 
-  void _handleTextChanged(
-      String text, TextSelection selection, NoteModel noteModel) {
+  void _handleTextChanged(String text, TextSelection selection, NoteModel noteModel) {
     final cursorPosition = selection.baseOffset;
     if (cursorPosition > 0 && text[cursorPosition - 1] == '#') {
       _tagListTimer?.cancel();
       _tagListTimer = Timer(const Duration(milliseconds: 200), () async {
         final tagCloud = await noteTagService.getMyTagCloud();
-        final sortedTags = tagCloud.keys.toList()
-          ..sort((a, b) => tagCloud[b]!.compareTo(tagCloud[a]!));
+        final sortedTags = tagCloud.keys.toList()..sort((a, b) => tagCloud[b]!.compareTo(tagCloud[a]!));
         final top5Tags = sortedTags.take(5).toList();
         _showTagList(top5Tags, noteModel, text, cursorPosition);
       });
@@ -139,8 +147,7 @@ class NoteEditState extends State<NoteEdit> {
     }
   }
 
-  void _showTagList(
-      List<String> tags, NoteModel noteModel, String text, int cursorPosition) {
+  void _showTagList(List<String> tags, NoteModel noteModel, String text, int cursorPosition) {
     if (_tagListOverlay != null) return;
 
     _tagListOverlay = OverlayEntry(
@@ -158,10 +165,7 @@ class NoteEditState extends State<NoteEdit> {
                 title: Text(tags[index]),
                 onTap: () {
                   final tag = tags[index];
-                  final newText = text.substring(0, cursorPosition) +
-                      tag +
-                      ' ' +
-                      text.substring(cursorPosition);
+                  final newText = text.substring(0, cursorPosition) + tag + ' ' + text.substring(cursorPosition);
                   noteModel.content = newText;
                   controller.selection = TextSelection.fromPosition(
                     TextPosition(offset: cursorPosition + tag.length + 1),
@@ -221,12 +225,8 @@ class NoteEditState extends State<NoteEdit> {
             maintainAnimation: true,
             maintainState: true,
             child: IconButton(
-              onPressed: noteModel.isMarkdown
-                  ? () => _pickAndUploadImage(context, noteModel)
-                  : null,
-              icon: noteModel.isUploading
-                  ? const CircularProgressIndicator()
-                  : const Icon(Icons.add_photo_alternate),
+              onPressed: noteModel.isMarkdown ? () => _pickAndUploadImage(context, noteModel) : null,
+              icon: noteModel.isUploading ? const CircularProgressIndicator() : const Icon(Icons.add_photo_alternate),
               iconSize: 24.0,
               padding: const EdgeInsets.all(12.0),
             ),
@@ -240,9 +240,7 @@ class NoteEditState extends State<NoteEdit> {
             onPressed: () async {
               await _pasteFromClipboard(context, noteModel);
             },
-            icon: noteModel.isPasting
-                ? const CircularProgressIndicator()
-                : const Icon(Icons.paste),
+            icon: noteModel.isPasting ? const CircularProgressIndicator() : const Icon(Icons.paste),
             iconSize: 24.0,
             padding: const EdgeInsets.all(12.0),
           ),
@@ -270,8 +268,7 @@ class NoteEditState extends State<NoteEdit> {
     return result ?? false;
   }
 
-  Future<void> _pickAndUploadImage(
-      BuildContext context, NoteModel noteModel) async {
+  Future<void> _pickAndUploadImage(BuildContext context, NoteModel noteModel) async {
     final scaffoldMessengerState = ScaffoldMessenger.of(context);
 
     // Show warning dialog first
@@ -302,8 +299,7 @@ class NoteEditState extends State<NoteEdit> {
     caseSensitive: false,
   );
 
-  Future<void> _pasteFromClipboard(
-      BuildContext context, NoteModel noteModel) async {
+  Future<void> _pasteFromClipboard(BuildContext context, NoteModel noteModel) async {
     final scaffoldMessengerState = ScaffoldMessenger.of(context);
     try {
       noteModel.setPasting(true);
@@ -312,15 +308,9 @@ class NoteEditState extends State<NoteEdit> {
           text = text.trim();
           if (text.isEmpty) return;
 
-          final processedText =
-              noteModel.isMarkdown && _urlPattern.hasMatch(text)
-                  ? _processUrl(text)
-                  : text;
+          final processedText = noteModel.isMarkdown && _urlPattern.hasMatch(text) ? _processUrl(text) : text;
 
-          final separator =
-              noteModel.content.isEmpty || noteModel.content.endsWith('\n')
-                  ? ''
-                  : '\n';
+          final separator = noteModel.content.isEmpty || noteModel.content.endsWith('\n') ? '' : '\n';
           noteModel.content += separator + processedText;
         },
         (error) {
