@@ -153,6 +153,7 @@ class TagNotesState extends State<TagNotes> {
       children: [
         Expanded(
           child: NoteList(
+            showDate: true,
             notes: _tagNotesController.notes,
             onTap: (note) async {
               await Navigator.push(
