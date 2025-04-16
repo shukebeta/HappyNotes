@@ -179,14 +179,16 @@ class NoteEditState extends State<NoteEdit> {
   void _showTagList(
       List<String> tags, NoteModel noteModel, String text, int cursorPosition) {
     if (_tagListOverlay != null) return;
+    if (tags.isEmpty) return;
 
     _tagListOverlay = OverlayEntry(
       builder: (context) => Positioned(
-        top: noteModel.focusNode.offset.dy + 40,
-        left: 0,
-        width: MediaQuery.of(context).size.width,
+        top: _calculateTopPosition(noteModel, cursorPosition, context),
+        left: _calculateLeftPosition(noteModel, cursorPosition, context, tags),
+        width: _calculateOverlayWidth(tags),
         child: Material(
           elevation: 4.0,
+          color: Colors.grey[200],
           child: ListView.builder(
             shrinkWrap: true,
             itemCount: tags.length,
@@ -227,6 +229,45 @@ class NoteEditState extends State<NoteEdit> {
     );
 
     Overlay.of(context).insert(_tagListOverlay!);
+  }
+
+  double _calculateTopPosition(
+      NoteModel noteModel, int cursorPosition, BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final baseTop = noteModel.focusNode.offset.dy + 40;
+    final overlayHeight = 200.0; // Approximate height of the overlay
+    if (baseTop + overlayHeight > screenHeight) {
+      return baseTop -
+          overlayHeight -
+          40; // Position above the cursor if near bottom
+    }
+    return baseTop;
+  }
+
+  double _calculateLeftPosition(NoteModel noteModel, int cursorPosition,
+      BuildContext context, List<String> tags) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final overlayWidth = _calculateOverlayWidth(tags);
+    // Rough estimation of cursor horizontal position based on character count per line
+    final text = controller.text.substring(0, cursorPosition);
+    final lines = text.split('\n');
+    final lastLine = lines.isNotEmpty ? lines.last : '';
+    final estimatedCursorX =
+        lastLine.length * 8.0; // Rough estimation: 8 pixels per character
+    final baseLeft = noteModel.focusNode.offset.dx + estimatedCursorX;
+    if (baseLeft + overlayWidth > screenWidth) {
+      return screenWidth -
+          overlayWidth -
+          10; // Adjust to stay within screen bounds
+    }
+    return baseLeft;
+  }
+
+  double _calculateOverlayWidth(List<String> tags) {
+    if (tags.isEmpty) return 300.0;
+    final longestTag = tags.reduce((a, b) => a.length > b.length ? a : b);
+    // Rough estimation: 10 pixels per character + padding
+    return longestTag.length * 10.0 + 40.0;
   }
 
   Widget _buildActionButtons(BuildContext context, NoteModel noteModel) {
