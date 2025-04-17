@@ -88,12 +88,17 @@ class NoteListItem extends StatelessWidget {
             thickness: 1,
           ),
         ),
-        Text(' ${note.id}    ',
+        Text(' ${note.id} ',
             style: TextStyle(
               fontWeight: FontWeight.w100,
               color: Colors.blue.shade300,
               fontSize: 13,
-            ))
+            )),
+        const Icon(
+          Icons.open_in_new,
+          color: Colors.blue,
+          size: 14,
+        )
       ],
     );
   }
@@ -173,16 +178,6 @@ class NoteListItem extends StatelessWidget {
                   ),
                 ),
               ],
-            ),
-            Positioned(
-              top: 2,
-              right: 0,
-              child: IconButton(
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(),
-                icon: const Icon(Icons.open_in_new, size: 15, color: Colors.blue,),
-                onPressed: onTap != null ? () => onTap!(note) : null,
-              ),
             ),
             if (showRestoreButton && note.isDeleted)
               Positioned(
