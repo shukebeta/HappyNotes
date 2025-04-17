@@ -234,31 +234,34 @@ class NoteEditState extends State<NoteEdit> {
   double _calculateTopPosition(
       NoteModel noteModel, int cursorPosition, BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
-    final baseTop = noteModel.focusNode.offset.dy + 40;
+    final renderObject = noteModel.focusNode.context?.findRenderObject() as RenderBox?;
+    final offset = renderObject?.localToGlobal(Offset.zero);
+    final text = controller.text.substring(0, cursorPosition);
+    final lines = text.split('\n');
+    final lineHeight = 20.0; // Approximate line height
+    final cursorLine = lines.length;
+    final baseTop = (offset?.dy ?? 0) + (cursorLine * lineHeight);
     final overlayHeight = 200.0; // Approximate height of the overlay
     if (baseTop + overlayHeight > screenHeight) {
-      return baseTop -
-          overlayHeight -
-          40; // Position above the cursor if near bottom
+      return baseTop - overlayHeight - lineHeight; // Position above the cursor if near bottom
     }
     return baseTop;
   }
-
+  
   double _calculateLeftPosition(NoteModel noteModel, int cursorPosition,
       BuildContext context, List<String> tags) {
     final screenWidth = MediaQuery.of(context).size.width;
     final overlayWidth = _calculateOverlayWidth(tags);
-    // Rough estimation of cursor horizontal position based on character count per line
+    final renderObject = noteModel.focusNode.context?.findRenderObject() as RenderBox?;
+    final offset = renderObject?.localToGlobal(Offset.zero);
     final text = controller.text.substring(0, cursorPosition);
     final lines = text.split('\n');
     final lastLine = lines.isNotEmpty ? lines.last : '';
     final estimatedCursorX =
         lastLine.length * 8.0; // Rough estimation: 8 pixels per character
-    final baseLeft = noteModel.focusNode.offset.dx + estimatedCursorX;
+    final baseLeft = (offset?.dx ?? 0) + estimatedCursorX;
     if (baseLeft + overlayWidth > screenWidth) {
-      return screenWidth -
-          overlayWidth -
-          10; // Adjust to stay within screen bounds
+      return screenWidth - overlayWidth - 10; // Adjust to stay within screen bounds
     }
     return baseLeft;
   }
