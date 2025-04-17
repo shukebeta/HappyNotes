@@ -200,17 +200,10 @@ class NoteEditState extends State<NoteEdit> {
                   String newText;
                   int newCursorPosition;
                   if (cursorPosition > 0 && text[cursorPosition - 1] == '#') {
-                    newText = text.substring(0, cursorPosition) +
-                        tag +
-                        ' ' +
-                        text.substring(cursorPosition);
+                    newText = '${text.substring(0, cursorPosition)}$tag ${text.substring(cursorPosition)}';
                     newCursorPosition = cursorPosition + tag.length + 1;
                   } else {
-                    newText = text.substring(0, cursorPosition) +
-                        '#' +
-                        tag +
-                        ' ' +
-                        text.substring(cursorPosition);
+                    newText = '${text.substring(0, cursorPosition)}#$tag ${text.substring(cursorPosition)}';
                     newCursorPosition = cursorPosition + tag.length + 2;
                   }
                   noteModel.content = newText;
@@ -238,10 +231,10 @@ class NoteEditState extends State<NoteEdit> {
     final offset = renderObject?.localToGlobal(Offset.zero);
     final text = controller.text.substring(0, cursorPosition);
     final lines = text.split('\n');
-    final lineHeight = 20.0; // Approximate line height
+    const lineHeight = 20.0; // Approximate line height
     final cursorLine = lines.length;
     final baseTop = (offset?.dy ?? 0) + (cursorLine * lineHeight);
-    final overlayHeight = 200.0; // Approximate height of the overlay
+    const overlayHeight = 150.0; // Approximate height of the overlay
     if (baseTop + overlayHeight > screenHeight) {
       return baseTop - overlayHeight - lineHeight; // Position above the cursor if near bottom
     }
@@ -354,6 +347,8 @@ class NoteEditState extends State<NoteEdit> {
       return true;
     }
 
+    if (!mounted) return false;
+    
     final result = await showDialog<bool>(
       context: context,
       barrierDismissible: false,
@@ -410,11 +405,15 @@ class NoteEditState extends State<NoteEdit> {
                   ? _processUrl(text)
                   : text;
 
-          final separator =
-              noteModel.content.isEmpty || noteModel.content.endsWith('\n')
-                  ? ''
-                  : '\n';
-          noteModel.content += separator + processedText;
+          final cursorPosition = controller.selection.baseOffset;
+          if (cursorPosition >= 0) {
+            noteModel.content = noteModel.content.substring(0, cursorPosition) + processedText + noteModel.content.substring(cursorPosition);
+            controller.selection = TextSelection.fromPosition(
+              TextPosition(offset: cursorPosition + processedText.length),
+            );
+          } else {
+            noteModel.content += processedText;
+          }
         },
         (error) {
           Util.showError(scaffoldMessengerState, error);
