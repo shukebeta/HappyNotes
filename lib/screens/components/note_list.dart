@@ -13,6 +13,7 @@ class NoteList extends StatelessWidget {
   final bool showDateHeader;
   final bool showAuthor;
   final bool showRestoreButton;
+  final bool? showDate;
   final Function(Note)? onRestoreTap;
   final Function(Note)? onDelete;
   final Future<bool> Function(DismissDirection)? confirmDismiss;
@@ -31,6 +32,7 @@ class NoteList extends StatelessWidget {
     this.showDateHeader = false,
     this.showAuthor = false,
     this.showRestoreButton = false,
+    this.showDate,
   }) : super(key: key);
 
   @override
@@ -89,7 +91,7 @@ class NoteList extends StatelessWidget {
                     onRestoreTap: onRestoreTap,
                     onDelete: onDelete,
                     confirmDismiss: confirmDismiss,
-                    showDate: !showDateHeader,
+                    showDate: showDate ?? !showDateHeader,
                     showAuthor: showAuthor,
                     showRestoreButton: showRestoreButton,
                   ),
