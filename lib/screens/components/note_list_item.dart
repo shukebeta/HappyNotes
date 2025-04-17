@@ -16,7 +16,7 @@ class NoteListItem extends StatelessWidget {
   final Function(Note)? onDelete;
   final Future<bool> Function(DismissDirection)? confirmDismiss;
 
-  NoteListItem({
+  const NoteListItem({
     super.key,
     required this.note,
     this.onTap,
@@ -32,8 +32,6 @@ class NoteListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var author = (note.user == null || note.userId == UserSession().id || !showAuthor) ? '' : '${note.user!.username} ';
-    var date = showDate ? '${note.createdDate} ' : '';
 
     Widget child = _buildChild(context);
 
@@ -59,6 +57,47 @@ class NoteListItem extends StatelessWidget {
     }
   }
 
+  Widget _buildNoteMetadata(Note note, String date, String author) {
+    return Row(
+      children: [
+        Text(
+          '- $date${note.createdTime} $author - ',
+          style: const TextStyle(
+            fontWeight: FontWeight.w300,
+            color: Colors.blue,
+            fontSize: 13,
+          ),
+        ),
+        ...[
+          if (note.isPrivate)
+            Icon(
+              Icons.lock,
+              color: Colors.grey.shade300,
+              size: 14,
+            ),
+          const Text(
+            ' ',
+            style: TextStyle(
+              fontSize: 13,
+            ),
+          ),
+        ],
+        Expanded(
+          child: Divider(
+            color: Colors.grey.shade300,
+            thickness: 1,
+          ),
+        ),
+        Text(' ${note.id}    ',
+            style: TextStyle(
+              fontWeight: FontWeight.w100,
+              color: Colors.blue.shade300,
+              fontSize: 13,
+            ))
+      ],
+    );
+  }
+
   Widget _buildChild(BuildContext context) {
     var author = (note.user == null || note.userId == UserSession().id || !showAuthor) ? '' : '${note.user!.username} ';
     var date = showDate ? '${note.createdDate} ' : '';
@@ -73,44 +112,7 @@ class NoteListItem extends StatelessWidget {
               children: [
                 Padding(
                   padding: const EdgeInsets.fromLTRB(4, 0, 4, 4),
-                  child: Row(
-                    children: [
-                      Text(
-                        '- $date${note.createdTime} $author - ',
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w300,
-                          color: Colors.blue,
-                          fontSize: 13,
-                        ),
-                      ),
-                      ...[
-                        if (note.isPrivate)
-                          Icon(
-                            Icons.lock,
-                            color: Colors.grey.shade300,
-                            size: 14,
-                          ),
-                        const Text(
-                          ' ',
-                          style: TextStyle(
-                            fontSize: 13,
-                          ),
-                        ),
-                      ],
-                      Expanded(
-                        child: Divider(
-                          color: Colors.grey.shade300,
-                          thickness: 1,
-                        ),
-                      ),
-                      Text(' ${note.id}    ',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w100,
-                            color: Colors.blue.shade300,
-                            fontSize: 13,
-                          ))
-                    ],
-                  ),
+                  child: _buildNoteMetadata(note, date, author),
                 ),
                 Padding(
                   padding: EdgeInsets.fromLTRB(4, 0, UserSession().isDesktop ? 4 : 16, 10),
