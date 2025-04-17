@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:happy_notes/screens/account/user_session.dart';
 import '../../entities/note.dart';
 import 'markdown_body_here.dart';
-import 'tag_widget.dart'; // Import your TagWidget
+import 'tag_widget.dart';
 
 class NoteListItem extends StatelessWidget {
   final Note note;
@@ -103,7 +103,7 @@ class NoteListItem extends StatelessWidget {
                           thickness: 1,
                         ),
                       ),
-                      Text(' ${note.id} ',
+                      Text(' ${note.id}    ',
                           style: TextStyle(
                             fontWeight: FontWeight.w100,
                             color: Colors.blue.shade300,
@@ -171,6 +171,16 @@ class NoteListItem extends StatelessWidget {
                   ),
                 ),
               ],
+            ),
+            Positioned(
+              top: 2,
+              right: 0,
+              child: IconButton(
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(),
+                icon: const Icon(Icons.open_in_new, size: 15, color: Colors.blue,),
+                onPressed: onTap != null ? () => onTap!(note) : null,
+              ),
             ),
             if (showRestoreButton && note.isDeleted)
               Positioned(
