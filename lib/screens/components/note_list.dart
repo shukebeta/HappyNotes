@@ -10,7 +10,7 @@ class NoteList extends StatelessWidget {
   final Function(Note)? onDoubleTap;
   final Function(Note note, String tag)? onTagTap;
   final Future<void> Function()? onRefresh;
-  final bool showDate;
+  final bool showDateHeader;
   final bool showAuthor;
   final bool showRestoreButton;
   final Function(Note)? onRestoreTap;
@@ -27,8 +27,8 @@ class NoteList extends StatelessWidget {
     this.onRefresh,
     this.onRestoreTap,
     this.onDelete,
-    this.confirmDismiss = null,
-    this.showDate = false,
+    this.confirmDismiss,
+    this.showDateHeader = false,
     this.showAuthor = false,
     this.showRestoreButton = false,
   }) : super(key: key);
@@ -55,7 +55,7 @@ class NoteList extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Date header
-              if (showDate)
+              if (showDateHeader)
                 Padding(
                   padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
                   child: Align(
@@ -89,7 +89,7 @@ class NoteList extends StatelessWidget {
                     onRestoreTap: onRestoreTap,
                     onDelete: onDelete,
                     confirmDismiss: confirmDismiss,
-                    showDate: showDate,
+                    showDate: !showDateHeader,
                     showAuthor: showAuthor,
                     showRestoreButton: showRestoreButton,
                   ),

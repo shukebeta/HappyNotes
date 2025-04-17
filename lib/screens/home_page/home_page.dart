@@ -148,6 +148,7 @@ class HomePageState extends State<HomePage> {
       children: [
         Expanded(
           child: NoteList(
+            showDateHeader: true,
             notes: _homePageController.notes,
             onTap: (note) async {
               var needRefresh = await Navigator.push(

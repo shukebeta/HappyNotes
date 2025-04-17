@@ -4,7 +4,7 @@ import 'package:intl/intl.dart';
 
 import '../../utils/navigation_helper.dart';
 import '../account/user_session.dart';
-import '../components/note_list.dart';
+import '../components/note_list_item.dart';
 import '../../dependency_injection.dart';
 import '../../entities/note.dart';
 import '../../services/notes_services.dart';
@@ -95,32 +95,31 @@ class MemoriesOnDayState extends State<MemoriesOnDay> with RouteAware {
             _notes = snapshot.data!.notes;
             return Stack(
               children: [
-                NoteList(
-                  notes: _notes,
-                  showDate: false,
-                  onRefresh: () async {
-                    setState(() {});
-                  },
-                  onTap: (note) async {
-                    await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => NoteDetail(note: note),
-                      ),
-                    );
-                  },
-                  onDoubleTap: (note) async {
-                    await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => NoteDetail(note: note, enterEditing: true),
-                      ),
-                    );
-                  },
-                  onTagTap: (note, tag) => NavigationHelper.onTagTap(context, note, tag),
-                  onDelete: (note) async {
-                    await _controller.deleteNote(context, note.id);
-                  },
+                ListView(
+                  children: _notes.map((note) => NoteListItem(
+                    note: note,
+                    showDate: false,
+                    onTap: (note) async {
+                      await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => NoteDetail(note: note),
+                        ),
+                      );
+                    },
+                    onDoubleTap: (note) async {
+                      await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => NoteDetail(note: note, enterEditing: true),
+                        ),
+                      );
+                    },
+                    onTagTap: (note, tag) => NavigationHelper.onTagTap(context, note, tag),
+                    onDelete: (note) async {
+                      await _controller.deleteNote(context, note.id);
+                    },
+                  )).toList(),
                 ),
                 // Add Note Button
                 Positioned(
