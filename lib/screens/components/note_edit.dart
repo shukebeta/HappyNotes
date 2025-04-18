@@ -102,7 +102,7 @@ class NoteEditState extends State<NoteEdit> {
           _tagListOverlay = null;
         } else {
           _isLongPress = true;
-          Timer(const Duration(milliseconds: 500), () {
+          Timer(const Duration(milliseconds: 800), () {
             if (_isLongPress) {
               final cursorPosition = controller.selection.baseOffset;
               _handleLongPress(noteModel, controller.text, cursorPosition);
@@ -200,10 +200,12 @@ class NoteEditState extends State<NoteEdit> {
                   String newText;
                   int newCursorPosition;
                   if (cursorPosition > 0 && text[cursorPosition - 1] == '#') {
-                    newText = '${text.substring(0, cursorPosition)}$tag ${text.substring(cursorPosition)}';
+                    newText =
+                        '${text.substring(0, cursorPosition)}$tag ${text.substring(cursorPosition)}';
                     newCursorPosition = cursorPosition + tag.length + 1;
                   } else {
-                    newText = '${text.substring(0, cursorPosition)}#$tag ${text.substring(cursorPosition)}';
+                    newText =
+                        '${text.substring(0, cursorPosition)}#$tag ${text.substring(cursorPosition)}';
                     newCursorPosition = cursorPosition + tag.length + 2;
                   }
                   noteModel.content = newText;
@@ -227,7 +229,8 @@ class NoteEditState extends State<NoteEdit> {
   double _calculateTopPosition(
       NoteModel noteModel, int cursorPosition, BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
-    final renderObject = noteModel.focusNode.context?.findRenderObject() as RenderBox?;
+    final renderObject =
+        noteModel.focusNode.context?.findRenderObject() as RenderBox?;
     final offset = renderObject?.localToGlobal(Offset.zero);
     final text = controller.text.substring(0, cursorPosition);
     final lines = text.split('\n');
@@ -235,17 +238,21 @@ class NoteEditState extends State<NoteEdit> {
     final cursorLine = lines.length;
     final baseTop = (offset?.dy ?? 0) + (cursorLine * lineHeight);
     const overlayHeight = 150.0; // Approximate height of the overlay
-    if (baseTop + overlayHeight > screenHeight) {
-      return baseTop - overlayHeight - lineHeight; // Position above the cursor if near bottom
+    // On smaller screens or mobile browsers, prefer positioning above to avoid being cut off
+    if (baseTop + overlayHeight > screenHeight || screenHeight < 600) {
+      return baseTop -
+          overlayHeight -
+          lineHeight; // Position above the cursor if near bottom or small screen
     }
     return baseTop;
   }
-  
+
   double _calculateLeftPosition(NoteModel noteModel, int cursorPosition,
       BuildContext context, List<String> tags) {
     final screenWidth = MediaQuery.of(context).size.width;
     final overlayWidth = _calculateOverlayWidth(tags);
-    final renderObject = noteModel.focusNode.context?.findRenderObject() as RenderBox?;
+    final renderObject =
+        noteModel.focusNode.context?.findRenderObject() as RenderBox?;
     final offset = renderObject?.localToGlobal(Offset.zero);
     final text = controller.text.substring(0, cursorPosition);
     final lines = text.split('\n');
@@ -254,7 +261,9 @@ class NoteEditState extends State<NoteEdit> {
         lastLine.length * 8.0; // Rough estimation: 8 pixels per character
     final baseLeft = (offset?.dx ?? 0) + estimatedCursorX;
     if (baseLeft + overlayWidth > screenWidth) {
-      return screenWidth - overlayWidth - 10; // Adjust to stay within screen bounds
+      return screenWidth -
+          overlayWidth -
+          10; // Adjust to stay within screen bounds
     }
     return baseLeft;
   }
@@ -333,6 +342,21 @@ class NoteEditState extends State<NoteEdit> {
             padding: const EdgeInsets.all(12.0),
           ),
         ),
+        GestureDetector(
+          onTap: () {
+            _handleLongPress(
+                noteModel, controller.text, controller.selection.baseOffset);
+          },
+          behavior: HitTestBehavior.opaque,
+          child: const Padding(
+            padding: EdgeInsets.all(12.0),
+            child: Icon(
+              Icons.tag,
+              color: Colors.black,
+              size: 24.0,
+            ),
+          ),
+        ),
       ],
     );
   }
@@ -348,7 +372,7 @@ class NoteEditState extends State<NoteEdit> {
     }
 
     if (!mounted) return false;
-    
+
     final result = await showDialog<bool>(
       context: context,
       barrierDismissible: false,
@@ -407,7 +431,9 @@ class NoteEditState extends State<NoteEdit> {
 
           final cursorPosition = controller.selection.baseOffset;
           if (cursorPosition >= 0) {
-            noteModel.content = noteModel.content.substring(0, cursorPosition) + processedText + noteModel.content.substring(cursorPosition);
+            noteModel.content = noteModel.content.substring(0, cursorPosition) +
+                processedText +
+                noteModel.content.substring(cursorPosition);
             controller.selection = TextSelection.fromPosition(
               TextPosition(offset: cursorPosition + processedText.length),
             );
