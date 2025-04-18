@@ -2,6 +2,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
+import 'dart:math';
 import 'package:dio/dio.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -181,91 +182,122 @@ class NoteEditState extends State<NoteEdit> {
     if (_tagListOverlay != null) return;
     if (tags.isEmpty) return;
 
-    _tagListOverlay = OverlayEntry(
-      builder: (context) => Positioned(
-        top: _calculateTopPosition(noteModel, cursorPosition, context),
-        left: _calculateLeftPosition(noteModel, cursorPosition, context, tags),
-        width: _calculateOverlayWidth(tags),
-        child: Material(
-          elevation: 4.0,
-          color: Colors.grey[200],
-          child: ListView.builder(
-            shrinkWrap: true,
-            itemCount: tags.length,
-            itemBuilder: (context, index) {
-              return ListTile(
-                title: Text(tags[index]),
-                onTap: () {
-                  final tag = tags[index];
-                  String newText;
-                  int newCursorPosition;
-                  if (cursorPosition > 0 && text[cursorPosition - 1] == '#') {
-                    newText =
-                        '${text.substring(0, cursorPosition)}$tag ${text.substring(cursorPosition)}';
-                    newCursorPosition = cursorPosition + tag.length + 1;
-                  } else {
-                    newText =
-                        '${text.substring(0, cursorPosition)}#$tag ${text.substring(cursorPosition)}';
-                    newCursorPosition = cursorPosition + tag.length + 2;
-                  }
-                  noteModel.content = newText;
-                  controller.selection = TextSelection.fromPosition(
-                    TextPosition(offset: newCursorPosition),
-                  );
-                  noteModel.requestFocus();
-                  _tagListOverlay?.remove();
-                  _tagListOverlay = null;
-                },
-              );
-            },
+    // Delay creation of overlay slightly to get more accurate measurements
+    Future.microtask(() {
+      if (!mounted) return;
+
+      // Calculate positions
+      final screenHeight = MediaQuery.of(context).size.height;
+      final screenWidth = MediaQuery.of(context).size.width;
+
+      final renderObject =
+          noteModel.focusNode.context?.findRenderObject() as RenderBox?;
+      if (renderObject == null) return;
+
+      final offset = renderObject.localToGlobal(Offset.zero);
+
+      // Get cursor position
+      final linePosition = _getCursorLinePosition(cursorPosition);
+      final horizontalPosition = _getCursorHorizontalPosition(cursorPosition);
+
+      // Calculate dimensions
+      const overlayHeight = 150.0;
+      final overlayWidth = _calculateOverlayWidth(tags);
+
+      // Base position calculation
+      double top = offset.dy + linePosition;
+
+      // Get keyboard height (estimate)
+      final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
+      final effectiveScreenHeight = screenHeight - keyboardHeight;
+
+      // Check if we're in the bottom half of the screen or near the bottom
+      final bottomHalf = top > (effectiveScreenHeight / 2);
+      final nearBottom = top + overlayHeight + 50 > effectiveScreenHeight;
+
+      if (bottomHalf || nearBottom) {
+        // Position well above cursor - ensure it's fully visible
+        top = max(10, top - overlayHeight - 50);
+      } else {
+        // Position below cursor with offset
+        top += 24.0; // standard line height
+      }
+
+      // Horizontal position - make sure it's visible
+      double left = offset.dx + horizontalPosition;
+      if (left + overlayWidth > screenWidth) {
+        left = max(10, screenWidth - overlayWidth - 10);
+      }
+      left = max(10, left); // Ensure minimum margin
+
+      // Create and insert overlay
+      _tagListOverlay = OverlayEntry(
+        builder: (context) => Positioned(
+          top: top,
+          left: left,
+          width: overlayWidth,
+          child: Material(
+            elevation: 8.0, // Increased elevation for better visibility
+            borderRadius: BorderRadius.circular(4.0),
+            color: Colors.grey[200],
+            child: ListView.builder(
+              shrinkWrap: true,
+              padding: EdgeInsets.zero,
+              itemCount: tags.length,
+              itemBuilder: (context, index) {
+                return ListTile(
+                  dense: true,
+                  title: Text(tags[index]),
+                  onTap: () {
+                    final tag = tags[index];
+                    String newText;
+                    int newCursorPosition;
+                    if (cursorPosition > 0 && text[cursorPosition - 1] == '#') {
+                      newText =
+                          '${text.substring(0, cursorPosition)}$tag ${text.substring(cursorPosition)}';
+                      newCursorPosition = cursorPosition + tag.length + 1;
+                    } else {
+                      newText =
+                          '${text.substring(0, cursorPosition)}#$tag ${text.substring(cursorPosition)}';
+                      newCursorPosition = cursorPosition + tag.length + 2;
+                    }
+                    noteModel.content = newText;
+                    controller.selection = TextSelection.fromPosition(
+                      TextPosition(offset: newCursorPosition),
+                    );
+                    noteModel.requestFocus();
+                    _tagListOverlay?.remove();
+                    _tagListOverlay = null;
+                  },
+                );
+              },
+            ),
           ),
         ),
-      ),
-    );
+      );
 
-    Overlay.of(context).insert(_tagListOverlay!);
+      if (mounted) {
+        Overlay.of(context).insert(_tagListOverlay!);
+      }
+    });
   }
 
-  double _calculateTopPosition(
-      NoteModel noteModel, int cursorPosition, BuildContext context) {
-    final screenHeight = MediaQuery.of(context).size.height;
-    final renderObject =
-        noteModel.focusNode.context?.findRenderObject() as RenderBox?;
-    final offset = renderObject?.localToGlobal(Offset.zero);
+  // Helper method to get cursor line position
+  double _getCursorLinePosition(int cursorPosition) {
     final text = controller.text.substring(0, cursorPosition);
     final lines = text.split('\n');
-    const lineHeight = 20.0; // Approximate line height
-    final cursorLine = lines.length;
-    final baseTop = (offset?.dy ?? 0) + (cursorLine * lineHeight);
-    const overlayHeight = 150.0; // Approximate height of the overlay
-    // On smaller screens or mobile browsers, prefer positioning above to avoid being cut off
-    if (baseTop + overlayHeight > screenHeight || screenHeight < 600) {
-      return baseTop -
-          overlayHeight -
-          lineHeight; // Position above the cursor if near bottom or small screen
-    }
-    return baseTop;
+    final cursorLine = lines.length - 1; // 0-based index
+    const lineHeight = 24.0;
+    return cursorLine * lineHeight;
   }
 
-  double _calculateLeftPosition(NoteModel noteModel, int cursorPosition,
-      BuildContext context, List<String> tags) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final overlayWidth = _calculateOverlayWidth(tags);
-    final renderObject =
-        noteModel.focusNode.context?.findRenderObject() as RenderBox?;
-    final offset = renderObject?.localToGlobal(Offset.zero);
+  // Helper method to get cursor horizontal position
+  double _getCursorHorizontalPosition(int cursorPosition) {
     final text = controller.text.substring(0, cursorPosition);
     final lines = text.split('\n');
-    final lastLine = lines.isNotEmpty ? lines.last : '';
-    final estimatedCursorX =
-        lastLine.length * 8.0; // Rough estimation: 8 pixels per character
-    final baseLeft = (offset?.dx ?? 0) + estimatedCursorX;
-    if (baseLeft + overlayWidth > screenWidth) {
-      return screenWidth -
-          overlayWidth -
-          10; // Adjust to stay within screen bounds
-    }
-    return baseLeft;
+    final currentLine = lines.isNotEmpty ? lines.last : '';
+    const charWidth = 9.0;
+    return currentLine.length * charWidth;
   }
 
   double _calculateOverlayWidth(List<String> tags) {
