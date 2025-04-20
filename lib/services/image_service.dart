@@ -58,17 +58,9 @@ class ImageService {
       if (text != null && text.isNotEmpty) {
         onSuccess(text);
         return;
-      } else if (text == null) {
-        print('Debug: Clipboard text is null');
-      } else {
-        print('Debug: Clipboard text is empty');
-      }
+      } 
     } catch (e) {
-      print('Debug: Text clipboard access error: $e');
-      if (e.toString().contains('JSObject') || e.toString().contains('TypeError')) {
-        onError('Clipboard access failed. This might be due to browser restrictions or permissions. Please ensure clipboard access is enabled in your browser settings.');
-        return;
-      }
+        print(e.toString());
     }
 
     // If no text found, try image
