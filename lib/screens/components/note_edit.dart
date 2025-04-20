@@ -36,8 +36,6 @@ class NoteEditState extends State<NoteEdit> {
   Timer? _tagListTimer;
   OverlayEntry? _tagListOverlay;
 
-  bool _isLongPress = false;
-
   @override
   void initState() {
     super.initState();
@@ -101,21 +99,7 @@ class NoteEditState extends State<NoteEdit> {
         if (_tagListOverlay != null) {
           _tagListOverlay?.remove();
           _tagListOverlay = null;
-        } else {
-          _isLongPress = true;
-          Timer(const Duration(milliseconds: 800), () {
-            if (_isLongPress) {
-              final cursorPosition = controller.selection.baseOffset;
-              _handleLongPress(noteModel, controller.text, cursorPosition);
-            }
-          });
         }
-      },
-      onPointerUp: (event) {
-        _isLongPress = false;
-      },
-      onPointerCancel: (event) {
-        _isLongPress = false;
       },
       child: TextField(
         controller: controller,
@@ -154,11 +138,7 @@ class NoteEditState extends State<NoteEdit> {
     if (cursorPosition > 0 && text[cursorPosition - 1] == '#') {
       _tagListTimer?.cancel();
       _tagListTimer = Timer(const Duration(milliseconds: 200), () async {
-        final tagCloud = await noteTagService.getMyTagCloud();
-        final sortedTags = tagCloud.keys.toList()
-          ..sort((a, b) => tagCloud[b]!.compareTo(tagCloud[a]!));
-        final top5Tags = sortedTags.take(5).toList();
-        _showTagList(top5Tags, noteModel, text, cursorPosition);
+        _showTagList(noteModel, text, cursorPosition);
       });
     } else {
       _tagListTimer?.cancel();
@@ -167,20 +147,17 @@ class NoteEditState extends State<NoteEdit> {
     }
   }
 
-  void _handleLongPress(
+  void _showTagList(
       NoteModel noteModel, String text, int cursorPosition) async {
+    if (_tagListOverlay != null) return;
+
+    List<String> tagsToShow;
     _tagListTimer?.cancel();
     final tagCloud = await noteTagService.getMyTagCloud();
     final sortedTags = tagCloud.keys.toList()
       ..sort((a, b) => tagCloud[b]!.compareTo(tagCloud[a]!));
-    final top5Tags = sortedTags.take(5).toList();
-    _showTagList(top5Tags, noteModel, text, cursorPosition);
-  }
-
-  void _showTagList(
-      List<String> tags, NoteModel noteModel, String text, int cursorPosition) {
-    if (_tagListOverlay != null) return;
-    if (tags.isEmpty) return;
+    tagsToShow = sortedTags.take(5).toList();
+    if (tagsToShow.isEmpty) return;
 
     // Delay creation of overlay slightly to get more accurate measurements
     Future.microtask(() {
@@ -202,7 +179,7 @@ class NoteEditState extends State<NoteEdit> {
 
       // Calculate dimensions
       const overlayHeight = 150.0;
-      final overlayWidth = _calculateOverlayWidth(tags);
+      final overlayWidth = _calculateOverlayWidth(tagsToShow);
 
       // Base position calculation
       double top = offset.dy + linePosition;
@@ -243,13 +220,13 @@ class NoteEditState extends State<NoteEdit> {
             child: ListView.builder(
               shrinkWrap: true,
               padding: EdgeInsets.zero,
-              itemCount: tags.length,
+              itemCount: tagsToShow.length,
               itemBuilder: (context, index) {
                 return ListTile(
                   dense: true,
-                  title: Text(tags[index]),
+                  title: Text(tagsToShow[index]),
                   onTap: () {
-                    final tag = tags[index];
+                    final tag = tagsToShow[index];
                     String newText;
                     int newCursorPosition;
                     if (cursorPosition > 0 && text[cursorPosition - 1] == '#') {
@@ -376,8 +353,7 @@ class NoteEditState extends State<NoteEdit> {
         ),
         GestureDetector(
           onTap: () {
-            _handleLongPress(
-                noteModel, controller.text, controller.selection.baseOffset);
+            _showTagList(noteModel, controller.text, controller.selection.baseOffset);
           },
           behavior: HitTestBehavior.opaque,
           child: const Padding(
