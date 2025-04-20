@@ -147,74 +147,61 @@ class NoteEditState extends State<NoteEdit> {
     }
   }
 
+  static const int _maxTagsToShow = 5;
+  static const double _overlayHeight = 150.0;
+  static const double _overlayElevation = 8.0;
+  static const double _standardLineHeight = 24.0;
+  static const Duration _tagListTimerDuration = Duration(milliseconds: 200);
+
   void _showTagList(
       NoteModel noteModel, String text, int cursorPosition) async {
     if (_tagListOverlay != null) return;
 
-    List<String> tagsToShow;
     _tagListTimer?.cancel();
-    final tagCloud = await noteTagService.getMyTagCloud();
+
+    try {
+      final tagCloud = await noteTagService.getMyTagCloud();
+      final tagsToShow = _getSortedTags(tagCloud).take(_maxTagsToShow).toList();
+
+      if (tagsToShow.isEmpty) return;
+
+      _createAndShowTagListOverlay(noteModel, text, cursorPosition, tagsToShow);
+    } catch (e) {
+      // Handle the error appropriately
+      print('Error fetching tag cloud: $e');
+    }
+  }
+
+  List<String> _getSortedTags(Map<String, dynamic> tagCloud) {
     final sortedTags = tagCloud.keys.toList()
       ..sort((a, b) => tagCloud[b]!.compareTo(tagCloud[a]!));
-    tagsToShow = sortedTags.take(5).toList();
-    if (tagsToShow.isEmpty) return;
+    return sortedTags;
+  }
 
-    // Delay creation of overlay slightly to get more accurate measurements
+  void _createAndShowTagListOverlay(
+    NoteModel noteModel,
+    String text,
+    int cursorPosition,
+    List<String> tagsToShow,
+  ) {
     Future.microtask(() {
       if (!mounted) return;
 
-      // Calculate positions
-      final screenHeight = MediaQuery.of(context).size.height;
-      final screenWidth = MediaQuery.of(context).size.width;
-
-      final renderObject =
-          noteModel.focusNode.context?.findRenderObject() as RenderBox?;
-      if (renderObject == null) return;
-
-      final offset = renderObject.localToGlobal(Offset.zero);
-
-      // Get cursor position
-      final linePosition = _getCursorLinePosition(cursorPosition);
-      final horizontalPosition = _getCursorHorizontalPosition(cursorPosition);
-
-      // Calculate dimensions
-      const overlayHeight = 150.0;
       final overlayWidth = _calculateOverlayWidth(tagsToShow);
+      final (top, left) = _calculateOverlayPosition(
+        noteModel,
+        cursorPosition,
+        overlayWidth,
+        _overlayHeight,
+      );
 
-      // Base position calculation
-      double top = offset.dy + linePosition;
-
-      // Get keyboard height (estimate)
-      final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
-      final effectiveScreenHeight = screenHeight - keyboardHeight;
-
-      // Check if we're in the bottom half of the screen or near the bottom
-      final bottomHalf = top > (effectiveScreenHeight / 2);
-      final nearBottom = top + overlayHeight + 50 > effectiveScreenHeight;
-
-      if (bottomHalf || nearBottom) {
-        // Position well above cursor - ensure it's fully visible
-        top = max(10, top - overlayHeight - 50);
-      } else {
-        // Position below cursor with offset
-        top += 24.0; // standard line height
-      }
-
-      // Horizontal position - make sure it's visible
-      double left = offset.dx + horizontalPosition;
-      if (left + overlayWidth > screenWidth) {
-        left = max(10, screenWidth - overlayWidth - 10);
-      }
-      left = max(10, left); // Ensure minimum margin
-
-      // Create and insert overlay
       _tagListOverlay = OverlayEntry(
         builder: (context) => Positioned(
           top: top,
           left: left,
           width: overlayWidth,
           child: Material(
-            elevation: 8.0, // Increased elevation for better visibility
+            elevation: _overlayElevation,
             borderRadius: BorderRadius.circular(4.0),
             color: Colors.grey[200],
             child: ListView.builder(
@@ -226,25 +213,12 @@ class NoteEditState extends State<NoteEdit> {
                   dense: true,
                   title: Text(tagsToShow[index]),
                   onTap: () {
-                    final tag = tagsToShow[index];
-                    String newText;
-                    int newCursorPosition;
-                    if (cursorPosition > 0 && text[cursorPosition - 1] == '#') {
-                      newText =
-                          '${text.substring(0, cursorPosition)}$tag ${text.substring(cursorPosition)}';
-                      newCursorPosition = cursorPosition + tag.length + 1;
-                    } else {
-                      newText =
-                          '${text.substring(0, cursorPosition)}#$tag ${text.substring(cursorPosition)}';
-                      newCursorPosition = cursorPosition + tag.length + 2;
-                    }
-                    noteModel.content = newText;
-                    controller.selection = TextSelection.fromPosition(
-                      TextPosition(offset: newCursorPosition),
+                    _handleTagSelection(
+                      noteModel,
+                      text,
+                      cursorPosition,
+                      tagsToShow[index],
                     );
-                    noteModel.requestFocus();
-                    _tagListOverlay?.remove();
-                    _tagListOverlay = null;
                   },
                 );
               },
@@ -257,6 +231,73 @@ class NoteEditState extends State<NoteEdit> {
         Overlay.of(context).insert(_tagListOverlay!);
       }
     });
+  }
+
+  (double top, double left) _calculateOverlayPosition(
+    NoteModel noteModel,
+    int cursorPosition,
+    double overlayWidth,
+    double overlayHeight,
+  ) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
+
+    final renderObject =
+        noteModel.focusNode.context?.findRenderObject() as RenderBox?;
+    if (renderObject == null) {
+      return (0, 0);
+    }
+
+    final offset = renderObject.localToGlobal(Offset.zero);
+    final linePosition = _getCursorLinePosition(cursorPosition);
+    final horizontalPosition = _getCursorHorizontalPosition(cursorPosition);
+
+    double top = offset.dy + linePosition;
+    final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
+    final effectiveScreenHeight = screenHeight - keyboardHeight;
+
+    final bottomHalf = top > (effectiveScreenHeight / 2);
+    final nearBottom = top + overlayHeight + 50 > effectiveScreenHeight;
+
+    if (bottomHalf || nearBottom) {
+      top = max(10, top - overlayHeight - 50);
+    } else {
+      top += _standardLineHeight;
+    }
+
+    double left = offset.dx + horizontalPosition;
+    if (left + overlayWidth > screenWidth) {
+      left = max(10, screenWidth - overlayWidth - 10);
+    }
+    left = max(10, left);
+
+    return (top, left);
+  }
+
+  void _handleTagSelection(
+    NoteModel noteModel,
+    String text,
+    int cursorPosition,
+    String tag,
+  ) {
+    String newText;
+    int newCursorPosition;
+    if (cursorPosition > 0 && text[cursorPosition - 1] == '#') {
+      newText =
+          '${text.substring(0, cursorPosition)}$tag ${text.substring(cursorPosition)}';
+      newCursorPosition = cursorPosition + tag.length + 1;
+    } else {
+      newText =
+          '${text.substring(0, cursorPosition)}#$tag ${text.substring(cursorPosition)}';
+      newCursorPosition = cursorPosition + tag.length + 2;
+    }
+    noteModel.content = newText;
+    controller.selection = TextSelection.fromPosition(
+      TextPosition(offset: newCursorPosition),
+    );
+    noteModel.requestFocus();
+    _tagListOverlay?.remove();
+    _tagListOverlay = null;
   }
 
   // Helper method to get cursor line position
@@ -353,7 +394,8 @@ class NoteEditState extends State<NoteEdit> {
         ),
         GestureDetector(
           onTap: () {
-            _showTagList(noteModel, controller.text, controller.selection.baseOffset);
+            _showTagList(
+                noteModel, controller.text, controller.selection.baseOffset);
           },
           behavior: HitTestBehavior.opaque,
           child: const Padding(
