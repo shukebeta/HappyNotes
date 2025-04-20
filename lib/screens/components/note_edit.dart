@@ -15,6 +15,7 @@ import '../../services/note_tag_service.dart';
 import '../../utils/happy_notes_prompts.dart';
 import '../../utils/util.dart';
 import 'image_warning_dialog.dart';
+import 'tag_list_overlay.dart';
 
 class NoteEdit extends StatefulWidget {
   final Note? note;
@@ -34,7 +35,6 @@ class NoteEditState extends State<NoteEdit> {
   late ImageService imageService;
   late NoteTagService noteTagService;
   Timer? _tagListTimer;
-  OverlayEntry? _tagListOverlay;
 
   @override
   void initState() {
@@ -74,6 +74,7 @@ class NoteEditState extends State<NoteEdit> {
   void dispose() {
     _tagListTimer?.cancel();
     _tagListOverlay?.remove();
+    _tagListOverlay = null;
     controller.dispose();
     super.dispose();
   }
@@ -132,10 +133,6 @@ class NoteEditState extends State<NoteEdit> {
     );
   }
 
-  static const int _maxTagsToShow = 5;
-  static const double _overlayHeight = 150.0;
-  static const double _overlayElevation = 8.0;
-  static const double _standardLineHeight = 24.0;
   static const Duration _tagListTimerDuration = Duration(milliseconds: 200);
   void _handleTextChanged(
       String text, TextSelection selection, NoteModel noteModel) {
@@ -147,140 +144,41 @@ class NoteEditState extends State<NoteEdit> {
       });
     } else {
       _tagListTimer?.cancel();
-      _tagListOverlay?.remove();
-      _tagListOverlay = null;
     }
   }
+
+  OverlayEntry? _tagListOverlay;
 
   void _showTagList(
-      NoteModel noteModel, String text, int cursorPosition) async {
+      NoteModel noteModel, String text, int cursorPosition) {
+    if (!mounted) return;
+    _tagListTimer?.cancel();
     if (_tagListOverlay != null) return;
 
-    _tagListTimer?.cancel();
+    _tagListOverlay = OverlayEntry(
+      builder: (context) => TagListOverlay(
+        noteModel: noteModel,
+        text: text,
+        cursorPosition: cursorPosition,
+        onTagSelected: (text, position, tag) {
+          _handleTagSelection(text, position, tag);
+          _tagListOverlay?.remove();
+          _tagListOverlay = null;
+        },
+      ),
+    );
 
-    try {
-      final tagCloud = await noteTagService.getMyTagCloud();
-      final tagsToShow = _getSortedTags(tagCloud).take(_maxTagsToShow).toList();
-
-      if (tagsToShow.isEmpty) return;
-
-      _createAndShowTagListOverlay(noteModel, text, cursorPosition, tagsToShow);
-    } catch (e) {
-      // Handle the error appropriately
-      print('Error fetching tag cloud: $e');
-    }
-  }
-
-  List<String> _getSortedTags(Map<String, dynamic> tagCloud) {
-    final sortedTags = tagCloud.keys.toList()
-      ..sort((a, b) => tagCloud[b]!.compareTo(tagCloud[a]!));
-    return sortedTags;
-  }
-
-  void _createAndShowTagListOverlay(
-    NoteModel noteModel,
-    String text,
-    int cursorPosition,
-    List<String> tagsToShow,
-  ) {
-    Future.microtask(() {
-      if (!mounted) return;
-
-      final overlayWidth = _calculateOverlayWidth(tagsToShow);
-      final (top, left) = _calculateOverlayPosition(
-        noteModel,
-        cursorPosition,
-        overlayWidth,
-        _overlayHeight,
-      );
-
-      _tagListOverlay = OverlayEntry(
-        builder: (context) => Positioned(
-          top: top,
-          left: left,
-          width: overlayWidth,
-          child: Material(
-            elevation: _overlayElevation,
-            borderRadius: BorderRadius.circular(4.0),
-            color: Colors.grey[200],
-            child: ListView.builder(
-              shrinkWrap: true,
-              padding: EdgeInsets.zero,
-              itemCount: tagsToShow.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  dense: true,
-                  title: Text(tagsToShow[index]),
-                  onTap: () {
-                    _handleTagSelection(
-                      noteModel,
-                      text,
-                      cursorPosition,
-                      tagsToShow[index],
-                    );
-                  },
-                );
-              },
-            ),
-          ),
-        ),
-      );
-
-      if (mounted) {
-        Overlay.of(context).insert(_tagListOverlay!);
-      }
-    });
-  }
-
-  (double top, double left) _calculateOverlayPosition(
-    NoteModel noteModel,
-    int cursorPosition,
-    double overlayWidth,
-    double overlayHeight,
-  ) {
-    final screenHeight = MediaQuery.of(context).size.height;
-    final screenWidth = MediaQuery.of(context).size.width;
-
-    final renderObject =
-        noteModel.focusNode.context?.findRenderObject() as RenderBox?;
-    if (renderObject == null) {
-      return (0, 0);
-    }
-
-    final offset = renderObject.localToGlobal(Offset.zero);
-    final linePosition = _getCursorLinePosition(cursorPosition);
-    final horizontalPosition = _getCursorHorizontalPosition(cursorPosition);
-
-    double top = offset.dy + linePosition;
-    final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
-    final effectiveScreenHeight = screenHeight - keyboardHeight;
-
-    final bottomHalf = top > (effectiveScreenHeight / 2);
-    final nearBottom = top + overlayHeight + 50 > effectiveScreenHeight;
-
-    if (bottomHalf || nearBottom) {
-      top = max(10, top - overlayHeight - 50);
-    } else {
-      top += _standardLineHeight;
-    }
-
-    double left = offset.dx + horizontalPosition;
-    if (left + overlayWidth > screenWidth) {
-      left = max(10, screenWidth - overlayWidth - 10);
-    }
-    left = max(10, left);
-
-    return (top, left);
+    Overlay.of(context).insert(_tagListOverlay!);
   }
 
   void _handleTagSelection(
-    NoteModel noteModel,
     String text,
     int cursorPosition,
     String tag,
   ) {
     String newText;
     int newCursorPosition;
+    final noteModel = context.read<NoteModel>();
     if (cursorPosition > 0 && text[cursorPosition - 1] == '#') {
       newText =
           '${text.substring(0, cursorPosition)}$tag ${text.substring(cursorPosition)}';
@@ -295,33 +193,6 @@ class NoteEditState extends State<NoteEdit> {
       TextPosition(offset: newCursorPosition),
     );
     noteModel.requestFocus();
-    _tagListOverlay?.remove();
-    _tagListOverlay = null;
-  }
-
-  // Helper method to get cursor line position
-  double _getCursorLinePosition(int cursorPosition) {
-    final text = controller.text.substring(0, cursorPosition);
-    final lines = text.split('\n');
-    final cursorLine = lines.length - 1; // 0-based index
-    const lineHeight = 24.0;
-    return cursorLine * lineHeight;
-  }
-
-  // Helper method to get cursor horizontal position
-  double _getCursorHorizontalPosition(int cursorPosition) {
-    final text = controller.text.substring(0, cursorPosition);
-    final lines = text.split('\n');
-    final currentLine = lines.isNotEmpty ? lines.last : '';
-    const charWidth = 9.0;
-    return currentLine.length * charWidth;
-  }
-
-  double _calculateOverlayWidth(List<String> tags) {
-    if (tags.isEmpty) return 300.0;
-    final longestTag = tags.reduce((a, b) => a.length > b.length ? a : b);
-    // Rough estimation: 10 pixels per character + padding
-    return longestTag.length * 10.0 + 40.0;
   }
 
   Widget _buildActionButtons(BuildContext context, NoteModel noteModel) {
