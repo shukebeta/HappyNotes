@@ -101,55 +101,67 @@ class NoteEditState extends State<NoteEdit> {
   }
 
   Widget _buildActionButtons(BuildContext context, NoteModel noteModel) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isSmallScreen = screenWidth < 400; // Adjust threshold as needed for iPhone SE size
     return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        _buildActionButton(
-          context,
-          noteModel,
-          icon: noteModel.isPrivate ? Icons.lock : Icons.lock_open,
-          color: noteModel.isPrivate ? Colors.blue : Colors.grey,
-          onTap: () => noteModel.togglePrivate(),
-        ),
-        _buildActionButton(
-          context,
-          noteModel,
-          child: Text(
-            "M↓",
-            style: TextStyle(
-              fontSize: 20.0,
-              color: noteModel.isMarkdown ? Colors.blue : Colors.grey,
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            _buildActionButton(
+              context,
+              noteModel,
+              icon: noteModel.isPrivate ? Icons.lock : Icons.lock_open,
+              color: noteModel.isPrivate ? Colors.blue : Colors.grey,
+              onTap: () => noteModel.togglePrivate(),
+              isSmallScreen: isSmallScreen,
             ),
-          ),
-          onTap: () => noteModel.toggleMarkdown(),
-        ),
-        if (kIsWeb || defaultTargetPlatform != TargetPlatform.macOS)
-          _buildMarkdownActionButton(
-            context: context,
-            noteModel: noteModel,
-            icon: Icons.add_photo_alternate,
-            onPressed: () => noteEditController.pickAndUploadImage(context, noteModel),
-            isLoading: noteModel.isUploading,
-          ),
-        if (Util.isPasteBoardSupported())
-          _buildMarkdownActionButton(
-            context: context,
-            noteModel: noteModel,
-            icon: Icons.paste,
-            onPressed: () async =>
-                await noteEditController.pasteFromClipboard(context, noteModel),
-            isLoading: noteModel.isPasting,
-          ),
-        _buildActionButton(
-          context,
-          noteModel,
-          icon: Icons.tag,
-          onTap: () => tagController.showTagList(
-            noteModel,
-            noteEditController.textController.text,
-            noteEditController.textController.selection.baseOffset,
-            context,
-          ),
+            _buildActionButton(
+              context,
+              noteModel,
+              child: Text(
+                "M↓",
+                style: TextStyle(
+                  fontSize: isSmallScreen ? 16.0 : 20.0,
+                  color: noteModel.isMarkdown ? Colors.blue : Colors.grey,
+                ),
+              ),
+              onTap: () => noteModel.toggleMarkdown(),
+              isSmallScreen: isSmallScreen,
+            ),
+            if (kIsWeb || defaultTargetPlatform != TargetPlatform.macOS)
+              _buildMarkdownActionButton(
+                context: context,
+                noteModel: noteModel,
+                icon: Icons.add_photo_alternate,
+                onPressed: () => noteEditController.pickAndUploadImage(context, noteModel),
+                isLoading: noteModel.isUploading,
+                isSmallScreen: isSmallScreen,
+              ),
+            if (Util.isPasteBoardSupported())
+              _buildMarkdownActionButton(
+                context: context,
+                noteModel: noteModel,
+                icon: Icons.paste,
+                onPressed: () async =>
+                    await noteEditController.pasteFromClipboard(context, noteModel),
+                isLoading: noteModel.isPasting,
+                isSmallScreen: isSmallScreen,
+              ),
+            _buildActionButton(
+              context,
+              noteModel,
+              icon: Icons.tag,
+              onTap: () => tagController.showTagList(
+                noteModel,
+                noteEditController.textController.text,
+                noteEditController.textController.selection.baseOffset,
+                context,
+              ),
+              isSmallScreen: isSmallScreen,
+            ),
+          ],
         ),
       ],
     );
@@ -162,17 +174,18 @@ class NoteEditState extends State<NoteEdit> {
     Widget? child,
     IconData? icon,
     Color? color,
+    bool isSmallScreen = false,
   }) {
     return GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
       child: Padding(
-        padding: const EdgeInsets.all(12.0),
+        padding: EdgeInsets.all(isSmallScreen ? 8.0 : 12.0),
         child: child ??
             Icon(
               icon,
               color: color ?? Colors.black,
-              size: 24.0,
+              size: isSmallScreen ? 20.0 : 24.0,
             ),
       ),
     );
@@ -184,6 +197,7 @@ class NoteEditState extends State<NoteEdit> {
     required IconData icon,
     required VoidCallback onPressed,
     required bool isLoading,
+    bool isSmallScreen = false,
   }) {
     return Visibility(
       visible: noteModel.isMarkdown,
@@ -193,8 +207,8 @@ class NoteEditState extends State<NoteEdit> {
       child: IconButton(
         onPressed: onPressed,
         icon: isLoading ? const CircularProgressIndicator() : Icon(icon),
-        iconSize: 24.0,
-        padding: const EdgeInsets.all(12.0),
+        iconSize: isSmallScreen ? 20.0 : 24.0,
+        padding: EdgeInsets.all(isSmallScreen ? 8.0 : 12.0),
       ),
     );
   }
