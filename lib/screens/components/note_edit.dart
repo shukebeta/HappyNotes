@@ -132,12 +132,17 @@ class NoteEditState extends State<NoteEdit> {
     );
   }
 
+  static const int _maxTagsToShow = 5;
+  static const double _overlayHeight = 150.0;
+  static const double _overlayElevation = 8.0;
+  static const double _standardLineHeight = 24.0;
+  static const Duration _tagListTimerDuration = Duration(milliseconds: 200);
   void _handleTextChanged(
       String text, TextSelection selection, NoteModel noteModel) {
     final cursorPosition = selection.baseOffset;
     if (cursorPosition > 0 && text[cursorPosition - 1] == '#') {
       _tagListTimer?.cancel();
-      _tagListTimer = Timer(const Duration(milliseconds: 200), () async {
+      _tagListTimer = Timer(_tagListTimerDuration, () async {
         _showTagList(noteModel, text, cursorPosition);
       });
     } else {
@@ -146,12 +151,6 @@ class NoteEditState extends State<NoteEdit> {
       _tagListOverlay = null;
     }
   }
-
-  static const int _maxTagsToShow = 5;
-  static const double _overlayHeight = 150.0;
-  static const double _overlayElevation = 8.0;
-  static const double _standardLineHeight = 24.0;
-  static const Duration _tagListTimerDuration = Duration(milliseconds: 200);
 
   void _showTagList(
       NoteModel noteModel, String text, int cursorPosition) async {
@@ -329,85 +328,97 @@ class NoteEditState extends State<NoteEdit> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        GestureDetector(
-          onTap: () {
-            noteModel.togglePrivate();
-          },
-          behavior: HitTestBehavior.opaque,
-          child: Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: Icon(
-              noteModel.isPrivate ? Icons.lock : Icons.lock_open,
-              color: noteModel.isPrivate ? Colors.blue : Colors.grey,
-              size: 24.0,
-            ),
-          ),
+        _buildActionButton(
+          context,
+          noteModel,
+          icon: noteModel.isPrivate ? Icons.lock : Icons.lock_open,
+          color: noteModel.isPrivate ? Colors.blue : Colors.grey,
+          onTap: () => noteModel.togglePrivate(),
         ),
-        GestureDetector(
-          onTap: () {
-            noteModel.toggleMarkdown();
-          },
-          behavior: HitTestBehavior.opaque,
-          child: Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: Text(
-              "M↓",
-              style: TextStyle(
-                fontSize: 20.0,
-                color: noteModel.isMarkdown ? Colors.blue : Colors.grey,
-              ),
+        _buildActionButton(
+          context,
+          noteModel,
+          child: Text(
+            "M↓",
+            style: TextStyle(
+              fontSize: 20.0,
+              color: noteModel.isMarkdown ? Colors.blue : Colors.grey,
             ),
           ),
+          onTap: () => noteModel.toggleMarkdown(),
         ),
         if (kIsWeb || defaultTargetPlatform != TargetPlatform.macOS)
-          Visibility(
-            visible: noteModel.isMarkdown,
-            maintainSize: true,
-            maintainAnimation: true,
-            maintainState: true,
-            child: IconButton(
-              onPressed: noteModel.isMarkdown
-                  ? () => _pickAndUploadImage(context, noteModel)
-                  : null,
-              icon: noteModel.isUploading
-                  ? const CircularProgressIndicator()
-                  : const Icon(Icons.add_photo_alternate),
-              iconSize: 24.0,
-              padding: const EdgeInsets.all(12.0),
-            ),
+          _buildMarkdownActionButton(
+            context: context,
+            noteModel: noteModel,
+            icon: Icons.add_photo_alternate,
+            onPressed: () => _pickAndUploadImage(context, noteModel),
+            isLoading: noteModel.isUploading,
           ),
-        Visibility(
-          visible: noteModel.isMarkdown && Util.isPasteBoardSupported(),
-          maintainSize: true,
-          maintainAnimation: true,
-          maintainState: true,
-          child: IconButton(
-            onPressed: () async {
-              await _pasteFromClipboard(context, noteModel);
-            },
-            icon: noteModel.isPasting
-                ? const CircularProgressIndicator()
-                : const Icon(Icons.paste),
-            iconSize: 24.0,
-            padding: const EdgeInsets.all(12.0),
+        if (Util.isPasteBoardSupported())
+          _buildMarkdownActionButton(
+            context: context,
+            noteModel: noteModel,
+            icon: Icons.paste,
+            onPressed: () async =>
+                await _pasteFromClipboard(context, noteModel),
+            isLoading: noteModel.isPasting,
           ),
-        ),
-        GestureDetector(
-          onTap: () {
-            _showTagList(
-                noteModel, controller.text, controller.selection.baseOffset);
-          },
-          behavior: HitTestBehavior.opaque,
-          child: const Padding(
-            padding: EdgeInsets.all(12.0),
-            child: Icon(
-              Icons.tag,
-              color: Colors.black,
-              size: 24.0,
-            ),
+        _buildActionButton(
+          context,
+          noteModel,
+          icon: Icons.tag,
+          onTap: () => _showTagList(
+            noteModel,
+            controller.text,
+            controller.selection.baseOffset,
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildActionButton(
+    BuildContext context,
+    NoteModel noteModel, {
+    required VoidCallback onTap,
+    Widget? child,
+    IconData? icon,
+    Color? color,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: child ??
+            Icon(
+              icon,
+              color: color ?? Colors.black,
+              size: 24.0,
+            ),
+      ),
+    );
+  }
+
+  Widget _buildMarkdownActionButton({
+    required BuildContext context,
+    required NoteModel noteModel,
+    required IconData icon,
+    required VoidCallback onPressed,
+    required bool isLoading,
+  }) {
+    return Visibility(
+      visible: noteModel.isMarkdown,
+      maintainSize: true,
+      maintainAnimation: true,
+      maintainState: true,
+      child: IconButton(
+        onPressed: onPressed,
+        icon: isLoading ? const CircularProgressIndicator() : Icon(icon),
+        iconSize: 24.0,
+        padding: const EdgeInsets.all(12.0),
+      ),
     );
   }
 
