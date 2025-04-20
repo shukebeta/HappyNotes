@@ -55,12 +55,20 @@ class ImageService {
     // First try to get text since it's more common and faster
     try {
       String? text = await Pasteboard.text;
-      if (text != null) {
+      if (text != null && text.isNotEmpty) {
         onSuccess(text);
         return;
+      } else if (text == null) {
+        print('Debug: Clipboard text is null');
+      } else {
+        print('Debug: Clipboard text is empty');
       }
     } catch (e) {
-      print('Debug: Text clipboard access error: $e'); // Add logging for debugging
+      print('Debug: Text clipboard access error: $e');
+      if (e.toString().contains('JSObject') || e.toString().contains('TypeError')) {
+        onError('Clipboard access failed. This might be due to browser restrictions or permissions. Please ensure clipboard access is enabled in your browser settings.');
+        return;
+      }
     }
 
     // If no text found, try image
@@ -72,13 +80,21 @@ class ImageService {
         if (imageFile != null) {
           await uploadImage(imageFile, onSuccess, onError);
           return;
+        } else {
+          print('Debug: Image compression failed or returned null');
         }
+      } else {
+        print('Debug: Clipboard image is null');
       }
     } catch (e) {
-      print('Debug: Image clipboard access error: $e'); // Add logging for debugging
+      print('Debug: Image clipboard access error: $e');
+      if (e.toString().contains('JSObject') || e.toString().contains('TypeError')) {
+        onError('Clipboard access failed. This might be due to browser restrictions or permissions. Please ensure clipboard access is enabled in your browser settings.');
+        return;
+      }
     }
 
     // If we get here, neither text nor image was successfully processed
-    onError('No valid content found in clipboard');
+    onError('No valid content found in clipboard. Check debug logs for more details or ensure clipboard access permissions are granted in your browser.');
   }
 }
