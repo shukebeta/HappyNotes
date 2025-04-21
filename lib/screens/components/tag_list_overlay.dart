@@ -29,7 +29,7 @@ class TagListOverlayState extends State<TagListOverlay> {
   OverlayEntry? _tagListOverlay;
   Timer? _tagListTimer;
   Map<String, int> tagsToShow = {};
-  static const int _maxTagsToShow = 15;
+  static const int _maxTagsToShow = 35;
   static const double _overlayHeight = 200.0;
   static const double _overlayElevation = 8.0;
   static const double _standardLineHeight = 24.0;
@@ -120,61 +120,24 @@ class TagListOverlayState extends State<TagListOverlay> {
   ) {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
-
-    final renderObject =
-        noteModel.focusNode.context?.findRenderObject() as RenderBox?;
-    if (renderObject == null) {
-      return (0, 0);
-    }
-
-    final offset = renderObject.localToGlobal(Offset.zero);
-    final linePosition = _getCursorLinePosition(cursorPosition);
-    final horizontalPosition = _getCursorHorizontalPosition(cursorPosition);
-
-    double top = offset.dy + linePosition;
     final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
     final effectiveScreenHeight = screenHeight - keyboardHeight;
 
-    final bottomHalf = top > (effectiveScreenHeight / 2);
-    final nearBottom = top + overlayHeight + 50 > effectiveScreenHeight;
+    // Position the overlay in the center of the screen
+    double top = (effectiveScreenHeight - overlayHeight) / 2;
+    double left = (screenWidth - overlayWidth) / 2;
 
-    if (bottomHalf || nearBottom) {
-      top = top - overlayHeight - 50;
-      if (top < 10) top = 10;
-    } else {
-      top += _standardLineHeight;
-    }
-
-    double left = offset.dx + horizontalPosition;
-    if (left + overlayWidth > screenWidth) {
-      left = screenWidth - overlayWidth - 10;
-      if (left < 10) left = 10;
-    }
+    // Ensure the overlay stays within screen bounds
+    top = top < 10 ? 10 : top;
     left = left < 10 ? 10 : left;
 
     return (top, left);
   }
 
-  double _getCursorLinePosition(int cursorPosition) {
-    final text = widget.text.substring(0, cursorPosition);
-    final lines = text.split('\n');
-    final cursorLine = lines.length - 1;
-    const lineHeight = 24.0;
-    return cursorLine * lineHeight;
-  }
-
-  double _getCursorHorizontalPosition(int cursorPosition) {
-    final text = widget.text.substring(0, cursorPosition);
-    final lines = text.split('\n');
-    final currentLine = lines.isNotEmpty ? lines.last : '';
-    const charWidth = 9.0;
-    return currentLine.length * charWidth;
-  }
-
   double _calculateOverlayWidth(List<String> tags) {
-    if (tags.isEmpty) return 300.0;
-    final longestTag = tags.reduce((a, b) => a.length > b.length ? a : b);
-    return longestTag.length * 10.0 + 40.0;
+    final screenWidth = MediaQuery.of(context).size.width;
+    // Use 80% of screen width for the overlay, with min and max constraints
+    return screenWidth * 0.8;
   }
 
   @override
