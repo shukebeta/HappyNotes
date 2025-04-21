@@ -13,8 +13,8 @@ class TagController {
 
   static const Duration tagListTimerDuration = Duration(milliseconds: 200);
 
-  void handleTextChanged(
-      String text, TextSelection selection, NoteModel noteModel, BuildContext context) {
+  void handleTextChanged(String text, TextSelection selection,
+      NoteModel noteModel, BuildContext context) {
     final cursorPosition = selection.baseOffset;
     if (cursorPosition > 0 && text[cursorPosition - 1] == '#') {
       _tagListTimer?.cancel();
@@ -26,8 +26,8 @@ class TagController {
     }
   }
 
-  void showTagList(
-      NoteModel noteModel, String text, int cursorPosition, BuildContext context) {
+  void showTagList(NoteModel noteModel, String text, int cursorPosition,
+      BuildContext context) {
     if (_tagListOverlay != null) return;
 
     _tagListOverlay = OverlayEntry(
@@ -49,19 +49,15 @@ class TagController {
   void handleTagSelection(
       String text, int cursorPosition, String tag, NoteModel noteModel) {
     String newText;
-    int newCursorPosition;
     if (cursorPosition > 0 && text[cursorPosition - 1] == '#') {
       newText =
           '${text.substring(0, cursorPosition)}$tag ${text.substring(cursorPosition)}';
-      newCursorPosition = cursorPosition + tag.length + 1;
     } else {
       newText =
           '${text.substring(0, cursorPosition)}#$tag ${text.substring(cursorPosition)}';
-      newCursorPosition = cursorPosition + tag.length + 2;
     }
-    noteModel.content = newText;
-    // Update cursor position via the controller in NoteEdit widget
     noteModel.requestFocus();
+    noteModel.content = newText;
   }
 
   void dispose() {
