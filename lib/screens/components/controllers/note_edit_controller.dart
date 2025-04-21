@@ -34,9 +34,7 @@ class NoteEditController {
       });
 
       // Request focus
-      if (!AppConfig.isIOSWeb) {
-        noteModel.requestFocus();
-      }
+      noteModel.requestFocus();
     });
   }
 
