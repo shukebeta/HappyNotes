@@ -50,9 +50,6 @@ class NoteEditController {
       return true;
     }
 
-    // Note: Context is used after async operation. Since this is a controller and not a widget,
-    // we assume the context passed is valid at the time of use. If issues arise, consider refactoring
-    // to pass a dialog-showing callback or use a different pattern.
     final result = await showDialog<bool>(
       context: context,
       barrierDismissible: false,
