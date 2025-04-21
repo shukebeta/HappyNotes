@@ -4,6 +4,7 @@ import '../../dependency_injection.dart';
 import '../../services/note_tag_service.dart';
 import '../../models/note_model.dart';
 import '../../models/tag_count.dart';
+import './tag_cloud.dart';
 
 class TagListOverlay extends StatefulWidget {
   final NoteModel noteModel;
@@ -27,9 +28,9 @@ class TagListOverlayState extends State<TagListOverlay> {
   late NoteTagService noteTagService;
   OverlayEntry? _tagListOverlay;
   Timer? _tagListTimer;
-  List<String> tagsToShow = [];
-  static const int _maxTagsToShow = 5;
-  static const double _overlayHeight = 150.0;
+  Map<String, int> tagsToShow = {};
+  static const int _maxTagsToShow = 15;
+  static const double _overlayHeight = 200.0;
   static const double _overlayElevation = 8.0;
   static const double _standardLineHeight = 24.0;
 
@@ -50,8 +51,9 @@ class TagListOverlayState extends State<TagListOverlay> {
   void _fetchTags() async {
     try {
       final tagCloud = await noteTagService.getMyTagCloud();
-      final tags =
-          tagCloud.map((item) => item.tag).take(_maxTagsToShow).toList();
+      final tags = Map<String, int>.fromEntries(tagCloud
+          .take(_maxTagsToShow)
+          .map((item) => MapEntry(item.tag, item.count)));
       setState(() {
         tagsToShow = tags;
       });
@@ -67,7 +69,7 @@ class TagListOverlayState extends State<TagListOverlay> {
     Future.microtask(() {
       if (!mounted) return;
 
-      final overlayWidth = _calculateOverlayWidth(tagsToShow);
+      final overlayWidth = _calculateOverlayWidth(tagsToShow.keys.toList());
       final (top, left) = _calculateOverlayPosition(
         widget.noteModel,
         widget.cursorPosition,
@@ -84,25 +86,21 @@ class TagListOverlayState extends State<TagListOverlay> {
             elevation: _overlayElevation,
             borderRadius: BorderRadius.circular(4.0),
             color: Colors.grey[200],
-            child: ListView.builder(
-              shrinkWrap: true,
-              padding: EdgeInsets.zero,
-              itemCount: tagsToShow.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  dense: true,
-                  title: Text(tagsToShow[index]),
-                  onTap: () {
-                    widget.onTagSelected(
-                      widget.text,
-                      widget.cursorPosition,
-                      tagsToShow[index],
-                    );
-                    _tagListOverlay?.remove();
-                    _tagListOverlay = null;
-                  },
-                );
-              },
+            child: Container(
+              padding: const EdgeInsets.all(8.0),
+              height: _overlayHeight,
+              child: TagCloud(
+                tagData: tagsToShow,
+                onTagTap: (tag) {
+                  widget.onTagSelected(
+                    widget.text,
+                    widget.cursorPosition,
+                    tag,
+                  );
+                  _tagListOverlay?.remove();
+                  _tagListOverlay = null;
+                },
+              ),
             ),
           ),
         ),
