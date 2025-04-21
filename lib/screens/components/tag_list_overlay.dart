@@ -29,7 +29,7 @@ class TagListOverlayState extends State<TagListOverlay> {
   OverlayEntry? _tagListOverlay;
   Timer? _tagListTimer;
   Map<String, int> tagsToShow = {};
-  static const int _maxTagsToShow = 35;
+  static const int _maxTagsToShow = 25;
   static const double _overlayHeight = 200.0;
   static const double _overlayElevation = 8.0;
   static const double _standardLineHeight = 24.0;
