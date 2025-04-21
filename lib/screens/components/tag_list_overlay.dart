@@ -3,6 +3,7 @@ import 'dart:async';
 import '../../dependency_injection.dart';
 import '../../services/note_tag_service.dart';
 import '../../models/note_model.dart';
+import '../../models/tag_count.dart';
 
 class TagListOverlay extends StatefulWidget {
   final NoteModel noteModel;
@@ -31,7 +32,6 @@ class TagListOverlayState extends State<TagListOverlay> {
   static const double _overlayHeight = 150.0;
   static const double _overlayElevation = 8.0;
   static const double _standardLineHeight = 24.0;
-  static const Duration _tagListTimerDuration = Duration(milliseconds: 200);
 
   @override
   void initState() {
@@ -50,22 +50,17 @@ class TagListOverlayState extends State<TagListOverlay> {
   void _fetchTags() async {
     try {
       final tagCloud = await noteTagService.getMyTagCloud();
-      final sortedTags = _getSortedTags(tagCloud).take(_maxTagsToShow).toList();
+      final tags =
+          tagCloud.map((item) => item.tag).take(_maxTagsToShow).toList();
       setState(() {
-        tagsToShow = sortedTags;
+        tagsToShow = tags;
       });
-      if (sortedTags.isNotEmpty) {
+      if (tags.isNotEmpty) {
         _createAndShowTagListOverlay();
       }
     } catch (e) {
       print('Error fetching tag cloud: $e');
     }
-  }
-
-  List<String> _getSortedTags(Map<String, dynamic> tagCloud) {
-    final sortedTags = tagCloud.keys.toList()
-      ..sort((a, b) => tagCloud[b]!.compareTo(tagCloud[a]!));
-    return sortedTags;
   }
 
   void _createAndShowTagListOverlay() {

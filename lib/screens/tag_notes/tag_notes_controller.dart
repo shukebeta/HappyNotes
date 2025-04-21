@@ -42,7 +42,8 @@ class TagNotesController {
     final scaffoldContext = ScaffoldMessenger.of(context);
     try {
       isLoading = true;
-      return await _noteTagService.getMyTagCloud();
+      final tagCloud = await _noteTagService.getMyTagCloud();
+      return {for (var item in tagCloud) item.tag: item.count};
     } catch (error) {
       Util.showError(scaffoldContext, error.toString());
     } finally {

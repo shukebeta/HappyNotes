@@ -14,7 +14,9 @@ class HomePageController {
   int get _totalNotes => _realTotalNotes <= 0 ? 1 : _realTotalNotes;
   bool isLoading = false;
 
-  HomePageController({required NotesService notesService, required NoteTagService noteTagService})
+  HomePageController(
+      {required NotesService notesService,
+      required NoteTagService noteTagService})
       : _notesService = notesService,
         _noteTagService = noteTagService;
 
@@ -38,7 +40,8 @@ class HomePageController {
     final scaffoldContext = ScaffoldMessenger.of(context);
     try {
       isLoading = true;
-      return await _noteTagService.getMyTagCloud();
+      final tagCloud = await _noteTagService.getMyTagCloud();
+      return {for (var item in tagCloud) item.tag: item.count};
     } catch (error) {
       Util.showError(scaffoldContext, error.toString());
     } finally {
