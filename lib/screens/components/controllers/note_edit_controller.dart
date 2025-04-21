@@ -50,6 +50,9 @@ class NoteEditController {
       return true;
     }
 
+    // Note: Context is used after async operation. Since this is a controller and not a widget,
+    // we assume the context passed is valid at the time of use. If issues arise, consider refactoring
+    // to pass a dialog-showing callback or use a different pattern.
     final result = await showDialog<bool>(
       context: context,
       barrierDismissible: false,
@@ -59,7 +62,8 @@ class NoteEditController {
     return result ?? false;
   }
 
-  Future<void> pickAndUploadImage(BuildContext context, NoteModel noteModel) async {
+  Future<void> pickAndUploadImage(
+      BuildContext context, NoteModel noteModel) async {
     final scaffoldMessengerState = ScaffoldMessenger.of(context);
 
     // Show warning dialog first
@@ -90,7 +94,8 @@ class NoteEditController {
     caseSensitive: false,
   );
 
-  Future<void> pasteFromClipboard(BuildContext context, NoteModel noteModel) async {
+  Future<void> pasteFromClipboard(
+      BuildContext context, NoteModel noteModel) async {
     final scaffoldMessengerState = ScaffoldMessenger.of(context);
     try {
       noteModel.setPasting(true);

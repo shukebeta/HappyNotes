@@ -3,7 +3,6 @@ import 'dart:async';
 import '../../dependency_injection.dart';
 import '../../services/note_tag_service.dart';
 import '../../models/note_model.dart';
-import '../../models/tag_count.dart';
 import './tag_cloud.dart';
 
 class TagListOverlay extends StatefulWidget {
