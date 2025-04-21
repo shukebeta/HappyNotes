@@ -30,7 +30,7 @@ class TagListOverlayState extends State<TagListOverlay> {
   Timer? _tagListTimer;
   Map<String, int> tagsToShow = {};
   static const int _maxTagsToShow = 25;
-  static const double _overlayHeight = 200.0;
+  static const double _overlayHeight = 200.0; // Default fallback height
   static const double _overlayElevation = 8.0;
   static const double _standardLineHeight = 24.0;
 
@@ -88,7 +88,7 @@ class TagListOverlayState extends State<TagListOverlay> {
             color: Colors.grey[200],
             child: Container(
               padding: const EdgeInsets.all(8.0),
-              height: _overlayHeight,
+              height: _calculateOverlayHeight(tagsToShow.length),
               child: TagCloud(
                 tagData: tagsToShow,
                 onTagTap: (tag) {
@@ -137,7 +137,20 @@ class TagListOverlayState extends State<TagListOverlay> {
   double _calculateOverlayWidth(List<String> tags) {
     final screenWidth = MediaQuery.of(context).size.width;
     // Use 80% of screen width for the overlay, with min and max constraints
-    return screenWidth * 0.8;
+    return screenWidth * 0.9;
+  }
+
+  double _calculateOverlayHeight(int tagCount) {
+    // Estimate height based on number of tags
+    const int tagsPerRow = 4; // Rough estimate of tags per row
+    const double lineHeight = _standardLineHeight;
+    const double padding = 16.0; // Padding on top and bottom
+    final int estimatedRows = (tagCount / tagsPerRow).ceil();
+    final double calculatedHeight = estimatedRows * lineHeight + padding * 2;
+    // Ensure height is within reasonable bounds
+    const double minHeight = 100.0;
+    final screenHeight = MediaQuery.of(context).size.height;
+    return calculatedHeight.clamp(minHeight, screenHeight);
   }
 
   @override
