@@ -3,13 +3,16 @@ import 'package:flutter/material.dart';
 import '../tag_list_overlay.dart';
 import '../../../services/note_tag_service.dart';
 import '../../../models/note_model.dart';
+import 'note_edit_controller.dart';
 
 class TagController {
   final NoteTagService noteTagService;
+  final NoteEditController noteEditController;
   OverlayEntry? _tagListOverlay;
   Timer? _tagListTimer;
 
-  TagController({required this.noteTagService});
+  TagController(
+      {required this.noteTagService, required this.noteEditController});
 
   static const Duration tagListTimerDuration = Duration(milliseconds: 200);
 
@@ -40,7 +43,9 @@ class TagController {
         text: text,
         cursorPosition: cursorPosition,
         onTagSelected: (text, position, tag) {
-          handleTagSelection(text, position, tag, noteModel);
+          final newSelection =
+              handleTagSelection(text, position, tag, noteModel);
+          noteEditController.textController.selection = newSelection;
           _tagListOverlay?.remove();
           _tagListOverlay = null;
         },
@@ -50,18 +55,22 @@ class TagController {
     Overlay.of(context).insert(_tagListOverlay!);
   }
 
-  void handleTagSelection(
+  TextSelection handleTagSelection(
       String text, int cursorPosition, String tag, NoteModel noteModel) {
     String newText;
+    int newCursorPosition;
     if (cursorPosition > 0 && text[cursorPosition - 1] == '#') {
       newText =
           '${text.substring(0, cursorPosition)}$tag ${text.substring(cursorPosition)}';
+      newCursorPosition = cursorPosition + tag.length + 1;
     } else {
       newText =
           '${text.substring(0, cursorPosition)}#$tag ${text.substring(cursorPosition)}';
+      newCursorPosition = cursorPosition + tag.length + 2;
     }
     noteModel.requestFocus();
     noteModel.content = newText;
+    return TextSelection.fromPosition(TextPosition(offset: newCursorPosition));
   }
 
   void dispose() {
