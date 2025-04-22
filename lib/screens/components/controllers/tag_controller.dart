@@ -23,6 +23,10 @@ class TagController {
       });
     } else {
       _tagListTimer?.cancel();
+      if (_tagListOverlay != null) {
+        _tagListOverlay?.remove();
+        _tagListOverlay = null;
+      }
     }
   }
 
