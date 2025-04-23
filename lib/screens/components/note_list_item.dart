@@ -32,7 +32,6 @@ class NoteListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     Widget child = _buildChild(context);
 
     if (onDelete != null && note.userId == UserSession().id) {
@@ -58,47 +57,75 @@ class NoteListItem extends StatelessWidget {
   }
 
   Widget _buildNoteMetadata(Note note, String date, String author) {
-    return Row(
+    return Stack(
       children: [
-        Text(
-          '- $date${note.createdTime} $author - ',
-          style: const TextStyle(
-            fontWeight: FontWeight.w300,
-            color: Colors.blue,
-            fontSize: 13,
-          ),
+         Row(
+            children: [
+              Text(
+                '- $date${note.createdTime} $author - ',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w300,
+                  color: Colors.blue,
+                  fontSize: 13,
+                ),
+              ),
+              ...[
+                if (note.isPrivate)
+                  Icon(
+                    Icons.lock,
+                    color: Colors.grey.shade300,
+                    size: 14,
+                  ),
+                const Text(
+                  ' ',
+                  style: TextStyle(
+                    fontSize: 13,
+                  ),
+                ),
+              ],
+              Expanded(
+                child: Divider(
+                  color: Colors.grey.shade300,
+                  thickness: 1,
+                ),
+              ),
+              Text(' ${note.id} ',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w100,
+                    color: Colors.blue.shade300,
+                    fontSize: 13,
+                  )),
+              const Icon(
+                Icons.open_in_new,
+                color: Colors.blue,
+                size: 14,
+              ),
+            ],
         ),
-        ...[
-          if (note.isPrivate)
-            Icon(
-              Icons.lock,
-              color: Colors.grey.shade300,
-              size: 14,
-            ),
-          const Text(
-            ' ',
-            style: TextStyle(
-              fontSize: 13,
+        if (showRestoreButton && note.isDeleted)
+          Positioned.fill(
+            child: GestureDetector(
+              onTap: () => onRestoreTap?.call(note),
+              child: Center(
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.blue,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
+                  child: const Text(
+                    'Restore',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    overflow: TextOverflow.visible,
+                  ),
+                ),
+              ),
             ),
           ),
-        ],
-        Expanded(
-          child: Divider(
-            color: Colors.grey.shade300,
-            thickness: 1,
-          ),
-        ),
-        Text(' ${note.id} ',
-            style: TextStyle(
-              fontWeight: FontWeight.w100,
-              color: Colors.blue.shade300,
-              fontSize: 13,
-            )),
-        const Icon(
-          Icons.open_in_new,
-          color: Colors.blue,
-          size: 14,
-        )
       ],
     );
   }
@@ -110,91 +137,71 @@ class NoteListItem extends StatelessWidget {
     return GestureDetector(
         onTap: onTap != null ? () => onTap!(note) : null,
         onDoubleTap: onDoubleTap != null ? () => onDoubleTap!(note) : null,
-        child: Stack(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(4, 0, 4, 4),
-                  child: _buildNoteMetadata(note, date, author),
-                ),
-                Padding(
-                  padding: EdgeInsets.fromLTRB(4, 0, UserSession().isDesktop ? 4 : 16, 10),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      note.isMarkdown
-                          ? MarkdownBodyHere(
-                              data: note.content + (note.isLong ? '...' : ''),
-                              isPrivate: note.isPrivate,
-                            )
-                          : SelectableText.rich(
-                              TextSpan(
-                                text: note.content + (note.isLong ? '...' : ''),
-                                style: TextStyle(
-                                  fontStyle: FontStyle.normal,
-                                  fontWeight: FontWeight.normal,
-                                  fontSize: 16,
-                                  height: 1.6,
-                                  color: note.isPrivate ? Colors.black54 : Colors.black87,
-                                ),
-                              ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(4, 0, 4, 4),
+              child: _buildNoteMetadata(note, date, author),
+            ),
+            Padding(
+              padding: EdgeInsets.fromLTRB(4, 0, UserSession().isDesktop ? 4 : 16, 10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  note.isMarkdown
+                      ? MarkdownBodyHere(
+                          data: note.content + (note.isLong ? '...' : ''),
+                          isPrivate: note.isPrivate,
+                        )
+                      : SelectableText.rich(
+                          TextSpan(
+                            text: note.content + (note.isLong ? '...' : ''),
+                            style: TextStyle(
+                              fontStyle: FontStyle.normal,
+                              fontWeight: FontWeight.normal,
+                              fontSize: 16,
+                              height: 1.6,
+                              color: note.isPrivate ? Colors.black54 : Colors.black87,
                             ),
-                      // fix #18 only show the tags row when necessary
-                      if (note.isLong || note.tags!.isNotEmpty)
-                        Column(
+                          ),
+                        ),
+                  // fix #18 only show the tags row when necessary
+                  if (note.isLong || note.tags!.isNotEmpty)
+                    Column(
+                      children: [
+                        const SizedBox(height: 8),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const SizedBox(height: 8),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            Wrap(
+                              spacing: 8,
+                              children: note.tags!.map((tag) {
+                                return TagWidget(
+                                  tag: tag,
+                                  onTap: () => onTagTap == null ? () {} : onTagTap!(note, tag),
+                                );
+                              }).toList(),
+                            ),
+                            Wrap(
+                              spacing: 8,
                               children: [
-                                Wrap(
-                                  spacing: 8,
-                                  children: note.tags!.map((tag) {
-                                    return TagWidget(
-                                      tag: tag,
-                                      onTap: () => onTagTap == null ? () {} : onTagTap!(note, tag),
-                                    );
-                                  }).toList(),
+                                Text(
+                                  note.isLong ? 'View more' : '',
+                                  style: const TextStyle(
+                                    color: Colors.blue,
+                                  ),
                                 ),
-                                Wrap(
-                                  spacing: 8,
-                                  children: [
-                                    Text(
-                                      note.isLong ? 'View more' : '',
-                                      style: const TextStyle(
-                                        color: Colors.blue,
-                                      ),
-                                    ),
-                                    const Text(''),
-                                  ],
-                                ),
+                                const Text(''),
                               ],
                             ),
                           ],
                         ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            if (showRestoreButton && note.isDeleted)
-              Positioned(
-                top: 0,
-                left: 0,
-                right: 0,
-                child: Align(
-                  alignment: Alignment.center,
-                  child: TextButton(
-                    onPressed: () => onRestoreTap?.call(note),
-                    child: const Text(
-                      'Restore',
-                      style: TextStyle(fontSize: 16, color: Colors.blue),
+                      ],
                     ),
-                  ),
-                ),
+                ],
               ),
+            ),
           ],
         ));
   }
