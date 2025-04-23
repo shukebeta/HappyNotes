@@ -82,61 +82,61 @@ class TrashBinPageState extends State<TrashBinPage> {
     }
 
     return RefreshIndicator(
-      onRefresh: () async {
-        await _controller.fetchTrashedNotes();
-        setState(() {});
-      },
-      child: ListView(
-        children: _controller.trashedNotes.map((note) {
-          return NoteListItem(
-            note: note,
-            onTap: (note) async {
-              try {
-                Note fullNote = await _controller.getNote(note.id);
-                final bool? needRefresh = await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => NoteDetail(note: fullNote)),
-                );
+        onRefresh: () async {
+          await _controller.fetchTrashedNotes();
+          setState(() {});
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: ListView(
+            children: _controller.trashedNotes.map((note) {
+              return NoteListItem(
+                note: note,
+                onTap: (note) async {
+                  try {
+                    Note fullNote = await _controller.getNote(note.id);
+                    final bool? needRefresh = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => NoteDetail(note: fullNote),
+                      ),
+                    );
 
-                if (needRefresh ?? false) {
-                  await _controller.fetchTrashedNotes();
-                  setState(() {});
-                }
-              } catch (e) {
-                // Handle error
-              }
-            },
-            onRestoreTap: (note) async {
-              try {
-                await _controller.undeleteNote(note.id);
-                setState(() {});
-              } catch (e) {
-                // Handle error
-              }
-            },
-            onDelete: null,
-            showDate: true,
-            showRestoreButton: true,
-          );
-        }).toList(),
-      ),
-    );
+                    if (needRefresh ?? false) {
+                      await _controller.fetchTrashedNotes();
+                      setState(() {});
+                    }
+                  } catch (e) {
+                    // Handle error
+                  }
+                },
+                onRestoreTap: (note) async {
+                  try {
+                    await _controller.undeleteNote(note.id);
+                    setState(() {});
+                  } catch (e) {
+                    // Handle error
+                  }
+                },
+                onDelete: null,
+                showDate: true,
+                showRestoreButton: true,
+              );
+            }).toList(),
+          ),
+        ));
   }
 
   Widget _buildPurgeDeletedButton() {
     return IconButton(
-      icon: _controller.isPurging
-          ? const Icon(Icons.hourglass_top)
-          : const Icon(Icons.delete_forever),
+      icon: _controller.isPurging ? const Icon(Icons.hourglass_top) : const Icon(Icons.delete_forever),
       onPressed: _controller.isPurging
           ? null
           : () async {
               final bool? shouldPurge = await DialogService.showConfirmDialog(
                 context,
                 title: 'Empty Trash Bin',
-                text:
-                    'Are you sure you want to empty the trash bin? This action cannot be undone.',
+                text: 'Are you sure you want to empty the trash bin? This action cannot be undone.',
                 noText: 'Cancel',
                 yesText: 'Empty',
               );
