@@ -38,22 +38,14 @@ class TrashBinPageState extends State<TrashBinPage> {
           _buildPurgeDeletedButton(),
         ],
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: _buildBody(),
-          ),
-          if (_controller.totalPages > 1)
-            UserSession().isDesktop
-                ? PaginationControls(
-                    currentPage: _controller.currentPageNumber,
-                    totalPages: _controller.totalPages,
-                    navigateToPage: (pageNumber) async {
-                      await _controller.navigateToPage(pageNumber);
-                      setState(() {});
-                    },
-                  )
-                : FloatingPagination(
+      body: UserSession().isDesktop
+          ? Column(
+              children: [
+                Expanded(
+                  child: _buildBody(),
+                ),
+                if (_controller.totalPages > 1)
+                  PaginationControls(
                     currentPage: _controller.currentPageNumber,
                     totalPages: _controller.totalPages,
                     navigateToPage: (pageNumber) async {
@@ -61,8 +53,22 @@ class TrashBinPageState extends State<TrashBinPage> {
                       setState(() {});
                     },
                   ),
-        ],
-      ),
+              ],
+            )
+          : Stack(
+              children: [
+                _buildBody(),
+                if (_controller.totalPages > 1)
+                  FloatingPagination(
+                    currentPage: _controller.currentPageNumber,
+                    totalPages: _controller.totalPages,
+                    navigateToPage: (pageNumber) async {
+                      await _controller.navigateToPage(pageNumber);
+                      setState(() {});
+                    },
+                  ),
+              ],
+            ),
     );
   }
 
@@ -89,7 +95,8 @@ class TrashBinPageState extends State<TrashBinPage> {
                 Note fullNote = await _controller.getNote(note.id);
                 final bool? needRefresh = await Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => NoteDetail(note: fullNote)),
+                  MaterialPageRoute(
+                      builder: (context) => NoteDetail(note: fullNote)),
                 );
 
                 if (needRefresh ?? false) {
@@ -119,14 +126,17 @@ class TrashBinPageState extends State<TrashBinPage> {
 
   Widget _buildPurgeDeletedButton() {
     return IconButton(
-      icon: _controller.isPurging ? const Icon(Icons.hourglass_top) : const Icon(Icons.delete_forever),
+      icon: _controller.isPurging
+          ? const Icon(Icons.hourglass_top)
+          : const Icon(Icons.delete_forever),
       onPressed: _controller.isPurging
           ? null
           : () async {
               final bool? shouldPurge = await DialogService.showConfirmDialog(
                 context,
                 title: 'Empty Trash Bin',
-                text: 'Are you sure you want to empty the trash bin? This action cannot be undone.',
+                text:
+                    'Are you sure you want to empty the trash bin? This action cannot be undone.',
                 noText: 'Cancel',
                 yesText: 'Empty',
               );
