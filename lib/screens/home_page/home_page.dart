@@ -74,11 +74,11 @@ class HomePageState extends State<HomePage> {
           // Wrap Text with Row to add an icon
           child: Row(
             mainAxisSize: MainAxisSize.min, // Prevent Row from expanding
-            children: const [
-              Text('My Notes'),
-              SizedBox(width: 8), // Add some spacing
+            children: [
+              const Text('My Notes'),
+              const SizedBox(width: 8), // Add some spacing
               Icon(Icons.touch_app,
-                  size: 18, color: Colors.white70), // Add subtle icon
+                  size: 18, color: Colors.blue), // Use blue color
             ],
           ),
         ),

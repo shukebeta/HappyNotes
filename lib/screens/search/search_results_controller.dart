@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:happy_notes/entities/note.dart';
+import 'package:happy_notes/app_config.dart'; // Import AppConfig for pageSize
 import 'package:happy_notes/services/notes_services.dart';
 // import 'package:happy_notes/dependency_injection.dart'; // Needed if service is injected via constructor/locator
 import 'package:happy_notes/services/note_tag_service.dart'; // Import NoteTagService
@@ -18,22 +19,34 @@ class SearchResultsController extends ChangeNotifier {
 
   bool _isLoading = false;
   List<Note> _results = [];
+  int _totalCount = 0;
+  int _currentPage = 1; // Keep track of the current page
   String? _error;
 
   bool get isLoading => _isLoading;
   List<Note> get results => _results;
   String? get error => _error;
+  int get totalNotes =>
+      _totalCount <= 0 ? 1 : _totalCount; // Avoid division by zero
+  int get totalPages => (totalNotes / AppConfig.pageSize).ceil();
+  int get currentPage => _currentPage;
 
-  Future<void> fetchSearchResults(String query) async {
+  // Modify fetchSearchResults to accept page number
+  Future<void> fetchSearchResults(String query, int pageNumber) async {
     _isLoading = true;
     _error = null;
+    // Don't clear results immediately, wait for new results or error
+    // _results = [];
     notifyListeners();
 
     try {
-      // For now, assume page 1 and default page size
+      // Use AppConfig.pageSize and the provided pageNumber
       final notesResult = await _notesService.searchNotes(
-          query, 0, 1); // Using 0 to trigger default size/page in API
+          query, AppConfig.pageSize, pageNumber);
+      // Update state with results and pagination info
       _results = notesResult.notes;
+      _totalCount = notesResult.totalNotes;
+      _currentPage = pageNumber; // Store the fetched page number
     } catch (e) {
       print('Error fetching search results: $e'); // Log the error
       _error = 'Failed to fetch search results: $e';
