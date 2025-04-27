@@ -8,6 +8,7 @@ import 'package:happy_notes/screens/settings/mastodon_sync_settings_controller.d
 import 'package:happy_notes/screens/settings/telegram_sync_settings_controller.dart';
 import 'package:happy_notes/screens/settings/settings_controller.dart';
 import 'package:happy_notes/screens/tag_notes/tag_notes_controller.dart';
+import 'package:happy_notes/screens/search/search_results_controller.dart';
 import 'package:happy_notes/services/account_service.dart';
 import 'package:happy_notes/services/image_service.dart';
 import 'package:happy_notes/services/mastodon_application_service.dart';
@@ -49,33 +50,43 @@ void _registerServices() {
   locator.registerLazySingleton(() => NotesService());
   locator.registerLazySingleton(() => ImageService());
   locator.registerLazySingleton(() => AccountService(
-    accountApi: locator(),
-    userSettingsService: locator(),
-    tokenUtils: locator(),
-  ));
-  locator.registerLazySingleton(() => UserSettingsService(userSettingsApi: locator()));
-  locator.registerLazySingleton(() => TelegramSettingsService(telegramSettingsApi: locator()));
-  locator.registerLazySingleton(() => MastodonApplicationService(mastodonApplicationApi: locator()));
-  locator.registerLazySingleton(() => MastodonUserAccountService(mastodonUserAccountApi: locator()));
-  locator.registerLazySingleton(() => MastodonService(mastodonApplicationService: locator(), mastodonUserAccountService: locator()));
+        accountApi: locator(),
+        userSettingsService: locator(),
+        tokenUtils: locator(),
+      ));
+  locator.registerLazySingleton(
+      () => UserSettingsService(userSettingsApi: locator()));
+  locator.registerLazySingleton(
+      () => TelegramSettingsService(telegramSettingsApi: locator()));
+  locator.registerLazySingleton(
+      () => MastodonApplicationService(mastodonApplicationApi: locator()));
+  locator.registerLazySingleton(
+      () => MastodonUserAccountService(mastodonUserAccountApi: locator()));
+  locator.registerLazySingleton(() => MastodonService(
+      mastodonApplicationService: locator(),
+      mastodonUserAccountService: locator()));
 }
 
 void _registerControllers() {
   locator.registerFactory(() => SettingsController(
-    accountService: locator(),
-    userSettingsService: locator(),
-  ));
-  locator.registerLazySingleton(() => TelegramSyncSettingsController(telegramSettingService: locator()));
-  locator.registerLazySingleton(() => MastodonSyncSettingsController(mastodonUserAccountService: locator()));
+        accountService: locator(),
+        userSettingsService: locator(),
+      ));
+  locator.registerLazySingleton(
+      () => TelegramSyncSettingsController(telegramSettingService: locator()));
+  locator.registerLazySingleton(() =>
+      MastodonSyncSettingsController(mastodonUserAccountService: locator()));
   locator.registerFactory(() => NewNoteController(notesService: locator()));
+  locator.registerFactory(() => SearchResultsController(
+      notesService: locator(), noteTagService: locator()));
   locator.registerFactory(() => HomePageController(
-    notesService: locator(),
-    noteTagService: locator(),
-  ));
+        notesService: locator(),
+        noteTagService: locator(),
+      ));
   locator.registerFactory(() => TagNotesController(
-    notesService: locator(),
-    noteTagService: locator(),
-  ));
+        notesService: locator(),
+        noteTagService: locator(),
+      ));
   locator.registerFactory(() => DiscoveryController(notesService: locator()));
 }
 

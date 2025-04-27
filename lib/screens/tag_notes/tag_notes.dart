@@ -74,7 +74,16 @@ class TagNotesState extends State<TagNotes> {
             NavigationHelper.showTagDiagram(context, tagData,
                 myNotesOnly: widget.myNotesOnly);
           },
-          child: Text('Notes with tag: ${widget.tag}'),
+          // Wrap Text with Row to add an icon
+          child: Row(
+            mainAxisSize: MainAxisSize.min, // Prevent Row from expanding
+            children: [
+              Text('Notes with tag: ${widget.tag}'),
+              const SizedBox(width: 8), // Add some spacing
+              const Icon(Icons.touch_app,
+                  size: 18, color: Colors.blue), // Use blue color
+            ],
+          ),
         ),
         actions: [
           _buildNewNoteButton(context),
