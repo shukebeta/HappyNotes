@@ -77,8 +77,8 @@ void _registerControllers() {
   locator.registerLazySingleton(() =>
       MastodonSyncSettingsController(mastodonUserAccountService: locator()));
   locator.registerFactory(() => NewNoteController(notesService: locator()));
-  locator
-      .registerFactory(() => SearchResultsController(notesService: locator()));
+  locator.registerFactory(() => SearchResultsController(
+      notesService: locator(), noteTagService: locator()));
   locator.registerFactory(() => HomePageController(
         notesService: locator(),
         noteTagService: locator(),

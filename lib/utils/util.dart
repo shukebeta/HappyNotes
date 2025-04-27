@@ -112,47 +112,59 @@ class Util {
             autofocus: !AppConfig.isIOSWeb,
             decoration: InputDecoration(hintText: hintText),
             onSubmitted: (value) {
-              // Mimic the 'Go' button behavior on submission
+              // Mimic the 'Search' button behavior on submission
               if (controller.text.isNotEmpty) {
                 Navigator.of(context)
-                    .pop({'action': 'go', 'text': controller.text});
+                    .pop({'action': 'search', 'text': controller.text});
               } else {
                 Navigator.of(context).pop(); // Mimic Cancel if empty
               }
             },
           ),
           actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                if (controller.text.isNotEmpty) {
-                  Navigator.of(context)
-                      .pop({'action': 'search', 'text': controller.text});
-                } else {
-                  // Optionally show a message that input is needed for search
-                  // Or just do nothing / mimic cancel
-                  Navigator.of(context).pop();
-                }
-              },
-              child: const Text('Search'), // New Search button
+            Tooltip(
+              // Add Tooltip for Search
+              message: 'Search note content for keywords',
+              child: TextButton(
+                onPressed: () {
+                  if (controller.text.isNotEmpty) {
+                    Navigator.of(context)
+                        .pop({'action': 'search', 'text': controller.text});
+                  } else {
+                    // Optionally show a message that input is needed for search
+                    // Or just do nothing / mimic cancel
+                    Navigator.of(context).pop();
+                  }
+                },
+                child: const Text('Search'),
+              ),
             ),
-            TextButton(
-              onPressed: () {
-                if (controller.text.isNotEmpty) {
-                  Navigator.of(context)
-                      .pop({'action': 'go', 'text': controller.text});
-                } else {
-                  // Optionally show a message that input is needed for go
-                  // Or just do nothing / mimic cancel
-                  Navigator.of(context).pop();
-                }
-              },
-              child: const Text('Go'), // Changed from 'OK'
+            Tooltip(
+              // Add Tooltip for Go
+              message: 'Navigate to tag, date, or note ID',
+              child: TextButton(
+                onPressed: () {
+                  if (controller.text.isNotEmpty) {
+                    Navigator.of(context)
+                        .pop({'action': 'go', 'text': controller.text});
+                  } else {
+                    // Optionally show a message that input is needed for go
+                    // Or just do nothing / mimic cancel
+                    Navigator.of(context).pop();
+                  }
+                },
+                child: const Text('Go'),
+              ),
             ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // Returns null for Cancel
-              },
-              child: const Text('Cancel'),
+            Tooltip(
+              // Add Tooltip for Cancel
+              message: 'Close dialog',
+              child: TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(); // Returns null for Cancel
+                },
+                child: const Text('Cancel'),
+              ),
             ),
           ],
         );

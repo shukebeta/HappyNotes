@@ -49,7 +49,27 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Search: "${widget.query}"'),
+        // Wrap title in GestureDetector for tap/long-press actions
+        title: GestureDetector(
+          onTap: () => NavigationHelper.showTagInputDialog(context),
+          onLongPress: () async {
+            var tagData = await _controller.loadTagCloud(context);
+            if (!mounted) return;
+            // Assuming myNotesOnly=true is desired for tag cloud from search results
+            NavigationHelper.showTagDiagram(context, tagData,
+                myNotesOnly: true);
+          },
+          // Wrap Text with Row to add an icon
+          child: Row(
+            mainAxisSize: MainAxisSize.min, // Prevent Row from expanding
+            children: [
+              Text('Search: "${widget.query}"'), // Original title text
+              const SizedBox(width: 8), // Add some spacing
+              const Icon(Icons.touch_app,
+                  size: 18, color: Colors.white70), // Add subtle icon
+            ],
+          ),
+        ),
       ),
       body: _buildBody(),
     );

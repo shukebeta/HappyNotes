@@ -71,7 +71,16 @@ class HomePageState extends State<HomePage> {
             if (!mounted) return;
             NavigationHelper.showTagDiagram(context, tagData);
           },
-          child: const Text('My Notes'),
+          // Wrap Text with Row to add an icon
+          child: Row(
+            mainAxisSize: MainAxisSize.min, // Prevent Row from expanding
+            children: const [
+              Text('My Notes'),
+              SizedBox(width: 8), // Add some spacing
+              Icon(Icons.touch_app,
+                  size: 18, color: Colors.white70), // Add subtle icon
+            ],
+          ),
         ),
         actions: [
           _buildNewNoteButton(context),
@@ -94,7 +103,9 @@ class HomePageState extends State<HomePage> {
   IconButton _buildNewNoteButton(BuildContext context) {
     return IconButton(
       icon: Util.writeNoteIcon(),
-      tooltip: AppConfig.privateNoteOnlyIsEnabled ? 'New Private Note' : 'New Public Note',
+      tooltip: AppConfig.privateNoteOnlyIsEnabled
+          ? 'New Private Note'
+          : 'New Public Note',
       onPressed: () async {
         final scaffoldContext = ScaffoldMessenger.of(context);
         final navigator = Navigator.of(context);
@@ -111,7 +122,8 @@ class HomePageState extends State<HomePage> {
                 }
                 scaffoldContext.showSnackBar(
                   SnackBar(
-                    content: const Text('Successfully saved. Click here to view.'),
+                    content:
+                        const Text('Successfully saved. Click here to view.'),
                     duration: const Duration(seconds: 5),
                     action: SnackBarAction(
                       label: 'View',
@@ -140,7 +152,8 @@ class HomePageState extends State<HomePage> {
     }
 
     if (_homePageController.notes.isEmpty) {
-      return const Center(child: Text('No notes available. Create a new note to get started.'));
+      return const Center(
+          child: Text('No notes available. Create a new note to get started.'));
     }
 
     return Column(
@@ -166,7 +179,9 @@ class HomePageState extends State<HomePage> {
               var needRefresh = await Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => NoteDetail(note: note, enterEditing: note.userId == UserSession().id),
+                      builder: (context) => NoteDetail(
+                          note: note,
+                          enterEditing: note.userId == UserSession().id),
                     ),
                   ) ??
                   false;
@@ -174,7 +189,8 @@ class HomePageState extends State<HomePage> {
                 refreshPage();
               }
             },
-            onTagTap: (note, tag) => NavigationHelper.onTagTap(context, note, tag),
+            onTagTap: (note, tag) =>
+                NavigationHelper.onTagTap(context, note, tag),
             onRefresh: () async => await navigateToPage(currentPageNumber),
             onDelete: (note) async {
               await _homePageController.deleteNote(note.id);

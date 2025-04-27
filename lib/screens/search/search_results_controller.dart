@@ -2,13 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:happy_notes/entities/note.dart';
 import 'package:happy_notes/services/notes_services.dart';
 // import 'package:happy_notes/dependency_injection.dart'; // Needed if service is injected via constructor/locator
+import 'package:happy_notes/services/note_tag_service.dart'; // Import NoteTagService
+import 'package:happy_notes/utils/util.dart'; // Import Util for error handling
 
 class SearchResultsController extends ChangeNotifier {
   final NotesService _notesService;
+  final NoteTagService _noteTagService; // Add NoteTagService
 
   // Constructor to accept NotesService
-  SearchResultsController({required NotesService notesService})
-      : _notesService = notesService;
+  SearchResultsController(
+      {required NotesService notesService,
+      required NoteTagService noteTagService}) // Update constructor
+      : _notesService = notesService,
+        _noteTagService = noteTagService;
 
   bool _isLoading = false;
   List<Note> _results = [];
@@ -36,5 +42,20 @@ class SearchResultsController extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     }
+  }
+
+  // Add loadTagCloud method (similar to HomePageController)
+  Future<Map<String, int>> loadTagCloud(BuildContext context) async {
+    final scaffoldContext = ScaffoldMessenger.of(context);
+    try {
+      // Consider if a separate loading state is needed for tag cloud
+      final tagCloud = await _noteTagService.getMyTagCloud();
+      return {for (var item in tagCloud) item.tag: item.count};
+    } catch (error) {
+      Util.showError(scaffoldContext, error.toString());
+    } finally {
+      // Handle loading state if needed
+    }
+    return {};
   }
 }
