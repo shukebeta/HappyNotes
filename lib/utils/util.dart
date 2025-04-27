@@ -6,7 +6,8 @@ import 'package:intl/intl.dart';
 import '../app_config.dart';
 
 class Util {
-  static void showError(ScaffoldMessengerState scaffoldMessengerState, String errorMessage) {
+  static void showError(
+      ScaffoldMessengerState scaffoldMessengerState, String errorMessage) {
     scaffoldMessengerState.showSnackBar(SnackBar(
       content: Text(errorMessage),
       backgroundColor: Colors.orange,
@@ -33,14 +34,17 @@ class Util {
     );
   }
 
-  static void showInfo(ScaffoldMessengerState scaffoldMessengerState, String message) {
+  static void showInfo(
+      ScaffoldMessengerState scaffoldMessengerState, String message) {
     scaffoldMessengerState.showSnackBar(SnackBar(
       content: Text(message),
-      backgroundColor: Colors.blue, // Optional: Set a different background color for info messages
+      backgroundColor: Colors
+          .blue, // Optional: Set a different background color for info messages
     ));
   }
 
-  static void showInfoDialog(BuildContext context, String title, String message) {
+  static void showInfoDialog(
+      BuildContext context, String title, String message) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -60,7 +64,8 @@ class Util {
     );
   }
 
-  static Future<String?> showInputDialog(BuildContext context, String title, String hintText) async {
+  static Future<String?> showInputDialog(
+      BuildContext context, String title, String hintText) async {
     TextEditingController controller = TextEditingController();
     return showDialog<String>(
       context: context,
@@ -94,7 +99,69 @@ class Util {
     );
   }
 
-  static String formatUnixTimestampToLocalDate(int unixTimestamp, String strFormat) {
+  static Future<Map<String, String>?> showKeywordOrTagDialog(
+      BuildContext context, String title, String hintText) async {
+    TextEditingController controller = TextEditingController();
+    return showDialog<Map<String, String>>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: TextField(
+            controller: controller,
+            autofocus: !AppConfig.isIOSWeb,
+            decoration: InputDecoration(hintText: hintText),
+            onSubmitted: (value) {
+              // Mimic the 'Go' button behavior on submission
+              if (controller.text.isNotEmpty) {
+                Navigator.of(context)
+                    .pop({'action': 'go', 'text': controller.text});
+              } else {
+                Navigator.of(context).pop(); // Mimic Cancel if empty
+              }
+            },
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                if (controller.text.isNotEmpty) {
+                  Navigator.of(context)
+                      .pop({'action': 'search', 'text': controller.text});
+                } else {
+                  // Optionally show a message that input is needed for search
+                  // Or just do nothing / mimic cancel
+                  Navigator.of(context).pop();
+                }
+              },
+              child: const Text('Search'), // New Search button
+            ),
+            TextButton(
+              onPressed: () {
+                if (controller.text.isNotEmpty) {
+                  Navigator.of(context)
+                      .pop({'action': 'go', 'text': controller.text});
+                } else {
+                  // Optionally show a message that input is needed for go
+                  // Or just do nothing / mimic cancel
+                  Navigator.of(context).pop();
+                }
+              },
+              child: const Text('Go'), // Changed from 'OK'
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Returns null for Cancel
+              },
+              child: const Text('Cancel'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  static String formatUnixTimestampToLocalDate(
+      int unixTimestamp, String strFormat) {
     // Convert Unix timestamp (seconds since epoch) to TZDateTime
     final dateTime = DateTime.fromMillisecondsSinceEpoch(unixTimestamp * 1000);
 
@@ -126,10 +193,10 @@ class Util {
   }
 
   static Future<Uint8List?> compressImage(
-      Uint8List imageData,
-      CompressFormat format, {
-        int maxPixel = 3333,
-      }) async {
+    Uint8List imageData,
+    CompressFormat format, {
+    int maxPixel = 3333,
+  }) async {
     return await FlutterImageCompress.compressWithList(
       imageData,
       minWidth: maxPixel,
@@ -146,7 +213,9 @@ class Util {
         Positioned(
           right: 0,
           bottom: 0,
-          child: Icon(AppConfig.privateNoteOnlyIsEnabled ? Icons.lock : Icons.public, size: 12),
+          child: Icon(
+              AppConfig.privateNoteOnlyIsEnabled ? Icons.lock : Icons.public,
+              size: 12),
         ),
       ],
     );

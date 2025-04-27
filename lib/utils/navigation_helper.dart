@@ -6,9 +6,11 @@ import '../entities/note.dart';
 import '../screens/components/tag_cloud.dart';
 import '../screens/memories/memories_on_day.dart';
 import '../screens/tag_notes/tag_notes.dart';
+import '../screens/search/search_results_page.dart';
 
 class NavigationHelper {
-  static Future<void> onTagTap(BuildContext context, Note note, String tag) async {
+  static Future<void> onTagTap(
+      BuildContext context, Note note, String tag) async {
     await Navigator.push(
       context,
       MaterialPageRoute(
@@ -21,46 +23,80 @@ class NavigationHelper {
 
   static Future<void> showTagInputDialog(BuildContext context) async {
     final navigator = Navigator.of(context);
-    var newTag = await Util.showInputDialog(context, 'Type a tag or a date', 'such as laugh or 2025-01-19');
-    if (newTag == null) return;
-    newTag = newTag.isEmpty ? 'laugh' : newTag;
-    newTag = _cleanTag(newTag);
-    if (newTag.isEmpty) return;
-    // First try to parse any date format
-    final dateString = _normalizeDateString(newTag);
-    if (dateString != null) {
-      try {
-        final date = DateTime.parse(dateString);
-        navigator.push(
-          MaterialPageRoute(
-            builder: (context) => MemoriesOnDay(date: date),
-          ),
-        );
-        return;
-      } catch (e) {
-        // If date parsing fails, continue with tag processing
-      }
-    }
-    // else
-    navigator.push(
-      MaterialPageRoute(
-        builder: (context) => newTag!.startsWith('@')
-            ? NoteDetail(noteId: int.parse(newTag.substring(1)))
-            : TagNotes(tag: newTag, myNotesOnly: true),
-      ),
+    // Use the new dialog function
+    final result = await Util.showKeywordOrTagDialog(
+      context,
+      'Find Notes', // Updated title
+      'Enter keyword, tag, date, or ID', // Updated hint
     );
+
+    // Handle null or cancel
+    if (result == null || result['action'] == 'cancel') {
+      return;
+    }
+
+    final action = result['action'];
+    final inputText = result['text'] ?? '';
+
+    if (inputText.isEmpty) return; // Don't proceed if text is empty
+
+    if (action == 'search') {
+      print('Search action triggered for: $inputText');
+      navigator.push(
+        MaterialPageRoute(
+          builder: (context) => SearchResultsPage(query: inputText),
+        ),
+      );
+    } else if (action == 'go') {
+      // Apply existing logic for tag/date/ID
+      var processedInput = _cleanTag(inputText);
+      if (processedInput.isEmpty) return;
+
+      // First try to parse any date format
+      final dateString = _normalizeDateString(processedInput);
+      if (dateString != null) {
+        try {
+          final date = DateTime.parse(dateString);
+          navigator.push(
+            MaterialPageRoute(builder: (context) => MemoriesOnDay(date: date)),
+          );
+          return;
+        } catch (e) {
+          // If date parsing fails, continue with tag/ID processing
+        }
+      }
+      // else (not a date or date parsing failed) - process as tag or ID
+      navigator.push(
+        MaterialPageRoute(
+          builder: (context) => processedInput.startsWith('@')
+              ? NoteDetail(noteId: int.parse(processedInput.substring(1)))
+              : TagNotes(tag: processedInput, myNotesOnly: true),
+        ),
+      );
+    }
   }
 
   static String? _normalizeDateString(String input) {
     // Match yyyy-MMM-dd or yyyy-M-d format
     final monthNames = {
-      'jan': '01', 'feb': '02', 'mar': '03', 'apr': '04',
-      'may': '05', 'jun': '06', 'jul': '07', 'aug': '08',
-      'sep': '09', 'oct': '10', 'nov': '11', 'dec': '12'
+      'jan': '01',
+      'feb': '02',
+      'mar': '03',
+      'apr': '04',
+      'may': '05',
+      'jun': '06',
+      'jul': '07',
+      'aug': '08',
+      'sep': '09',
+      'oct': '10',
+      'nov': '11',
+      'dec': '12'
     };
 
     // Try yyyy-MMM-dd format
-    final monthNamePattern = RegExp(r'^(\d{4})-(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)-(\d{2})$', caseSensitive: false);
+    final monthNamePattern = RegExp(
+        r'^(\d{4})-(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)-(\d{2})$',
+        caseSensitive: false);
     final monthMatch = monthNamePattern.firstMatch(input);
     if (monthMatch != null) {
       final year = monthMatch.group(1);
@@ -70,7 +106,8 @@ class NavigationHelper {
     }
 
     // Try yyyy-M-d format
-    final numericPattern = RegExp(r'^(\d{4})-(0?[1-9]|1[0-2])-(0?[1-9]|[12]\d|3[01])$');
+    final numericPattern =
+        RegExp(r'^(\d{4})-(0?[1-9]|1[0-2])-(0?[1-9]|[12]\d|3[01])$');
     final numericMatch = numericPattern.firstMatch(input);
     if (numericMatch != null) {
       final year = numericMatch.group(1);
@@ -93,7 +130,8 @@ class NavigationHelper {
             child: TagCloud(
               tagData: tagData,
               onTagTap: (tag) {
-                _navigateToTagNotes(context, tag, replacePage: replacePage, myNotesOnly: myNotesOnly);
+                _navigateToTagNotes(context, tag,
+                    replacePage: replacePage, myNotesOnly: myNotesOnly);
               },
             ),
           ),

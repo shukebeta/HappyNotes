@@ -28,6 +28,15 @@ class NotesService {
     return _getPagedNotesResult(apiResult);
   }
 
+// Search notes by keyword
+  Future<NotesResult> searchNotes(
+      String query, int pageSize, int pageNumber) async {
+    var apiResult =
+        (await NotesApi.searchNotes(query, pageSize, pageNumber)).data;
+    // Reuse the existing helper to parse the paged result structure
+    return _getPagedNotesResult(apiResult);
+  }
+
   // fetch my latest notes (include private ones)
   Future<NotesResult> memories() async {
     var params = {'localTimeZone': AppConfig.timezone};
@@ -75,18 +84,27 @@ class NotesService {
       'content': noteModel.content,
       'isPrivate': noteModel.isPrivate,
       'isMarkdown': noteModel.isMarkdown,
-      'publishDateTime': noteModel.publishDateTime.isEmpty ? '' : DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.parse(noteModel.publishDateTime).add(
-        Duration(hours: now.hour, minutes: now.minute, seconds: now.second,)),
-      ),
+      'publishDateTime': noteModel.publishDateTime.isEmpty
+          ? ''
+          : DateFormat('yyyy-MM-dd HH:mm:ss').format(
+              DateTime.parse(noteModel.publishDateTime).add(Duration(
+                hours: now.hour,
+                minutes: now.minute,
+                seconds: now.second,
+              )),
+            ),
       'timezoneId': AppConfig.timezone,
     };
     var apiResult = (await NotesApi.post(params)).data;
-    if (!apiResult['successful'] && apiResult['errorCode'] != AppConfig.quietErrorCode) throw ApiException(apiResult);
+    if (!apiResult['successful'] &&
+        apiResult['errorCode'] != AppConfig.quietErrorCode)
+      throw ApiException(apiResult);
     return apiResult['data']; //note id
   }
 
   // update a note and get its noteId
-  Future<int> update(int noteId, String content, bool isPrivate, bool isMarkdown) async {
+  Future<int> update(
+      int noteId, String content, bool isPrivate, bool isMarkdown) async {
     var params = {
       'id': noteId,
       'content': content,
@@ -94,7 +112,9 @@ class NotesService {
       'isMarkdown': isMarkdown,
     };
     var apiResult = (await NotesApi.update(params)).data;
-    if (!apiResult['successful'] && apiResult['errorCode'] != AppConfig.quietErrorCode) throw ApiException(apiResult);
+    if (!apiResult['successful'] &&
+        apiResult['errorCode'] != AppConfig.quietErrorCode)
+      throw ApiException(apiResult);
     return apiResult['data']; //note id
   }
 
@@ -111,7 +131,8 @@ class NotesService {
   }
 
   Future<Note> get(int noteId, {bool includeDeleted = false}) async {
-    var apiResult = (await NotesApi.get(noteId, includeDeleted: includeDeleted)).data;
+    var apiResult =
+        (await NotesApi.get(noteId, includeDeleted: includeDeleted)).data;
     if (!apiResult['successful']) throw ApiException(apiResult);
     return Note.fromJson(apiResult['data']);
   }
@@ -124,6 +145,6 @@ class NotesService {
   Future<int> purgeDeleted() async {
     var apiResult = (await NotesApi.purgeDeleted()).data;
     if (!apiResult['successful']) throw ApiException(apiResult);
-    return apiResult['data']; 
+    return apiResult['data'];
   }
 }
