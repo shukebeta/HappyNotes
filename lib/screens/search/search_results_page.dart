@@ -65,7 +65,7 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
       appBar: AppBar(
         // Wrap title in GestureDetector for tap/long-press actions
         title: GestureDetector(
-          onTap: () => NavigationHelper.showTagInputDialog(context),
+          onTap: () => NavigationHelper.showTagInputDialog(context, replacePage: true),
           onLongPress: () async {
             var tagData = await _controller.loadTagCloud(context);
             if (!mounted) return;

@@ -66,7 +66,7 @@ class TagNotesState extends State<TagNotes> {
     return Scaffold(
       appBar: AppBar(
         title: GestureDetector(
-          onTap: () => NavigationHelper.showTagInputDialog(context),
+          onTap: () => NavigationHelper.showTagInputDialog(context, replacePage: true),
           onLongPress: () async {
             var tagData = await _tagNotesController.loadTagCloud(context);
             // Show tag diagram on long press

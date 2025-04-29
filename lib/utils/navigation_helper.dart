@@ -21,7 +21,7 @@ class NavigationHelper {
     );
   }
 
-  static Future<void> showTagInputDialog(BuildContext context) async {
+  static Future<void> showTagInputDialog(BuildContext context, {bool replacePage = false}) async {
     final navigator = Navigator.of(context);
     // Use the new dialog function
     final result = await Util.showKeywordOrTagDialog(
@@ -42,11 +42,19 @@ class NavigationHelper {
 
     if (action == 'search') {
       print('Search action triggered for: $inputText');
-      navigator.push(
-        MaterialPageRoute(
-          builder: (context) => SearchResultsPage(query: inputText),
-        ),
-      );
+      if (replacePage) {
+        navigator.pushReplacement(
+          MaterialPageRoute(
+            builder: (context) => SearchResultsPage(query: inputText),
+          ),
+        );
+      } else {
+        navigator.push(
+          MaterialPageRoute(
+            builder: (context) => SearchResultsPage(query: inputText),
+          ),
+        );
+      }
     } else if (action == 'go') {
       // Apply existing logic for tag/date/ID
       var processedInput = _cleanTag(inputText);
@@ -57,22 +65,38 @@ class NavigationHelper {
       if (dateString != null) {
         try {
           final date = DateTime.parse(dateString);
-          navigator.push(
-            MaterialPageRoute(builder: (context) => MemoriesOnDay(date: date)),
-          );
+          if (replacePage) {
+            navigator.pushReplacement(
+              MaterialPageRoute(builder: (context) => MemoriesOnDay(date: date)),
+            );
+          } else {
+            navigator.push(
+              MaterialPageRoute(builder: (context) => MemoriesOnDay(date: date)),
+            );
+          }
           return;
         } catch (e) {
           // If date parsing fails, continue with tag/ID processing
         }
       }
       // else (not a date or date parsing failed) - process as tag or ID
-      navigator.push(
-        MaterialPageRoute(
-          builder: (context) => processedInput.startsWith('@')
-              ? NoteDetail(noteId: int.parse(processedInput.substring(1)))
-              : TagNotes(tag: processedInput, myNotesOnly: true),
-        ),
-      );
+      if (replacePage) {
+        navigator.pushReplacement(
+          MaterialPageRoute(
+            builder: (context) => processedInput.startsWith('@')
+                ? NoteDetail(noteId: int.parse(processedInput.substring(1)))
+                : TagNotes(tag: processedInput, myNotesOnly: true),
+          ),
+        );
+      } else {
+        navigator.push(
+          MaterialPageRoute(
+            builder: (context) => processedInput.startsWith('@')
+                ? NoteDetail(noteId: int.parse(processedInput.substring(1)))
+                : TagNotes(tag: processedInput, myNotesOnly: true),
+          ),
+        );
+      }
     }
   }
 
