@@ -71,4 +71,26 @@ class SearchResultsController extends ChangeNotifier {
     }
     return {};
   }
+
+  Future<void> deleteNote(BuildContext context, int noteId) async {
+    final scaffoldContext = ScaffoldMessenger.of(context);
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      await _notesService.delete(noteId);
+      // Remove the note from the local list and update count
+      _results.removeWhere((note) => note.id == noteId);
+      _totalCount--; // Decrement total count
+      // Optionally, show a success message
+      Util.showInfo(scaffoldContext, 'Note deleted successfully.');
+    } catch (error) {
+      _error = 'Failed to delete note: $error';
+      Util.showError(scaffoldContext, _error!);
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
 }

@@ -152,7 +152,9 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
                 NavigationHelper.onTagTap(context, note, tag),
             onRefresh: () => navigateToPage(
                 currentPageNumber), // Use navigateToPage for refresh
-            // onDelete might not make sense in search results, omit or handle carefully
+            onDelete: (note) async {
+              await _controller.deleteNote(context, note.id);
+            },
           ),
         ),
         if (_controller.totalPages > 1 && UserSession().isDesktop)
