@@ -10,6 +10,7 @@ import '../../dependency_injection.dart';
 import '../account/user_session.dart';
 import '../new_note/new_note.dart';
 import 'home_page_controller.dart';
+import '../components/controllers/tag_cloud_controller.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -20,6 +21,7 @@ class HomePage extends StatefulWidget {
 
 class HomePageState extends State<HomePage> {
   late HomePageController _homePageController;
+  late TagCloudController _tagCloudController;
   int currentPageNumber = 1;
   bool showPageSelector = false;
 
@@ -32,6 +34,7 @@ class HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     _homePageController = locator<HomePageController>();
+    _tagCloudController = locator<TagCloudController>();
   }
 
   @override
@@ -67,7 +70,7 @@ class HomePageState extends State<HomePage> {
         title: GestureDetector(
           onTap: () => NavigationHelper.showTagInputDialog(context),
           onLongPress: () async {
-            var tagData = await _homePageController.loadTagCloud(context);
+            var tagData = await _tagCloudController.loadTagCloud(context);
             if (!mounted) return;
             NavigationHelper.showTagDiagram(context, tagData);
           },

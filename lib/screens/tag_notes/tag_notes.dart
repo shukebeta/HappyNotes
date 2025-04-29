@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:happy_notes/app_config.dart';
 import 'package:happy_notes/screens/note_detail/note_detail.dart';
 import 'package:happy_notes/screens/tag_notes/tag_notes_controller.dart';
+import 'package:happy_notes/screens/components/controllers/tag_cloud_controller.dart';
 import '../../utils/navigation_helper.dart';
 import '../components/floating_pagination.dart';
 import '../components/note_list.dart';
@@ -22,6 +23,7 @@ class TagNotes extends StatefulWidget {
 
 class TagNotesState extends State<TagNotes> {
   late TagNotesController _tagNotesController;
+  late TagCloudController _tagCloudController;
   int currentPageNumber = 1;
   bool showPageSelector = false;
   bool get isFirstPage => currentPageNumber == 1;
@@ -32,6 +34,7 @@ class TagNotesState extends State<TagNotes> {
   void initState() {
     super.initState();
     _tagNotesController = locator<TagNotesController>();
+    _tagCloudController = locator<TagCloudController>();
   }
 
   @override
@@ -68,11 +71,10 @@ class TagNotesState extends State<TagNotes> {
         title: GestureDetector(
           onTap: () => NavigationHelper.showTagInputDialog(context, replacePage: true),
           onLongPress: () async {
-            var tagData = await _tagNotesController.loadTagCloud(context);
+            var tagData = await _tagCloudController.loadTagCloud(context);
             // Show tag diagram on long press
             if (!mounted) return;
-            NavigationHelper.showTagDiagram(context, tagData,
-                myNotesOnly: widget.myNotesOnly);
+            NavigationHelper.showTagDiagram(context, tagData, myNotesOnly: widget.myNotesOnly);
           },
           // Wrap Text with Row to add an icon
           child: Row(

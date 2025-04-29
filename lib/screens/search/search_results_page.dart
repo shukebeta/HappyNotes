@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:happy_notes/screens/components/note_list.dart';
 import 'package:happy_notes/screens/search/search_results_controller.dart';
+import 'package:happy_notes/screens/components/controllers/tag_cloud_controller.dart';
 import 'package:happy_notes/dependency_injection.dart';
 import 'package:happy_notes/entities/note.dart';
 import 'package:happy_notes/screens/note_detail/note_detail.dart';
@@ -20,12 +21,14 @@ class SearchResultsPage extends StatefulWidget {
 
 class _SearchResultsPageState extends State<SearchResultsPage> {
   late SearchResultsController _controller;
+  late TagCloudController _tagCloudController;
   int currentPageNumber = 1; // Add state for current page
 
   @override
   void initState() {
     super.initState();
     _controller = locator<SearchResultsController>();
+    _tagCloudController = locator<TagCloudController>();
     // Add listener to rebuild when controller notifies changes
     _controller.addListener(_onControllerUpdate);
     // Fetch initial page
@@ -67,11 +70,10 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
         title: GestureDetector(
           onTap: () => NavigationHelper.showTagInputDialog(context, replacePage: true),
           onLongPress: () async {
-            var tagData = await _controller.loadTagCloud(context);
+            var tagData = await _tagCloudController.loadTagCloud(context);
             if (!mounted) return;
             // Assuming myNotesOnly=true is desired for tag cloud from search results
-            NavigationHelper.showTagDiagram(context, tagData,
-                myNotesOnly: true);
+            NavigationHelper.showTagDiagram(context, tagData, myNotesOnly: true);
           },
           // Wrap Text with Row to add an icon
           child: Row(

@@ -6,7 +6,9 @@ import '../components/memory_list.dart';
 import '../../dependency_injection.dart';
 import '../../services/notes_services.dart';
 import '../new_note/new_note.dart';
+import '../../utils/navigation_helper.dart';
 import 'memories_controller.dart';
+import '../components/controllers/tag_cloud_controller.dart';
 
 class Memories extends StatefulWidget {
   const Memories({super.key});
@@ -17,11 +19,13 @@ class Memories extends StatefulWidget {
 
 class MemoriesState extends State<Memories> with RouteAware {
   late MemoriesController _memoriesController;
+  late TagCloudController _tagCloudController;
 
   @override
   void initState() {
     super.initState();
     _memoriesController = MemoriesController(locator<NotesService>());
+    _tagCloudController = locator<TagCloudController>();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       UserSession.routeObserver.subscribe(this, ModalRoute.of(context)!);
     });
@@ -48,7 +52,22 @@ class MemoriesState extends State<Memories> with RouteAware {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('My Memories'),
+        title: GestureDetector(
+          onTap: () => NavigationHelper.showTagInputDialog(context),
+          onLongPress: () async {
+            var tagData = await _tagCloudController.loadTagCloud(context);
+            if (!mounted) return;
+            NavigationHelper.showTagDiagram(context, tagData);
+          },
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text('My Memories'),
+              const SizedBox(width: 8),
+              const Icon(Icons.touch_app, size: 18, color: Colors.blue),
+            ],
+          ),
+        ),
         actions: [_buildNewNoteButton(context)],
       ),
       body: _buildBody(),

@@ -9,6 +9,7 @@ import 'package:happy_notes/screens/settings/telegram_sync_settings_controller.d
 import 'package:happy_notes/screens/settings/settings_controller.dart';
 import 'package:happy_notes/screens/tag_notes/tag_notes_controller.dart';
 import 'package:happy_notes/screens/search/search_results_controller.dart';
+import 'package:happy_notes/screens/components/controllers/tag_cloud_controller.dart';
 import 'package:happy_notes/services/account_service.dart';
 import 'package:happy_notes/services/image_service.dart';
 import 'package:happy_notes/services/mastodon_application_service.dart';
@@ -88,6 +89,7 @@ void _registerControllers() {
         noteTagService: locator(),
       ));
   locator.registerFactory(() => DiscoveryController(notesService: locator()));
+  locator.registerFactory(() => TagCloudController());
 }
 
 void _registerUtils() {

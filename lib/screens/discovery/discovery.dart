@@ -11,6 +11,7 @@ import '../account/user_session.dart';
 import 'discovery_controller.dart';
 import '../new_note/new_note.dart';
 import '../../app_config.dart';
+import '../components/controllers/tag_cloud_controller.dart';
 
 class Discovery extends StatefulWidget {
   const Discovery({super.key});
@@ -21,6 +22,7 @@ class Discovery extends StatefulWidget {
 
 class DiscoveryState extends State<Discovery> {
   late DiscoveryController _discoveryController;
+  late TagCloudController _tagCloudController;
   int currentPageNumber = 1;
   bool showPageSelector = false;
 
@@ -32,6 +34,7 @@ class DiscoveryState extends State<Discovery> {
   void initState() {
     super.initState();
     _discoveryController = locator<DiscoveryController>();
+    _tagCloudController = locator<TagCloudController>();
   }
 
   @override
@@ -60,7 +63,24 @@ class DiscoveryState extends State<Discovery> {
   Widget build(BuildContext context) {
     UserSession().isDesktop = MediaQuery.of(context).size.width >= 600;
     return Scaffold(
-      appBar: AppBar(title: const Text('Shared Notes'), actions: [
+      appBar: AppBar(
+        title: GestureDetector(
+          onTap: () => NavigationHelper.showTagInputDialog(context),
+          onLongPress: () async {
+            var tagData = await _tagCloudController.loadTagCloud(context);
+            if (!mounted) return;
+            NavigationHelper.showTagDiagram(context, tagData);
+          },
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text('Shared Notes'),
+              const SizedBox(width: 8),
+              const Icon(Icons.touch_app, size: 18, color: Colors.blue),
+            ],
+          ),
+        ),
+        actions: [
         _buildNewNoteButton(context),
       ]),
       body: Stack(
