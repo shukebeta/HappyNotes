@@ -69,12 +69,16 @@ class NoteViewState extends State<NoteView> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       widget.note.isMarkdown
-                          ? MarkdownBodyHere(data: widget.note.content, isPrivate: widget.note.isPrivate)
+                          ? MarkdownBodyHere(
+                              data: widget.note.content,
+                              isPrivate: widget.note.isPrivate)
                           : Text(
                               widget.note.formattedContent,
                               style: TextStyle(
                                 fontSize: 16.0,
-                                color: widget.note.isPrivate ? Colors.grey : Colors.black,
+                                color: widget.note.isPrivate
+                                    ? Colors.grey
+                                    : Colors.black,
                               ),
                             ),
                     ],
@@ -87,7 +91,8 @@ class NoteViewState extends State<NoteView> {
                     child: Center(child: CircularProgressIndicator()),
                   )
                 else if (linkedNotes != null && linkedNotes!.isNotEmpty)
-                  LinkedNotes(linkedNotes: linkedNotes!, parentNote: widget.note),
+                  LinkedNotes(
+                      linkedNotes: linkedNotes!, parentNote: widget.note),
               ],
             ),
 
@@ -106,7 +111,7 @@ class NoteViewState extends State<NoteView> {
                         builder: (context) => NewNote(
                           isPrivate: widget.note.isPrivate,
                           initialTag: '@${widget.note.id}',
-                          onNoteSaved: navigator.pop,
+                          // onNoteSaved removed
                         ),
                       ),
                     );

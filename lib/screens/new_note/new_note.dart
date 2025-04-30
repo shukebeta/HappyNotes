@@ -12,13 +12,13 @@ class NewNote extends StatefulWidget {
   final bool isPrivate;
   final DateTime? date;
   final String? initialTag;
-  final SaveNoteCallback? onNoteSaved;
+  // final SaveNoteCallback? onNoteSaved; // No longer needed
 
   const NewNote({
     Key? key,
     required this.isPrivate,
     this.initialTag,
-    this.onNoteSaved,
+    // this.onNoteSaved, // Removed
     this.date,
   }) : super(key: key);
 
@@ -29,7 +29,7 @@ class NewNote extends StatefulWidget {
 class NewNoteState extends State<NewNote> {
   final _newNoteController = locator<NewNoteController>();
   late NoteModel noteModel;
-  bool isSaving = false;  // Add saving state flag
+  bool isSaving = false; // Add saving state flag
 
   @override
   void initState() {
@@ -38,7 +38,9 @@ class NewNoteState extends State<NewNote> {
     noteModel.isPrivate = widget.isPrivate;
     noteModel.isMarkdown = AppConfig.markdownIsEnabled;
     noteModel.content = '';
-    noteModel.publishDateTime = widget.date != null ? DateFormat('yyyy-MM-dd').format(widget.date!) : '';
+    noteModel.publishDateTime = widget.date != null
+        ? DateFormat('yyyy-MM-dd').format(widget.date!)
+        : '';
     if (widget.initialTag != null) {
       noteModel.initialContent = widget.initialTag!;
     }
@@ -51,7 +53,8 @@ class NewNoteState extends State<NewNote> {
         builder: (context, child) {
           return PopScope(
             canPop: false,
-            onPopInvoked: (didPop) => _newNoteController.onPopHandler(context, didPop),
+            onPopInvoked: (didPop) =>
+                _newNoteController.onPopHandler(context, didPop),
             child: Scaffold(
               appBar: AppBar(
                 title: Consumer<NoteModel>(
@@ -59,7 +62,9 @@ class NewNoteState extends State<NewNote> {
                     return Text(
                       _getNoteTitle(noteModel),
                       style: TextStyle(
-                        color: noteModel.isPrivate ? Colors.red : Colors.green, // Change colors accordingly
+                        color: noteModel.isPrivate
+                            ? Colors.red
+                            : Colors.green, // Change colors accordingly
                       ),
                     );
                   },
@@ -71,19 +76,19 @@ class NewNoteState extends State<NewNote> {
               ),
               floatingActionButton: FloatingActionButton(
                 mini: true,
-                onPressed: isSaving ? null : () async {
-                  setState(() => isSaving = true);
-                  try {
-                    await _newNoteController.saveNote(
-                      context,
-                      widget.onNoteSaved,
-                    );
-                  } finally {
-                    if (mounted) {
-                      setState(() => isSaving = false);
-                    }
-                  }
-                },
+                onPressed: isSaving
+                    ? null
+                    : () async {
+                        setState(() => isSaving = true);
+                        try {
+                          // Call saveNote without the callback, it now handles popping internally
+                          await _newNoteController.saveNote(context);
+                        } finally {
+                          if (mounted) {
+                            setState(() => isSaving = false);
+                          }
+                        }
+                      },
                 child: isSaving
                     ? const SizedBox(
                         width: 20,
@@ -103,7 +108,9 @@ class NewNoteState extends State<NewNote> {
   String _getNoteTitle(NoteModel noteModel) {
     String privacyStatus = noteModel.isPrivate ? 'Private' : 'Public';
     String markdownIndicator = noteModel.isMarkdown ? ' with M↓' : '';
-    String onDate = widget.date != null ? ' on ${DateFormat('dd-MMM-yyyy').format(widget.date!)}' : '';
+    String onDate = widget.date != null
+        ? ' on ${DateFormat('dd-MMM-yyyy').format(widget.date!)}'
+        : '';
 
     return '$privacyStatus note$markdownIndicator$onDate';
   }

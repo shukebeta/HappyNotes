@@ -64,7 +64,8 @@ class MemoriesOnDayState extends State<MemoriesOnDay> with RouteAware {
 
   @override
   void didPopNext() {
-    setState(() {});
+    // No need to call setState here just because a route was popped.
+    // Refresh should happen based on actual data changes if necessary.
   }
 
   @override
@@ -144,21 +145,27 @@ class MemoriesOnDayState extends State<MemoriesOnDay> with RouteAware {
                     opacity: 0.5,
                     child: FloatingActionButton(
                       onPressed: () async {
-                        final navigator = Navigator.of(context);
-                        final newNote = await Navigator.push(
+                        // final navigator = Navigator.of(context); // No longer needed here
+                        // Await the result of pushing the NewNote screen
+                        final bool? savedSuccessfully =
+                            await Navigator.push<bool>(
                           context,
                           MaterialPageRoute(
                             builder: (context) => NewNote(
                               date: widget.date,
                               isPrivate: true,
-                              onNoteSaved: (note) async {
-                                navigator.pop();
-                              },
+                              // onNoteSaved removed
                             ),
                           ),
                         );
-                        if (newNote != null) {
-                          setState(() {});
+                        // If savedSuccessfully is true, refresh the data
+                        if (savedSuccessfully == true) {
+                          // Re-fetch data instead of just setState to ensure list updates
+                          await _controller.fetchMemories(widget.date);
+                          // Trigger rebuild after fetching
+                          if (mounted) {
+                            setState(() {});
+                          }
                         }
                       },
                       child: const Icon(Icons.add),

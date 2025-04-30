@@ -111,31 +111,7 @@ class TagNotesState extends State<TagNotes> {
             builder: (context) => NewNote(
               isPrivate: AppConfig.privateNoteOnlyIsEnabled,
               initialTag: widget.tag,
-              onNoteSaved: (note) async {
-                navigator.pop();
-                if (isFirstPage) {
-                  await refreshPage();
-                  return;
-                }
-                scaffoldContext.showSnackBar(
-                  SnackBar(
-                    content:
-                        const Text('Successfully saved. Click here to view.'),
-                    duration: const Duration(seconds: 5),
-                    action: SnackBarAction(
-                      label: 'View',
-                      onPressed: () async {
-                        await navigator.push(
-                          MaterialPageRoute(
-                            builder: (context) => NoteDetail(note: note),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                );
-                return;
-              },
+              // onNoteSaved removed
             ),
           ),
         );

@@ -52,7 +52,7 @@ class MainMenuState extends State<MainMenu> {
         NewNote(
           key: newNoteKey,
           isPrivate: true,
-          onNoteSaved: _onNoteSaved,
+          // onNoteSaved removed
         ),
         if (kIsWeb) const Discovery(),
         Settings(
@@ -64,7 +64,8 @@ class MainMenuState extends State<MainMenu> {
   }
 
   void _onLogout() {
-    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const InitialPage()));
+    Navigator.pushReplacement(
+        context, MaterialPageRoute(builder: (context) => const InitialPage()));
   }
 
   void _onNoteSaved(Note note) async {
@@ -105,7 +106,8 @@ class MainMenuState extends State<MainMenu> {
     switch (index) {
       case indexNewNote:
         if (!AppConfig.isIOSWeb) {
-          Future.delayed(const Duration(milliseconds: 150), () => focusNode.requestFocus());
+          Future.delayed(const Duration(milliseconds: 150),
+              () => focusNode.requestFocus());
         }
         break;
       case indexNotes:
@@ -135,7 +137,9 @@ class MainMenuState extends State<MainMenu> {
       canPop: false,
       onPopInvoked: (bool didPop) async {
         if (!didPop) {
-          if (true == await DialogService.showConfirmDialog(context, title: 'Yes to quit Happy Notes')) {
+          if (true ==
+              await DialogService.showConfirmDialog(context,
+                  title: 'Yes to quit Happy Notes')) {
             SystemNavigator.pop();
           }
         }
@@ -146,7 +150,10 @@ class MainMenuState extends State<MainMenu> {
         // ),
         body: Row(
           children: [
-            if (isDesktop) RailNavigation(selectedIndex: _selectedIndex, onDestinationSelected: switchToPage),
+            if (isDesktop)
+              RailNavigation(
+                  selectedIndex: _selectedIndex,
+                  onDestinationSelected: switchToPage),
             Expanded(
               child: _getPage(_selectedIndex),
             ),

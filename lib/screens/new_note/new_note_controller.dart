@@ -11,34 +11,29 @@ import 'package:provider/provider.dart';
 class NewNoteController {
   final NotesService _notesService;
 
-  NewNoteController({required NotesService notesService}) : _notesService = notesService;
+  NewNoteController({required NotesService notesService})
+      : _notesService = notesService;
 
-  Future<void> saveNote(BuildContext context, SaveNoteCallback? onNoteSaved) async {
+  // Returns true if saved successfully, false otherwise.
+  Future<bool> saveNote(BuildContext context) async {
     final scaffoldMessengerSate = ScaffoldMessenger.of(context);
+    final navigator = Navigator.of(context); // Get navigator
     final noteModel = context.read<NoteModel>();
     if (noteModel.content.trim() == '') {
       Util.showInfo(scaffoldMessengerSate, 'Please write something');
-      return;
+      return false; // Indicate failure
     }
     try {
-      final noteId = await _notesService.post(noteModel);
-      var content = noteModel.content;
+      await _notesService.post(noteModel);
       noteModel.initialContent = '';
       noteModel.content = '';
       noteModel.unfocus();
-      if (onNoteSaved != null) {
-        final note = Note(
-            id: noteId,
-            userId: UserSession().id!,
-            content: content,
-            isLong: content.length < 1024,
-            isPrivate: noteModel.isPrivate,
-            isMarkdown: noteModel.isMarkdown,
-            createdAt: _getCreatedAt(noteModel.publishDateTime));
-        onNoteSaved(note);
-      }
+      // Pop with true on success
+      navigator.pop(true);
+      return true; // Indicate success
     } catch (error) {
       Util.showError(scaffoldMessengerSate, error.toString());
+      return false; // Indicate failure
     }
   }
 
