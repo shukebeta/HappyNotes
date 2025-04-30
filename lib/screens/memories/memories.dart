@@ -80,7 +80,6 @@ class MemoriesState extends State<Memories> with RouteAware {
           MaterialPageRoute(
             builder: (context) => NewNote(
               isPrivate: AppConfig.privateNoteOnlyIsEnabled,
-              // onNoteSaved removed
             ),
           ),
         );

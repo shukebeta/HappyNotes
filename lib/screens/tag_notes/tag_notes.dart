@@ -111,7 +111,6 @@ class TagNotesState extends State<TagNotes> {
             builder: (context) => NewNote(
               isPrivate: AppConfig.privateNoteOnlyIsEnabled,
               initialTag: widget.tag,
-              // onNoteSaved removed
             ),
           ),
         );

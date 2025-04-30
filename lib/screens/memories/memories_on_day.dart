@@ -154,7 +154,6 @@ class MemoriesOnDayState extends State<MemoriesOnDay> with RouteAware {
                             builder: (context) => NewNote(
                               date: widget.date,
                               isPrivate: true,
-                              // onNoteSaved removed
                             ),
                           ),
                         );
