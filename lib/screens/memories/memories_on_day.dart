@@ -158,8 +158,9 @@ class MemoriesOnDayState extends State<MemoriesOnDay> with RouteAware {
                             ),
                           ),
                         );
-                        // If savedSuccessfully is true, trigger a rebuild
-                        if (savedSuccessfully == true) {
+                        // If savedSuccessfully is true (or not null and true), trigger a rebuild
+                        if (savedSuccessfully ?? false) {
+                          // Use ?? false for null safety
                           // Calling setState will cause the FutureBuilder to re-fetch data
                           if (mounted) {
                             setState(() {});

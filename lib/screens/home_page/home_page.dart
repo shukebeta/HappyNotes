@@ -114,8 +114,9 @@ class HomePageState extends State<HomePage> {
             ),
           ),
         );
-        // If savedSuccessfully is true, refresh the page
-        if (savedSuccessfully == true) {
+        // If savedSuccessfully is true (or not null and true), refresh the page
+        if (savedSuccessfully ?? false) {
+          // Use ?? false for null safety
           // Only refresh if on the first page, otherwise let the snackbar handle it (existing logic)
           if (isFirstPage) {
             await refreshPage();

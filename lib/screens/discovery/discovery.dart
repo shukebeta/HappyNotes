@@ -98,16 +98,20 @@ class DiscoveryState extends State<Discovery> {
           ? 'New Private Note'
           : 'New Public Note',
       onPressed: () async {
-        final scaffoldContext = ScaffoldMessenger.of(context);
-        final navigator = Navigator.of(context);
-        await navigator.push(
+        // Await the result
+        final bool? savedSuccessfully = await Navigator.push<bool>(
+          context,
           MaterialPageRoute(
-            builder: (context) => NewNote(
+            builder: (context) => const NewNote(
               isPrivate: false,
-              // onNoteSaved removed
             ),
           ),
         );
+        // Use ?? false for null safety
+        if (savedSuccessfully ?? false) {
+          // Always refresh discovery page if a new note was added
+          await refreshPage();
+        }
       },
     );
   }
