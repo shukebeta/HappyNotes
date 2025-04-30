@@ -44,23 +44,6 @@ class NewNoteController {
     }
   }
 
-  int _getCreatedAt(String publishDate) {
-    var now = DateTime.now();
-    // If the publishDate is empty, use DateTime.now()
-    final sourceDateTime = publishDate.isEmpty
-        ? now
-        : DateTime.parse(publishDate).add(
-            Duration(
-              hours: now.hour,
-              minutes: now.minute,
-              seconds: now.second,
-            ),
-          );
-
-    // Return the Unix timestamp
-    return sourceDateTime.toUtc().millisecondsSinceEpoch ~/ 1000;
-  }
-
   onPopHandler(BuildContext context, bool didPop) async {
     if (!didPop) {
       final noteModel = context.read<NoteModel>();
