@@ -104,18 +104,16 @@ class NoteViewState extends State<NoteView> {
                 opacity: 0.5,
                 child: FloatingActionButton(
                   onPressed: () async {
-                    final navigator = Navigator.of(context);
-                    final newNote = await Navigator.push(
+                    final newNoteSaved = await Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => NewNote(
                           isPrivate: widget.note.isPrivate,
                           initialTag: '@${widget.note.id}',
-                          // onNoteSaved removed
                         ),
                       ),
                     );
-                    if (newNote != null) {
+                    if (newNoteSaved ?? false) {
                       await _loadLinkedNotes();
                     }
                   },

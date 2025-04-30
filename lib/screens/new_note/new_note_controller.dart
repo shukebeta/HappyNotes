@@ -14,8 +14,9 @@ class NewNoteController {
   NewNoteController({required NotesService notesService})
       : _notesService = notesService;
 
-  // Returns true if saved successfully, false otherwise.
-  Future<bool> saveNote(BuildContext context) async {
+  // Returns true if saved successfully (when used modally), false otherwise.
+  // Calls onSaveSuccessInMainMenu if provided (when used in MainMenu).
+  Future<bool> saveNote(BuildContext context, {VoidCallback? onSaveSuccessInMainMenu}) async {
     final scaffoldMessengerSate = ScaffoldMessenger.of(context);
     final navigator = Navigator.of(context); // Get navigator
     final noteModel = context.read<NoteModel>();
@@ -28,9 +29,15 @@ class NewNoteController {
       noteModel.initialContent = '';
       noteModel.content = '';
       noteModel.unfocus();
-      // Pop with true on success
-      navigator.pop(true);
-      return true; // Indicate success
+
+      if (onSaveSuccessInMainMenu != null) {
+        // If callback provided (MainMenu context), call it instead of popping
+        onSaveSuccessInMainMenu();
+      } else {
+        // Otherwise (modal context), pop with true on success
+        navigator.pop(true);
+      }
+      return true; // Indicate success regardless of context
     } catch (error) {
       Util.showError(scaffoldMessengerSate, error.toString());
       return false; // Indicate failure

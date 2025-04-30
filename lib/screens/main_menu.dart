@@ -52,7 +52,7 @@ class MainMenuState extends State<MainMenu> {
         NewNote(
           key: newNoteKey,
           isPrivate: true,
-          // onNoteSaved removed
+          onSaveSuccessInMainMenu: _handleSaveSuccessFromNewNoteTab, // Pass the handler
         ),
         if (kIsWeb) const Discovery(),
         Settings(
@@ -68,34 +68,13 @@ class MainMenuState extends State<MainMenu> {
         context, MaterialPageRoute(builder: (context) => const InitialPage()));
   }
 
-  void _onNoteSaved(Note note) async {
-    setState(() {
-      _selectedIndex = indexNotes;
-    });
-    if (note.id > 0) {
-      if (homePageKey.currentState?.isFirstPage ?? false) {
-        await homePageKey.currentState?.refreshPage();
-        return;
-      }
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Successfully saved. Click here to view.'),
-          duration: const Duration(seconds: 5),
-          action: SnackBarAction(
-            label: 'View',
-            onPressed: () async {
-              await Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => NoteDetail(note: note),
-                ),
-              );
-            },
-          ),
-        ),
-      );
-    }
+  // This method is called by NewNote when save is successful in the MainMenu context
+  void _handleSaveSuccessFromNewNoteTab() {
+    // Switch to the HomePage and trigger its refresh logic via switchToPage
+    switchToPage(indexNotes);
   }
+
+  // void _onNoteSaved(Note note) async { ... } // Delete this old method
 
   void switchToPage(int index) {
     final focusNode = FocusScope.of(context);

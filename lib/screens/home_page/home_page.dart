@@ -102,21 +102,16 @@ class HomePageState extends State<HomePage> {
           ? 'New Private Note'
           : 'New Public Note',
       onPressed: () async {
-        // final scaffoldContext = ScaffoldMessenger.of(context); // Not needed directly here anymore
-        // final navigator = Navigator.of(context); // Not needed directly here anymore
+        // Await the result
         final bool? savedSuccessfully = await Navigator.push<bool>(
-          // Await the result
           context,
           MaterialPageRoute(
             builder: (context) => NewNote(
               isPrivate: AppConfig.privateNoteOnlyIsEnabled,
-              // onNoteSaved removed
             ),
           ),
         );
-        // If savedSuccessfully is true (or not null and true), refresh the page
         if (savedSuccessfully ?? false) {
-          // Use ?? false for null safety
           // Only refresh if on the first page, otherwise let the snackbar handle it (existing logic)
           if (isFirstPage) {
             await refreshPage();

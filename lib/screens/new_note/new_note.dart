@@ -13,6 +13,7 @@ class NewNote extends StatefulWidget {
   final DateTime? date;
   final String? initialTag;
   // final SaveNoteCallback? onNoteSaved; // No longer needed
+  final VoidCallback? onSaveSuccessInMainMenu; // Callback for MainMenu context
 
   const NewNote({
     Key? key,
@@ -20,6 +21,7 @@ class NewNote extends StatefulWidget {
     this.initialTag,
     // this.onNoteSaved, // Removed
     this.date,
+    this.onSaveSuccessInMainMenu, // Add to constructor
   }) : super(key: key);
 
   @override
@@ -81,8 +83,11 @@ class NewNoteState extends State<NewNote> {
                     : () async {
                         setState(() => isSaving = true);
                         try {
-                          // Call saveNote without the callback, it now handles popping internally
-                          await _newNoteController.saveNote(context);
+                          // Pass the widget's callback to the controller
+                          await _newNoteController.saveNote(
+                            context,
+                            onSaveSuccessInMainMenu: widget.onSaveSuccessInMainMenu,
+                          );
                         } finally {
                           if (mounted) {
                             setState(() => isSaving = false);
