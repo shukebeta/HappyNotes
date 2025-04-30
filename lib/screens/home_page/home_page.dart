@@ -11,6 +11,7 @@ import '../account/user_session.dart';
 import '../new_note/new_note.dart';
 import 'home_page_controller.dart';
 import '../components/controllers/tag_cloud_controller.dart';
+import '../components/tappable_app_bar_title.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -67,23 +68,14 @@ class HomePageState extends State<HomePage> {
     UserSession().isDesktop = MediaQuery.of(context).size.width >= 600;
     return Scaffold(
       appBar: AppBar(
-        title: GestureDetector(
+        title: TappableAppBarTitle(
+          title: 'My Notes',
           onTap: () => NavigationHelper.showTagInputDialog(context),
           onLongPress: () async {
             var tagData = await _tagCloudController.loadTagCloud(context);
             if (!mounted) return;
             NavigationHelper.showTagDiagram(context, tagData);
           },
-          // Wrap Text with Row to add an icon
-          child: Row(
-            mainAxisSize: MainAxisSize.min, // Prevent Row from expanding
-            children: [
-              const Text('My Notes'),
-              const SizedBox(width: 8), // Add some spacing
-              Icon(Icons.touch_app,
-                  size: 18, color: Colors.blue), // Use blue color
-            ],
-          ),
         ),
         actions: [
           _buildNewNoteButton(context),

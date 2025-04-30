@@ -12,6 +12,7 @@ import 'discovery_controller.dart';
 import '../new_note/new_note.dart';
 import '../../app_config.dart';
 import '../components/controllers/tag_cloud_controller.dart';
+import '../components/tappable_app_bar_title.dart';
 
 class Discovery extends StatefulWidget {
   const Discovery({super.key});
@@ -64,25 +65,18 @@ class DiscoveryState extends State<Discovery> {
     UserSession().isDesktop = MediaQuery.of(context).size.width >= 600;
     return Scaffold(
       appBar: AppBar(
-        title: GestureDetector(
-          onTap: () => NavigationHelper.showTagInputDialog(context),
-          onLongPress: () async {
-            var tagData = await _tagCloudController.loadTagCloud(context);
-            if (!mounted) return;
-            NavigationHelper.showTagDiagram(context, tagData);
-          },
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text('Shared Notes'),
-              const SizedBox(width: 8),
-              const Icon(Icons.touch_app, size: 18, color: Colors.blue),
-            ],
+          title: TappableAppBarTitle(
+            title: 'Shared Notes',
+            onTap: () => NavigationHelper.showTagInputDialog(context),
+            onLongPress: () async {
+              var tagData = await _tagCloudController.loadTagCloud(context);
+              if (!mounted) return;
+              NavigationHelper.showTagDiagram(context, tagData);
+            },
           ),
-        ),
-        actions: [
-        _buildNewNoteButton(context),
-      ]),
+          actions: [
+            _buildNewNoteButton(context),
+          ]),
       body: Stack(
         children: [
           _buildBody(),
@@ -100,7 +94,9 @@ class DiscoveryState extends State<Discovery> {
   IconButton _buildNewNoteButton(BuildContext context) {
     return IconButton(
       icon: Util.writeNoteIcon(),
-      tooltip: AppConfig.privateNoteOnlyIsEnabled ? 'New Private Note' : 'New Public Note',
+      tooltip: AppConfig.privateNoteOnlyIsEnabled
+          ? 'New Private Note'
+          : 'New Public Note',
       onPressed: () async {
         final scaffoldContext = ScaffoldMessenger.of(context);
         final navigator = Navigator.of(context);
@@ -116,7 +112,8 @@ class DiscoveryState extends State<Discovery> {
                 }
                 scaffoldContext.showSnackBar(
                   SnackBar(
-                    content: const Text('Successfully saved. Click here to view.'),
+                    content:
+                        const Text('Successfully saved. Click here to view.'),
                     duration: const Duration(seconds: 5),
                     action: SnackBarAction(
                       label: 'View',
@@ -168,12 +165,15 @@ class DiscoveryState extends State<Discovery> {
               await Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => NoteDetail(note: note, enterEditing: note.userId == UserSession().id),
+                  builder: (context) => NoteDetail(
+                      note: note,
+                      enterEditing: note.userId == UserSession().id),
                 ),
               );
               navigateToPage(currentPageNumber);
             },
-            onTagTap: (note, tag) => NavigationHelper.onTagTap(context, note, tag),
+            onTagTap: (note, tag) =>
+                NavigationHelper.onTagTap(context, note, tag),
             onRefresh: () async => await refreshPage(),
             onDelete: (note) async {
               if (note.userId == UserSession().id) {
