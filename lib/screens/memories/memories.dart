@@ -9,6 +9,7 @@ import '../new_note/new_note.dart';
 import '../../utils/navigation_helper.dart';
 import 'memories_controller.dart';
 import '../components/controllers/tag_cloud_controller.dart';
+import '../components/tappable_app_bar_title.dart';
 
 class Memories extends StatefulWidget {
   const Memories({super.key});
@@ -52,21 +53,14 @@ class MemoriesState extends State<Memories> with RouteAware {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: GestureDetector(
+        title: TappableAppBarTitle(
+          title: 'My Memories',
           onTap: () => NavigationHelper.showTagInputDialog(context),
           onLongPress: () async {
             var tagData = await _tagCloudController.loadTagCloud(context);
             if (!mounted) return;
             NavigationHelper.showTagDiagram(context, tagData);
           },
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text('My Memories'),
-              const SizedBox(width: 8),
-              const Icon(Icons.touch_app, size: 18, color: Colors.blue),
-            ],
-          ),
         ),
         actions: [_buildNewNoteButton(context)],
       ),
@@ -77,17 +71,15 @@ class MemoriesState extends State<Memories> with RouteAware {
   IconButton _buildNewNoteButton(BuildContext context) {
     return IconButton(
       icon: Util.writeNoteIcon(),
-      tooltip: AppConfig.privateNoteOnlyIsEnabled ? 'New Private Note' : 'New Public Note',
+      tooltip: AppConfig.privateNoteOnlyIsEnabled
+          ? 'New Private Note'
+          : 'New Public Note',
       onPressed: () async {
         final navigator = Navigator.of(context);
         await navigator.push(
           MaterialPageRoute(
             builder: (context) => NewNote(
               isPrivate: AppConfig.privateNoteOnlyIsEnabled,
-              onNoteSaved: (note) async {
-                navigator.pop();
-                await refreshPage();
-              },
             ),
           ),
         );
@@ -101,7 +93,8 @@ class MemoriesState extends State<Memories> with RouteAware {
     }
 
     if (_memoriesController.notes.isEmpty) {
-      return const Center(child: Text('No memories available. Compose notes from now on'));
+      return const Center(
+          child: Text('No memories available. Compose notes from now on'));
     }
 
     return Column(

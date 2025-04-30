@@ -9,6 +9,7 @@ import 'package:happy_notes/utils/navigation_helper.dart';
 import 'package:happy_notes/screens/account/user_session.dart'; // For onDoubleTap logic
 import 'package:happy_notes/screens/components/floating_pagination.dart'; // Import pagination
 import 'package:happy_notes/screens/components/pagination_controls.dart'; // Import pagination
+import 'package:happy_notes/screens/components/tappable_app_bar_title.dart';
 
 class SearchResultsPage extends StatefulWidget {
   final String query;
@@ -67,24 +68,17 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
     return Scaffold(
       appBar: AppBar(
         // Wrap title in GestureDetector for tap/long-press actions
-        title: GestureDetector(
-          onTap: () => NavigationHelper.showTagInputDialog(context, replacePage: true),
+        title: TappableAppBarTitle(
+          title: 'Search: "${widget.query}"',
+          onTap: () =>
+              NavigationHelper.showTagInputDialog(context, replacePage: true),
           onLongPress: () async {
             var tagData = await _tagCloudController.loadTagCloud(context);
             if (!mounted) return;
             // Assuming myNotesOnly=true is desired for tag cloud from search results
-            NavigationHelper.showTagDiagram(context, tagData, myNotesOnly: true);
+            NavigationHelper.showTagDiagram(context, tagData,
+                myNotesOnly: true);
           },
-          // Wrap Text with Row to add an icon
-          child: Row(
-            mainAxisSize: MainAxisSize.min, // Prevent Row from expanding
-            children: [
-              Text('Search: "${widget.query}"'), // Original title text
-              const SizedBox(width: 8), // Add some spacing
-              const Icon(Icons.touch_app,
-                  size: 18, color: Colors.blue), // Use blue color
-            ],
-          ),
         ),
       ),
       // Use Stack to overlay pagination controls

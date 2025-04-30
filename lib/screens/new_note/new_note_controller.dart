@@ -11,52 +11,37 @@ import 'package:provider/provider.dart';
 class NewNoteController {
   final NotesService _notesService;
 
-  NewNoteController({required NotesService notesService}) : _notesService = notesService;
+  NewNoteController({required NotesService notesService})
+      : _notesService = notesService;
 
-  Future<void> saveNote(BuildContext context, SaveNoteCallback? onNoteSaved) async {
+  // Returns true if saved successfully (when used modally), false otherwise.
+  // Calls onSaveSuccessInMainMenu if provided (when used in MainMenu).
+  Future<bool> saveNote(BuildContext context, {VoidCallback? onSaveSuccessInMainMenu}) async {
     final scaffoldMessengerSate = ScaffoldMessenger.of(context);
+    final navigator = Navigator.of(context); // Get navigator
     final noteModel = context.read<NoteModel>();
     if (noteModel.content.trim() == '') {
       Util.showInfo(scaffoldMessengerSate, 'Please write something');
-      return;
+      return false; // Indicate failure
     }
     try {
-      final noteId = await _notesService.post(noteModel);
-      var content = noteModel.content;
+      await _notesService.post(noteModel);
       noteModel.initialContent = '';
       noteModel.content = '';
       noteModel.unfocus();
-      if (onNoteSaved != null) {
-        final note = Note(
-            id: noteId,
-            userId: UserSession().id!,
-            content: content,
-            isLong: content.length < 1024,
-            isPrivate: noteModel.isPrivate,
-            isMarkdown: noteModel.isMarkdown,
-            createdAt: _getCreatedAt(noteModel.publishDateTime));
-        onNoteSaved(note);
+
+      if (onSaveSuccessInMainMenu != null) {
+        // If callback provided (MainMenu context), call it instead of popping
+        onSaveSuccessInMainMenu();
+      } else {
+        // Otherwise (modal context), pop with true on success
+        navigator.pop(true);
       }
+      return true; // Indicate success regardless of context
     } catch (error) {
       Util.showError(scaffoldMessengerSate, error.toString());
+      return false; // Indicate failure
     }
-  }
-
-  int _getCreatedAt(String publishDate) {
-    var now = DateTime.now();
-    // If the publishDate is empty, use DateTime.now()
-    final sourceDateTime = publishDate.isEmpty
-        ? now
-        : DateTime.parse(publishDate).add(
-            Duration(
-              hours: now.hour,
-              minutes: now.minute,
-              seconds: now.second,
-            ),
-          );
-
-    // Return the Unix timestamp
-    return sourceDateTime.toUtc().millisecondsSinceEpoch ~/ 1000;
   }
 
   onPopHandler(BuildContext context, bool didPop) async {

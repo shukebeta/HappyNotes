@@ -11,6 +11,7 @@ import '../account/user_session.dart';
 import '../new_note/new_note.dart';
 import 'home_page_controller.dart';
 import '../components/controllers/tag_cloud_controller.dart';
+import '../components/tappable_app_bar_title.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -67,23 +68,14 @@ class HomePageState extends State<HomePage> {
     UserSession().isDesktop = MediaQuery.of(context).size.width >= 600;
     return Scaffold(
       appBar: AppBar(
-        title: GestureDetector(
+        title: TappableAppBarTitle(
+          title: 'My Notes',
           onTap: () => NavigationHelper.showTagInputDialog(context),
           onLongPress: () async {
             var tagData = await _tagCloudController.loadTagCloud(context);
             if (!mounted) return;
             NavigationHelper.showTagDiagram(context, tagData);
           },
-          // Wrap Text with Row to add an icon
-          child: Row(
-            mainAxisSize: MainAxisSize.min, // Prevent Row from expanding
-            children: [
-              const Text('My Notes'),
-              const SizedBox(width: 8), // Add some spacing
-              Icon(Icons.touch_app,
-                  size: 18, color: Colors.blue), // Use blue color
-            ],
-          ),
         ),
         actions: [
           _buildNewNoteButton(context),
@@ -110,41 +102,30 @@ class HomePageState extends State<HomePage> {
           ? 'New Private Note'
           : 'New Public Note',
       onPressed: () async {
-        final scaffoldContext = ScaffoldMessenger.of(context);
-        final navigator = Navigator.of(context);
-        await Navigator.push(
+        // Await the result
+        final bool? savedSuccessfully = await Navigator.push<bool>(
           context,
           MaterialPageRoute(
             builder: (context) => NewNote(
               isPrivate: AppConfig.privateNoteOnlyIsEnabled,
-              onNoteSaved: (note) async {
-                navigator.pop();
-                if (isFirstPage) {
-                  await refreshPage();
-                  return;
-                }
-                scaffoldContext.showSnackBar(
-                  SnackBar(
-                    content:
-                        const Text('Successfully saved. Click here to view.'),
-                    duration: const Duration(seconds: 5),
-                    action: SnackBarAction(
-                      label: 'View',
-                      onPressed: () async {
-                        await navigator.push(
-                          MaterialPageRoute(
-                            builder: (context) => NoteDetail(note: note),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                );
-                return;
-              },
             ),
           ),
         );
+        if (savedSuccessfully ?? false) {
+          // Only refresh if on the first page, otherwise let the snackbar handle it (existing logic)
+          if (isFirstPage) {
+            await refreshPage();
+          } else {
+            // Show snackbar (or handle differently if needed)
+            // This part might need adjustment based on desired UX when not on first page
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Note saved successfully.'),
+                duration: Duration(seconds: 3),
+              ),
+            );
+          }
+        }
       },
     );
   }

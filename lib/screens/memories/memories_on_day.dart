@@ -13,6 +13,7 @@ import '../new_note/new_note.dart';
 import '../note_detail/note_detail.dart';
 import 'memories_on_day_controller.dart';
 import '../components/controllers/tag_cloud_controller.dart';
+import '../components/tappable_app_bar_title.dart';
 
 class MemoriesOnDay extends StatefulWidget {
   final DateTime date;
@@ -52,7 +53,8 @@ class MemoriesOnDayState extends State<MemoriesOnDay> with RouteAware {
 
   @override
   void initState() {
-    _controller = MemoriesOnDayController(notesService: locator<NotesService>());
+    _controller =
+        MemoriesOnDayController(notesService: locator<NotesService>());
     _tagCloudController = locator<TagCloudController>();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       UserSession.routeObserver.subscribe(this, ModalRoute.of(context)!);
@@ -62,7 +64,8 @@ class MemoriesOnDayState extends State<MemoriesOnDay> with RouteAware {
 
   @override
   void didPopNext() {
-    setState(() {});
+    // No need to call setState here just because a route was popped.
+    // Refresh should happen based on actual data changes if necessary.
   }
 
   @override
@@ -76,21 +79,14 @@ class MemoriesOnDayState extends State<MemoriesOnDay> with RouteAware {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: GestureDetector(
+        title: TappableAppBarTitle(
+          title: DateFormat('EEE, MMM d, yyyy').format(widget.date),
           onTap: () => NavigationHelper.showTagInputDialog(context),
           onLongPress: () async {
             var tagData = await _tagCloudController.loadTagCloud(context);
             if (!mounted) return;
             NavigationHelper.showTagDiagram(context, tagData);
           },
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(DateFormat('EEE, MMM d, yyyy').format(widget.date)),
-              const SizedBox(width: 8),
-              const Icon(Icons.touch_app, size: 18, color: Colors.blue),
-            ],
-          ),
         ),
         actions: [
           IconButton(
@@ -130,11 +126,13 @@ class MemoriesOnDayState extends State<MemoriesOnDay> with RouteAware {
                     await Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => NoteDetail(note: note, enterEditing: true),
+                        builder: (context) =>
+                            NoteDetail(note: note, enterEditing: true),
                       ),
                     );
                   },
-                  onTagTap: (note, tag) => NavigationHelper.onTagTap(context, note, tag),
+                  onTagTap: (note, tag) =>
+                      NavigationHelper.onTagTap(context, note, tag),
                   onDelete: (note) async {
                     await _controller.deleteNote(context, note.id);
                   },
@@ -147,21 +145,25 @@ class MemoriesOnDayState extends State<MemoriesOnDay> with RouteAware {
                     opacity: 0.5,
                     child: FloatingActionButton(
                       onPressed: () async {
-                        final navigator = Navigator.of(context);
-                        final newNote = await Navigator.push(
+                        // final navigator = Navigator.of(context); // No longer needed here
+                        // Await the result of pushing the NewNote screen
+                        final bool? savedSuccessfully =
+                            await Navigator.push<bool>(
                           context,
                           MaterialPageRoute(
                             builder: (context) => NewNote(
                               date: widget.date,
                               isPrivate: true,
-                              onNoteSaved: (note) async {
-                                navigator.pop();
-                              },
                             ),
                           ),
                         );
-                        if (newNote != null) {
-                          setState(() {});
+                        // If savedSuccessfully is true (or not null and true), trigger a rebuild
+                        if (savedSuccessfully ?? false) {
+                          // Use ?? false for null safety
+                          // Calling setState will cause the FutureBuilder to re-fetch data
+                          if (mounted) {
+                            setState(() {});
+                          }
                         }
                       },
                       child: const Icon(Icons.add),

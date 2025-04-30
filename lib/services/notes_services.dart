@@ -113,8 +113,9 @@ class NotesService {
     };
     var apiResult = (await NotesApi.update(params)).data;
     if (!apiResult['successful'] &&
-        apiResult['errorCode'] != AppConfig.quietErrorCode)
+        apiResult['errorCode'] != AppConfig.quietErrorCode) {
       throw ApiException(apiResult);
+    }
     return apiResult['data']; //note id
   }
 

@@ -10,6 +10,7 @@ import '../components/pagination_controls.dart';
 import '../../dependency_injection.dart';
 import '../account/user_session.dart';
 import '../new_note/new_note.dart';
+import '../components/tappable_app_bar_title.dart';
 
 class TagNotes extends StatefulWidget {
   final String tag;
@@ -68,24 +69,17 @@ class TagNotesState extends State<TagNotes> {
 
     return Scaffold(
       appBar: AppBar(
-        title: GestureDetector(
-          onTap: () => NavigationHelper.showTagInputDialog(context, replacePage: true),
+        title: TappableAppBarTitle(
+          title: 'Notes with tag: ${widget.tag}',
+          onTap: () =>
+              NavigationHelper.showTagInputDialog(context, replacePage: true),
           onLongPress: () async {
             var tagData = await _tagCloudController.loadTagCloud(context);
             // Show tag diagram on long press
             if (!mounted) return;
-            NavigationHelper.showTagDiagram(context, tagData, myNotesOnly: widget.myNotesOnly);
+            NavigationHelper.showTagDiagram(context, tagData,
+                myNotesOnly: widget.myNotesOnly);
           },
-          // Wrap Text with Row to add an icon
-          child: Row(
-            mainAxisSize: MainAxisSize.min, // Prevent Row from expanding
-            children: [
-              Text('Notes with tag: ${widget.tag}'),
-              const SizedBox(width: 8), // Add some spacing
-              const Icon(Icons.touch_app,
-                  size: 18, color: Colors.blue), // Use blue color
-            ],
-          ),
         ),
         actions: [
           _buildNewNoteButton(context),
@@ -117,31 +111,6 @@ class TagNotesState extends State<TagNotes> {
             builder: (context) => NewNote(
               isPrivate: AppConfig.privateNoteOnlyIsEnabled,
               initialTag: widget.tag,
-              onNoteSaved: (note) async {
-                navigator.pop();
-                if (isFirstPage) {
-                  await refreshPage();
-                  return;
-                }
-                scaffoldContext.showSnackBar(
-                  SnackBar(
-                    content:
-                        const Text('Successfully saved. Click here to view.'),
-                    duration: const Duration(seconds: 5),
-                    action: SnackBarAction(
-                      label: 'View',
-                      onPressed: () async {
-                        await navigator.push(
-                          MaterialPageRoute(
-                            builder: (context) => NoteDetail(note: note),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                );
-                return;
-              },
             ),
           ),
         );
