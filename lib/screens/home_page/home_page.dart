@@ -102,9 +102,10 @@ class HomePageState extends State<HomePage> {
           ? 'New Private Note'
           : 'New Public Note',
       onPressed: () async {
-        final scaffoldContext = ScaffoldMessenger.of(context);
-        final navigator = Navigator.of(context);
-        await Navigator.push(
+        // final scaffoldContext = ScaffoldMessenger.of(context); // Not needed directly here anymore
+        // final navigator = Navigator.of(context); // Not needed directly here anymore
+        final bool? savedSuccessfully = await Navigator.push<bool>(
+          // Await the result
           context,
           MaterialPageRoute(
             builder: (context) => NewNote(
@@ -113,6 +114,22 @@ class HomePageState extends State<HomePage> {
             ),
           ),
         );
+        // If savedSuccessfully is true, refresh the page
+        if (savedSuccessfully == true) {
+          // Only refresh if on the first page, otherwise let the snackbar handle it (existing logic)
+          if (isFirstPage) {
+            await refreshPage();
+          } else {
+            // Show snackbar (or handle differently if needed)
+            // This part might need adjustment based on desired UX when not on first page
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Note saved successfully.'),
+                duration: Duration(seconds: 3),
+              ),
+            );
+          }
+        }
       },
     );
   }

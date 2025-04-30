@@ -158,11 +158,9 @@ class MemoriesOnDayState extends State<MemoriesOnDay> with RouteAware {
                             ),
                           ),
                         );
-                        // If savedSuccessfully is true, refresh the data
+                        // If savedSuccessfully is true, trigger a rebuild
                         if (savedSuccessfully == true) {
-                          // Re-fetch data instead of just setState to ensure list updates
-                          await _controller.fetchMemories(widget.date);
-                          // Trigger rebuild after fetching
+                          // Calling setState will cause the FutureBuilder to re-fetch data
                           if (mounted) {
                             setState(() {});
                           }
