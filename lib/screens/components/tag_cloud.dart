@@ -49,16 +49,21 @@ class TagCloud extends StatelessWidget {
       return (minFontSize + maxFontSize) / 2;
     }
     return minFontSize +
-        ((count - minCount) / (maxCount - minCount)) * (maxFontSize - minFontSize);
+        ((count - minCount) / (maxCount - minCount)) *
+            (maxFontSize - minFontSize);
   }
 
   Color _generateRandomColor() {
     Random random = Random();
-    return Color.fromARGB(
-      255,
-      random.nextInt(256),
-      random.nextInt(256),
-      random.nextInt(256),
-    );
+    int r, g, b;
+    double brightness;
+    do {
+      r = random.nextInt(181); // Limit to 0-180 to bias towards darker colors
+      g = random.nextInt(181);
+      b = random.nextInt(181);
+      brightness = 0.299 * r + 0.587 * g + 0.114 * b;
+    } while (brightness >
+        128); // Ensure brightness is low for contrast with white background
+    return Color.fromARGB(255, r, g, b);
   }
 }
