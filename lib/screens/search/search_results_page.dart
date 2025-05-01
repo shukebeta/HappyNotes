@@ -131,8 +131,8 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
                   context,
                   MaterialPageRoute(
                       builder: (context) => NoteDetail(note: note)));
-              // Refresh current page after returning from detail? Optional.
-              // navigateToPage(currentPageNumber);
+              // Refresh current page after returning from detail.
+              navigateToPage(currentPageNumber);
             },
             onDoubleTap: (note) async {
               // Navigate to detail in edit mode if user owns the note
@@ -142,7 +142,8 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
                       builder: (context) => NoteDetail(
                           note: note,
                           enterEditing: note.userId == UserSession().id)));
-              // navigateToPage(currentPageNumber); // Optional refresh
+              // Refresh current page after returning from detail.
+              navigateToPage(currentPageNumber);
             },
             onTagTap: (note, tag) =>
                 NavigationHelper.onTagTap(context, note, tag),
