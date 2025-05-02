@@ -7,6 +7,9 @@ import 'package:happy_notes/entities/note.dart';
 import 'package:happy_notes/screens/note_detail/note_detail.dart';
 import 'package:happy_notes/utils/navigation_helper.dart';
 import 'package:happy_notes/screens/account/user_session.dart'; // For onDoubleTap logic
+import 'package:happy_notes/app_config.dart';
+import 'package:happy_notes/screens/new_note/new_note.dart';
+import 'package:happy_notes/utils/util.dart';
 import 'package:happy_notes/screens/components/floating_pagination.dart'; // Import pagination
 import 'package:happy_notes/screens/components/pagination_controls.dart'; // Import pagination
 import 'package:happy_notes/screens/components/tappable_app_bar_title.dart';
@@ -80,6 +83,30 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
                 myNotesOnly: true);
           },
         ),
+        actions: [
+          IconButton(
+            icon: Util.writeNoteIcon(),
+            tooltip: 'New Public Note',
+            onPressed: () async {
+              final bool? savedSuccessfully = await Navigator.push<bool>(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const NewNote(
+                    isPrivate: false,
+                  ),
+                ),
+              );
+              if (savedSuccessfully ?? false) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Note saved successfully.'),
+                    duration: Duration(seconds: 3),
+                  ),
+                );
+              }
+            },
+          ),
+        ],
       ),
       // Use Stack to overlay pagination controls
       body: Stack(
