@@ -39,7 +39,8 @@ class MemoryList extends StatelessWidget {
                 onTap: () => _navigateToMemoriesOnDay(context, date),
                 child: Container(
                   color: const Color(0xFFEBDDFF), // Light purple background
-                  padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 8.0, horizontal: 16.0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -97,10 +98,10 @@ class MemoryList extends StatelessWidget {
     final now = DateTime.now();
     final difference = now.difference(date);
     if (difference.inDays >= 365) {
-      final years = difference.inDays ~/ 365;
+      final years = (difference.inDays / 365).round();
       return '$years year${years > 1 ? 's' : ''} ago';
     } else if (difference.inDays >= 30) {
-      final months = difference.inDays ~/ 30;
+      final months = (difference.inDays / 30).round();
       return '$months month${months > 1 ? 's' : ''} ago';
     } else if (difference.inDays >= 7) {
       final weeks = difference.inDays ~/ 7;
