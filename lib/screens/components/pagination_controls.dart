@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:happy_notes/utils/util.dart'; // Import Util
 
 class PaginationControls extends StatefulWidget {
   final int currentPage;
@@ -38,9 +39,7 @@ class PaginationControlsState extends State<PaginationControls> {
       widget.navigateToPage(newPage);
       _hidePageSelector();
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Invalid page number')),
-      );
+      Util.showError(ScaffoldMessenger.of(context), 'Invalid page number'); // Replaced showSnackBar
     }
   }
 

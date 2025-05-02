@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:happy_notes/entities/telegram_settings.dart';
 import '../../dependency_injection.dart';
 import 'telegram_sync_settings_controller.dart';
+import '../../utils/util.dart'; // Import Util
 
 class AddTelegramSetting extends StatefulWidget {
   final TelegramSettings? setting;
@@ -95,12 +96,7 @@ class AddTelegramSettingState extends State<AddTelegramSetting> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Failed to save settings: ${e.toString()}'),
-            backgroundColor: Colors.red,
-          ),
-        );
+        Util.showError(ScaffoldMessenger.of(context), 'Failed to save settings: ${e.toString()}'); // Replaced showSnackBar
       }
     } finally {
       if (mounted) {

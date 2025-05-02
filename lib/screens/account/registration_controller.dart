@@ -3,6 +3,7 @@ import '../../dependency_injection.dart';
 import '../../utils/token_utils.dart';
 import '../../services/account_service.dart';
 import '../main_menu.dart';
+import '../../utils/util.dart'; // Import Util
 
 class RegistrationController {
   final tokenManager = locator<TokenUtils>();
@@ -53,20 +54,18 @@ class RegistrationController {
       final password = passwordController.text;
 
       // Make API call to register user
-      final scaffoldContext = ScaffoldMessenger.of(context); 
+      final scaffoldContext = ScaffoldMessenger.of(context);
       final navigator = Navigator.of(context);
       try {
         final apiResponse = await accountService.register(username, email, password);
         if (apiResponse['successful']) {
-          scaffoldContext.showSnackBar(const SnackBar(content: Text('Registration successful')));
+          Util.showInfo(scaffoldContext, 'Registration successful'); // Replaced showSnackBar
           navigator.pushAndRemoveUntil(MaterialPageRoute(builder: (context) => const MainMenu()), (route) => false);
         } else {
-          scaffoldContext.showSnackBar(SnackBar(content: Text(apiResponse.message)));
+          Util.showError(scaffoldContext, apiResponse['message']); // Replaced showSnackBar
         }
       } catch (e) {
-        scaffoldContext.showSnackBar(
-          SnackBar(content: Text(e.toString())),
-        );
+        Util.showError(scaffoldContext, e.toString()); // Replaced showSnackBar
       } finally {
         _isSubmitting = false;
         onSubmittingStateChanged?.call(false);
