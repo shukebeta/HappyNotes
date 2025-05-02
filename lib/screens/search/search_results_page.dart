@@ -87,12 +87,7 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
                 ),
               );
               if (savedSuccessfully ?? false) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Note saved successfully.'),
-                    duration: Duration(seconds: 3),
-                  ),
-                );
+                Util.showInfo(ScaffoldMessenger.of(context), 'Note saved successfully.');
               }
             },
           ),

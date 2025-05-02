@@ -37,7 +37,7 @@ class LoginController {
       final password = passwordController.text;
 
       // capture the context before entering await
-      final scaffoldContext = ScaffoldMessenger.of(context); 
+      final scaffoldContext = ScaffoldMessenger.of(context);
       final navigator = Navigator.of(context);
       try {
         // Call AuthService for login
@@ -49,9 +49,7 @@ class LoginController {
             MaterialPageRoute(builder: (context) => const InitialPage()));
         } else {
           // Show error message if login fails
-          scaffoldContext.showSnackBar(
-            SnackBar(content: Text('Login failed: ${apiResponse['message']}')),
-          );
+          Util.showError(scaffoldContext, 'Login failed: ${apiResponse['message']}'); // Replaced showSnackBar
         }
 
       } catch (e) {
