@@ -3,6 +3,9 @@ import 'package:happy_notes/screens/settings/mastodon_sync_settings.dart';
 import 'package:happy_notes/screens/settings/settings_controller.dart';
 import 'package:happy_notes/screens/settings/telegram_sync_settings.dart';
 import 'package:happy_notes/screens/settings/profile_page.dart';
+import 'package:happy_notes/screens/account/user_session.dart';
+import 'package:happy_notes/entities/user.dart';
+import 'package:happy_notes/apis/account_api.dart';
 
 import '../../app_config.dart';
 import '../../app_constants.dart';
@@ -26,6 +29,37 @@ class SettingsState extends State<Settings> {
   int pageSize = AppConfig.pageSize;
   String? selectedTimezone = AppConfig.timezone;
   final SettingsController _settingsController = locator<SettingsController>();
+  User? _currentUser;
+  bool _isLoadingAvatar = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserInfoForAvatar();
+  }
+
+  Future<void> _fetchUserInfoForAvatar() async {
+    setState(() {
+      _isLoadingAvatar = true;
+    });
+    try {
+      final user = await AccountApi.getMyInformation();
+      if (mounted) {
+        setState(() {
+          _currentUser = user;
+          _isLoadingAvatar = false;
+        });
+      }
+    } catch (e) {
+      debugPrint("Error fetching user info for avatar: $e");
+      if (mounted) {
+        setState(() {
+          _isLoadingAvatar = false;
+        });
+      }
+    }
+  }
+
 
   @override
   void didChangeDependencies() {
@@ -38,29 +72,33 @@ class SettingsState extends State<Settings> {
       appBar: AppBar(
         title: const Text('Settings'),
         actions: [
-          PopupMenuButton(
-            itemBuilder: (context) => [
-              const PopupMenuItem(
-                value: 'profile',
-                child: Text('Profile'),
-              ),
-              const PopupMenuItem(
-                value: 'trash_bin',
-                child: Text('Trash Bin'),
-              ),
-            ],
-            onSelected: (value) {
-              if (value == 'profile') {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const ProfilePage()),
-                );
-              } else if (value == 'trash_bin') {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const TrashBinPage()),
-                );
-              }
+          _isLoadingAvatar
+              ? const Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
+                )
+              : IconButton(
+            icon: CircleAvatar(
+              radius: 18,
+              backgroundImage: (_currentUser?.gravatar != null && _currentUser!.gravatar.isNotEmpty)
+                  ? NetworkImage(_currentUser!.gravatar)
+                  : null,
+              onBackgroundImageError: (_, __) {},
+              backgroundColor: Colors.grey[300],
+              child: (_currentUser?.gravatar == null || _currentUser!.gravatar.isEmpty)
+                  ? const Icon(Icons.person, size: 18)
+                  : null,
+            ),
+            tooltip: 'Profile',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const ProfilePage()),
+              );
             },
           ),
         ],
@@ -161,7 +199,18 @@ class SettingsState extends State<Settings> {
                 );
               },
             ),
-            // Version info block
+            const Divider(),
+            ListTile(
+              leading: const Icon(Icons.delete_outline),
+              title: const Text('Trash Bin'),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const TrashBinPage()),
+                );
+              },
+            ),
             const SizedBox(height: 32),
             Center(
               child: Text(
