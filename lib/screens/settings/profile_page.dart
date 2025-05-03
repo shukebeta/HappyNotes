@@ -3,6 +3,7 @@ import 'package:happy_notes/screens/settings/account_settings_page.dart';
 import 'package:happy_notes/screens/settings/profile_controller.dart';
 import 'package:provider/provider.dart';
 import 'package:happy_notes/screens/settings/change_password_page.dart';
+import 'package:happy_notes/utils/util.dart'; // Import Util
 
 class ProfilePage extends StatelessWidget { // Changed to StatelessWidget
   const ProfilePage({super.key});
@@ -66,12 +67,21 @@ class ProfilePage extends StatelessWidget { // Changed to StatelessWidget
                       leading: const Icon(Icons.password),
                       title: const Text('Change Password'),
                       trailing: const Icon(Icons.chevron_right),
-                      onTap: () {
-                        Navigator.push(
+                      onTap: () async { // Make onTap async
+                        // Capture the result of Navigator.push
+                        final result = await Navigator.push(
                           context,
-                          // Pass the controller instance from the Consumer builder
                           MaterialPageRoute(builder: (context) => ChangePasswordPage(controller: controller)),
                         );
+
+                        // Check if the result indicates success (popped with true)
+                        // Also check if the widget is still mounted before showing Scaffold message
+                        if (result == true && context.mounted) {
+                           Util.showInfo(
+                             ScaffoldMessenger.of(context),
+                             'Password changed successfully!',
+                           );
+                        }
                       },
                     ),
                     ListTile(

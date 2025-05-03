@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:happy_notes/screens/settings/profile_controller.dart';
+// Remove provider import if no longer needed, but keep for now just in case
 import 'package:provider/provider.dart';
+import 'package:happy_notes/utils/util.dart'; // Import Util
 
 class ChangePasswordPage extends StatefulWidget {
   final ProfileController controller; // Add controller instance variable
@@ -44,18 +46,15 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
         _isChangingPassword = false;
       });
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(success
-              ? 'Password changed successfully!'
-              // Access error message from the passed controller
-              : widget.controller.errorMessage ?? 'Failed to change password.'),
-          backgroundColor: success ? Colors.green : Theme.of(context).colorScheme.error,
-        ),
-      );
-
       if (success) {
-        Navigator.pop(context); // Go back to profile page on success
+        // Pop page on success, returning true
+        Navigator.pop(context, true);
+      } else {
+        // Show error using Util.showError on failure
+        Util.showError(
+          ScaffoldMessenger.of(context),
+          widget.controller.errorMessage ?? 'Failed to change password.',
+        );
       }
     }
   }

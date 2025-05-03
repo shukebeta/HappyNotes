@@ -46,9 +46,9 @@ class ProfileController extends ChangeNotifier {
      try {
         await AccountApi.changePassword(currentPassword, newPassword);
         // Optionally re-fetch user info or assume success
-        _errorMessage = "Password changed successfully."; // Or handle via return value
+        // _errorMessage should only be set on failure
         success = true;
-     } catch (e) {
+      } catch (e) {
         debugPrint("Error changing password: $e");
         // Attempt to parse specific error messages from API if possible
         _errorMessage = "Failed to change password. Please check current password.";
