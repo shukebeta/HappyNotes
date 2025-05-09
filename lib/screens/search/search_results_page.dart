@@ -132,18 +132,24 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
             notes: _controller.results,
             showDateHeader: true,
             onTap: (note) async {
-              await Navigator.push(
+              final result = await Navigator.push(
                   context,
                   MaterialPageRoute(
                       builder: (context) => NoteDetail(note: note)));
+              if (result == true) {
+                navigateToPage(currentPageNumber);
+              }
             },
             onDoubleTap: (note) async {
-              await Navigator.push(
+              final result = await Navigator.push(
                   context,
                   MaterialPageRoute(
                       builder: (context) => NoteDetail(
                           note: note,
                           enterEditing: note.userId == UserSession().id)));
+              if (result == true) {
+                navigateToPage(currentPageNumber);
+              }
             },
             onTagTap: (note, tag) =>
                 NavigationHelper.onTagTap(context, note, tag),
