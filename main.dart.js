@@ -99631,21 +99631,19 @@ while(true)switch(s){case 0:s=!b?2:3
 break
 case 2:p=A.En(a,!1,t.x7)
 o=A.b9(a,!1)
-if(q.d){n=p.d
-m=q.b
-m===$&&A.a()
-m=n!==m.c
-n=m}else n=!1
-s=n?4:6
+n=!1
+s=q.d?4:5
 break
-case 4:s=7
+case 4:m=p.d
+l=q.b
+l===$&&A.a()
+s=m!==l.c?6:7
+break
+case 6:s=8
 return A.l(A.kD(a,"Cancel",u.x,"Unsaved changes",null,"Yes"),$async$mN)
-case 7:l=d
-if(l==null)l=!1
-s=5
-break
-case 6:l=!1
-case 5:o.i2(l)
+case 8:n=d
+if(n==null)n=!1
+case 7:case 5:if(n)o.i2(!1)
 case 3:return A.n(null,r)}})
 return A.o($async$mN,r)}}
 A.th.prototype={
