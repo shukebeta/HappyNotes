@@ -71,7 +71,7 @@ class NoteDetailController {
     if (!didPop) {
       final noteModel = context.read<NoteModel>();
       final navigator = Navigator.of(context);
-      if (isEditing && noteModel.content != _originalNote.content && (await DialogService.showUnsavedChangesDialog(context) ?? false)) {
+      if (!isEditing || (noteModel.content == _originalNote.content) || (await DialogService.showUnsavedChangesDialog(context) ?? false)) {
         navigator.pop(false);
       }
     }
