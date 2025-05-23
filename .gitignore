@@ -51,3 +51,4 @@ key.jks
 /android/app/release
 devtools_options.yaml
 plans/
+coverage
