@@ -4,7 +4,6 @@ import 'package:intl/intl.dart';
 
 import '../../utils/navigation_helper.dart';
 import '../account/user_session.dart';
-import '../components/note_list_item.dart';
 import '../components/note_list.dart';
 import '../../dependency_injection.dart';
 import '../../entities/note.dart';

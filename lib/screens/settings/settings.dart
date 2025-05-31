@@ -3,7 +3,6 @@ import 'package:happy_notes/screens/settings/mastodon_sync_settings.dart';
 import 'package:happy_notes/screens/settings/settings_controller.dart';
 import 'package:happy_notes/screens/settings/telegram_sync_settings.dart';
 import 'package:happy_notes/screens/settings/profile_page.dart';
-import 'package:happy_notes/screens/account/user_session.dart';
 import 'package:happy_notes/entities/user.dart';
 import 'package:happy_notes/apis/account_api.dart';
 

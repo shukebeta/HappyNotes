@@ -5,15 +5,13 @@ import 'package:provider/provider.dart';
 import 'package:happy_notes/screens/new_note/new_note_controller.dart';
 import '../../dependency_injection.dart';
 import '../../models/note_model.dart';
-import '../../typedefs.dart';
 import '../components/note_edit.dart';
 
 class NewNote extends StatefulWidget {
   final bool isPrivate;
   final DateTime? date;
   final String? initialTag;
-  // final SaveNoteCallback? onNoteSaved; // No longer needed
-  final VoidCallback? onSaveSuccessInMainMenu; // Callback for MainMenu context
+  final VoidCallback? onSaveSuccessInMainMenu;
 
   const NewNote({
     Key? key,

@@ -4,7 +4,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../../services/image_service.dart';
 import '../../../models/note_model.dart';
 import '../../../utils/util.dart';
-import '../../../app_config.dart';
 import '../../../entities/note.dart';
 import '../image_warning_dialog.dart';
 

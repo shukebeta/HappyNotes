@@ -103,8 +103,6 @@ class TagNotesState extends State<TagNotes> {
     return IconButton(
       icon: const Icon(Icons.edit),
       onPressed: () async {
-        final scaffoldContext = ScaffoldMessenger.of(context);
-        final navigator = Navigator.of(context);
         await Navigator.push(
           context,
           MaterialPageRoute(

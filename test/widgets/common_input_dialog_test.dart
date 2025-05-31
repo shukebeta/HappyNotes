@@ -344,12 +344,9 @@ void main() {
       await tester.tap(find.text('Show Dialog'));
       await tester.pumpAndSettle();
 
-      // **[FACT]** Fix: Check focus using FocusManager instead of Focus.of()
       final textFieldFinder = find.byType(TextFormField);
       expect(textFieldFinder, findsOneWidget);
 
-      // **[FACT]** Another way: Check if primary focus is on a TextFormField widget
-      final BuildContext textFieldContext = tester.element(textFieldFinder);
       final FocusNode? primaryFocus = FocusManager.instance.primaryFocus;
 
       // Verify that some focus node is active (the text field should be focused)

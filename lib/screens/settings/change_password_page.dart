@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:happy_notes/screens/settings/profile_controller.dart';
-// Remove provider import if no longer needed, but keep for now just in case
-import 'package:provider/provider.dart';
-import 'package:happy_notes/utils/util.dart'; // Import Util
+import 'package:happy_notes/utils/util.dart';
 
 class ChangePasswordPage extends StatefulWidget {
-  final ProfileController controller; // Add controller instance variable
+  final ProfileController controller;
 
   const ChangePasswordPage({super.key, required this.controller}); // Update constructor
 
