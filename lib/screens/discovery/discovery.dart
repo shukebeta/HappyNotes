@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:happy_notes/app_config.dart';
+import 'package:happy_notes/screens/components/note_list/note-list.dart';
 import 'package:happy_notes/screens/note_detail/note_detail.dart';
+import '../../entities/note.dart';
 import '../../utils/navigation_helper.dart';
 import '../../utils/util.dart';
 import '../components/floating_pagination.dart';
-import '../../dependency_injection.dart';
-import '../components/note_list.dart';
+import '../components/list-grouper.dart';
+import '../components/note_list/note-list-callbacks.dart';
 import '../components/pagination_controls.dart';
+import '../../dependency_injection.dart';
 import '../account/user_session.dart';
-import 'discovery_controller.dart';
 import '../new_note/new_note.dart';
-import '../../app_config.dart';
+import 'discovery_controller.dart';
 import '../components/controllers/tag_cloud_controller.dart';
 import '../components/tappable_app_bar_title.dart';
 
@@ -64,18 +67,19 @@ class DiscoveryState extends State<Discovery> {
     UserSession().isDesktop = MediaQuery.of(context).size.width >= 600;
     return Scaffold(
       appBar: AppBar(
-          title: TappableAppBarTitle(
-            title: 'Shared Notes',
-            onTap: () => NavigationHelper.showTagInputDialog(context),
-            onLongPress: () async {
-              var tagData = await _tagCloudController.loadTagCloud(context);
-              if (!mounted) return;
-              NavigationHelper.showTagDiagram(context, tagData);
-            },
-          ),
-          actions: [
-            _buildNewNoteButton(context),
-          ]),
+        title: TappableAppBarTitle(
+          title: 'My Notes',
+          onTap: () => NavigationHelper.showTagInputDialog(context),
+          onLongPress: () async {
+            var tagData = await _tagCloudController.loadTagCloud(context);
+            if (!mounted) return;
+            NavigationHelper.showTagDiagram(context, tagData);
+          },
+        ),
+        actions: [
+          _buildNewNoteButton(context),
+        ],
+      ),
       body: Stack(
         children: [
           _buildBody(),
@@ -93,23 +97,24 @@ class DiscoveryState extends State<Discovery> {
   IconButton _buildNewNoteButton(BuildContext context) {
     return IconButton(
       icon: Util.writeNoteIcon(),
-      tooltip: AppConfig.privateNoteOnlyIsEnabled
-          ? 'New Private Note'
-          : 'New Public Note',
+      tooltip: AppConfig.privateNoteOnlyIsEnabled ? 'New Private Note' : 'New Public Note',
       onPressed: () async {
         // Await the result
         final bool? savedSuccessfully = await Navigator.push<bool>(
           context,
           MaterialPageRoute(
-            builder: (context) => const NewNote(
-              isPrivate: false,
+            builder: (context) => NewNote(
+              isPrivate: AppConfig.privateNoteOnlyIsEnabled,
             ),
           ),
         );
-        // Use ?? false for null safety
         if (savedSuccessfully ?? false) {
-          // Always refresh discovery page if a new note was added
-          await refreshPage();
+          // Only refresh if on the first page, otherwise let the snackbar handle it (existing logic)
+          if (isFirstPage) {
+            await refreshPage();
+          } else {
+            Util.showInfo(ScaffoldMessenger.of(context), 'Note saved successfully.'); // Replaced showSnackBar
+          }
         }
       },
     );
@@ -121,44 +126,57 @@ class DiscoveryState extends State<Discovery> {
     }
 
     if (_discoveryController.notes.isEmpty) {
-      return const Center(child: Text('Create a new note to get started.'));
+      return const Center(child: Text('No notes available. Create a new note to get started.'));
     }
+
+    final groupedNotes = ListGrouper.groupByDate(_discoveryController.notes, (note) => note.createdDate);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Expanded(
           child: NoteList(
-            showAuthor: true,
-            notes: _discoveryController.notes,
-            onTap: (note) async {
-              await Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => NoteDetail(note: note),
-                ),
-              );
-              await navigateToPage(currentPageNumber);
-            },
-            onDoubleTap: (note) async {
-              await Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => NoteDetail(
-                      note: note,
-                      enterEditing: note.userId == UserSession().id),
-                ),
-              );
-              navigateToPage(currentPageNumber);
-            },
-            onTagTap: (note, tag) =>
-                NavigationHelper.onTagTap(context, note, tag),
-            onRefresh: () async => await refreshPage(),
-            onDelete: (note) async {
-              if (note.userId == UserSession().id) {
+            groupedNotes: groupedNotes,
+            showDateHeader: true,
+            callbacks: ListItemCallbacks<Note>(
+              onTap: (note) async {
+                var needRefresh = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => NoteDetail(note: note),
+                      ),
+                    ) ??
+                    false;
+                if (needRefresh) {
+                  refreshPage();
+                }
+              },
+              onDoubleTap: (note) async {
+                var needRefresh = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => NoteDetail(note: note, enterEditing: note.userId == UserSession().id),
+                      ),
+                    ) ??
+                    false;
+                if (needRefresh) {
+                  refreshPage();
+                }
+              },
+              onDelete: (note) async {
                 await _discoveryController.deleteNote(context, note.id);
-              }
-            },
+              },
+            ),
+            noteCallbacks: NoteListCallbacks(
+              onTagTap: (note, tag) => (note, tag) => NavigationHelper.onTagTap(context, note, tag),
+              onDateHeaderTap: (date) => {},
+            ),
+            config: const ListItemConfig(
+              showDate: false,
+              showAuthor: true, // Show author for discovery page
+              showRestoreButton: false,
+              enableDismiss: true,
+            ),
           ),
         ),
         if (_discoveryController.totalPages > 1 && UserSession().isDesktop)

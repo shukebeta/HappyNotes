@@ -4,7 +4,8 @@ import 'package:happy_notes/screens/note_detail/note_detail.dart';
 import 'package:happy_notes/screens/trash_bin/trash_bin_controller.dart';
 import 'package:happy_notes/services/dialog_services.dart';
 import '../components/pagination_controls.dart';
-import '../components/note_list_item.dart';
+import '../components/note_list/note-list.dart';
+import '../components/note_list/note-list-item.dart';
 import '../account/user_session.dart';
 import '../components/floating_pagination.dart';
 
@@ -82,16 +83,17 @@ class TrashBinPageState extends State<TrashBinPage> {
     }
 
     return RefreshIndicator(
-        onRefresh: () async {
-          await _controller.fetchTrashedNotes();
-          setState(() {});
-        },
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: ListView(
-            children: _controller.trashedNotes.map((note) {
-              return NoteListItem(
-                note: note,
+      onRefresh: () async {
+        await _controller.fetchTrashedNotes();
+        setState(() {});
+      },
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ListView(
+          children: _controller.trashedNotes.map((note) {
+            return NoteListItem(
+              note: note,
+              callbacks: ListItemCallbacks<Note>(
                 onTap: (note) async {
                   try {
                     Note fullNote = await _controller.getNote(note.id);
@@ -110,7 +112,7 @@ class TrashBinPageState extends State<TrashBinPage> {
                     // Handle error
                   }
                 },
-                onRestoreTap: (note) async {
+                onRestore: (note) async {
                   try {
                     await _controller.undeleteNote(note.id);
                     setState(() {});
@@ -118,13 +120,18 @@ class TrashBinPageState extends State<TrashBinPage> {
                     // Handle error
                   }
                 },
-                onDelete: null,
+              ),
+              config: const ListItemConfig(
                 showDate: true,
+                showAuthor: false,
                 showRestoreButton: true,
-              );
-            }).toList(),
-          ),
-        ));
+                enableDismiss: false,
+              ),
+            );
+          }).toList(),
+        ),
+      ),
+    );
   }
 
   Widget _buildPurgeDeletedButton() {

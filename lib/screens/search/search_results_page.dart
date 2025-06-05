@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:happy_notes/screens/components/note_list.dart';
+import 'package:happy_notes/screens/components/note_list/note-list.dart';
+import 'package:happy_notes/screens/components/note_list/note-list-callbacks.dart';
 import 'package:happy_notes/screens/search/search_results_controller.dart';
 import 'package:happy_notes/screens/components/controllers/tag_cloud_controller.dart';
 import 'package:happy_notes/dependency_injection.dart';
@@ -11,6 +12,8 @@ import 'package:happy_notes/utils/util.dart';
 import 'package:happy_notes/screens/components/floating_pagination.dart';
 import 'package:happy_notes/screens/components/pagination_controls.dart';
 import 'package:happy_notes/screens/components/tappable_app_bar_title.dart';
+import 'package:happy_notes/screens/components/list-grouper.dart';
+import 'package:happy_notes/entities/note.dart';
 
 class SearchResultsPage extends StatefulWidget {
   final String query;
@@ -127,34 +130,43 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
       children: [
         Expanded(
           child: NoteList(
-            notes: _controller.results,
+            groupedNotes: ListGrouper.groupByDate(_controller.results, (note) => note.createdDate),
             showDateHeader: true,
-            onTap: (note) async {
-              final result = await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => NoteDetail(note: note)));
-              if (result == true) {
-                navigateToPage(currentPageNumber);
-              }
-            },
-            onDoubleTap: (note) async {
-              final result = await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => NoteDetail(
-                          note: note,
-                          enterEditing: note.userId == UserSession().id)));
-              if (result == true) {
-                navigateToPage(currentPageNumber);
-              }
-            },
-            onTagTap: (note, tag) =>
-                NavigationHelper.onTagTap(context, note, tag),
-            onRefresh: () => navigateToPage(currentPageNumber),
-            onDelete: (note) async {
-              await _controller.deleteNote(context, note.id);
-            },
+            callbacks: ListItemCallbacks<Note>(
+              onTap: (note) async {
+                final result = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => NoteDetail(note: note)));
+                if (result == true) {
+                  navigateToPage(currentPageNumber);
+                }
+              },
+              onDoubleTap: (note) async {
+                final result = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => NoteDetail(
+                            note: note,
+                            enterEditing: note.userId == UserSession().id)));
+                if (result == true) {
+                  navigateToPage(currentPageNumber);
+                }
+              },
+              onDelete: (note) async {
+                await _controller.deleteNote(context, note.id);
+              },
+            ),
+            noteCallbacks: NoteListCallbacks(
+              onTagTap: (note, tag) =>
+                  NavigationHelper.onTagTap(context, note, tag),
+              onRefresh: () => navigateToPage(currentPageNumber),
+            ),
+            config: const ListItemConfig(
+              showDate: false,
+              showRestoreButton: false,
+              enableDismiss: true,
+            ),
           ),
         ),
         if (_controller.totalPages > 1 && UserSession().isDesktop)

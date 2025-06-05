@@ -4,7 +4,6 @@ import 'package:intl/intl.dart';
 
 import '../../utils/navigation_helper.dart';
 import '../account/user_session.dart';
-import '../components/note_list.dart';
 import '../../dependency_injection.dart';
 import '../../entities/note.dart';
 import '../../services/notes_services.dart';
@@ -13,6 +12,9 @@ import '../note_detail/note_detail.dart';
 import 'memories_on_day_controller.dart';
 import '../components/controllers/tag_cloud_controller.dart';
 import '../components/tappable_app_bar_title.dart';
+import '../components/note_list/note-list.dart';
+import '../components/note_list/note-list-callbacks.dart';
+import '../components/list-grouper.dart';
 
 class MemoriesOnDay extends StatefulWidget {
   final DateTime date;
@@ -73,6 +75,10 @@ class MemoriesOnDayState extends State<MemoriesOnDay> with RouteAware {
     super.dispose();
   }
 
+  Future<void> _refreshNotes() async {
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -110,31 +116,41 @@ class MemoriesOnDayState extends State<MemoriesOnDay> with RouteAware {
             return Stack(
               children: [
                 NoteList(
-                  notes: _notes,
+                  groupedNotes: ListGrouper.groupByDate(_notes, (note) => note.createdDate),
                   showDateHeader: false,
-                  showDate: false,
-                  onTap: (note) async {
-                    await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => NoteDetail(note: note),
-                      ),
-                    );
-                  },
-                  onDoubleTap: (note) async {
-                    await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            NoteDetail(note: note, enterEditing: true),
-                      ),
-                    );
-                  },
-                  onTagTap: (note, tag) =>
-                      NavigationHelper.onTagTap(context, note, tag),
-                  onDelete: (note) async {
-                    await _controller.deleteNote(context, note.id);
-                  },
+                  callbacks: ListItemCallbacks<Note>(
+                    onTap: (note) async {
+                      await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => NoteDetail(note: note),
+                        ),
+                      );
+                    },
+                    onDoubleTap: (note) async {
+                      await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              NoteDetail(note: note, enterEditing: note.userId == UserSession().id),
+                        ),
+                      );
+                    },
+                    onDelete: (note) async {
+                      await _controller.deleteNote(context, note.id);
+                    },
+                  ),
+                  noteCallbacks: NoteListCallbacks(
+                    onTagTap: (note, tag) =>
+                        NavigationHelper.onTagTap(context, note, tag),
+                    onRefresh: _refreshNotes,
+                  ),
+                  config: const ListItemConfig(
+                    showDate: false,
+                    showAuthor: false,
+                    showRestoreButton: false,
+                    enableDismiss: true,
+                  ),
                 ),
                 // Add Note Button
                 Positioned(
@@ -144,7 +160,6 @@ class MemoriesOnDayState extends State<MemoriesOnDay> with RouteAware {
                     opacity: 0.5,
                     child: FloatingActionButton(
                       onPressed: () async {
-                        // final navigator = Navigator.of(context); // No longer needed here
                         // Await the result of pushing the NewNote screen
                         final bool? savedSuccessfully =
                             await Navigator.push<bool>(
@@ -158,7 +173,6 @@ class MemoriesOnDayState extends State<MemoriesOnDay> with RouteAware {
                         );
                         // If savedSuccessfully is true (or not null and true), trigger a rebuild
                         if (savedSuccessfully ?? false) {
-                          // Use ?? false for null safety
                           // Calling setState will cause the FutureBuilder to re-fetch data
                           if (mounted) {
                             setState(() {});

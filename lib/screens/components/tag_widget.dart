@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class TagWidget extends StatelessWidget {
   final String tag;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   const TagWidget({
     Key? key,

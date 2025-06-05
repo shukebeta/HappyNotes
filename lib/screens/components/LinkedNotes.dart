@@ -3,7 +3,8 @@ import '../../entities/note.dart';
 import '../../utils/navigation_helper.dart';
 import '../account/user_session.dart';
 import '../note_detail/note_detail.dart';
-import 'note_list_item.dart';
+import '../components/note_list/note-list-item.dart';
+import '../components/note_list/note-list.dart';
 
 class LinkedNotes extends StatelessWidget {
   final List<Note> linkedNotes;
@@ -31,28 +32,33 @@ class LinkedNotes extends StatelessWidget {
         ),
 
         // Linked notes list
-        ...linkedNotes
-            .map((note) => NoteListItem(
+        ...linkedNotes.map((note) => NoteListItem(
+          note: note,
+          callbacks: ListItemCallbacks<Note>(
+            onTap: (note) => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => NoteDetail(note: note),
+              ),
+            ),
+            onDoubleTap: (note) => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => NoteDetail(
                   note: note,
-                  onTap: (note) => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => NoteDetail(note: note),
-                    ),
-                  ),
-                  onDoubleTap: (note) => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => NoteDetail(
-                        note: note,
-                        enterEditing: parentNote.userId == UserSession().id,
-                      ),
-                    ),
-                  ),
-                  onTagTap: (note, tag) => NavigationHelper.onTagTap(context, note, tag),
-                  showDate: true,
-                ))
-            .toList(),
+                  enterEditing: parentNote.userId == UserSession().id,
+                ),
+              ),
+            ),
+          ),
+          onTagTap: (note, tag) => NavigationHelper.onTagTap(context, note, tag),
+          config: const ListItemConfig(
+            showDate: true,
+            showAuthor: true, // Show author for linked notes
+            showRestoreButton: false,
+            enableDismiss: false,
+          ),
+        )).toList(),
       ]),
     );
   }
