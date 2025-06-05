@@ -5,8 +5,11 @@ import '../account/user_session.dart';
 import '../note_detail/note_detail.dart';
 import '../components/note_list/note-list-item.dart';
 import '../components/note_list/note-list.dart';
+import '../../services/notes_services.dart';
+import '../../dependency_injection.dart';
+import '../../models/notes_result.dart';
 
-class LinkedNotes extends StatelessWidget {
+class LinkedNotes extends StatefulWidget {
   final List<Note> linkedNotes;
   final Note parentNote;
 
@@ -17,8 +20,51 @@ class LinkedNotes extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  _LinkedNotesState createState() => _LinkedNotesState();
+}
+
+class _LinkedNotesState extends State<LinkedNotes> {
+  late List<Note> _linkedNotes;
+  final NotesService _notesService = locator<NotesService>();
+  bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _linkedNotes = List<Note>.from(widget.linkedNotes); // Create a copy of the list
+  }
+
+  Future<void> _refreshNotes() async {
+    if (_isLoading) return; // Prevent multiple refreshes at once
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      // Fetch all linked notes in one go
+      NotesResult result = await _notesService.getLinkedNotes(widget.parentNote.id);
+      setState(() {
+        _linkedNotes = result.notes;
+      });
+    } catch (error) {
+      // Handle error if needed
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    if (linkedNotes.isEmpty) return const SliverToBoxAdapter(child: SizedBox.shrink());
+    if (_isLoading) {
+      return const SliverToBoxAdapter(
+        child: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    if (_linkedNotes.isEmpty) return const SliverToBoxAdapter(child: SizedBox.shrink());
 
     return SliverList(
       delegate: SliverChildListDelegate([
@@ -32,7 +78,7 @@ class LinkedNotes extends StatelessWidget {
         ),
 
         // Linked notes list
-        ...linkedNotes.map((note) => NoteListItem(
+        ..._linkedNotes.map((note) => NoteListItem(
           note: note,
           callbacks: ListItemCallbacks<Note>(
             onTap: (note) => Navigator.push(
@@ -46,7 +92,8 @@ class LinkedNotes extends StatelessWidget {
               MaterialPageRoute(
                 builder: (context) => NoteDetail(
                   note: note,
-                  enterEditing: parentNote.userId == UserSession().id,
+                  enterEditing: widget.parentNote.userId == UserSession().id,
+                  onNoteSaved: _refreshNotes, // Pass the refresh callback
                 ),
               ),
             ),

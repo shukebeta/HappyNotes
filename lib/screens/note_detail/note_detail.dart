@@ -16,8 +16,9 @@ class NoteDetail extends StatefulWidget {
   final Note? note;
   final int? noteId;
   bool? enterEditing;
+  final VoidCallback? onNoteSaved; // Add the onNoteSaved callback
 
-  NoteDetail({super.key, this.note, this.noteId, this.enterEditing});
+  NoteDetail({super.key, this.note, this.noteId, this.enterEditing, this.onNoteSaved});
 
   @override
   NoteDetailState createState() => NoteDetailState();
@@ -28,7 +29,6 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
   List<Note>? linkedNotes = [];
   late NoteDetailController _controller;
   bool _initialized = false;
-
 
   @override
   void initState() {
@@ -107,7 +107,11 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
                               _controller.saveNote(
                                 context,
                                 note?.id ?? widget.noteId!,
-                                  () => navigator.pop(true),
+                                () {
+                                  // Call the onNoteSaved callback if provided
+                                  widget.onNoteSaved?.call();
+                                  navigator.pop(true);
+                                },
                               );
                             },
                           )
