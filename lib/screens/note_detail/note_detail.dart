@@ -16,9 +16,17 @@ class NoteDetail extends StatefulWidget {
   final Note? note;
   final int? noteId;
   bool? enterEditing;
-  final VoidCallback? onNoteSaved; // Add the onNoteSaved callback
+  final VoidCallback? onNoteSaved; // Callback when note is saved
+  final bool fromDetailPage; // Flag to indicate if coming from detail page
 
-  NoteDetail({super.key, this.note, this.noteId, this.enterEditing, this.onNoteSaved});
+  NoteDetail({
+    super.key,
+    this.note,
+    this.noteId,
+    this.enterEditing,
+    this.onNoteSaved,
+    this.fromDetailPage = false,
+  });
 
   @override
   NoteDetailState createState() => NoteDetailState();
@@ -29,12 +37,14 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
   List<Note>? linkedNotes = [];
   late NoteDetailController _controller;
   bool _initialized = false;
+  bool _editingFromDetailPage = false; // Track if editing from detail page
 
   @override
   void initState() {
     _controller = NoteDetailController(notesService: locator<NotesService>());
     _controller.isEditing = widget.enterEditing ?? false;
     note = widget.note;
+    _editingFromDetailPage = widget.fromDetailPage; // Initialize from widget
     super.initState();
   }
 
@@ -57,8 +67,28 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
     if (note?.userId != UserSession().id) return;
     if (!_controller.isEditing) {
       _controller.isEditing = true;
+      // When entering editing mode from the detail page, set _editingFromDetailPage to true
+      setState(() {
+        _editingFromDetailPage = true;
+      });
     }
     setState(() {});
+  }
+
+  void _updateNoteContent(NoteModel noteModel) {
+    // Update the note content in the NoteModel
+    note = Note(
+      id: note!.id,
+      userId: note!.userId,
+      content: noteModel.content,
+      isPrivate: noteModel.isPrivate,
+      isLong: note!.isLong,
+      isMarkdown: noteModel.isMarkdown,
+      createdAt: note!.createdAt,
+      deletedAt: note!.deletedAt,
+      user: note!.user,
+      tags: note!.tags,
+    );
   }
 
   @override
@@ -92,7 +122,7 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
                 child: Consumer<NoteModel>(builder: (context, noteModel, child) {
                   return AppBar(
                     title: Text(
-                      'Note ${note?.id} - ${noteModel.isPrivate ? 'Private' : 'Public'}${noteModel.isMarkdown ? ' with M↓'  : ''}',
+                      '${note?.id} - ${noteModel.isPrivate ? 'Private' : 'Public'}${noteModel.isMarkdown ? ' with M↓' : ''}',
                       style: TextStyle(
                         color: noteModel.isPrivate ? Colors.red : Colors.green, // Change colors accordingly
                       ),
@@ -110,7 +140,16 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
                                 () {
                                   // Call the onNoteSaved callback if provided
                                   widget.onNoteSaved?.call();
-                                  navigator.pop(true);
+                                  // If editing from detail page, stay on detail page
+                                  if (_editingFromDetailPage) {
+                                    // Update the note content in the NoteModel
+                                    _updateNoteContent(noteModel);
+                                    setState(() {
+                                      _controller.isEditing = false;
+                                    });
+                                  } else {
+                                    navigator.pop(true);
+                                  }
                                 },
                               );
                             },
@@ -174,33 +213,49 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
               ),
               body: GestureDetector(
                 onDoubleTap: _enterEditingMode,
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 16.0),
-                  child: Consumer<NoteModel>(
-                    builder: (context, noteModel, child) {
-                      if (note == null) return const Text("Note doesn't exist, or, you don't have permission to read it.");
-                      return Column(
-                        children: [
-                          if (note?.deletedAt != null)
-                            Container(
-                              width: double.infinity,
-                              color: Colors.red.withOpacity(0.2),
-                              padding: const EdgeInsets.all(8.0),
-                              child: const Text(
-                                'You are viewing a deleted note',
-                                style: TextStyle(color: Colors.red),
-                                textAlign: TextAlign.center,
-                              ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Publish time
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
+                      child: Text(
+                        'Published on ${note?.createdDate} at ${note?.createdTime}',
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: Colors.grey[600],
                             ),
-                          Expanded(
-                            child: _controller.isEditing
-                                ? NoteEdit(note: note!)
-                                : NoteView(note: note!),
-                          ),
-                        ],
-                      );
-                    },
-                  ),
+                      ),
+                    ),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 16.0),
+                        child: Consumer<NoteModel>(
+                          builder: (context, noteModel, child) {
+                            if (note == null)
+                              return const Text("Note doesn't exist, or, you don't have permission to read it.");
+                            return Column(
+                              children: [
+                                if (note?.deletedAt != null)
+                                  Container(
+                                    width: double.infinity,
+                                    color: Colors.red.withOpacity(0.2),
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: const Text(
+                                      'You are viewing a deleted note',
+                                      style: TextStyle(color: Colors.red),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                Expanded(
+                                  child: _controller.isEditing ? NoteEdit(note: note!) : NoteView(note: note!),
+                                ),
+                              ],
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),

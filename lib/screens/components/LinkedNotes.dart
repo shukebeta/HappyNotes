@@ -94,6 +94,7 @@ class _LinkedNotesState extends State<LinkedNotes> {
                   note: note,
                   enterEditing: widget.parentNote.userId == UserSession().id,
                   onNoteSaved: _refreshNotes, // Pass the refresh callback
+                  fromDetailPage: false, // Not coming from detail page
                 ),
               ),
             ),

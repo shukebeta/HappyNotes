@@ -11,8 +11,6 @@ class Note {
   final int createdAt;
   final int? deletedAt;
 
-  final bool? showDate;
-
   User? user;
   List<String>? tags;
 
@@ -38,7 +36,6 @@ class Note {
     required this.isMarkdown,
     required this.createdAt,
     this.deletedAt,
-    this.showDate,
     this.user,
     this.tags,
   });
@@ -53,7 +50,6 @@ class Note {
       isMarkdown: json['isMarkdown'],
       createdAt: json['createdAt'],
       deletedAt: json['deletedAt'],
-      showDate: json['showDate'],
       user: json['user'] != null ? User.fromJson(json['user']) : null,
       tags: json['tags'] == '' || json['tags'] == null ? [] : json['tags'].split(' '),
     );
