@@ -52,3 +52,10 @@ key.jks
 devtools_options.yaml
 plans/
 coverage
+alembic.ini
+alembic/
+generate_mcp_yaml.py
+install_rooflow_conport.sh
+system_prompt.md
+logs/
+
