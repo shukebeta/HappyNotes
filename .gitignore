@@ -59,3 +59,4 @@ install_rooflow_conport.sh
 system_prompt.md
 logs/
 
+android/app/.cxx
