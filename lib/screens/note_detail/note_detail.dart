@@ -11,7 +11,6 @@ import '../../services/notes_services.dart';
 import '../trash_bin/trash_bin_page.dart';
 import 'note_detail_controller.dart';
 
-// ignore: must_be_immutable
 class NoteDetail extends StatefulWidget {
   final Note? note;
   final int? noteId;
@@ -38,6 +37,7 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
   late NoteDetailController _controller;
   bool _initialized = false;
   bool _editingFromDetailPage = false; // Track if editing from detail page
+  bool _isSaving = false;
 
   @override
   void initState() {
@@ -131,28 +131,35 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
                       if (note?.userId == UserSession().id) ...[
                         if (_controller.isEditing)
                           IconButton(
-                            icon: const Icon(Icons.check),
-                            onPressed: () {
-                              var navigator = Navigator.of(context);
-                              _controller.saveNote(
-                                context,
-                                note?.id ?? widget.noteId!,
-                                () {
-                                  // Call the onNoteSaved callback if provided
-                                  widget.onNoteSaved?.call();
-                                  // If editing from detail page, stay on detail page
-                                  if (_editingFromDetailPage) {
-                                    // Update the note content in the NoteModel
-                                    _updateNoteContent(noteModel);
+                            icon: _isSaving
+                                ? const CircularProgressIndicator()
+                                : const Icon(Icons.check),
+                            onPressed: _isSaving
+                                ? null
+                                : () {
                                     setState(() {
-                                      _controller.isEditing = false;
+                                      _isSaving = true;
                                     });
-                                  } else {
-                                    navigator.pop(true);
-                                  }
-                                },
-                              );
-                            },
+                                    var navigator = Navigator.of(context);
+                                    _controller.saveNote(
+                                      context,
+                                      note?.id ?? widget.noteId!,
+                                      () {
+                                        setState(() {
+                                          _isSaving = false;
+                                        });
+                                        // Call the onNoteSaved callback if provided
+                                        widget.onNoteSaved?.call();
+                                        // If editing from detail page, stay on detail page
+                                        if (_editingFromDetailPage) {
+                                          // Update the note content in the NoteModel
+                                          _updateNoteContent(noteModel);
+                                        } else {
+                                          navigator.pop(true);
+                                        }
+                                      },
+                                    );
+                                  },
                           )
                         else
                           IconButton(
