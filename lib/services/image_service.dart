@@ -1,8 +1,12 @@
+import 'dart:io';
 import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:pasteboard/pasteboard.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:flutter/foundation.dart'; // For kIsWeb
+import 'package:gal/gal.dart';
 import '../app_config.dart';
 import '../utils/util.dart';
 import '../apis/file_uploader_api.dart';
@@ -10,6 +14,32 @@ import '../dependency_injection.dart';
 
 class ImageService {
   final fileUploaderApi = locator<FileUploaderApi>();
+
+  /// Saves a network image to the device's gallery
+  Future<bool> saveImageToGallery(String imageUrl) async {
+    try {
+      // Gal handles permissions internally, but we can still check manually if needed
+      if (!await Gal.hasAccess()) {
+        await Gal.requestAccess();
+      }
+
+      // Download image
+      final response = await Dio().get(
+        imageUrl,
+        options: Options(responseType: ResponseType.bytes),
+      );
+
+      // Save to gallery using Gal
+      await Gal.putImageBytes(
+        Uint8List.fromList(response.data),
+      );
+      
+      return true;
+    } catch (e) {
+      print('Error saving image: $e');
+      return false;
+    }
+  }
 
   Future<MultipartFile?> compressImageIfNeeded(Uint8List imageBytes, String filename) async {
     if (Util.isImageCompressionSupported()) {
@@ -58,7 +88,7 @@ class ImageService {
       if (text != null && text.isNotEmpty) {
         onSuccess(text);
         return;
-      } 
+      }
     } catch (e) {
         print(e.toString());
     }
