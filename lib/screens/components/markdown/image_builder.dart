@@ -45,11 +45,14 @@ class ImageBuilder extends MarkdownElementBuilder {
         child: Stack(
           children: [
             Center(
-              child: PhotoView(
-                imageProvider: NetworkImage(url),
-                minScale: PhotoViewComputedScale.contained,
-                maxScale: PhotoViewComputedScale.covered * 4,
-                backgroundDecoration: const BoxDecoration(color: Colors.black),
+              child: GestureDetector(
+                onLongPress: () => _showSaveImageDialog(url),
+                child: PhotoView(
+                  imageProvider: NetworkImage(url),
+                  minScale: PhotoViewComputedScale.contained,
+                  maxScale: PhotoViewComputedScale.covered * 4,
+                  backgroundDecoration: const BoxDecoration(color: Colors.black),
+                ),
               ),
             ),
             Positioned(
@@ -90,7 +93,7 @@ class ImageBuilder extends MarkdownElementBuilder {
               child: createWebImage(
                 url,
                 null, // No tap action in fullscreen
-                null, // No long press action in fullscreen
+                () => _showSaveImageDialog(url), // Long press to save/open
                 isFullScreen: true,
               ),
             ),
