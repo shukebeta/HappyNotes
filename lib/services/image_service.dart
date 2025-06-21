@@ -10,34 +10,39 @@ import '../utils/util.dart';
 import '../apis/file_uploader_api.dart';
 import '../dependency_injection.dart';
 
+// Conditional imports for web download functionality
+import 'web_download_stub.dart'
+    if (dart.library.html) 'web_download_impl.dart';
+
 class ImageService {
   final fileUploaderApi = locator<FileUploaderApi>();
 
   /// Saves a network image to the device's gallery
   Future<bool> saveImageToGallery(String imageUrl) async {
     try {
-      // Gal handles permissions internally, but we can still check manually if needed
-      if (!await Gal.hasAccess()) {
-        await Gal.requestAccess();
+      if (kIsWeb) {
+        // Web: Download directly from the image source without API call
+        return downloadImageOnWeb(null, imageUrl);
+      } else {
+        // Mobile: Download image bytes and save to gallery
+        final response = await Dio().get(
+          imageUrl,
+          options: Options(responseType: ResponseType.bytes),
+        );
+        final imageBytes = Uint8List.fromList(response.data);
+        
+        if (!await Gal.hasAccess()) {
+          await Gal.requestAccess();
+        }
+        await Gal.putImageBytes(imageBytes);
+        return true;
       }
-
-      // Download image
-      final response = await Dio().get(
-        imageUrl,
-        options: Options(responseType: ResponseType.bytes),
-      );
-
-      // Save to gallery using Gal
-      await Gal.putImageBytes(
-        Uint8List.fromList(response.data),
-      );
-      
-      return true;
     } catch (e) {
       print('Error saving image: $e');
       return false;
     }
   }
+
 
   Future<MultipartFile?> compressImageIfNeeded(Uint8List imageBytes, String filename) async {
     if (Util.isImageCompressionSupported()) {

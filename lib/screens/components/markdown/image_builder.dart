@@ -5,6 +5,7 @@ import 'package:markdown/markdown.dart' as md;
 import 'package:get_it/get_it.dart';
 import 'package:flutter/foundation.dart';
 import '../../../services/image_service.dart';
+import '../../../utils/util.dart';
 
 // Conditional imports for web
 import 'web_image_stub.dart'
@@ -121,8 +122,10 @@ class ImageBuilder extends MarkdownElementBuilder {
     showDialog(
       context: parentContext,
       builder: (ctx) => AlertDialog(
-        title: const Text('Save Image'),
-        content: const Text('Save this image to your device gallery?'),
+        title: Text(kIsWeb ? 'Open Image' : 'Save Image'),
+        content: Text(kIsWeb 
+          ? 'Open this image in browser?' 
+          : 'Save this image to your device gallery?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
@@ -133,7 +136,7 @@ class ImageBuilder extends MarkdownElementBuilder {
               Navigator.pop(ctx);
               await _saveImage(url);
             },
-            child: const Text('Save'),
+            child: Text(kIsWeb ? 'Open' : 'Save'),
           ),
         ],
       ),
@@ -145,9 +148,10 @@ class ImageBuilder extends MarkdownElementBuilder {
     final result = await imageService.saveImageToGallery(url);
 
     if (parentContext.mounted) {
-      ScaffoldMessenger.of(parentContext).showSnackBar(
-        SnackBar(content: Text(result ? 'Image saved!' : 'Failed to save image')),
-      );
+      final message = result 
+        ? (kIsWeb ? 'Image opened in browser!' : 'Image saved!') 
+        : (kIsWeb ? 'Failed to open image' : 'Failed to save image');
+      Util.showInfo(ScaffoldMessenger.of(parentContext), message);
     }
   }
 }
