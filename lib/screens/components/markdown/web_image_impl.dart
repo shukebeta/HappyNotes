@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:html' as html;
 import 'dart:ui_web' as ui_web;
+import 'dart:math' as math;
 
 // Web implementation using HTML elements to bypass CORS
 Widget createWebImage(String src, VoidCallback? onTap, VoidCallback? onLongPress, {bool isFullScreen = false}) {
@@ -17,8 +18,11 @@ Widget createWebImage(String src, VoidCallback? onTap, VoidCallback? onLongPress
         ..style.cursor = 'zoom-in'
         ..style.transition = 'transform 0.2s ease';
       
-      // Add zoom functionality with mouse wheel for fullscreen
+      // Add zoom functionality with mouse wheel and touch gestures for fullscreen
       double scale = 1.0;
+      double lastScale = 1.0;
+      
+      // Mouse wheel zoom
       imgElement.onWheel.listen((event) {
         event.preventDefault();
         scale += event.deltaY > 0 ? -0.1 : 0.1;
@@ -27,9 +31,65 @@ Widget createWebImage(String src, VoidCallback? onTap, VoidCallback? onLongPress
         imgElement.style.cursor = scale > 1.0 ? 'zoom-out' : 'zoom-in';
       });
       
-      // Reset zoom on double click in fullscreen
+      // Touch gesture zoom
+      Map<int, html.Touch> activeTouches = {};
+      
+      imgElement.onTouchStart.listen((event) {
+        event.preventDefault();
+        for (var touch in event.changedTouches!) {
+          activeTouches[touch.identifier ?? 0] = touch;
+        }
+      });
+      
+      imgElement.onTouchMove.listen((event) {
+        event.preventDefault();
+        if (activeTouches.length == 2) {
+          var touches = activeTouches.values.toList();
+          var touch1 = touches[0];
+          var touch2 = touches[1];
+          
+          // Find current touches
+          html.Touch? currentTouch1;
+          html.Touch? currentTouch2;
+          
+          for (var touch in event.touches!) {
+            if (touch.identifier == touch1.identifier) {
+              currentTouch1 = touch;
+            } else if (touch.identifier == touch2.identifier) {
+              currentTouch2 = touch;
+            }
+          }
+          
+          if (currentTouch1 != null && currentTouch2 != null) {
+            // Calculate distance between touches
+            double currentDistance = _calculateDistance(currentTouch1, currentTouch2);
+            double initialDistance = _calculateDistance(touch1, touch2);
+            
+            if (initialDistance > 0) {
+              double gestureScale = currentDistance / initialDistance;
+              double newScale = lastScale * gestureScale;
+              newScale = newScale.clamp(0.5, 3.0);
+              
+              imgElement.style.transform = 'scale($newScale)';
+              scale = newScale;
+            }
+          }
+        }
+      });
+      
+      imgElement.onTouchEnd.listen((event) {
+        event.preventDefault();
+        for (var touch in event.changedTouches!) {
+          activeTouches.remove(touch.identifier ?? 0);
+        }
+        lastScale = scale;
+        imgElement.style.cursor = scale > 1.0 ? 'zoom-out' : 'zoom-in';
+      });
+      
+      // Reset zoom on double tap in fullscreen
       imgElement.onDoubleClick.listen((event) {
         scale = 1.0;
+        lastScale = 1.0;
         imgElement.style.transform = 'scale(1.0)';
         imgElement.style.cursor = 'zoom-in';
       });
@@ -101,4 +161,11 @@ Widget createWebImage(String src, VoidCallback? onTap, VoidCallback? onLongPress
       ],
     ),
   );
+}
+
+// Helper function to calculate distance between two touch points
+double _calculateDistance(html.Touch touch1, html.Touch touch2) {
+  double dx = (touch1.page?.x ?? 0).toDouble() - (touch2.page?.x ?? 0).toDouble();
+  double dy = (touch1.page?.y ?? 0).toDouble() - (touch2.page?.y ?? 0).toDouble();
+  return math.sqrt(dx * dx + dy * dy);
 }
