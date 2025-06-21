@@ -1,10 +1,8 @@
-import 'dart:io';
 import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:pasteboard/pasteboard.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/foundation.dart'; // For kIsWeb
 import 'package:gal/gal.dart';
 import '../app_config.dart';

@@ -3,7 +3,12 @@ import 'package:flutter_markdown_selectionarea/flutter_markdown.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:markdown/markdown.dart' as md;
 import 'package:get_it/get_it.dart';
+import 'package:flutter/foundation.dart';
 import '../../../services/image_service.dart';
+
+// Conditional imports for web
+import 'web_image_stub.dart'
+    if (dart.library.html) 'web_image_impl.dart';
 
 class ImageBuilder extends MarkdownElementBuilder {
   final BuildContext parentContext;
@@ -14,21 +19,99 @@ class ImageBuilder extends MarkdownElementBuilder {
   @override
   Widget visitElementAfter(md.Element element, TextStyle? preferredStyle) {
     final src = element.attributes['src'] ?? '';
-    return GestureDetector(
-      child: Image.network(src),
-      onTap: () => _showFullScreenImage(src),
-      onLongPress: () => _showSaveImageDialog(src),
+    
+    return createWebImage(
+      src,
+      () => _showFullScreenImage(src),
+      () => _showSaveImageDialog(src),
     );
   }
 
   void _showFullScreenImage(String url) {
+    if (kIsWeb) {
+      _showWebFullScreenImage(url);
+    } else {
+      _showMobileFullScreenImage(url);
+    }
+  }
+
+  void _showMobileFullScreenImage(String url) {
     showDialog(
       context: parentContext,
-      builder: (ctx) => Dialog(
-        child: PhotoView(
-          imageProvider: NetworkImage(url),
-          minScale: PhotoViewComputedScale.contained,
-          maxScale: PhotoViewComputedScale.covered * 4,
+      barrierDismissible: true,
+      builder: (ctx) => Dialog.fullscreen(
+        backgroundColor: Colors.black,
+        child: Stack(
+          children: [
+            Center(
+              child: PhotoView(
+                imageProvider: NetworkImage(url),
+                minScale: PhotoViewComputedScale.contained,
+                maxScale: PhotoViewComputedScale.covered * 4,
+                backgroundDecoration: const BoxDecoration(color: Colors.black),
+              ),
+            ),
+            Positioned(
+              top: 16,
+              right: 16,
+              child: SafeArea(
+                child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () {
+                    Navigator.of(ctx).pop();
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.black54,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: const Icon(Icons.close, color: Colors.white, size: 24),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showWebFullScreenImage(String url) {
+    showDialog(
+      context: parentContext,
+      barrierDismissible: true,
+      builder: (ctx) => Dialog.fullscreen(
+        backgroundColor: Colors.black,
+        child: Stack(
+          children: [
+            Center(
+              child: createWebImage(
+                url,
+                null, // No tap action in fullscreen
+                null, // No long press action in fullscreen
+                isFullScreen: true,
+              ),
+            ),
+            Positioned(
+              top: 16,
+              right: 16,
+              child: GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () {
+                  Navigator.of(ctx).pop();
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.black54,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: const Icon(Icons.close, color: Colors.white, size: 24),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -61,8 +144,10 @@ class ImageBuilder extends MarkdownElementBuilder {
     final imageService = _locator<ImageService>();
     final result = await imageService.saveImageToGallery(url);
 
-    ScaffoldMessenger.of(parentContext).showSnackBar(
-      SnackBar(content: Text(result ? 'Image saved!' : 'Failed to save image')),
-    );
+    if (parentContext.mounted) {
+      ScaffoldMessenger.of(parentContext).showSnackBar(
+        SnackBar(content: Text(result ? 'Image saved!' : 'Failed to save image')),
+      );
+    }
   }
 }
