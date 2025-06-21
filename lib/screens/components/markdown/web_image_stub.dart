@@ -11,11 +11,13 @@ Widget createWebImage(String src, VoidCallback? onTap, VoidCallback? onLongPress
     );
   }
   
-  // In normal mode, use a container with fixed height
+  // In normal mode, use a container with responsive height
   return Container(
-    height: 200, // Fixed height to prevent auto-extending
+    constraints: const BoxConstraints(
+      maxHeight: 300, // Prevent excessive height
+      minHeight: 150, // Ensure minimum visibility
+    ),
     child: Stack(
-      clipBehavior: Clip.none,
       children: [
         Image.network(
           src,

@@ -50,14 +50,17 @@ Widget createWebImage(String src, VoidCallback? onTap, VoidCallback? onLongPress
     // Create a container div to control overflow
     final containerDiv = html.DivElement()
       ..style.width = '100%'
-      ..style.height = '200px'
+      ..style.maxHeight = '300px'
       ..style.overflow = 'hidden'
-      ..style.position = 'relative';
+      ..style.position = 'relative'
+      ..style.display = 'flex'
+      ..style.alignItems = 'center';
     
     final imgElement = html.ImageElement()
       ..src = src
       ..style.width = '100%'
-      ..style.height = '200px' // Force specific height
+      ..style.height = 'auto' // Let image scale naturally
+      ..style.maxHeight = '300px'
       ..style.objectFit = 'contain'
       ..style.cursor = 'pointer'
       ..style.display = 'block'
@@ -73,15 +76,16 @@ Widget createWebImage(String src, VoidCallback? onTap, VoidCallback? onLongPress
   });
 
   return Container(
-    height: 200, // Fixed height to prevent auto-extending
+    constraints: const BoxConstraints(
+      maxHeight: 300, // Prevent excessive height
+      minHeight: 150, // Ensure minimum visibility
+    ),
     clipBehavior: Clip.hardEdge, // Clip any overflow
     decoration: const BoxDecoration(), // Required for clipBehavior
     child: Stack(
-      clipBehavior: Clip.hardEdge,
       children: [
-        SizedBox(
-          height: 200,
-          width: double.infinity,
+        ConstrainedBox(
+          constraints: const BoxConstraints(maxHeight: 300),
           child: HtmlElementView(viewType: viewId),
         ),
         // Simple tap detection overlay
