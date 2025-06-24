@@ -1,12 +1,12 @@
 #!/bin/bash
 # This file is for creating a bundle with correct version info
-#set -e -x
+set -e  # Exit on any error
 if [ -n "$(git status --porcelain)" ]; then
   echo "Error: Your workspace has uncommitted changes. Please commit or stash them before continuing."
 #  exit 1
 fi
 
-if [ "$(git rev-parse --abbrev-ref HEAD)" != "heads/master" ]; then
+if [ "$(git rev-parse --abbrev-ref HEAD)" != "master" ]; then
   echo "Error: You are not on the master branch. Please switch to the master branch before continuing."
   exit 1
 fi
@@ -19,12 +19,16 @@ mv .env .env.backup
 current_version_code=$(grep '^FLUTTER_VERSION_CODE=' .env.production | cut -d'=' -f2)
 current_version_name=$(grep '^FLUTTER_VERSION_NAME=' .env.production | cut -d'=' -f2)
 
+echo "Current version: $current_version_name (code: $current_version_code)"
+
 # Increment version code
 new_version_code=$((current_version_code + 1))
 
 # Update version name (for example, incrementing the patch version)
 IFS='.' read -r major minor patch <<< "$current_version_name"
 new_version_name="$major.$minor.$((patch + 1))"
+
+echo "New version: $new_version_name (code: $new_version_code)"
 
 # replace flutter.versionCode and flutter.versionName with new version information
 properties_file="android/local.properties"
@@ -33,7 +37,7 @@ properties_file="android/local.properties"
 sed -i "s/^flutter.versionCode=.*/flutter.versionCode=$new_version_code/" "$properties_file"
 sed -i "s/^flutter.versionName=.*/flutter.versionName=$new_version_name/" "$properties_file"
 sed -i "s/^FLUTTER_VERSION_CODE=.*/FLUTTER_VERSION_CODE=$new_version_code/" .env.production
-sed -i "s/^FLUTTER_VERSION_NAME=.*/FLUTTER_VERSION_Name=$new_version_name/" .env.production
+sed -i "s/^FLUTTER_VERSION_NAME=.*/FLUTTER_VERSION_NAME=$new_version_name/" .env.production
 
 # Set the version number in pubspec.yaml
 sed -i "s/^version: .*$/version: $new_version_name/" pubspec.yaml
@@ -42,6 +46,7 @@ sed -i "s/^version: .*$/version: $new_version_name/" pubspec.yaml
 git add pubspec.yaml .env.production
 
 # Commit the changes
+echo "Committing version updates..."
 git commit -m "Update flutter.versionCode to $new_version_code and flutter.versionName to $new_version_name"
 
 cp .env.production .env
@@ -50,5 +55,8 @@ BUILD_DATE=$(date '+%Y-%b-%d')
 VERSION_INFO="$COMMIT_HASH($BUILD_DATE)"
 sed -i "s/VERSION_PLACEHOLDER/$VERSION_INFO/" .env
 
+echo "Building app bundle..."
 flutter build appbundle
 mv .env.backup .env
+
+echo "App bundle built successfully: build/app/outputs/bundle/release/app-release.aab"

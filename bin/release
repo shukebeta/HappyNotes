@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e  # Exit on any error
 
 # Check if the workspace is clean and on the master branch
 if [ -n "$(git status --porcelain)" ]; then
@@ -6,7 +7,7 @@ if [ -n "$(git status --porcelain)" ]; then
   exit 1
 fi
 
-if [ "$(git rev-parse --abbrev-ref HEAD)" != "heads/master" ]; then
+if [ "$(git rev-parse --abbrev-ref HEAD)" != "master" ]; then
   echo "Error: You are not on the master branch. Please switch to the master branch before continuing."
   exit 1
 fi
@@ -17,7 +18,7 @@ cd $script_dir/..
 # Check if the correct number of arguments is provided
 if [ "$#" -ne 2 ]; then
   echo "Usage: $0 <version> <release_note>"
-  echo "Current $(rg version: pubspec.yaml)"
+  echo "Current version: $(rg '^version:' pubspec.yaml | cut -d' ' -f2)"
   echo "Example: $0 1.2.3 \"This is a release note\""
   exit 1
 fi
@@ -36,21 +37,26 @@ RELEASE_NOTE=$2
 
 
 # Pull the latest changes from the remote repository
+echo "Pulling latest changes..."
 git pull --ff-only origin master
 
 # Set the version number in pubspec.yaml
+echo "Updating version to $VERSION in pubspec.yaml..."
 sed -i "s/^version: .*$/version: $VERSION/" pubspec.yaml
 
 # Add all changes to Git
 git add pubspec.yaml
 
 # Commit the changes with a message
+echo "Committing version bump..."
 git commit -m "Release version $VERSION"
 
 # Create a Git tag with the release note
+echo "Creating tag $VERSION..."
 git tag -a "$VERSION" -m "$RELEASE_NOTE"
 
 # Push the changes and the new tag to the remote repository
+echo "Pushing changes and tag to remote..."
 git push origin master
 git push origin "$VERSION"
 mv .env.backup .env
