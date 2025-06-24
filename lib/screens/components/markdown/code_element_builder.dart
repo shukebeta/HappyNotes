@@ -14,8 +14,7 @@ class CodeElementBuilder extends MarkdownElementBuilder {
     if (_isMultipleLine(element)) {
       return Container(
         margin: const EdgeInsets.fromLTRB(7, 20, 10, 0),
-        width: PlatformDispatcher.instance.views.first.physicalSize.width /
-            PlatformDispatcher.instance.views.first.devicePixelRatio,
+        width: double.infinity, // Use full available width
         child: Text(
           element.textContent,
           style:
