@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_markdown_selectionarea/flutter_markdown.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import 'markdown/code_element_builder.dart';
@@ -24,50 +25,55 @@ class MarkdownBodyHereState extends State<MarkdownBodyHere> {
     // Define base color based on isPrivate flag
     final textColor = widget.isPrivate ? Colors.black54 : Colors.black87;
 
-    return SelectionArea(
-      child: MarkdownBody(
-        data: widget.data,
-        builders: <String, MarkdownElementBuilder>{
-          'code': CodeElementBuilder(),
-          'img': ImageBuilder(context),
-        },
-        styleSheet: MarkdownStyleSheet(
-          // Update all text elements to use the dynamic color
-          h1: TextStyle(
-            fontSize: 20,
-            color: textColor,
-          ),
-          h2: TextStyle(color: textColor),
-          h3: TextStyle(color: textColor),
-          h4: TextStyle(color: textColor),
-          h5: TextStyle(color: textColor),
-          h6: TextStyle(color: textColor),
-          p: TextStyle(
-            fontSize: 16,
-            height: 1.6,
-            color: textColor,
-          ),
-          code: TextStyle(
-            fontSize: 16,
-            height: 1.6,
-            color: textColor,
-            fontFamily: 'monospace',
-          ),
-          codeblockDecoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8),
-            color: Colors.grey.shade200,
-          ),
-          // Add other text elements that need color control
-          listBullet: TextStyle(color: textColor),
-          strong: TextStyle(color: textColor),
-          em: TextStyle(color: textColor),
+    final markdownBody = MarkdownBody(
+      data: widget.data,
+      builders: <String, MarkdownElementBuilder>{
+        'code': CodeElementBuilder(),
+        'img': ImageBuilder(context),
+      },
+      styleSheet: MarkdownStyleSheet(
+        // Update all text elements to use the dynamic color
+        h1: TextStyle(
+          fontSize: 20,
+          color: textColor,
         ),
-        onTapLink: (text, url, title) {
-          if (url != null) {
-            launchUrlString(url);
-          }
-        },
+        h2: TextStyle(color: textColor),
+        h3: TextStyle(color: textColor),
+        h4: TextStyle(color: textColor),
+        h5: TextStyle(color: textColor),
+        h6: TextStyle(color: textColor),
+        p: TextStyle(
+          fontSize: 16,
+          height: 1.6,
+          color: textColor,
+        ),
+        code: TextStyle(
+          fontSize: 16,
+          height: 1.6,
+          color: textColor,
+          fontFamily: 'monospace',
+        ),
+        codeblockDecoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8),
+          color: Colors.grey.shade200,
+        ),
+        // Add other text elements that need color control
+        listBullet: TextStyle(color: textColor),
+        strong: TextStyle(color: textColor),
+        em: TextStyle(color: textColor),
       ),
+      onTapLink: (text, url, title) {
+        if (url != null) {
+          launchUrlString(url);
+        }
+      },
     );
+
+    // Only use SelectionArea on non-web platforms to avoid conflicts with browser selection
+    if (kIsWeb) {
+      return markdownBody;
+    } else {
+      return SelectionArea(child: markdownBody);
+    }
   }
 }
