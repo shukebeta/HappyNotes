@@ -18,6 +18,8 @@ class TimezoneDropdownItem extends StatelessWidget {
         value: value,
         onChanged: onChanged,
         isExpanded: true,
+        menuMaxHeight: 300, // Limit dropdown height to prevent overlap
+        focusColor: Colors.transparent, // Remove focus color
         items: items.map<DropdownMenuItem<String>>((Map<String, String> item) {
           return DropdownMenuItem<String>(
             value: item['name'],
@@ -27,6 +29,8 @@ class TimezoneDropdownItem extends StatelessWidget {
                   child: Text(
                     item['name']!,
                     textAlign: TextAlign.left,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
                   ),
                 ),
                 Text(
