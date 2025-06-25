@@ -37,6 +37,8 @@ class ImageBuilder extends MarkdownElementBuilder {
   }
 
   void _showMobileFullScreenImage(String url) {
+    final PhotoViewController controller = PhotoViewController();
+    
     showDialog(
       context: parentContext,
       barrierDismissible: true,
@@ -45,14 +47,31 @@ class ImageBuilder extends MarkdownElementBuilder {
         child: Stack(
           children: [
             Center(
-              child: GestureDetector(
-                onLongPress: () => _showSaveImageDialog(url),
-                child: PhotoView(
-                  imageProvider: NetworkImage(url),
-                  minScale: PhotoViewComputedScale.contained,
-                  maxScale: PhotoViewComputedScale.covered * 4,
-                  backgroundDecoration: const BoxDecoration(color: Colors.black),
+              child: PhotoView(
+                imageProvider: NetworkImage(url),
+                minScale: PhotoViewComputedScale.contained,
+                maxScale: PhotoViewComputedScale.covered * 4,
+                backgroundDecoration: const BoxDecoration(color: Colors.black),
+                enableRotation: false, // Disable rotation like web version
+                controller: controller, // Add controller for programmatic control
+                loadingBuilder: (context, event) => const Center(
+                  child: CircularProgressIndicator(color: Colors.white),
                 ),
+                errorBuilder: (context, error, stackTrace) => const Center(
+                  child: Icon(Icons.error, color: Colors.white, size: 48),
+                ),
+              ),
+            ),
+            // Double-tap to reset and long-press for save functionality
+            Positioned.fill(
+              child: GestureDetector(
+                behavior: HitTestBehavior.translucent,
+                onDoubleTap: () {
+                  // Reset zoom and position like web version
+                  controller.reset();
+                },
+                onLongPress: () => _showSaveImageDialog(url),
+                child: Container(), // Transparent container for gesture detection
               ),
             ),
             Positioned(
