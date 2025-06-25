@@ -65,23 +65,25 @@ class NoteViewState extends State<NoteView> {
               slivers: [
                 // Original note content
                 SliverToBoxAdapter(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      widget.note.isMarkdown
-                          ? MarkdownBodyHere(
-                              data: widget.note.content,
-                              isPrivate: widget.note.isPrivate)
-                          : Text(
-                              widget.note.formattedContent,
-                              style: TextStyle(
-                                fontSize: 16.0,
-                                color: widget.note.isPrivate
-                                    ? Colors.grey
-                                    : Colors.black,
+                  child: SelectionArea(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        widget.note.isMarkdown
+                            ? MarkdownBodyHere(
+                                data: widget.note.content,
+                                isPrivate: widget.note.isPrivate)
+                            : Text(
+                                widget.note.formattedContent,
+                                style: TextStyle(
+                                  fontSize: 16.0,
+                                  color: widget.note.isPrivate
+                                      ? Colors.grey
+                                      : Colors.black,
+                                ),
                               ),
-                            ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
 

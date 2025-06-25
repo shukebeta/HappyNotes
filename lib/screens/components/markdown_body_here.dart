@@ -69,11 +69,7 @@ class MarkdownBodyHereState extends State<MarkdownBodyHere> {
       },
     );
 
-    // Only use SelectionArea on non-web platforms to avoid conflicts with browser selection
-    if (kIsWeb) {
-      return markdownBody;
-    } else {
-      return SelectionArea(child: markdownBody);
-    }
+    // SelectionArea is now handled at the parent level (note list item)
+    return markdownBody;
   }
 }

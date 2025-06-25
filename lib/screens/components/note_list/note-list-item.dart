@@ -41,19 +41,21 @@ class NoteListItem extends StatelessWidget {
  Widget _buildContent(BuildContext context) {
    return Stack(
      children: [
-       GestureDetector(
-         onTap: () => callbacks.onTap?.call(note),
-         onDoubleTap: () => callbacks.onDoubleTap?.call(note),
-         child: Container(
-           color: config.backgroundColor,
-           padding: config.padding ?? const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-           child: Column(
-             crossAxisAlignment: CrossAxisAlignment.start,
-             children: [
-               _buildMetadata(),
-               _buildNoteContent(),
-               if ((note.tags?.isNotEmpty == true || note.isLong) && !config.showRestoreButton) _buildFooter(),
-             ],
+       SelectionArea(
+         child: GestureDetector(
+           onTap: () => callbacks.onTap?.call(note),
+           onDoubleTap: () => callbacks.onDoubleTap?.call(note),
+           child: Container(
+             color: config.backgroundColor,
+             padding: config.padding ?? const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+             child: Column(
+               crossAxisAlignment: CrossAxisAlignment.start,
+               children: [
+                 _buildMetadata(),
+                 _buildNoteContent(),
+                 if ((note.tags?.isNotEmpty == true || note.isLong) && !config.showRestoreButton) _buildFooter(),
+               ],
+             ),
            ),
          ),
        ),
@@ -128,7 +130,7 @@ class NoteListItem extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: note.isMarkdown
           ? MarkdownBodyHere(data: content, isPrivate: note.isPrivate)
-          : SelectableText(
+          : Text(
         content,
         style: TextStyle(
           fontSize: 16,
