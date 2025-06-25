@@ -18,21 +18,36 @@ Widget createWebImage(String src, VoidCallback? onTap, VoidCallback? onLongPress
         ..style.cursor = 'zoom-in'
         ..style.transition = 'transform 0.2s ease';
       
-      // Add zoom functionality with mouse wheel and touch gestures for fullscreen
+      // Add zoom and pan functionality with mouse wheel and touch gestures for fullscreen
       double scale = 1.0;
       double lastScale = 1.0;
+      double translateX = 0.0;
+      double translateY = 0.0;
+      
+      void updateTransform() {
+        imgElement.style.transform = 'scale($scale) translate(${translateX}px, ${translateY}px)';
+      }
       
       // Mouse wheel zoom
       imgElement.onWheel.listen((event) {
         event.preventDefault();
         scale += event.deltaY > 0 ? -0.1 : 0.1;
         scale = scale.clamp(0.5, 3.0);
-        imgElement.style.transform = 'scale($scale)';
-        imgElement.style.cursor = scale > 1.0 ? 'zoom-out' : 'zoom-in';
+        
+        // Reset translation when zooming out completely
+        if (scale <= 1.0) {
+          translateX = 0.0;
+          translateY = 0.0;
+        }
+        
+        updateTransform();
+        imgElement.style.cursor = scale > 1.0 ? 'grab' : 'zoom-in';
       });
       
-      // Touch gesture zoom
+      // Touch gesture zoom and pan
       Map<int, html.Touch> activeTouches = {};
+      double lastTranslateX = 0.0;
+      double lastTranslateY = 0.0;
       
       imgElement.onTouchStart.listen((event) {
         event.preventDefault();
@@ -43,7 +58,9 @@ Widget createWebImage(String src, VoidCallback? onTap, VoidCallback? onLongPress
       
       imgElement.onTouchMove.listen((event) {
         event.preventDefault();
+        
         if (activeTouches.length == 2) {
+          // Two-finger pinch zoom
           var touches = activeTouches.values.toList();
           var touch1 = touches[0];
           var touch2 = touches[1];
@@ -69,11 +86,29 @@ Widget createWebImage(String src, VoidCallback? onTap, VoidCallback? onLongPress
               double gestureScale = currentDistance / initialDistance;
               double newScale = lastScale * gestureScale;
               newScale = newScale.clamp(0.5, 3.0);
-              
-              imgElement.style.transform = 'scale($newScale)';
               scale = newScale;
+              
+              // Reset translation when zooming out completely
+              if (scale <= 1.0) {
+                translateX = 0.0;
+                translateY = 0.0;
+              }
+              
+              updateTransform();
             }
           }
+        } else if (activeTouches.length == 1 && scale > 1.0) {
+          // Single finger pan when zoomed in
+          var initialTouch = activeTouches.values.first;
+          var currentTouch = event.touches!.first;
+          
+          double deltaX = (currentTouch.page?.x ?? 0).toDouble() - (initialTouch.page?.x ?? 0).toDouble();
+          double deltaY = (currentTouch.page?.y ?? 0).toDouble() - (initialTouch.page?.y ?? 0).toDouble();
+          
+          translateX = lastTranslateX + deltaX;
+          translateY = lastTranslateY + deltaY;
+          
+          updateTransform();
         }
       });
       
@@ -83,14 +118,20 @@ Widget createWebImage(String src, VoidCallback? onTap, VoidCallback? onLongPress
           activeTouches.remove(touch.identifier ?? 0);
         }
         lastScale = scale;
-        imgElement.style.cursor = scale > 1.0 ? 'zoom-out' : 'zoom-in';
+        lastTranslateX = translateX;
+        lastTranslateY = translateY;
+        imgElement.style.cursor = scale > 1.0 ? 'grab' : 'zoom-in';
       });
       
-      // Reset zoom on double tap in fullscreen
+      // Reset zoom and pan on double tap in fullscreen
       imgElement.onDoubleClick.listen((event) {
         scale = 1.0;
         lastScale = 1.0;
-        imgElement.style.transform = 'scale(1.0)';
+        translateX = 0.0;
+        translateY = 0.0;
+        lastTranslateX = 0.0;
+        lastTranslateY = 0.0;
+        updateTransform();
         imgElement.style.cursor = 'zoom-in';
       });
       

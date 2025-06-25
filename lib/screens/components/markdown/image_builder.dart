@@ -92,8 +92,8 @@ class ImageBuilder extends MarkdownElementBuilder {
             Center(
               child: createWebImage(
                 url,
-                null, // No tap action in fullscreen
-                () => _showSaveImageDialog(url), // Long press to save/open
+                () {}, // No tap action in fullscreen
+                () {}, // No long press action in fullscreen
                 isFullScreen: true,
               ),
             ),
