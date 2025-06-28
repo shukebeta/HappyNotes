@@ -6,6 +6,7 @@ import 'package:get_it/get_it.dart';
 import 'package:flutter/foundation.dart';
 import '../../../services/image_service.dart';
 import '../../../utils/util.dart';
+import '../../../app_config.dart';
 
 // Conditional imports for web
 import 'web_image_stub.dart'
@@ -146,6 +147,11 @@ class ImageBuilder extends MarkdownElementBuilder {
   }
 
   void _showSaveImageDialog(String url) {
+    // For iOS web (Safari or Chrome), don't show dialog since user is already long-pressing
+    if (AppConfig.isIOSWeb) {
+      return; // Let the native context menu handle it
+    }
+    
     showDialog(
       context: parentContext,
       builder: (ctx) => AlertDialog(
@@ -176,9 +182,10 @@ class ImageBuilder extends MarkdownElementBuilder {
 
     if (parentContext.mounted) {
       final message = result 
-        ? (kIsWeb ? 'Image opened in browser!' : 'Image saved!') 
-        : (kIsWeb ? 'Failed to open image' : 'Failed to save image');
+        ? (kIsWeb ? 'Download triggered!' : 'Image saved!') 
+        : (kIsWeb ? 'Failed to download image' : 'Failed to save image');
       Util.showInfo(ScaffoldMessenger.of(parentContext), message);
     }
   }
+
 }

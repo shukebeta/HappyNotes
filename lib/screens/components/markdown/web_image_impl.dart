@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:html' as html;
 import 'dart:ui_web' as ui_web;
 import 'dart:math' as math;
+import '../../../app_config.dart';
 
 // Web implementation using HTML elements to bypass CORS
 Widget createWebImage(String src, VoidCallback? onTap, VoidCallback? onLongPress, {bool isFullScreen = false}) {
@@ -223,8 +224,13 @@ Widget createWebImage(String src, VoidCallback? onTap, VoidCallback? onLongPress
       ..style.cursor = 'pointer'
       ..style.display = 'block'
       ..onContextMenu.listen((event) {
-        event.preventDefault(); // Prevent default context menu
-        onLongPress?.call();
+        // Only prevent default context menu on non-iOS browsers
+        // iOS web (Safari/Chrome) needs the native context menu for "Save to Photos" to work
+        if (!AppConfig.isIOSWeb) {
+          event.preventDefault(); // Prevent default context menu
+          onLongPress?.call();
+        }
+        // On iOS web, let the native context menu show and work properly
       });
     
     // Add image to container
@@ -267,3 +273,4 @@ double _calculateDistance(html.Touch touch1, html.Touch touch2) {
   double dy = (touch1.page?.y ?? 0).toDouble() - (touch2.page?.y ?? 0).toDouble();
   return math.sqrt(dx * dx + dy * dy);
 }
+

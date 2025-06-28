@@ -60,3 +60,4 @@ system_prompt.md
 logs/
 
 android/app/.cxx
+.claude
