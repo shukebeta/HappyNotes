@@ -130,7 +130,7 @@ class SettingsState extends State<Settings> {
             ListTile(
               title: const Text('Timezone'),
               trailing: SizedBox(
-                width: 250,
+                width: 245,
                 child: TimezoneDropdownItem(
                   items: TimezoneHelper.timezones,
                   value: selectedTimezone,
