@@ -54,6 +54,11 @@ class ImageBuilder extends MarkdownElementBuilder {
                 backgroundDecoration: const BoxDecoration(color: Colors.black),
                 enableRotation: false, // Disable rotation like web version
                 controller: controller, // Add controller for programmatic control
+                // Restrict pan boundaries to prevent losing the image
+                enablePanAlways: false, // Only allow pan when zoomed in
+                strictScale: true, // Enforce scale limits
+                tightMode: true, // Constrain panning to image boundaries
+                filterQuality: FilterQuality.high, // Better image quality
                 loadingBuilder: (context, event) => const Center(
                   child: CircularProgressIndicator(color: Colors.white),
                 ),

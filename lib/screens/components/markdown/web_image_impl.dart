@@ -23,8 +23,55 @@ Widget createWebImage(String src, VoidCallback? onTap, VoidCallback? onLongPress
       double lastScale = 1.0;
       double translateX = 0.0;
       double translateY = 0.0;
+      double imageWidth = 0.0;
+      double imageHeight = 0.0;
+      double containerWidth = 0.0;
+      double containerHeight = 0.0;
       
       void updateTransform() {
+        // Apply pan boundaries based on image dimensions and zoom level
+        double maxTranslateX = 0.0;
+        double maxTranslateY = 0.0;
+        
+        if (scale > 1.0 && imageWidth > 0 && imageHeight > 0) {
+          // Calculate actual displayed image dimensions
+          double displayWidth = imageWidth;
+          double displayHeight = imageHeight;
+          
+          // If image is contained, calculate the actual display size
+          if (containerWidth > 0 && containerHeight > 0) {
+            double imageAspectRatio = imageWidth / imageHeight;
+            double containerAspectRatio = containerWidth / containerHeight;
+            
+            if (imageAspectRatio > containerAspectRatio) {
+              // Image is wider - constrained by width
+              displayWidth = containerWidth;
+              displayHeight = containerWidth / imageAspectRatio;
+            } else {
+              // Image is taller - constrained by height
+              displayHeight = containerHeight;
+              displayWidth = containerHeight * imageAspectRatio;
+            }
+          }
+          
+          // Calculate how much the scaled image extends beyond the container
+          double scaledWidth = displayWidth * scale;
+          double scaledHeight = displayHeight * scale;
+          
+          // Much more restrictive - ensure at least 50% of image stays visible
+          // This prevents losing the image completely
+          double overflowX = math.max(0, scaledWidth - containerWidth);
+          double overflowY = math.max(0, scaledHeight - containerHeight);
+          
+          // Limit pan to only 25% of the overflow, keeping most of image visible
+          maxTranslateX = overflowX * 0.25;
+          maxTranslateY = overflowY * 0.25;
+        }
+        
+        // Clamp translation to boundaries
+        translateX = translateX.clamp(-maxTranslateX, maxTranslateX);
+        translateY = translateY.clamp(-maxTranslateY, maxTranslateY);
+        
         imgElement.style.transform = 'scale($scale) translate(${translateX}px, ${translateY}px)';
       }
       
@@ -42,6 +89,16 @@ Widget createWebImage(String src, VoidCallback? onTap, VoidCallback? onLongPress
         
         updateTransform();
         imgElement.style.cursor = scale > 1.0 ? 'grab' : 'zoom-in';
+      });
+      
+      // Get image and container dimensions when image loads
+      imgElement.onLoad.listen((event) {
+        imageWidth = imgElement.naturalWidth?.toDouble() ?? 0.0;
+        imageHeight = imgElement.naturalHeight?.toDouble() ?? 0.0;
+        
+        // Get container dimensions (approximation for fullscreen)
+        containerWidth = html.window.innerWidth?.toDouble() ?? 800.0;
+        containerHeight = html.window.innerHeight?.toDouble() ?? 600.0;
       });
       
       // Touch gesture zoom and pan
