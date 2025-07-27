@@ -152,7 +152,8 @@ class NoteListItem extends StatelessWidget {
               tag: tag,
               onTap: onTagTap != null ? () => onTagTap!(note, tag) : null,
             )).toList(),
-          ),
+          )
+        else const Text(' '), // a placeholder to make sure "View more" will show at the end of the row
         if (note.isLong)
           const Text('View more', style: TextStyle(color: Colors.blue)),
       ],
