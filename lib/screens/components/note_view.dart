@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../entities/note.dart';
 import '../../models/note_model.dart';
-import '../../dependency_injection.dart';
-import '../../services/notes_services.dart';
 import '../new_note/new_note.dart';
 import 'LinkedNotes.dart';
 import 'markdown_body_here.dart';
@@ -21,39 +19,8 @@ class NoteView extends StatefulWidget {
 }
 
 class NoteViewState extends State<NoteView> {
-  List<Note>? linkedNotes;
-  final NotesService _notesService = locator<NotesService>();
-  bool isLoading = false;
-  bool _initialized = false;
+  final GlobalKey<LinkedNotesState> _linkedNotesKey = GlobalKey<LinkedNotesState>();
 
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (!_initialized) {
-      _initialized = true;
-      _loadLinkedNotes();
-    }
-  }
-
-  Future<void> _loadLinkedNotes() async {
-    try {
-      final notes = await _notesService.getLinkedNotes(widget.note.id);
-      setState(() {
-        isLoading = false;
-        linkedNotes = notes.notes;
-      });
-    } catch (e) {
-      setState(() {
-        isLoading = false;
-        linkedNotes = []; // Set to empty list on error
-      });
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -87,14 +54,12 @@ class NoteViewState extends State<NoteView> {
                   ),
                 ),
 
-                // Linked notes section with loading state
-                if (isLoading)
-                  const SliverToBoxAdapter(
-                    child: Center(child: CircularProgressIndicator()),
-                  )
-                else if (linkedNotes != null && linkedNotes!.isNotEmpty)
-                  LinkedNotes(
-                      linkedNotes: linkedNotes!, parentNote: widget.note),
+                // Linked notes section
+                LinkedNotes(
+                  key: _linkedNotesKey,
+                  linkedNotes: const [],
+                  parentNote: widget.note,
+                ),
               ],
             ),
 
@@ -116,7 +81,7 @@ class NoteViewState extends State<NoteView> {
                       ),
                     );
                     if (newNoteSaved ?? false) {
-                      await _loadLinkedNotes();
+                      _linkedNotesKey.currentState?.refreshNotes();
                     }
                   },
                   child: const Icon(Icons.add),

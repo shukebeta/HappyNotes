@@ -20,10 +20,10 @@ class LinkedNotes extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _LinkedNotesState createState() => _LinkedNotesState();
+  LinkedNotesState createState() => LinkedNotesState();
 }
 
-class _LinkedNotesState extends State<LinkedNotes> {
+class LinkedNotesState extends State<LinkedNotes> {
   late List<Note> _linkedNotes;
   final NotesService _notesService = locator<NotesService>();
   bool _isLoading = false;
@@ -32,9 +32,10 @@ class _LinkedNotesState extends State<LinkedNotes> {
   void initState() {
     super.initState();
     _linkedNotes = List<Note>.from(widget.linkedNotes); // Create a copy of the list
+    refreshNotes(); // Auto-load linked notes when widget initializes
   }
 
-  Future<void> _refreshNotes() async {
+  Future<void> refreshNotes() async {
     if (_isLoading) return; // Prevent multiple refreshes at once
 
     setState(() {
@@ -93,7 +94,7 @@ class _LinkedNotesState extends State<LinkedNotes> {
                 builder: (context) => NoteDetail(
                   note: note,
                   enterEditing: widget.parentNote.userId == UserSession().id,
-                  onNoteSaved: _refreshNotes, // Pass the refresh callback
+                  onNoteSaved: refreshNotes, // Pass the refresh callback
                   fromDetailPage: false, // Not coming from detail page
                 ),
               ),
