@@ -12,7 +12,7 @@ import 'package:happy_notes/utils/util.dart';
 import 'package:happy_notes/screens/components/floating_pagination.dart';
 import 'package:happy_notes/screens/components/pagination_controls.dart';
 import 'package:happy_notes/screens/components/tappable_app_bar_title.dart';
-import 'package:happy_notes/screens/components/list-grouper.dart';
+import 'package:happy_notes/screens/components/list_grouper.dart';
 import 'package:happy_notes/entities/note.dart';
 
 class SearchResultsPage extends StatefulWidget {

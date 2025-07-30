@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import '../../entities/note.dart';
 import '../../models/note_model.dart';
 import '../new_note/new_note.dart';
-import 'LinkedNotes.dart';
+import 'linked_notes.dart';
 import 'markdown_body_here.dart';
 
 class NoteView extends StatefulWidget {

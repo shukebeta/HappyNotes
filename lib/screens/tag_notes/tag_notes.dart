@@ -12,7 +12,7 @@ import '../../dependency_injection.dart';
 import '../account/user_session.dart';
 import '../new_note/new_note.dart';
 import '../components/tappable_app_bar_title.dart';
-import '../components/list-grouper.dart';
+import '../components/list_grouper.dart';
 import '../../entities/note.dart';
 
 class TagNotes extends StatefulWidget {

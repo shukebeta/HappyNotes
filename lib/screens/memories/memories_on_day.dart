@@ -14,7 +14,7 @@ import '../components/controllers/tag_cloud_controller.dart';
 import '../components/tappable_app_bar_title.dart';
 import '../components/note_list/note-list.dart';
 import '../components/note_list/note-list-callbacks.dart';
-import '../components/list-grouper.dart';
+import '../components/list_grouper.dart';
 
 class MemoriesOnDay extends StatefulWidget {
   final DateTime date;

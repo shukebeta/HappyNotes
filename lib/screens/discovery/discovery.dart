@@ -6,7 +6,7 @@ import '../../entities/note.dart';
 import '../../utils/navigation_helper.dart';
 import '../../utils/util.dart';
 import '../components/floating_pagination.dart';
-import '../components/list-grouper.dart';
+import '../components/list_grouper.dart';
 import '../components/note_list/note-list-callbacks.dart';
 import '../components/pagination_controls.dart';
 import '../../dependency_injection.dart';
