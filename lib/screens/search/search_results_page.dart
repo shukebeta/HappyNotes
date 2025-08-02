@@ -87,6 +87,7 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
                 ),
               );
               if (savedSuccessfully ?? false) {
+                if (!mounted) return;
                 Util.showInfo(ScaffoldMessenger.of(context), 'Note saved successfully.');
               }
             },

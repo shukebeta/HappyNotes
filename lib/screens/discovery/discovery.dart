@@ -113,6 +113,7 @@ class DiscoveryState extends State<Discovery> {
           if (isFirstPage) {
             await refreshPage();
           } else {
+            if (!mounted) return;
             Util.showInfo(ScaffoldMessenger.of(context), 'Note saved successfully.'); // Replaced showSnackBar
           }
         }

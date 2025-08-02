@@ -97,6 +97,7 @@ class TrashBinPageState extends State<TrashBinPage> {
                 onTap: (note) async {
                   try {
                     Note fullNote = await _controller.getNote(note.id);
+                    if (!mounted) return;
                     final bool? needRefresh = await Navigator.push(
                       context,
                       MaterialPageRoute(

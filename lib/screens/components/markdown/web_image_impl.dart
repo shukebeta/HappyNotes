@@ -94,8 +94,8 @@ Widget createWebImage(String src, VoidCallback? onTap, VoidCallback? onLongPress
       
       // Get image and container dimensions when image loads
       imgElement.onLoad.listen((event) {
-        imageWidth = imgElement.naturalWidth?.toDouble() ?? 0.0;
-        imageHeight = imgElement.naturalHeight?.toDouble() ?? 0.0;
+        imageWidth = imgElement.naturalWidth.toDouble();
+        imageHeight = imgElement.naturalHeight.toDouble();
         
         // Get container dimensions (approximation for fullscreen)
         containerWidth = html.window.innerWidth?.toDouble() ?? 800.0;
@@ -160,8 +160,8 @@ Widget createWebImage(String src, VoidCallback? onTap, VoidCallback? onLongPress
           var initialTouch = activeTouches.values.first;
           var currentTouch = event.touches!.first;
           
-          double deltaX = (currentTouch.page?.x ?? 0).toDouble() - (initialTouch.page?.x ?? 0).toDouble();
-          double deltaY = (currentTouch.page?.y ?? 0).toDouble() - (initialTouch.page?.y ?? 0).toDouble();
+          double deltaX = currentTouch.page.x.toDouble() - initialTouch.page.x.toDouble();
+          double deltaY = currentTouch.page.y.toDouble() - initialTouch.page.y.toDouble();
           
           translateX = lastTranslateX + deltaX;
           translateY = lastTranslateY + deltaY;
@@ -269,8 +269,8 @@ Widget createWebImage(String src, VoidCallback? onTap, VoidCallback? onLongPress
 
 // Helper function to calculate distance between two touch points
 double _calculateDistance(html.Touch touch1, html.Touch touch2) {
-  double dx = (touch1.page?.x ?? 0).toDouble() - (touch2.page?.x ?? 0).toDouble();
-  double dy = (touch1.page?.y ?? 0).toDouble() - (touch2.page?.y ?? 0).toDouble();
+  double dx = touch1.page.x.toDouble() - touch2.page.x.toDouble();
+  double dy = touch1.page.y.toDouble() - touch2.page.y.toDouble();
   return math.sqrt(dx * dx + dy * dy);
 }
 

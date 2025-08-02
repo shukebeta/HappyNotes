@@ -14,11 +14,11 @@ import 'note_detail_controller.dart';
 class NoteDetail extends StatefulWidget {
   final Note? note;
   final int? noteId;
-  bool? enterEditing;
+  final bool? enterEditing;
   final VoidCallback? onNoteSaved; // Callback when note is saved
   final bool fromDetailPage; // Flag to indicate if coming from detail page
 
-  NoteDetail({
+  const NoteDetail({
     super.key,
     this.note,
     this.noteId,

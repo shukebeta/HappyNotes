@@ -32,6 +32,7 @@ class DiscoveryController {
     final scaffoldContext = ScaffoldMessenger.of(context);
     try {
       await _notesService.delete(noteId);
+      if (!context.mounted) return;
       await loadNotes(context, 1); // Reload notes after deletion
       Util.showInfo(scaffoldContext, 'Note successfully deleted.');
     } catch (error) {

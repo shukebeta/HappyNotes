@@ -47,6 +47,8 @@ class NoteEditController {
       return true;
     }
 
+    if (!context.mounted) return false;
+
     final result = await showDialog<bool>(
       context: context,
       barrierDismissible: false,

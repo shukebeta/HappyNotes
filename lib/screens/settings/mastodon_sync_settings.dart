@@ -120,6 +120,7 @@ class MastodonSyncSettingsState extends State<MastodonSyncSettings> {
                                 await _settingsController.disableMastodonSetting(setting);
                               }
                             } catch (e) {
+                              if (!mounted) return;
                               Util.showError(
                                 ScaffoldMessenger.of(context),
                                 e.toString(),
