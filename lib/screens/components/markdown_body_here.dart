@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_markdown_selectionarea/flutter_markdown.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import 'markdown/code_element_builder.dart';

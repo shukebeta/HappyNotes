@@ -21,7 +21,7 @@ class ImageBuilder extends MarkdownElementBuilder {
   @override
   Widget visitElementAfter(md.Element element, TextStyle? preferredStyle) {
     final src = element.attributes['src'] ?? '';
-    
+
     return createWebImage(
       src,
       () => _showFullScreenImage(src),
@@ -39,7 +39,7 @@ class ImageBuilder extends MarkdownElementBuilder {
 
   void _showMobileFullScreenImage(String url) {
     final PhotoViewController controller = PhotoViewController();
-    
+
     showDialog(
       context: parentContext,
       barrierDismissible: true,
@@ -151,13 +151,13 @@ class ImageBuilder extends MarkdownElementBuilder {
     if (AppConfig.isIOSWeb) {
       return; // Let the native context menu handle it
     }
-    
+
     showDialog(
       context: parentContext,
       builder: (ctx) => AlertDialog(
-        title: Text(kIsWeb ? 'Open Image' : 'Save Image'),
-        content: Text(kIsWeb 
-          ? 'Open this image in browser?' 
+        title: const Text(kIsWeb ? 'Open Image' : 'Save Image'),
+        content: const Text(kIsWeb
+          ? 'Open this image in browser?'
           : 'Save this image to your device gallery?'),
         actions: [
           TextButton(
@@ -169,7 +169,7 @@ class ImageBuilder extends MarkdownElementBuilder {
               Navigator.pop(ctx);
               await _saveImage(url);
             },
-            child: Text(kIsWeb ? 'Open' : 'Save'),
+            child: const Text(kIsWeb ? 'Open' : 'Save'),
           ),
         ],
       ),
@@ -181,8 +181,8 @@ class ImageBuilder extends MarkdownElementBuilder {
     final result = await imageService.saveImageToGallery(url);
 
     if (parentContext.mounted) {
-      final message = result 
-        ? (kIsWeb ? 'Download triggered!' : 'Image saved!') 
+      final message = result
+        ? (kIsWeb ? 'Download triggered!' : 'Image saved!')
         : (kIsWeb ? 'Failed to download image' : 'Failed to save image');
       Util.showInfo(ScaffoldMessenger.of(parentContext), message);
     }

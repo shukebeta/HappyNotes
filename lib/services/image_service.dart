@@ -1,4 +1,3 @@
-import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:image_picker/image_picker.dart';
@@ -30,7 +29,7 @@ class ImageService {
           options: Options(responseType: ResponseType.bytes),
         );
         final imageBytes = Uint8List.fromList(response.data);
-        
+
         if (!await Gal.hasAccess()) {
           await Gal.requestAccess();
         }

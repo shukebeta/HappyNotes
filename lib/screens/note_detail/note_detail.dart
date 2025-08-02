@@ -238,8 +238,9 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
                         padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 16.0),
                         child: Consumer<NoteModel>(
                           builder: (context, noteModel, child) {
-                            if (note == null)
+                            if (note == null) {
                               return const Text("Note doesn't exist, or, you don't have permission to read it.");
+                            }
                             return Column(
                               children: [
                                 if (note?.deletedAt != null)
