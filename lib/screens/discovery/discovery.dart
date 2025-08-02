@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:happy_notes/app_config.dart';
-import 'package:happy_notes/screens/components/note_list/note-list.dart';
+import 'package:happy_notes/screens/components/note_list/note_list.dart';
 import 'package:happy_notes/screens/note_detail/note_detail.dart';
 import '../../entities/note.dart';
 import '../../utils/navigation_helper.dart';
 import '../../utils/util.dart';
 import '../components/floating_pagination.dart';
 import '../components/list_grouper.dart';
-import '../components/note_list/note-list-callbacks.dart';
+import '../components/note_list/note_list_callbacks.dart';
 import '../components/pagination_controls.dart';
 import '../../dependency_injection.dart';
 import '../account/user_session.dart';

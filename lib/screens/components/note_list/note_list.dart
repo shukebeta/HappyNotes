@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
 import '../../../entities/note.dart';
-import '../date-header.dart';
-import '../grouped-list-view.dart';
-import 'note-list-item.dart';
-import 'note-list-callbacks.dart';
+import '../date_header.dart';
+import '../grouped_list_view.dart';
+import 'note_list_item.dart';
+import 'note_list_callbacks.dart';
 
 class NoteList extends StatelessWidget {
   final Map<String, List<Note>> groupedNotes;

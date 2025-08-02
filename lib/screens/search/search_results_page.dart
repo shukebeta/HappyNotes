@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:happy_notes/screens/components/note_list/note-list.dart';
-import 'package:happy_notes/screens/components/note_list/note-list-callbacks.dart';
+import 'package:happy_notes/screens/components/note_list/note_list.dart';
+import 'package:happy_notes/screens/components/note_list/note_list_callbacks.dart';
 import 'package:happy_notes/screens/search/search_results_controller.dart';
 import 'package:happy_notes/screens/components/controllers/tag_cloud_controller.dart';
 import 'package:happy_notes/dependency_injection.dart';

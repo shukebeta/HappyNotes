@@ -4,7 +4,7 @@ import 'package:happy_notes/screens/components/tag_widget.dart';
 
 import '../../../entities/note.dart';
 import '../markdown_body_here.dart';
-import 'note-list.dart';
+import 'note_list.dart';
 
 class NoteListItem extends StatelessWidget {
   final Note note;

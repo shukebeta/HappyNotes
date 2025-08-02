@@ -12,8 +12,8 @@ import '../note_detail/note_detail.dart';
 import 'memories_on_day_controller.dart';
 import '../components/controllers/tag_cloud_controller.dart';
 import '../components/tappable_app_bar_title.dart';
-import '../components/note_list/note-list.dart';
-import '../components/note_list/note-list-callbacks.dart';
+import '../components/note_list/note_list.dart';
+import '../components/note_list/note_list_callbacks.dart';
 import '../components/list_grouper.dart';
 
 class MemoriesOnDay extends StatefulWidget {

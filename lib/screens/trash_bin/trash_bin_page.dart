@@ -4,8 +4,8 @@ import 'package:happy_notes/screens/note_detail/note_detail.dart';
 import 'package:happy_notes/screens/trash_bin/trash_bin_controller.dart';
 import 'package:happy_notes/services/dialog_services.dart';
 import '../components/pagination_controls.dart';
-import '../components/note_list/note-list.dart';
-import '../components/note_list/note-list-item.dart';
+import '../components/note_list/note_list.dart';
+import '../components/note_list/note_list_item.dart';
 import '../account/user_session.dart';
 import '../components/floating_pagination.dart';
 
