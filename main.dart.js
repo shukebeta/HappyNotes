@@ -27772,19 +27772,18 @@ r=b.pageY
 r.toString
 B.d.ab(r)
 q=o-s
-o=a.pageX
-o.toString
-B.d.ab(o)
-o=a.pageY
-o.toString
-o=B.d.ab(o)
-s=b.pageX
+s=a.pageX
 s.toString
 B.d.ab(s)
-s=b.pageY
+s=a.pageY
 s.toString
 s=B.d.ab(s)
-p=o-s
+o=b.pageX
+o.toString
+B.d.ab(o)
+o=b.pageY
+o.toString
+p=s-B.d.ab(o)
 return Math.sqrt(q*q+p*p)},
 aI2:function aI2(a){this.a=a},
 aI4:function aI4(a,b){this.a=a
@@ -28179,7 +28178,8 @@ aEf:function aEf(){},
 aEd:function aEd(a){this.a=a},
 aEe:function aEe(a,b){this.a=a
 this.b=b},
-aEc:function aEc(a){this.a=a},
+aEc:function aEc(a,b){this.a=a
+this.b=b},
 aEb:function aEb(){},
 aE7:function aE7(){},
 aE4:function aE4(a){this.a=a},
@@ -97112,6 +97112,8 @@ while(true)switch(s){case 0:s=3
 return A.l(p.z7(),$async$ur)
 case 3:if(!c){q=!0
 s=1
+break}if(a.e==null){q=!1
+s=1
 break}s=4
 return A.l(A.M3(!1,new A.amo(),a,t.y),$async$ur)
 case 4:o=c
@@ -97594,21 +97596,19 @@ s=s.b>1?"grab":"zoom-in"
 r.cursor=s},
 $S:591}
 A.aHY.prototype={
-$1(a){var s,r,q,p,o=this.b,n=o.naturalWidth
-n.toString
-s=n
-n=this.a
-n.f=s
-o=o.naturalHeight
+$1(a){var s,r,q,p=this.b,o=p.naturalWidth
 o.toString
-r=o
-n.e=r
-o=window.innerWidth
-q=o==null?null:o
-n.d=q==null?800:q
-o=window.innerHeight
-p=o==null?null:o
-n.c=p==null?600:p},
+s=this.a
+s.f=o
+p=p.naturalHeight
+p.toString
+s.e=p
+p=window.innerWidth
+r=p==null?null:p
+s.d=r==null?800:r
+p=window.innerHeight
+q=p==null?null:p
+s.c=q==null?600:q},
 $S:86}
 A.aHZ.prototype={
 $1(a){var s,r,q,p,o,n
@@ -98309,26 +98309,27 @@ case 1:return A.n(q,r)}})
 return A.o($async$$0,r)},
 $S:5}
 A.a9F.prototype={
-$0(){var s=0,r=A.p(t.H),q=this,p,o,n
+$0(){var s=0,r=A.p(t.H),q,p=this,o,n,m
 var $async$$0=A.q(function(a,b){if(a===1)return A.m(b,r)
-while(true)switch(s){case 0:p=q.b
-o=A.bU(new A.a9E(),null,t.y)
-s=2
-return A.l(A.b4(p,!1).cc(o),$async$$0)
-case 2:n=b
-s=n===!0?3:4
+while(true)switch(s){case 0:o=p.b
+n=A.bU(new A.a9E(),null,t.y)
+s=3
+return A.l(A.b4(o,!1).cc(n),$async$$0)
+case 3:m=b
+s=m===!0?4:5
 break
-case 3:o=q.a
-s=o.f===1?5:7
+case 4:n=p.a
+s=n.f===1?6:8
 break
-case 5:s=8
-return A.l(o.f6(),$async$$0)
-case 8:s=6
+case 6:s=9
+return A.l(n.f6(),$async$$0)
+case 9:s=7
 break
-case 7:p=p.a_(t.q)
-p.toString
-p.f.c7(A.bV(null,null,null,B.a3,null,B.j,null,A.aq("Note saved successfully.",null,null,null,null,null,null),null,B.M,null,null,null,null,null,null,null,null,null))
-case 6:case 4:return A.n(null,r)}})
+case 8:if(n.c==null){s=1
+break}o=o.a_(t.q)
+o.toString
+o.f.c7(A.bV(null,null,null,B.a3,null,B.j,null,A.aq("Note saved successfully.",null,null,null,null,null,null),null,B.M,null,null,null,null,null,null,null,null,null))
+case 7:case 5:case 1:return A.n(q,r)}})
 return A.o($async$$0,r)},
 $S:5}
 A.a9E.prototype={
@@ -98436,31 +98437,32 @@ case 5:return A.n(null,r)
 case 1:return A.m(p,r)}})
 return A.o($async$lp,r)},
 fe(a,b){return this.au7(a,b)},
-au7(a,b){var s=0,r=A.p(t.H),q=1,p,o=this,n,m,l,k,j
-var $async$fe=A.q(function(c,d){if(c===1){p=d
-s=q}while(true)switch(s){case 0:k=a.a_(t.q)
-k.toString
-n=k.f
-q=3
+au7(a,b){var s=0,r=A.p(t.H),q,p=2,o,n=this,m,l,k,j,i
+var $async$fe=A.q(function(c,d){if(c===1){o=d
+s=p}while(true)switch(s){case 0:j=a.a_(t.q)
+j.toString
+m=j.f
+p=4
+s=7
+return A.l(n.a.dk(0,b),$async$fe)
+case 7:if(a.e==null){s=1
+break}s=8
+return A.l(n.lp(a,1),$async$fe)
+case 8:m.c7(A.bV(null,null,null,B.a3,null,B.j,null,A.aq("Note successfully deleted.",null,null,null,null,null,null),null,B.M,null,null,null,null,null,null,null,null,null))
+p=2
 s=6
-return A.l(o.a.dk(0,b),$async$fe)
-case 6:s=7
-return A.l(o.lp(a,1),$async$fe)
-case 7:n.c7(A.bV(null,null,null,B.a3,null,B.j,null,A.aq("Note successfully deleted.",null,null,null,null,null,null),null,B.M,null,null,null,null,null,null,null,null,null))
-q=1
-s=5
 break
-case 3:q=2
-j=p
-m=A.a2(j)
-k=J.bB(m)
-n.c7(A.bV(null,null,null,B.a4,null,B.j,null,A.aq(k,null,null,null,null,null,null),null,B.M,null,null,null,null,null,null,null,null,null))
-s=5
+case 4:p=3
+i=o
+l=A.a2(i)
+j=J.bB(l)
+m.c7(A.bV(null,null,null,B.a4,null,B.j,null,A.aq(j,null,null,null,null,null,null),null,B.M,null,null,null,null,null,null,null,null,null))
+s=6
 break
-case 2:s=1
+case 3:s=2
 break
-case 5:return A.n(null,r)
-case 1:return A.m(p,r)}})
+case 6:case 1:return A.n(q,r)
+case 2:return A.m(o,r)}})
 return A.o($async$fe,r)}}
 A.Cs.prototype={
 a0(){return new A.vD()}}
@@ -98556,26 +98558,27 @@ case 1:return A.n(q,r)}})
 return A.o($async$$0,r)},
 $S:5}
 A.aen.prototype={
-$0(){var s=0,r=A.p(t.H),q=this,p,o,n
+$0(){var s=0,r=A.p(t.H),q,p=this,o,n,m
 var $async$$0=A.q(function(a,b){if(a===1)return A.m(b,r)
-while(true)switch(s){case 0:p=q.b
-o=A.bU(new A.aem(),null,t.y)
-s=2
-return A.l(A.b4(p,!1).cc(o),$async$$0)
-case 2:n=b
-s=n===!0?3:4
+while(true)switch(s){case 0:o=p.b
+n=A.bU(new A.aem(),null,t.y)
+s=3
+return A.l(A.b4(o,!1).cc(n),$async$$0)
+case 3:m=b
+s=m===!0?4:5
 break
-case 3:o=q.a
-s=o.f===1?5:7
+case 4:n=p.a
+s=n.f===1?6:8
 break
-case 5:s=8
-return A.l(o.f6(),$async$$0)
-case 8:s=6
+case 6:s=9
+return A.l(n.f6(),$async$$0)
+case 9:s=7
 break
-case 7:p=p.a_(t.q)
-p.toString
-p.f.c7(A.bV(null,null,null,B.a3,null,B.j,null,A.aq("Note saved successfully.",null,null,null,null,null,null),null,B.M,null,null,null,null,null,null,null,null,null))
-case 6:case 4:return A.n(null,r)}})
+case 8:if(n.c==null){s=1
+break}o=o.a_(t.q)
+o.toString
+o.f.c7(A.bV(null,null,null,B.a3,null,B.j,null,A.aq("Note saved successfully.",null,null,null,null,null,null),null,B.M,null,null,null,null,null,null,null,null,null))
+case 7:case 5:case 1:return A.n(q,r)}})
 return A.o($async$$0,r)},
 $S:5}
 A.aem.prototype={
@@ -99700,7 +99703,7 @@ break
 case 1:return A.n(q,r)}})
 return A.o($async$c1,r)},
 F(a){var s,r,q=this,p=null,o=q.a.c,n=t.p
-o=A.f9(A.b([A.h2(p,p,A.aw0(),p,new A.aEc(a),p,p,p,"New Public Note")],n),p,new A.n1('Search: "'+o+'"',new A.aEd(a),new A.aEe(q,a),p))
+o=A.f9(A.b([A.h2(p,p,A.aw0(),p,new A.aEc(q,a),p,p,p,"New Public Note")],n),p,new A.n1('Search: "'+o+'"',new A.aEd(a),new A.aEe(q,a),p))
 n=A.b([q.aoe()],n)
 s=q.d
 s===$&&A.a()
@@ -99749,16 +99752,17 @@ case 1:return A.n(q,r)}})
 return A.o($async$$0,r)},
 $S:5}
 A.aEc.prototype={
-$0(){var s=0,r=A.p(t.H),q=this,p,o,n
+$0(){var s=0,r=A.p(t.H),q,p=this,o,n,m
 var $async$$0=A.q(function(a,b){if(a===1)return A.m(b,r)
-while(true)switch(s){case 0:p=q.a
-o=A.bU(new A.aEb(),null,t.y)
-s=2
-return A.l(A.b4(p,!1).cc(o),$async$$0)
-case 2:n=b
-if(n===!0){p=p.a_(t.q)
-p.toString
-p.f.c7(A.bV(null,null,null,B.a3,null,B.j,null,A.aq("Note saved successfully.",null,null,null,null,null,null),null,B.M,null,null,null,null,null,null,null,null,null))}return A.n(null,r)}})
+while(true)switch(s){case 0:o=p.b
+n=A.bU(new A.aEb(),null,t.y)
+s=3
+return A.l(A.b4(o,!1).cc(n),$async$$0)
+case 3:m=b
+if(m===!0){if(p.a.c==null){s=1
+break}o=o.a_(t.q)
+o.toString
+o.f.c7(A.bV(null,null,null,B.a3,null,B.j,null,A.aq("Note saved successfully.",null,null,null,null,null,null),null,B.M,null,null,null,null,null,null,null,null,null))}case 1:return A.n(q,r)}})
 return A.o($async$$0,r)},
 $S:5}
 A.aEb.prototype={
@@ -100098,34 +100102,35 @@ return A.n(null,r)}})
 return A.o($async$$0,r)},
 $S:5}
 A.ahk.prototype={
-$0(){var s=0,r=A.p(t.H),q=1,p,o=this,n,m,l,k
-var $async$$0=A.q(function(a,b){if(a===1){p=b
-s=q}while(true)switch(s){case 0:q=3
-m=o.b
-s=m.go2()?6:7
+$0(){var s=0,r=A.p(t.H),q,p=2,o,n=this,m,l,k,j
+var $async$$0=A.q(function(a,b){if(a===1){o=b
+s=p}while(true)switch(s){case 0:p=4
+l=n.b
+s=l.go2()?7:8
 break
-case 6:s=8
-return A.l(o.a.d.BM(m),$async$$0)
-case 8:case 7:s=m.x==="Normal"?9:10
+case 7:s=9
+return A.l(n.a.d.BM(l),$async$$0)
+case 9:case 8:s=l.x==="Normal"?10:11
 break
-case 9:s=11
-return A.l(o.a.d.CP(m),$async$$0)
-case 11:case 10:q=1
-s=5
+case 10:s=12
+return A.l(n.a.d.CP(l),$async$$0)
+case 12:case 11:p=2
+s=6
 break
-case 3:q=2
-k=p
-n=A.a2(k)
-m=o.c.a_(t.q)
-m.toString
-m.f.c7(A.bV(null,null,null,B.a4,null,B.j,null,A.aq(J.bB(n),null,null,null,null,null,null),null,B.M,null,null,null,null,null,null,null,null,null))
-s=5
+case 4:p=3
+j=o
+m=A.a2(j)
+if(n.a.c==null){s=1
+break}l=n.c.a_(t.q)
+l.toString
+l.f.c7(A.bV(null,null,null,B.a4,null,B.j,null,A.aq(J.bB(m),null,null,null,null,null,null),null,B.M,null,null,null,null,null,null,null,null,null))
+s=6
 break
-case 2:s=1
+case 3:s=2
 break
-case 5:o.a.nl()
-return A.n(null,r)
-case 1:return A.m(p,r)}})
+case 6:n.a.nl()
+case 1:return A.n(q,r)
+case 2:return A.m(o,r)}})
 return A.o($async$$0,r)},
 $S:5}
 A.ahl.prototype={
@@ -101160,37 +101165,37 @@ return new A.kX(a,new A.kT(new A.avp(r),s,s,new A.avq(r),t.jd),B.Lq,s,s)},
 $S:99}
 A.avp.prototype={
 $1(a){return this.a3X(a)},
-a3X(a){var s=0,r=A.p(t.H),q=1,p,o=this,n,m,l,k,j,i,h,g
-var $async$$1=A.q(function(b,c){if(b===1){p=c
-s=q}while(true)switch(s){case 0:q=3
-l=o.a
-k=l.d
-s=6
-return A.l(k.yJ(a.a),$async$$1)
-case 6:n=c
-j=l.c
-j.toString
-i=A.bU(new A.avm(n),null,t.y)
+a3X(a){var s=0,r=A.p(t.H),q,p=2,o,n=this,m,l,k,j,i,h,g,f
+var $async$$1=A.q(function(b,c){if(b===1){o=c
+s=p}while(true)switch(s){case 0:p=4
+k=n.a
+j=k.d
 s=7
-return A.l(A.b4(j,!1).cc(i),$async$$1)
+return A.l(j.yJ(a.a),$async$$1)
 case 7:m=c
-j=m
-s=(j==null?!1:j)?8:9
+i=k.c
+if(i==null){s=1
+break}h=A.bU(new A.avm(m),null,t.y)
+s=8
+return A.l(A.b4(i,!1).cc(h),$async$$1)
+case 8:l=c
+i=l
+s=(i==null?!1:i)?9:10
 break
-case 8:s=10
-return A.l(k.mh(),$async$$1)
-case 10:l.N(new A.avn())
-case 9:q=1
-s=5
+case 9:s=11
+return A.l(j.mh(),$async$$1)
+case 11:k.N(new A.avn())
+case 10:p=2
+s=6
 break
-case 3:q=2
-g=p
-s=5
+case 4:p=3
+f=o
+s=6
 break
-case 2:s=1
+case 3:s=2
 break
-case 5:return A.n(null,r)
-case 1:return A.m(p,r)}})
+case 6:case 1:return A.n(q,r)
+case 2:return A.m(o,r)}})
 return A.o($async$$1,r)},
 $S:16}
 A.avm.prototype={
