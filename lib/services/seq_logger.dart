@@ -71,6 +71,7 @@ class SeqLogger {
         '@m': record.message,
         'Logger': record.loggerName,
         'App': 'HappyNotes',
+        'Version': AppConfig.version,
         'Platform': defaultTargetPlatform.name,
         'BuildMode': kDebugMode ? 'Debug' : (kProfileMode ? 'Profile' : 'Release'),
         if (record.error != null) 'Exception': record.error.toString(),
