@@ -67,9 +67,10 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
           onTap: () =>
               NavigationHelper.showTagInputDialog(context, replacePage: true),
           onLongPress: () async {
+            final navigator = Navigator.of(context);
             var tagData = await _tagCloudController.loadTagCloud(context);
             if (!mounted) return;
-            NavigationHelper.showTagDiagram(context, tagData,
+            NavigationHelper.showTagDiagram(navigator.context, tagData,
                 myNotesOnly: true);
           },
         ),
@@ -78,6 +79,7 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
             icon: Util.writeNoteIcon(),
             tooltip: 'New Public Note',
             onPressed: () async {
+              final scaffoldMessenger = ScaffoldMessenger.of(context);
               final bool? savedSuccessfully = await Navigator.push<bool>(
                 context,
                 MaterialPageRoute(
@@ -88,7 +90,7 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
               );
               if (savedSuccessfully ?? false) {
                 if (!mounted) return;
-                Util.showInfo(ScaffoldMessenger.of(context), 'Note saved successfully.');
+                Util.showInfo(scaffoldMessenger, 'Note saved successfully.');
               }
             },
           ),

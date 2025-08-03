@@ -112,6 +112,7 @@ class MastodonSyncSettingsState extends State<MastodonSyncSettings> {
                       if (setting.isActive || setting.isDisabled)
                         TextButton.icon(
                           onPressed: () async {
+                            final scaffoldMessenger = ScaffoldMessenger.of(context);
                             try {
                               if (setting.isDisabled) {
                                 await _settingsController.activateMastodonSetting(setting);
@@ -121,10 +122,7 @@ class MastodonSyncSettingsState extends State<MastodonSyncSettings> {
                               }
                             } catch (e) {
                               if (!mounted) return;
-                              Util.showError(
-                                ScaffoldMessenger.of(context),
-                                e.toString(),
-                              );
+                              Util.showError(scaffoldMessenger, e.toString());
                             }
                             _loadSyncSettings();
                           },

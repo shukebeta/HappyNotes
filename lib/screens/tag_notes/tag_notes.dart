@@ -77,10 +77,11 @@ class TagNotesState extends State<TagNotes> {
           onTap: () =>
               NavigationHelper.showTagInputDialog(context, replacePage: true),
           onLongPress: () async {
+            final navigator = Navigator.of(context);
             var tagData = await _tagCloudController.loadTagCloud(context);
             // Show tag diagram on long press
             if (!mounted) return;
-            NavigationHelper.showTagDiagram(context, tagData,
+            NavigationHelper.showTagDiagram(navigator.context, tagData,
                 myNotesOnly: widget.myNotesOnly);
           },
         ),

@@ -88,9 +88,10 @@ class MemoriesOnDayState extends State<MemoriesOnDay> with RouteAware {
           title: DateFormat('EEE, MMM d, yyyy').format(widget.date),
           onTap: () => NavigationHelper.showTagInputDialog(context),
           onLongPress: () async {
+            final navigator = Navigator.of(context);
             var tagData = await _tagCloudController.loadTagCloud(context);
             if (!mounted) return;
-            NavigationHelper.showTagDiagram(context, tagData);
+            NavigationHelper.showTagDiagram(navigator.context, tagData);
           },
         ),
         actions: [

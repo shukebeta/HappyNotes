@@ -246,7 +246,7 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
                                 if (note?.deletedAt != null)
                                   Container(
                                     width: double.infinity,
-                                    color: Colors.red.withOpacity(0.2),
+                                    color: Colors.red.withValues(alpha: 0.2),
                                     padding: const EdgeInsets.all(8.0),
                                     child: const Text(
                                       'You are viewing a deleted note',

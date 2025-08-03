@@ -57,9 +57,10 @@ class MemoriesState extends State<Memories> with RouteAware {
           title: 'My Memories',
           onTap: () => NavigationHelper.showTagInputDialog(context),
           onLongPress: () async {
+            final navigator = Navigator.of(context);
             var tagData = await _tagCloudController.loadTagCloud(context);
             if (!mounted) return;
-            NavigationHelper.showTagDiagram(context, tagData);
+            NavigationHelper.showTagDiagram(navigator.context, tagData);
           },
         ),
         actions: [_buildNewNoteButton(context)],
