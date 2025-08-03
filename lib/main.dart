@@ -5,6 +5,7 @@ import 'package:happy_notes/screens/account/user_session.dart';
 import 'package:happy_notes/screens/initial_page.dart';
 import 'package:happy_notes/screens/main_menu.dart';
 import 'package:happy_notes/screens/navigation/bottom_navigation.dart';
+import 'package:happy_notes/services/seq_logger.dart';
 import 'package:quick_actions/quick_actions.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'dart:io' show Platform;
@@ -20,6 +21,9 @@ void main() async {
 
   // Load environment variables
   await dotenv.load(fileName: '.env');
+
+  // Initialize logging
+  SeqLogger.initialize();
 
   // Run the app
   runApp(

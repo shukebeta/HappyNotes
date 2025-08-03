@@ -48,7 +48,6 @@ class SearchResultsController extends ChangeNotifier {
       _totalCount = notesResult.totalNotes;
       _currentPage = pageNumber; // Store the fetched page number
     } catch (e) {
-      print('Error fetching search results: $e'); // Log the error
       _error = 'Failed to fetch search results: $e';
       _results = []; // Clear results on error
     } finally {

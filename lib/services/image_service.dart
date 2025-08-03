@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart'; // For kIsWeb
 import 'package:gal/gal.dart';
 import '../app_config.dart';
 import '../utils/util.dart';
+import 'seq_logger.dart';
 import '../apis/file_uploader_api.dart';
 import '../dependency_injection.dart';
 
@@ -37,7 +38,7 @@ class ImageService {
         return true;
       }
     } catch (e) {
-      print('Error saving image: $e');
+      SeqLogger.severe('Failed to save image to gallery', e);
       return false;
     }
   }
@@ -92,7 +93,7 @@ class ImageService {
         return;
       }
     } catch (e) {
-        print(e.toString());
+        SeqLogger.fine('Clipboard text access failed (expected fallback)', e);
     }
 
     // If no text found, try image
@@ -105,13 +106,13 @@ class ImageService {
           await uploadImage(imageFile, onSuccess, onError);
           return;
         } else {
-          print('Debug: Image compression failed or returned null');
+          SeqLogger.warning('Image compression failed or returned null');
         }
       } else {
-        print('Debug: Clipboard image is null');
+        SeqLogger.info('Clipboard image is null (no image in clipboard)');
       }
     } catch (e) {
-      print('Debug: Image clipboard access error: $e');
+      SeqLogger.severe('Image clipboard access error', e);
       if (e.toString().contains('JSObject') || e.toString().contains('TypeError')) {
         onError('Clipboard access failed. This might be due to browser restrictions or permissions. Please ensure clipboard access is enabled in your browser settings.');
         return;

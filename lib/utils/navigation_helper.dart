@@ -41,7 +41,6 @@ class NavigationHelper {
     if (inputText.isEmpty) return; // Don't proceed if text is empty
 
     if (action == 'search') {
-      print('Search action triggered for: $inputText');
       if (replacePage) {
         navigator.pushReplacement(
           MaterialPageRoute(

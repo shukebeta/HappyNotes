@@ -5,6 +5,7 @@ import 'package:happy_notes/services/mastodon_user_account_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../app_config.dart';
 import 'mastodon_application_service.dart';
+import 'seq_logger.dart';
 
 class MastodonService {
   final MastodonApplicationService _mastodonApplicationService;
@@ -55,7 +56,7 @@ class MastodonService {
         userList.firstWhere((element) => element.instanceUrl == instanceUrl);
         return userList;
       } catch (e) {
-        print("Waiting for authorization...");
+        SeqLogger.info("Waiting for Mastodon authorization completion");
       }
       await Future.delayed(const Duration(seconds: 2));
     }

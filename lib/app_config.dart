@@ -19,6 +19,10 @@ class AppConfig {
     return dotenv.env['UPLOADER_BASE_URL'] ?? 'https://staging-happynotes-img-uploader.dev.shukebeta.com';
   }
 
+  static String get seqServerUrl {
+    return dotenv.env['SEQ_SERVER_URL'] ?? 'http://seq.shukebeta.eu.org:5341';
+  }
+
   /// Returns the maximum dimension (width or height) for image processing.
   ///
   /// This value is used to determine the size limit for the longer side of an image.

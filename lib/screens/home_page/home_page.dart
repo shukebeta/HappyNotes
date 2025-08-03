@@ -76,9 +76,10 @@ class HomePageState extends State<HomePage> {
           title: 'My Notes',
           onTap: () => NavigationHelper.showTagInputDialog(context),
           onLongPress: () async {
+            final navigator = Navigator.of(context);
             var tagData = await _tagCloudController.loadTagCloud(context);
             if (!mounted) return;
-            NavigationHelper.showTagDiagram(context, tagData);
+            NavigationHelper.showTagDiagram(navigator.context, tagData);
           },
         ),
         actions: [
@@ -105,6 +106,7 @@ class HomePageState extends State<HomePage> {
       tooltip: AppConfig.privateNoteOnlyIsEnabled ? 'New Private Note' : 'New Public Note',
       onPressed: () async {
         // Await the result
+        final scaffoldMessenger = ScaffoldMessenger.of(context);
         final bool? savedSuccessfully = await Navigator.push<bool>(
           context,
           MaterialPageRoute(
@@ -113,13 +115,13 @@ class HomePageState extends State<HomePage> {
             ),
           ),
         );
+        if (!mounted) return;
         if (savedSuccessfully ?? false) {
           // Only refresh if on the first page, otherwise let the snackbar handle it (existing logic)
           if (isFirstPage) {
             await refreshPage();
           } else {
-            if (!mounted) return;
-            Util.showInfo(ScaffoldMessenger.of(context), 'Note saved successfully.'); // Replaced showSnackBar
+            Util.showInfo(scaffoldMessenger, 'Note saved successfully.'); // Replaced showSnackBar
           }
         }
       },

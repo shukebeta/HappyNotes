@@ -3,6 +3,7 @@ import 'dart:async';
 import '../../dependency_injection.dart';
 import '../../services/note_tag_service.dart';
 import '../../models/note_model.dart';
+import '../../utils/util.dart';
 import './tag_cloud.dart';
 
 class TagListOverlay extends StatefulWidget {
@@ -60,7 +61,9 @@ class TagListOverlayState extends State<TagListOverlay> {
         _createAndShowTagListOverlay();
       }
     } catch (e) {
-      print('Error fetching tag cloud: $e');
+      if (mounted) {
+        Util.showError(ScaffoldMessenger.of(context), 'Failed to load tag suggestions');
+      }
     }
   }
 
