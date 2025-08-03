@@ -53,7 +53,7 @@ class NewNoteState extends State<NewNote> {
         builder: (context, child) {
           return PopScope(
             canPop: false,
-            onPopInvoked: (didPop) =>
+            onPopInvokedWithResult: (didPop, result) =>
                 _newNoteController.onPopHandler(context, didPop),
             child: Scaffold(
               appBar: AppBar(

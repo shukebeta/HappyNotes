@@ -115,7 +115,7 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
         builder: (context, child) {
           return PopScope(
             canPop: false,
-            onPopInvoked: (didPop) => _controller.onPopHandler(context, didPop),
+            onPopInvokedWithResult: (didPop, result) => _controller.onPopHandler(context, didPop),
             child: Scaffold(
               appBar: PreferredSize(
                 preferredSize: const Size.fromHeight(kToolbarHeight),

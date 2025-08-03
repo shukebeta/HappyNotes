@@ -10,7 +10,7 @@ import '../../app_config.dart';
 import '../../app_constants.dart';
 import '../../dependency_injection.dart';
 import '../../utils/timezone_helper.dart';
-import '../components/timezone-dropdown-item.dart';
+import '../components/timezone_dropdown_item.dart';
 import '../trash_bin/trash_bin_page.dart';
 
 class Settings extends StatefulWidget {

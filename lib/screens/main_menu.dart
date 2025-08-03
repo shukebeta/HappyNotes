@@ -112,7 +112,7 @@ class MainMenuState extends State<MainMenu> {
 
     return PopScope(
       canPop: false,
-      onPopInvoked: (bool didPop) async {
+      onPopInvokedWithResult: (bool didPop, Object? result) async {
         if (!didPop) {
           if (true ==
               await DialogService.showConfirmDialog(context,
