@@ -42,13 +42,13 @@
       /* IE 10 and Edge */
       user-select: none;
       /* Standard syntax */
+      /* avoid double selection */
+      caret-color: rgba(255, 255, 255, 0) !important;
     }
   </style>
 </head>
 <body
   oncontextmenu="event.preventDefault();"
-  ontouchstart="event.preventDefault();"
-  ontouchend="event.preventDefault();"
 >
   <script src="flutter_bootstrap.js" async></script>
 </body>
