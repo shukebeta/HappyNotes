@@ -8,6 +8,7 @@ import 'package:happy_notes/screens/navigation/bottom_navigation.dart';
 import 'package:happy_notes/services/seq_logger.dart';
 import 'package:quick_actions/quick_actions.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/services.dart';
 import 'dart:io' show Platform;
 
 import 'app_config.dart';
@@ -24,6 +25,11 @@ void main() async {
 
   // Initialize logging
   SeqLogger.initialize();
+
+  // Disable browser context menu for Flutter web double selection fix
+  if (kIsWeb) {
+    BrowserContextMenu.disableContextMenu();
+  }
 
   // Run the app
   runApp(
