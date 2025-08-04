@@ -16,7 +16,7 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.24.x'
+          flutter-version: '3.32.x'
           channel: 'stable'
 
       - name: Fetch Git Commit Hash
@@ -33,7 +33,7 @@ jobs:
           VERSION_INFO="$COMMIT_HASH ($BUILD_DATE)"
           sed -i "s/VERSION_PLACEHOLDER/$VERSION_INFO/" .env
           flutter config --enable-web
-          flutter build web --release --base-href "/"  --web-renderer html
+          flutter build web --release --base-href "/"
 
       - name: Create CNAME file
         run: echo 'happynotes.shukebeta.com' > ./build/web/CNAME
