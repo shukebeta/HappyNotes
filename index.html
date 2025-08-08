@@ -50,6 +50,27 @@
 <body
   oncontextmenu="event.preventDefault();"
 >
+  <script>
+    document.addEventListener('touchstart', function(e) {
+      if (!isEditableElement(e.target)) {
+        e.preventDefault();
+      }
+    }, { passive: false });
+
+    document.addEventListener('touchend', function(e) {
+      if (!isEditableElement(e.target)) {
+        e.preventDefault();
+      }
+    }, { passive: false });
+
+    function isEditableElement(element) {
+      const tagName = element.tagName.toLowerCase();
+      const contentEditable = element.contentEditable;
+      const isInput = tagName === 'input' || tagName === 'textarea';
+      const isEditable = contentEditable === 'true' || contentEditable === '';
+      return isInput || isEditable || element.closest('[contenteditable="true"]');
+    }
+  </script>
   <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>
