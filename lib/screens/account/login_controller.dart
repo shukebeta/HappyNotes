@@ -40,19 +40,23 @@ class LoginController {
         final success = await authProvider.login(username, password);
 
         if (success) {
-          // No navigation needed - InitialPage Consumer<AuthProvider> will handle it automatically
+          // SUCCESS: Don't reset loading state - widget will be disposed during auto-navigation
           // The user will be redirected to MainMenu automatically when auth state changes
         } else {
-          // Show error message if login fails
+          // FAILURE: Reset loading state so user can retry
+          _isSubmitting = false;
+          onSubmittingStateChanged?.call(false);
+          
           final errorMessage = authProvider.error ?? 'Login failed';
           Util.showError(scaffoldContext, errorMessage);
         }
 
       } catch (e) {
-        Util.showError(scaffoldContext, e.toString());
-      } finally {
+        // ERROR: Reset loading state so user can retry
         _isSubmitting = false;
         onSubmittingStateChanged?.call(false);
+        
+        Util.showError(scaffoldContext, e.toString());
       }
     }
   }
