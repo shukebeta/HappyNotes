@@ -24,7 +24,7 @@ void main() {
         isPrivate: false,
         isMarkdown: false,
         isLong: false,
-        createdAt: 1640995200000, // 2022-01-01 00:00:00
+        createdAt: 1640995200, // 2022-01-01 00:00:00
         deletedAt: null,
         user: null,
         tags: [],
@@ -36,7 +36,7 @@ void main() {
         isPrivate: true,
         isMarkdown: false,
         isLong: false,
-        createdAt: 1641081600000, // 2022-01-02 00:00:00
+        createdAt: 1641081600, // 2022-01-02 00:00:00
         deletedAt: null,
         user: null,
         tags: [],
@@ -54,10 +54,9 @@ void main() {
         expect(provider.groupedNotes, isEmpty);
         expect(provider.isLoadingList, false);
         expect(provider.isLoadingAdd, false);
-        expect(provider.isRefreshing, false);
         expect(provider.listError, null);
         expect(provider.addError, null);
-        expect(provider.canLoadMore, false);
+        expect(provider.totalPages, 1);
       });
     });
 
@@ -71,7 +70,7 @@ void main() {
         expect(provider.notes, mockNotes);
         expect(provider.isLoadingList, false);
         expect(provider.listError, null);
-        expect(provider.canLoadMore, false);
+        expect(provider.totalPages, 1);
         expect(provider.groupedNotes.length, 2);
         verify(mockNotesService.myLatest(10, 1)).called(1);
       });
@@ -89,7 +88,7 @@ void main() {
 
         expect(provider.notes.length, 2);
         expect(provider.notes, mockNotes);
-        expect(provider.canLoadMore, false);
+        expect(provider.totalPages, 1);
         verify(mockNotesService.myLatest(10, 1)).called(1);
         verify(mockNotesService.myLatest(10, 2)).called(1);
       });
@@ -117,7 +116,7 @@ void main() {
         when(mockNotesService.myLatest(any, any)).thenAnswer((_) async => mockResult);
 
         await provider.fetchNotes();
-        expect(provider.canLoadMore, false);
+        expect(provider.totalPages, 1);
 
         await provider.fetchNotes(loadMore: true);
 
@@ -392,7 +391,7 @@ void main() {
         final secondResult = NotesResult([mockNotes[1]], 2);
         when(mockNotesService.searchNotes('test', 10, 2))
             .thenAnswer((_) async => secondResult);
-        await provider.searchNotes('test', loadMore: true);
+        await provider.searchNotes('test');
 
         expect(provider.notes.length, 2);
         verify(mockNotesService.searchNotes('test', 10, 1)).called(1);
@@ -424,7 +423,7 @@ void main() {
         final secondResult = NotesResult([mockNotes[1]], 2);
         when(mockNotesService.tagNotes('important', 10, 2))
             .thenAnswer((_) async => secondResult);
-        await provider.fetchTagNotes('important', loadMore: true);
+        await provider.fetchTagNotes('important');
 
         expect(provider.notes.length, 2);
         verify(mockNotesService.tagNotes('important', 10, 1)).called(1);
@@ -457,7 +456,6 @@ void main() {
         expect(provider.groupedNotes, isEmpty);
         expect(provider.isLoadingList, false);
         expect(provider.isLoadingAdd, false);
-        expect(provider.isRefreshing, false);
         expect(provider.listError, null);
         expect(provider.addError, null);
       });

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:happy_notes/app_config.dart';
+import 'package:happy_notes/providers/notes_provider.dart';
 import 'package:happy_notes/screens/components/note_list/note_list.dart';
 import 'package:happy_notes/screens/note_detail/note_detail.dart';
 import '../../entities/note.dart';
@@ -13,7 +15,6 @@ import '../components/pagination_controls.dart';
 import '../../dependency_injection.dart';
 import '../account/user_session.dart';
 import '../new_note/new_note.dart';
-import 'home_page_controller.dart';
 import '../components/controllers/tag_cloud_controller.dart';
 import '../components/tappable_app_bar_title.dart';
 
@@ -25,20 +26,22 @@ class HomePage extends StatefulWidget {
 }
 
 class HomePageState extends State<HomePage> {
-  late HomePageController _homePageController;
   late TagCloudController _tagCloudController;
   int currentPageNumber = 1;
   bool showPageSelector = false;
 
   bool get isFirstPage => currentPageNumber == 1;
 
-  bool get isLastPage => currentPageNumber == _homePageController.totalPages;
+  bool get isLastPage {
+    final provider = Provider.of<NotesProvider>(context, listen: false);
+    return currentPageNumber == provider.totalPages;
+  }
+
   bool _isInitialized = false;
 
   @override
   void initState() {
     super.initState();
-    _homePageController = locator<HomePageController>();
     _tagCloudController = locator<TagCloudController>();
   }
 
@@ -52,8 +55,9 @@ class HomePageState extends State<HomePage> {
   }
 
   Future<bool> navigateToPage(int pageNumber) async {
-    if (pageNumber >= 1 && pageNumber <= _homePageController.totalPages) {
-      await _homePageController.loadNotes(context, pageNumber);
+    final provider = Provider.of<NotesProvider>(context, listen: false);
+    if (pageNumber >= 1 && pageNumber <= provider.totalPages) {
+      await provider.loadPage(pageNumber);
       setState(() {
         currentPageNumber = pageNumber;
         showPageSelector = false;
@@ -86,16 +90,20 @@ class HomePageState extends State<HomePage> {
           _buildNewNoteButton(context),
         ],
       ),
-      body: Stack(
-        children: [
-          _buildBody(),
-          if (_homePageController.totalPages > 1 && !UserSession().isDesktop)
-            FloatingPagination(
-              currentPage: currentPageNumber,
-              totalPages: _homePageController.totalPages,
-              navigateToPage: navigateToPage,
-            ),
-        ],
+      body: Consumer<NotesProvider>(
+        builder: (ctx, notesProvider, child) {
+          return Stack(
+            children: [
+              _buildBody(notesProvider),
+              if (notesProvider.totalPages > 1 && !UserSession().isDesktop)
+                FloatingPagination(
+                  currentPage: currentPageNumber,
+                  totalPages: notesProvider.totalPages,
+                  navigateToPage: navigateToPage,
+                ),
+            ],
+          );
+        },
       ),
     );
   }
@@ -105,7 +113,6 @@ class HomePageState extends State<HomePage> {
       icon: Util.writeNoteIcon(),
       tooltip: AppConfig.privateNoteOnlyIsEnabled ? 'New Private Note' : 'New Public Note',
       onPressed: () async {
-        // Await the result
         final scaffoldMessenger = ScaffoldMessenger.of(context);
         final bool? savedSuccessfully = await Navigator.push<bool>(
           context,
@@ -117,27 +124,28 @@ class HomePageState extends State<HomePage> {
         );
         if (!mounted) return;
         if (savedSuccessfully ?? false) {
-          // Only refresh if on the first page, otherwise let the snackbar handle it (existing logic)
+          // Smart update: Only refresh if on page 1, otherwise show message
           if (isFirstPage) {
-            await refreshPage();
+            // Note was already added optimistically to page 1, no need to refresh
+            // The provider handled the optimistic update
           } else {
-            Util.showInfo(scaffoldMessenger, 'Note saved successfully.'); // Replaced showSnackBar
+            Util.showInfo(scaffoldMessenger, 'Note saved successfully.');
           }
         }
       },
     );
   }
 
-  Widget _buildBody() {
-    if (_homePageController.isLoading) {
+  Widget _buildBody(NotesProvider notesProvider) {
+    if (notesProvider.isLoadingList) {
       return const Center(child: CircularProgressIndicator());
     }
 
-    if (_homePageController.notes.isEmpty) {
+    if (notesProvider.notes.isEmpty) {
       return const Center(child: Text('No notes available. Create a new note to get started.'));
     }
 
-    final groupedNotes = ListGrouper.groupByDate(_homePageController.notes, (note) => note.createdDate);
+    final groupedNotes = ListGrouper.groupByDate(notesProvider.notes, (note) => note.createdDate);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -172,7 +180,7 @@ class HomePageState extends State<HomePage> {
                 }
               },
               onDelete: (note) async {
-                await _homePageController.deleteNote(note.id);
+                await notesProvider.deleteNote(note.id);
               },
             ),
             noteCallbacks: NoteListCallbacks(
@@ -192,10 +200,10 @@ class HomePageState extends State<HomePage> {
             ),
           ),
         ),
-        if (_homePageController.totalPages > 1 && UserSession().isDesktop)
+        if (notesProvider.totalPages > 1 && UserSession().isDesktop)
           PaginationControls(
             currentPage: currentPageNumber,
-            totalPages: _homePageController.totalPages,
+            totalPages: notesProvider.totalPages,
             navigateToPage: navigateToPage,
           ),
       ],

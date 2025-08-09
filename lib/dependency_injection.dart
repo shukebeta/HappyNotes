@@ -2,7 +2,6 @@ import 'package:happy_notes/apis/account_api.dart';
 import 'package:happy_notes/apis/file_uploader_api.dart';
 import 'package:happy_notes/apis/user_settings_api.dart';
 import 'package:happy_notes/screens/discovery/discovery_controller.dart';
-import 'package:happy_notes/screens/home_page/home_page_controller.dart';
 import 'package:happy_notes/screens/new_note/new_note_controller.dart';
 import 'package:happy_notes/screens/settings/mastodon_sync_settings_controller.dart';
 import 'package:happy_notes/screens/settings/telegram_sync_settings_controller.dart';
@@ -78,13 +77,9 @@ void _registerControllers() {
       () => TelegramSyncSettingsController(telegramSettingService: locator()));
   locator.registerLazySingleton(() =>
       MastodonSyncSettingsController(mastodonUserAccountService: locator()));
-  locator.registerFactory(() => NewNoteController(notesService: locator()));
+  locator.registerFactory(() => NewNoteController());
   locator.registerFactory(() => SearchResultsController(
       notesService: locator(), noteTagService: locator()));
-  locator.registerFactory(() => HomePageController(
-        notesService: locator(),
-        noteTagService: locator(),
-      ));
   locator.registerFactory(() => TagNotesController(
         notesService: locator(),
         noteTagService: locator(),
