@@ -29,7 +29,8 @@ class NewNote extends StatefulWidget {
 class NewNoteState extends State<NewNote> {
   final _newNoteController = locator<NewNoteController>();
   late NoteModel noteModel;
-  bool isSaving = false; // Add saving state flag
+  bool isSaving = false;
+  VoidCallback? _floatingActionButtonOnPressed;
 
   @override
   void initState() {
@@ -48,6 +49,24 @@ class NewNoteState extends State<NewNote> {
 
   @override
   Widget build(BuildContext context) {
+    // Define FloatingActionButton callback that can be reused
+    _floatingActionButtonOnPressed = () async {
+      if (isSaving) return;
+      isSaving = true; // Set synchronously first
+      setState(() {}); // Then trigger rebuild
+      try {
+        await _newNoteController.saveNote(
+          context,
+          onSaveSuccessInMainMenu: widget.onSaveSuccessInMainMenu,
+        );
+      } finally {
+        if (mounted) {
+          isSaving = false; // Reset synchronously
+          setState(() {}); // Then trigger rebuild
+        }
+      }
+    };
+
     return ChangeNotifierProvider(
         create: (_) => noteModel,
         builder: (context, child) {
@@ -70,28 +89,15 @@ class NewNoteState extends State<NewNote> {
                   },
                 ),
               ),
-              body: const Padding(
-                padding: EdgeInsets.fromLTRB(16.0, 0, 16.0, 16.0),
-                child: NoteEdit(),
+              body: Padding(
+                padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 16.0),
+                child: NoteEdit(
+                  onSubmit: _floatingActionButtonOnPressed,
+                ),
               ),
               floatingActionButton: FloatingActionButton(
                 mini: true,
-                onPressed: isSaving
-                    ? null
-                    : () async {
-                        setState(() => isSaving = true);
-                        try {
-                          // Pass the widget's callback to the controller
-                          await _newNoteController.saveNote(
-                            context,
-                            onSaveSuccessInMainMenu: widget.onSaveSuccessInMainMenu,
-                          );
-                        } finally {
-                          if (mounted) {
-                            setState(() => isSaving = false);
-                          }
-                        }
-                      },
+                onPressed: _floatingActionButtonOnPressed,
                 child: isSaving
                     ? const SizedBox(
                         width: 20,

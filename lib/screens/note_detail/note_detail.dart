@@ -38,6 +38,7 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
   bool _initialized = false;
   bool _editingFromDetailPage = false; // Track if editing from detail page
   bool _isSaving = false;
+  VoidCallback? _saveNoteHandler;
 
   @override
   void initState() {
@@ -120,6 +121,28 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
               appBar: PreferredSize(
                 preferredSize: const Size.fromHeight(kToolbarHeight),
                 child: Consumer<NoteModel>(builder: (context, noteModel, child) {
+                  // Define IconButton callback that can be reused
+                  _saveNoteHandler = () {
+                    if (_isSaving) return;
+                    _isSaving = true; // Set synchronously first
+                    setState(() {}); // Then trigger rebuild
+                    var navigator = Navigator.of(context);
+                    _controller.saveNote(
+                      context,
+                      note?.id ?? widget.noteId!,
+                      () {
+                        _isSaving = false; // Reset synchronously
+                        setState(() {}); // Then trigger rebuild
+                        widget.onNoteSaved?.call();
+                        if (_editingFromDetailPage) {
+                          _updateNoteContent(noteModel);
+                        } else {
+                          navigator.pop(true);
+                        }
+                      },
+                    );
+                  };
+
                   return AppBar(
                     title: Text(
                       '${note?.id} - ${noteModel.isPrivate ? 'Private' : 'Public'}${noteModel.isMarkdown ? ' with M↓' : ''}',
@@ -134,32 +157,7 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
                             icon: _isSaving
                                 ? const CircularProgressIndicator()
                                 : const Icon(Icons.check),
-                            onPressed: _isSaving
-                                ? null
-                                : () {
-                                    setState(() {
-                                      _isSaving = true;
-                                    });
-                                    var navigator = Navigator.of(context);
-                                    _controller.saveNote(
-                                      context,
-                                      note?.id ?? widget.noteId!,
-                                      () {
-                                        setState(() {
-                                          _isSaving = false;
-                                        });
-                                        // Call the onNoteSaved callback if provided
-                                        widget.onNoteSaved?.call();
-                                        // If editing from detail page, stay on detail page
-                                        if (_editingFromDetailPage) {
-                                          // Update the note content in the NoteModel
-                                          _updateNoteContent(noteModel);
-                                        } else {
-                                          navigator.pop(true);
-                                        }
-                                      },
-                                    );
-                                  },
+                            onPressed: _saveNoteHandler,
                           )
                         else
                           IconButton(
@@ -255,7 +253,12 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
                                     ),
                                   ),
                                 Expanded(
-                                  child: _controller.isEditing ? NoteEdit(note: note!) : NoteView(note: note!),
+                                  child: _controller.isEditing
+                                    ? NoteEdit(
+                                        note: note!,
+                                        onSubmit: _saveNoteHandler,
+                                      )
+                                    : NoteView(note: note!),
                                 ),
                               ],
                             );

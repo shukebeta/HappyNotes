@@ -1,6 +1,7 @@
 // NoteEdit.dart
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../dependency_injection.dart';
 import '../../entities/note.dart';
@@ -14,10 +15,12 @@ import 'controllers/tag_controller.dart';
 
 class NoteEdit extends StatefulWidget {
   final Note? note;
+  final VoidCallback? onSubmit;
 
   const NoteEdit({
     Key? key,
     this.note,
+    this.onSubmit,
   }) : super(key: key);
 
   @override
@@ -65,7 +68,15 @@ class NoteEditState extends State<NoteEdit> {
   }
 
   Widget _buildEditor(NoteModel noteModel) {
-    return Listener(
+    return CallbackShortcuts(
+      bindings: {
+        const SingleActivator(LogicalKeyboardKey.enter, control: true): () {
+          if (widget.onSubmit != null) {
+            widget.onSubmit!();
+          }
+        },
+      },
+      child: Listener(
       onPointerDown: (event) {
         tagController.dispose(); // Close tag overlay if open
       },
@@ -97,6 +108,7 @@ class NoteEditState extends State<NoteEdit> {
           tagController.handleTextChanged(text,
               noteEditController.textController.selection, noteModel, context);
         },
+      ),
       ),
     );
   }
