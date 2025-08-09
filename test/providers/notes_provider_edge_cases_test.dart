@@ -1,7 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:happy_notes/providers/notes_provider.dart';
-import 'package:happy_notes/services/notes_services.dart';
 import 'package:happy_notes/entities/note.dart';
 import 'package:happy_notes/models/notes_result.dart';
 import 'package:happy_notes/exceptions/api_exception.dart';

@@ -392,7 +392,7 @@ void main() {
         // Should have called myLatest twice (initial load + search clearing cache and reloading)
         verify(mockNotesService.myLatest(10, 1)).called(2);
       });
-    }, skip: 'Search functionality to be implemented in Phase 6');
+    });
 
     group('fetchTagNotes', () {
       test('should clear cache and load page 1 (placeholder implementation)', () async {
@@ -411,7 +411,7 @@ void main() {
         // Should have called myLatest twice (initial load + tag search clearing cache and reloading)
         verify(mockNotesService.myLatest(10, 1)).called(2);
       });
-    }, skip: 'Tag functionality to be implemented in Phase 6');
+    });
 
     group('AuthAwareProvider behavior', () {
       test('should load data on login', () async {

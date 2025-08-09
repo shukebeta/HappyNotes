@@ -1,6 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:happy_notes/providers/auth_provider.dart';
 import 'package:happy_notes/providers/notes_provider.dart';
+import 'package:happy_notes/providers/search_provider.dart';
+import 'package:happy_notes/providers/tag_provider.dart';
+import 'package:happy_notes/providers/memories_provider.dart';
 import 'package:happy_notes/providers/provider_base.dart';
 
 /// Central application state coordinator
@@ -9,11 +12,20 @@ import 'package:happy_notes/providers/provider_base.dart';
 class AppStateProvider with ChangeNotifier {
   final AuthProvider _authProvider;
   final NotesProvider _notesProvider;
+  final SearchProvider _searchProvider;
+  final TagProvider _tagProvider;
+  final MemoriesProvider _memoriesProvider;
   
   bool _isInitialized = false;
   bool get isInitialized => _isInitialized;
 
-  AppStateProvider(this._authProvider, this._notesProvider) {
+  AppStateProvider(
+    this._authProvider, 
+    this._notesProvider,
+    this._searchProvider,
+    this._tagProvider,
+    this._memoriesProvider,
+  ) {
     _initializeProvider();
   }
 
@@ -81,7 +93,9 @@ class AppStateProvider with ChangeNotifier {
     // Collect all auth-aware providers
     final List<AuthAwareProvider> providers = [
       _notesProvider,
-      // Add other auth-aware providers here as they are created
+      _searchProvider,
+      _tagProvider,
+      _memoriesProvider,
     ];
     
     // Notify all providers of auth state change
@@ -97,7 +111,9 @@ class AppStateProvider with ChangeNotifier {
   Future<void> _clearAllProviderData() async {
     final List<AuthAwareProvider> providers = [
       _notesProvider,
-      // Add other auth-aware providers here as they are created
+      _searchProvider,
+      _tagProvider,
+      _memoriesProvider,
     ];
     
     for (final provider in providers) {
@@ -111,15 +127,16 @@ class AppStateProvider with ChangeNotifier {
     if (!_authProvider.isAuthenticated) return;
     
     try {
-      // Refresh notes data
+      // Refresh all provider data
       await _notesProvider.refreshNotes();
-      
-      // Add other provider refresh calls here as they are created
+      await _searchProvider.refreshSearch();
+      await _tagProvider.loadTagCloud(forceRefresh: true);
+      await _memoriesProvider.refreshMemories();
       
       notifyListeners();
     } catch (e) {
       if (kDebugMode) {
-        print('Error refreshing app data: $e');
+        debugPrint('Error refreshing app data: $e');
       }
     }
   }

@@ -3,7 +3,9 @@ import 'package:mockito/mockito.dart';
 import 'package:happy_notes/providers/app_state_provider.dart';
 import 'package:happy_notes/providers/auth_provider.dart';
 import 'package:happy_notes/providers/notes_provider.dart';
-import 'package:happy_notes/services/notes_services.dart';
+import 'package:happy_notes/providers/search_provider.dart';
+import 'package:happy_notes/providers/tag_provider.dart';
+import 'package:happy_notes/providers/memories_provider.dart';
 import 'package:happy_notes/entities/note.dart';
 import 'package:happy_notes/models/notes_result.dart';
 
@@ -30,16 +32,79 @@ class MockAuthProvider extends Mock implements AuthProvider {
   );
 }
 
+class MockSearchProvider extends Mock implements SearchProvider {
+  @override
+  void clearAllData() => super.noSuchMethod(Invocation.method(#clearAllData, []));
+  
+  @override
+  Future<void> onAuthStateChanged(bool isAuthenticated) => super.noSuchMethod(
+    Invocation.method(#onAuthStateChanged, [isAuthenticated]),
+    returnValue: Future.value(),
+  );
+  
+  @override
+  Future<void> refreshSearch() => super.noSuchMethod(
+    Invocation.method(#refreshSearch, []),
+    returnValue: Future.value(),
+  );
+
+  @override
+  Future<void> searchNotes(String query, int pageNumber) => super.noSuchMethod(
+    Invocation.method(#searchNotes, [query, pageNumber]),
+    returnValue: Future.value(),
+  );
+}
+
+class MockTagProvider extends Mock implements TagProvider {
+  @override
+  void clearAllData() => super.noSuchMethod(Invocation.method(#clearAllData, []));
+  
+  @override
+  Future<void> onAuthStateChanged(bool isAuthenticated) => super.noSuchMethod(
+    Invocation.method(#onAuthStateChanged, [isAuthenticated]),
+    returnValue: Future.value(),
+  );
+  
+  @override
+  Future<void> loadTagCloud({bool forceRefresh = false}) => super.noSuchMethod(
+    Invocation.method(#loadTagCloud, [], {#forceRefresh: forceRefresh}),
+    returnValue: Future.value(),
+  );
+}
+
+class MockMemoriesProvider extends Mock implements MemoriesProvider {
+  @override
+  void clearAllData() => super.noSuchMethod(Invocation.method(#clearAllData, []));
+  
+  @override
+  Future<void> onAuthStateChanged(bool isAuthenticated) => super.noSuchMethod(
+    Invocation.method(#onAuthStateChanged, [isAuthenticated]),
+    returnValue: Future.value(),
+  );
+  
+  @override
+  Future<void> refreshMemories() => super.noSuchMethod(
+    Invocation.method(#refreshMemories, []),
+    returnValue: Future.value(),
+  );
+}
+
 void main() {
   group('AppStateProvider Tests', () {
     late AppStateProvider appStateProvider;
     late MockAuthProvider mockAuthProvider;
     late MockNotesService mockNotesService;
     late NotesProvider notesProvider;
+    late MockSearchProvider mockSearchProvider;
+    late MockTagProvider mockTagProvider;
+    late MockMemoriesProvider mockMemoriesProvider;
 
     setUp(() {
       mockAuthProvider = MockAuthProvider();
       mockNotesService = MockNotesService();
+      mockSearchProvider = MockSearchProvider();
+      mockTagProvider = MockTagProvider();
+      mockMemoriesProvider = MockMemoriesProvider();
       
       // Setup default mock responses before creating provider
       when(mockAuthProvider.isAuthenticated).thenReturn(false);
@@ -47,7 +112,13 @@ void main() {
       when(mockAuthProvider.currentUserEmail).thenReturn(null);
       
       notesProvider = NotesProvider(mockNotesService);
-      appStateProvider = AppStateProvider(mockAuthProvider, notesProvider);
+      appStateProvider = AppStateProvider(
+        mockAuthProvider, 
+        notesProvider, 
+        mockSearchProvider, 
+        mockTagProvider, 
+        mockMemoriesProvider
+      );
     });
 
     group('Initialization', () {
@@ -114,14 +185,26 @@ void main() {
       test('should refresh all provider data', () async {
         when(mockAuthProvider.isAuthenticated).thenReturn(true);
         
-        // Mock notes service for refresh
-        when(mockNotesService.myLatest(10, 1))
+        // Mock notes service for refresh - ensure all needed calls are mocked
+        when(mockNotesService.myLatest(any, any))
             .thenAnswer((_) async => NotesResult([], 0));
+
+        // Explicitly mock all provider refresh methods
+        when(mockSearchProvider.refreshSearch())
+            .thenAnswer((_) async {});
+        when(mockTagProvider.loadTagCloud(forceRefresh: true))
+            .thenAnswer((_) async {});
+        when(mockMemoriesProvider.refreshMemories())
+            .thenAnswer((_) async {});
 
         await appStateProvider.refreshAllData();
         
         // Verify notes provider refresh was called
         verify(mockNotesService.myLatest(10, 1)).called(1);
+        // Verify other providers were called
+        verify(mockSearchProvider.refreshSearch()).called(1);
+        verify(mockTagProvider.loadTagCloud(forceRefresh: true)).called(1);
+        verify(mockMemoriesProvider.refreshMemories()).called(1);
       });
 
       test('should not refresh data when not authenticated', () async {
