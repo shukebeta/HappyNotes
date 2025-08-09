@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:happy_notes/screens/initial_page.dart';
-import 'package:happy_notes/utils/token_utils.dart';
-import '../../dependency_injection.dart';
-import '../../services/account_service.dart';
+import 'package:provider/provider.dart';
+import 'package:happy_notes/providers/auth_provider.dart';
 import '../../utils/util.dart';
 
 class LoginController {
-  final tokenManager = locator<TokenUtils>();
-  final accountService = locator<AccountService>();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
@@ -38,18 +34,18 @@ class LoginController {
 
       // capture the context before entering await
       final scaffoldContext = ScaffoldMessenger.of(context);
-      final navigator = Navigator.of(context);
       try {
-        // Call AuthService for login
-        final apiResponse = await accountService.login(username, password);
+        // Use AuthProvider for login instead of AccountService directly
+        final authProvider = context.read<AuthProvider>();
+        final success = await authProvider.login(username, password);
 
-        if (apiResponse['successful']) {
-          // Navigate to the home page
-          navigator.pushReplacement(
-            MaterialPageRoute(builder: (context) => const InitialPage()));
+        if (success) {
+          // No navigation needed - InitialPage Consumer<AuthProvider> will handle it automatically
+          // The user will be redirected to MainMenu automatically when auth state changes
         } else {
           // Show error message if login fails
-          Util.showError(scaffoldContext, 'Login failed: ${apiResponse['message']}'); // Replaced showSnackBar
+          final errorMessage = authProvider.error ?? 'Login failed';
+          Util.showError(scaffoldContext, errorMessage);
         }
 
       } catch (e) {
