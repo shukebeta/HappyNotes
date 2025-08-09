@@ -27,48 +27,38 @@ class HomePage extends StatefulWidget {
 
 class HomePageState extends State<HomePage> {
   late TagCloudController _tagCloudController;
-  int currentPageNumber = 1;
-  bool showPageSelector = false;
-
-  bool get isFirstPage => currentPageNumber == 1;
-
-  bool get isLastPage {
-    final provider = Provider.of<NotesProvider>(context, listen: false);
-    return currentPageNumber == provider.totalPages;
-  }
-
-  bool _isInitialized = false;
 
   @override
   void initState() {
     super.initState();
     _tagCloudController = locator<TagCloudController>();
+    
+    // Initialize provider data after widget is built
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        final provider = Provider.of<NotesProvider>(context, listen: false);
+        if (provider.notes.isEmpty && !provider.isLoadingList) {
+          provider.loadPage(1);
+        }
+      }
+    });
   }
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (!_isInitialized) {
-      _isInitialized = true;
-      navigateToPage(currentPageNumber);
-    }
+  void dispose() {
+    super.dispose();
   }
 
-  Future<bool> navigateToPage(int pageNumber) async {
+  Future<void> navigateToPage(int pageNumber) async {
+    if (!mounted) return;
     final provider = Provider.of<NotesProvider>(context, listen: false);
-    if (pageNumber >= 1 && pageNumber <= provider.totalPages) {
-      await provider.loadPage(pageNumber);
-      setState(() {
-        currentPageNumber = pageNumber;
-        showPageSelector = false;
-      });
-      return true;
-    }
-    return false;
+    await provider.loadPage(pageNumber);
   }
 
-  Future<bool> refreshPage() async {
-    return await navigateToPage(currentPageNumber);
+  Future<void> refreshPage() async {
+    if (!mounted) return;
+    final provider = Provider.of<NotesProvider>(context, listen: false);
+    await provider.refreshCurrentPage();
   }
 
   @override
@@ -97,9 +87,9 @@ class HomePageState extends State<HomePage> {
               _buildBody(notesProvider),
               if (notesProvider.totalPages > 1 && !UserSession().isDesktop)
                 FloatingPagination(
-                  currentPage: currentPageNumber,
+                  currentPage: notesProvider.currentPage,
                   totalPages: notesProvider.totalPages,
-                  navigateToPage: navigateToPage,
+                  navigateToPage: (pageNumber) => navigateToPage(pageNumber),
                 ),
             ],
           );
@@ -114,6 +104,7 @@ class HomePageState extends State<HomePage> {
       tooltip: AppConfig.privateNoteOnlyIsEnabled ? 'New Private Note' : 'New Public Note',
       onPressed: () async {
         final scaffoldMessenger = ScaffoldMessenger.of(context);
+        final provider = Provider.of<NotesProvider>(context, listen: false);
         final bool? savedSuccessfully = await Navigator.push<bool>(
           context,
           MaterialPageRoute(
@@ -125,7 +116,7 @@ class HomePageState extends State<HomePage> {
         if (!mounted) return;
         if (savedSuccessfully ?? false) {
           // Smart update: Only refresh if on page 1, otherwise show message
-          if (isFirstPage) {
+          if (provider.currentPage == 1) {
             // Note was already added optimistically to page 1, no need to refresh
             // The provider handled the optimistic update
           } else {
@@ -184,7 +175,7 @@ class HomePageState extends State<HomePage> {
               },
             ),
             noteCallbacks: NoteListCallbacks(
-              onRefresh: () async => await navigateToPage(currentPageNumber),
+              onRefresh: refreshPage,
               onTagTap: (note, tag) => NavigationHelper.onTagTap(context, note, tag),
               onDateHeaderTap: (date) => Navigator.push(
                       context,
@@ -202,9 +193,9 @@ class HomePageState extends State<HomePage> {
         ),
         if (notesProvider.totalPages > 1 && UserSession().isDesktop)
           PaginationControls(
-            currentPage: currentPageNumber,
+            currentPage: notesProvider.currentPage,
             totalPages: notesProvider.totalPages,
-            navigateToPage: navigateToPage,
+            navigateToPage: (pageNumber) => navigateToPage(pageNumber),
           ),
       ],
     );

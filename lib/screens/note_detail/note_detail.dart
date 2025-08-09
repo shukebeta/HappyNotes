@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:happy_notes/screens/components/note_edit.dart';
 import 'package:provider/provider.dart';
-import '../../dependency_injection.dart';
 import '../../entities/note.dart';
 import '../../models/note_model.dart';
 import '../../services/dialog_services.dart';
 import '../account/user_session.dart';
 import '../components/note_view.dart';
-import '../../services/notes_services.dart';
 import '../trash_bin/trash_bin_page.dart';
-import 'note_detail_controller.dart';
+import '../../providers/notes_provider.dart';
+import '../../utils/util.dart';
 
 class NoteDetail extends StatefulWidget {
   final Note? note;
@@ -34,16 +33,17 @@ class NoteDetail extends StatefulWidget {
 class NoteDetailState extends State<NoteDetail> with RouteAware {
   Note? note;
   List<Note>? linkedNotes = [];
-  late NoteDetailController _controller;
   bool _initialized = false;
   bool _editingFromDetailPage = false; // Track if editing from detail page
   bool _isSaving = false;
+  bool _isEditing = false;
+  bool _isLoading = false;
   VoidCallback? _saveNoteHandler;
+  Note? _originalNote;
 
   @override
   void initState() {
-    _controller = NoteDetailController(notesService: locator<NotesService>());
-    _controller.isEditing = widget.enterEditing ?? false;
+    _isEditing = widget.enterEditing ?? false;
     note = widget.note;
     _editingFromDetailPage = widget.fromDetailPage; // Initialize from widget
     super.initState();
@@ -53,21 +53,41 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
   void didChangeDependencies() async {
     super.didChangeDependencies();
     if (!_initialized) {
-      bool includeDeleted = widget.note?.deletedAt != null;
-      note = await _controller.fetchNote(
-        context,
-        note?.id ?? widget.noteId!,
-        includeDeleted: includeDeleted,
-      );
+      await _fetchNote();
       _initialized = true;
       setState(() {});
     }
   }
 
+  Future<void> _fetchNote() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    final notesProvider = Provider.of<NotesProvider>(context, listen: false);
+    bool includeDeleted = widget.note?.deletedAt != null;
+    
+    final fetchedNote = await notesProvider.getNote(
+      note?.id ?? widget.noteId!,
+      includeDeleted: includeDeleted,
+    );
+
+    if (fetchedNote != null) {
+      _originalNote = fetchedNote;
+      note = fetchedNote;
+    } else if (mounted) {
+      Util.showError(ScaffoldMessenger.of(context), 'Failed to load note');
+    }
+
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
   void _enterEditingMode() async {
     if (note?.userId != UserSession().id) return;
-    if (!_controller.isEditing) {
-      _controller.isEditing = true;
+    if (!_isEditing) {
+      _isEditing = true;
       // When entering editing mode from the detail page, set _editingFromDetailPage to true
       setState(() {
         _editingFromDetailPage = true;
@@ -98,9 +118,98 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
     super.dispose();
   }
 
+  Future<void> _saveNote(NoteModel noteModel) async {
+    if (_isSaving) return;
+    
+    setState(() {
+      _isSaving = true;
+    });
+
+    final notesProvider = Provider.of<NotesProvider>(context, listen: false);
+    final navigator = Navigator.of(context);
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    
+    final success = await notesProvider.updateNote(
+      note?.id ?? widget.noteId!,
+      noteModel.content,
+      isPrivate: noteModel.isPrivate,
+      isMarkdown: noteModel.isMarkdown,
+    );
+
+    setState(() {
+      _isSaving = false;
+    });
+
+    if (success) {
+      _isEditing = false;
+      widget.onNoteSaved?.call();
+      if (_editingFromDetailPage) {
+        _updateNoteContent(noteModel);
+      } else {
+        navigator.pop(true);
+      }
+      if (mounted) {
+        Util.showInfo(scaffoldMessenger, 'Note successfully updated.');
+      }
+    } else if (mounted) {
+      Util.showError(scaffoldMessenger, 'Failed to update note');
+    }
+  }
+
+  Future<void> _deleteNote() async {
+    final notesProvider = Provider.of<NotesProvider>(context, listen: false);
+    final navigator = Navigator.of(context);
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    
+    final success = await notesProvider.deleteNote(note?.id ?? widget.noteId!);
+    
+    if (success) {
+      navigator.pop(true);
+      if (mounted) {
+        Util.showInfo(scaffoldMessenger, 'Note successfully deleted.');
+      }
+    } else if (mounted) {
+      Util.showError(scaffoldMessenger, 'Failed to delete note');
+    }
+  }
+
+  Future<void> _undeleteNote() async {
+    final notesProvider = Provider.of<NotesProvider>(context, listen: false);
+    final navigator = Navigator.of(context);
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    
+    final success = await notesProvider.undeleteNote(note?.id ?? widget.noteId!);
+    
+    if (success) {
+      navigator.pop(true);
+      if (mounted) {
+        Util.showInfo(scaffoldMessenger, 'Note successfully undeleted.');
+      }
+    } else if (mounted) {
+      Util.showError(scaffoldMessenger, 'Failed to undelete note');
+    }
+  }
+
+  Future<bool> _onPopInvoked(BuildContext context, bool didPop) async {
+    if (!didPop && mounted) {
+      final noteModel = context.read<NoteModel>();
+      final navigator = Navigator.of(context);
+      final currentContent = noteModel.content;
+      
+      if (!_isEditing || 
+          (_originalNote != null && currentContent == _originalNote!.content) || 
+          (await DialogService.showUnsavedChangesDialog(context) ?? false)) {
+        navigator.pop(false);
+        return true;
+      }
+      return false;
+    }
+    return true;
+  }
+
   @override
   Widget build(BuildContext context) {
-    if (_controller.isLoading) {
+    if (_isLoading) {
       return const Scaffold(
         body: Center(child: CircularProgressIndicator()),
       );
@@ -116,32 +225,13 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
         builder: (context, child) {
           return PopScope(
             canPop: false,
-            onPopInvokedWithResult: (didPop, result) => _controller.onPopHandler(context, didPop),
+            onPopInvokedWithResult: (didPop, result) => _onPopInvoked(context, didPop),
             child: Scaffold(
               appBar: PreferredSize(
                 preferredSize: const Size.fromHeight(kToolbarHeight),
                 child: Consumer<NoteModel>(builder: (context, noteModel, child) {
                   // Define IconButton callback that can be reused
-                  _saveNoteHandler = () {
-                    if (_isSaving) return;
-                    _isSaving = true; // Set synchronously first
-                    setState(() {}); // Then trigger rebuild
-                    var navigator = Navigator.of(context);
-                    _controller.saveNote(
-                      context,
-                      note?.id ?? widget.noteId!,
-                      () {
-                        _isSaving = false; // Reset synchronously
-                        setState(() {}); // Then trigger rebuild
-                        widget.onNoteSaved?.call();
-                        if (_editingFromDetailPage) {
-                          _updateNoteContent(noteModel);
-                        } else {
-                          navigator.pop(true);
-                        }
-                      },
-                    );
-                  };
+                  _saveNoteHandler = () => _saveNote(noteModel);
 
                   return AppBar(
                     title: Text(
@@ -152,7 +242,7 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
                     ),
                     actions: [
                       if (note?.userId == UserSession().id) ...[
-                        if (_controller.isEditing)
+                        if (_isEditing)
                           IconButton(
                             icon: _isSaving
                                 ? const CircularProgressIndicator()
@@ -171,24 +261,14 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
                                 context,
                                 title: 'Delete note',
                                 text: 'Each note is a story, are you sure you want to delete it?',
-                                yesCallback: () => _controller.deleteNote(
-                                  context,
-                                  note?.id ?? widget.noteId!,
-                                  (needRefresh) => Navigator.of(context).pop(needRefresh),
-                                ),
+                                yesCallback: _deleteNote,
                               );
                             } else if (value == 'undelete') {
                               await DialogService.showConfirmDialog(
                                 context,
                                 title: 'Undelete note',
                                 text: 'Are you sure you want to undelete this note?',
-                                yesCallback: () async {
-                                  _controller.undeleteNote(
-                                    context,
-                                    note?.id ?? widget.noteId!,
-                                    (needRefresh) => Navigator.of(context).pop(needRefresh),
-                                  );
-                                },
+                                yesCallback: _undeleteNote,
                               );
                             } else if (value == 'trash_bin') {
                               Navigator.push(
@@ -253,7 +333,7 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
                                     ),
                                   ),
                                 Expanded(
-                                  child: _controller.isEditing
+                                  child: _isEditing
                                     ? NoteEdit(
                                         note: note!,
                                         onSubmit: _saveNoteHandler,
