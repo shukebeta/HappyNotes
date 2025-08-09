@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:provider/provider.dart';
 import 'package:happy_notes/dependency_injection.dart' as di;
+import 'package:happy_notes/providers/auth_provider.dart';
+import 'package:happy_notes/providers/notes_provider.dart';
 import 'package:happy_notes/screens/account/user_session.dart';
 import 'package:happy_notes/screens/initial_page.dart';
 import 'package:happy_notes/screens/main_menu.dart';
@@ -31,9 +34,18 @@ void main() async {
     BrowserContextMenu.disableContextMenu();
   }
 
-  // Run the app
+  // Run the app with MultiProvider
   runApp(
-    const HappyNotesApp(),
+    MultiProvider(
+      providers: [
+        // Create individual providers first
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(
+          create: (_) => NotesProvider(di.locator()),
+        ),
+      ],
+      child: const HappyNotesApp(),
+    ),
   );
 }
 

@@ -32,6 +32,7 @@ final locator = GetIt.instance;
 void init() {
   _registerApis();
   _registerServices();
+  _registerProviders();
   _registerControllers();
   _registerUtils();
 }
@@ -90,6 +91,11 @@ void _registerControllers() {
       ));
   locator.registerFactory(() => DiscoveryController(notesService: locator()));
   locator.registerFactory(() => TagCloudController());
+}
+
+void _registerProviders() {
+  // Register providers for dependency injection when needed
+  // Note: Providers will be created via MultiProvider in main.dart
 }
 
 void _registerUtils() {
