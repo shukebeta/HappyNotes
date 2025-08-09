@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:happy_notes/dependency_injection.dart' as di;
 import 'package:happy_notes/providers/auth_provider.dart';
 import 'package:happy_notes/providers/notes_provider.dart';
+import 'package:happy_notes/providers/app_state_provider.dart';
 import 'package:happy_notes/screens/account/user_session.dart';
 import 'package:happy_notes/screens/initial_page.dart';
 import 'package:happy_notes/screens/main_menu.dart';
@@ -42,6 +43,15 @@ void main() async {
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(
           create: (_) => NotesProvider(di.locator()),
+        ),
+        // Create AppStateProvider after individual providers
+        ChangeNotifierProxyProvider2<AuthProvider, NotesProvider, AppStateProvider>(
+          create: (context) => AppStateProvider(
+            Provider.of<AuthProvider>(context, listen: false),
+            Provider.of<NotesProvider>(context, listen: false),
+          ),
+          update: (context, authProvider, notesProvider, previous) =>
+              previous ?? AppStateProvider(authProvider, notesProvider),
         ),
       ],
       child: const HappyNotesApp(),

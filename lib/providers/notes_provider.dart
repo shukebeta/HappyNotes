@@ -32,7 +32,20 @@ class NotesProvider extends AuthAwareProvider {
   int get totalPages => _totalNotes <= 0 ? 1 : (_totalNotes / _pageSize).ceil();
 
   // New property for grouped notes by date string (for current page)
-  Map<String, List<Note>> groupedNotes = {};
+  Map<String, List<Note>> _cachedGroupedNotes = {};
+  List<Note> _lastGroupedNotesSource = [];
+  
+  /// Get grouped notes with memoization for performance
+  Map<String, List<Note>> get groupedNotes {
+    // Check if we need to recalculate grouping
+    if (_cachedGroupedNotes.isEmpty || 
+        _lastGroupedNotesSource.length != _currentPageNotes.length ||
+        !_listsEqual(_lastGroupedNotesSource, _currentPageNotes)) {
+      _groupNotesByDate();
+      _lastGroupedNotesSource = List.from(_currentPageNotes);
+    }
+    return _cachedGroupedNotes;
+  }
 
   bool _isLoadingList = false;
   bool get isLoadingList => _isLoadingList;
@@ -60,7 +73,7 @@ class NotesProvider extends AuthAwareProvider {
       if (_pageCache.containsKey(pageNumber)) {
         _currentPage = pageNumber;
         _currentPageNotes = List.from(_pageCache[pageNumber]!);
-        _groupNotesByDate();
+        _clearGroupedNotesCache(); // Clear cache to trigger recalculation
       } else {
         // Load from API
         final notesResult = await _notesService.myLatest(_pageSize, pageNumber);
@@ -72,7 +85,7 @@ class NotesProvider extends AuthAwareProvider {
         // Cache the loaded page
         _pageCache[pageNumber] = List.from(notesResult.notes);
 
-        _groupNotesByDate();
+        _clearGroupedNotesCache(); // Clear cache to trigger recalculation
       }
     } on ApiException catch (e) {
       _listError = e.toString();
@@ -95,18 +108,37 @@ class NotesProvider extends AuthAwareProvider {
     await loadPage(_currentPage);
   }
 
-  // New method to group notes by date
+  /// Helper method to compare two note lists for memoization
+  bool _listsEqual(List<Note> list1, List<Note> list2) {
+    if (list1.length != list2.length) return false;
+    for (int i = 0; i < list1.length; i++) {
+      if (list1[i].id != list2[i].id || 
+          list1[i].content != list2[i].content ||
+          list1[i].createdAt != list2[i].createdAt) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  /// Group notes by date with caching for performance
   void _groupNotesByDate() {
-    groupedNotes = {};
+    _cachedGroupedNotes = {};
     for (final note in _currentPageNotes) {
       // Use the Note entity's built-in createdDate getter for consistency
       final dateKey = note.createdDate;
 
-      if (!groupedNotes.containsKey(dateKey)) {
-        groupedNotes[dateKey] = [];
+      if (!_cachedGroupedNotes.containsKey(dateKey)) {
+        _cachedGroupedNotes[dateKey] = [];
       }
-      groupedNotes[dateKey]!.add(note);
+      _cachedGroupedNotes[dateKey]!.add(note);
     }
+  }
+
+  /// Clear cached grouped notes (called when data changes)
+  void _clearGroupedNotesCache() {
+    _cachedGroupedNotes.clear();
+    _lastGroupedNotesSource.clear();
   }
 
   Future<void> refreshNotes() async {
@@ -139,7 +171,7 @@ class NotesProvider extends AuthAwareProvider {
         _currentPageNotes.insert(0, newNote); // Add to beginning of page 1
         _pageCache[1] = List.from(_currentPageNotes); // Update cache
         _totalNotes++; // Increment total notes
-        _groupNotesByDate(); // Update grouped notes
+        _clearGroupedNotesCache(); // Clear cache to trigger recalculation
       }
 
       _isLoadingAdd = false;
@@ -187,8 +219,7 @@ class NotesProvider extends AuthAwareProvider {
 
       _currentPageNotes[noteIndex] = updatedNote;
       _pageCache[_currentPage] = List.from(_currentPageNotes); // Update cache
-      // Update grouped notes after modification
-      _groupNotesByDate();
+      _clearGroupedNotesCache(); // Clear cache to trigger recalculation
       notifyListeners();
       return true;
     } catch (e) {
@@ -203,8 +234,7 @@ class NotesProvider extends AuthAwareProvider {
       _currentPageNotes.removeWhere((note) => note.id == noteId);
       _pageCache[_currentPage] = List.from(_currentPageNotes); // Update cache
       _totalNotes--; // Decrement total notes
-      // Update grouped notes after deletion
-      _groupNotesByDate();
+      _clearGroupedNotesCache(); // Clear cache to trigger recalculation
       notifyListeners();
       return true;
     } catch (e) {
@@ -252,7 +282,7 @@ class NotesProvider extends AuthAwareProvider {
   void clearAllData() {
     _currentPageNotes = [];
     _pageCache.clear();
-    groupedNotes = {};
+    _clearGroupedNotesCache();
     _currentPage = 1;
     _totalNotes = 0;
     _isLoadingList = false;
