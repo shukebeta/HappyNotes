@@ -200,7 +200,7 @@ void main() {
 
         await memoriesProvider.onLogin();
 
-        // 某些实现下登录后 memories 可能为空，宽容处理
+        // In some implementations, memories may be empty after login; allow flexible assertion
         expect(memoriesProvider.memories.length, greaterThanOrEqualTo(0));
       });
     });

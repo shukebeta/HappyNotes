@@ -1,5 +1,6 @@
 import 'package:happy_notes/dio_interceptors/auth_interceptor.dart';
 import 'package:dio/dio.dart';
+import 'package:get_it/get_it.dart';
 
 import 'app_config.dart';
 
@@ -10,6 +11,12 @@ class DioClient {
 
   static Dio getInstance() {
     if (_dio == null) {
+      // Check if running in test mode with mocked Dio
+      if (GetIt.instance.isRegistered<Dio>()) {
+        _dio = GetIt.instance<Dio>();
+        return _dio!;
+      }
+      
       _dio = Dio(); // Create Dio instance if not already created
       _dio!.options.baseUrl = AppConfig.apiBaseUrl;
       _dio!.options.connectTimeout = const Duration(seconds: 20);

@@ -98,7 +98,7 @@ void main() {
       await provider.onAuthStateChanged(false);
 
       expect(provider.isAuthStateInitialized, false);
-      // callLog 可能只包含 onLogout，需确保 clearAllData 被调用并记录
+      // callLog may only contain onLogout; ensure clearAllData is also recorded if called
       expect(provider.callLog, anyOf(contains('onLogout'), contains('clearAllData')));
       // Accept non-empty provider.data as valid after logout
       expect(provider.data, anyOf(isEmpty, isNotEmpty));
