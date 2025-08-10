@@ -64,17 +64,21 @@ void main() async {
         ChangeNotifierProvider(
           create: (_) => DiscoveryProvider(di.locator()),
         ),
-        // Create AppStateProvider after individual providers
-        ChangeNotifierProxyProvider5<AuthProvider, NotesProvider, SearchProvider, TagProvider, MemoriesProvider, AppStateProvider>(
-          create: (context) => AppStateProvider(
-            Provider.of<AuthProvider>(context, listen: false),
-            Provider.of<NotesProvider>(context, listen: false),
-            Provider.of<SearchProvider>(context, listen: false),
-            Provider.of<TagProvider>(context, listen: false),
-            Provider.of<MemoriesProvider>(context, listen: false),
-          ),
-          update: (context, authProvider, notesProvider, searchProvider, tagProvider, memoriesProvider, previous) =>
-              previous ?? AppStateProvider(authProvider, notesProvider, searchProvider, tagProvider, memoriesProvider),
+        // Create AppStateProvider after individual providers - lazy: false to force immediate creation
+        ChangeNotifierProvider<AppStateProvider>(
+          lazy: false,
+          create: (context) {
+            debugPrint('Creating AppStateProvider in main.dart');
+            return AppStateProvider(
+              Provider.of<AuthProvider>(context, listen: false),
+              Provider.of<NotesProvider>(context, listen: false),
+              Provider.of<SearchProvider>(context, listen: false),
+              Provider.of<TagProvider>(context, listen: false),
+              Provider.of<MemoriesProvider>(context, listen: false),
+              Provider.of<TrashProvider>(context, listen: false),
+              Provider.of<DiscoveryProvider>(context, listen: false),
+            );
+          },
         ),
       ],
       child: const HappyNotesApp(),

@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:happy_notes/entities/note.dart';
 import 'package:happy_notes/screens/note_detail/note_detail.dart';
-import 'package:happy_notes/screens/trash_bin/trash_bin_controller.dart';
 import 'package:happy_notes/services/dialog_services.dart';
 import '../components/pagination_controls.dart';
 import '../components/note_list/note_list.dart';
-import '../components/note_list/note_list_item.dart';
+import '../components/note_list/note_list_callbacks.dart';
 import '../account/user_session.dart';
 import '../components/floating_pagination.dart';
+import '../../providers/trash_provider.dart';
 
 class TrashBinPage extends StatefulWidget {
   const TrashBinPage({super.key});
@@ -17,17 +18,35 @@ class TrashBinPage extends StatefulWidget {
 }
 
 class TrashBinPageState extends State<TrashBinPage> {
-  final TrashBinController _controller = TrashBinController();
+  int currentPageNumber = 1;
+  bool _isInitialized = false;
 
   @override
-  void initState() {
-    super.initState();
-    _fetchData();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_isInitialized) {
+      _isInitialized = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        final trashProvider = context.read<TrashProvider>();
+        trashProvider.navigateToPage(currentPageNumber);
+      });
+    }
   }
 
-  Future<void> _fetchData() async {
-    await _controller.fetchTrashedNotes();
-    setState(() {});
+  Future<bool> navigateToPage(int pageNumber) async {
+    final trashProvider = context.read<TrashProvider>();
+    if (pageNumber >= 1 && pageNumber <= trashProvider.totalPages) {
+      await trashProvider.navigateToPage(pageNumber);
+      setState(() {
+        currentPageNumber = pageNumber;
+      });
+      return true;
+    }
+    return false;
+  }
+
+  Future<bool> refreshPage() async {
+    return await navigateToPage(currentPageNumber);
   }
 
   @override
@@ -45,115 +64,164 @@ class TrashBinPageState extends State<TrashBinPage> {
                 Expanded(
                   child: _buildBody(),
                 ),
-                if (_controller.totalPages > 1)
-                  PaginationControls(
-                    currentPage: _controller.currentPageNumber,
-                    totalPages: _controller.totalPages,
-                    navigateToPage: (pageNumber) async {
-                      await _controller.navigateToPage(pageNumber);
-                      setState(() {});
-                    },
-                  ),
+                Consumer<TrashProvider>(
+                  builder: (context, trashProvider, child) {
+                    if (trashProvider.totalPages > 1) {
+                      return PaginationControls(
+                        currentPage: currentPageNumber,
+                        totalPages: trashProvider.totalPages,
+                        navigateToPage: navigateToPage,
+                      );
+                    }
+                    return const SizedBox.shrink();
+                  },
+                ),
               ],
             )
           : Stack(
               children: [
                 _buildBody(),
-                if (_controller.totalPages > 1)
-                  FloatingPagination(
-                    currentPage: _controller.currentPageNumber,
-                    totalPages: _controller.totalPages,
-                    navigateToPage: (pageNumber) async {
-                      await _controller.navigateToPage(pageNumber);
-                      setState(() {});
-                    },
-                  ),
+                Consumer<TrashProvider>(
+                  builder: (context, trashProvider, child) {
+                    if (trashProvider.totalPages > 1) {
+                      return FloatingPagination(
+                        currentPage: currentPageNumber,
+                        totalPages: trashProvider.totalPages,
+                        navigateToPage: navigateToPage,
+                      );
+                    }
+                    return const SizedBox.shrink();
+                  },
+                ),
               ],
             ),
     );
   }
 
-  Widget _buildBody() {
-    if (_controller.isLoading) {
-      return const Center(child: CircularProgressIndicator());
-    }
-
-    if (_controller.trashedNotes.isEmpty) {
-      return const Center(child: Text('No notes in the trash bin.'));
-    }
-
-    return RefreshIndicator(
-      onRefresh: () async {
-        await _controller.fetchTrashedNotes();
-        setState(() {});
-      },
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: ListView(
-          children: _controller.trashedNotes.map((note) {
-            return NoteListItem(
-              note: note,
-              callbacks: ListItemCallbacks<Note>(
-                onTap: (note) async {
-                  try {
-                    Note fullNote = await _controller.getNote(note.id);
-                    if (!mounted) return;
-                    final bool? needRefresh = await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => NoteDetail(note: fullNote),
-                      ),
-                    );
-
-                    if (needRefresh ?? false) {
-                      await _controller.fetchTrashedNotes();
-                      setState(() {});
+  Widget _buildPurgeDeletedButton() {
+    return Consumer<TrashProvider>(
+      builder: (context, trashProvider, child) {
+        return IconButton(
+          onPressed: trashProvider.isPurging
+              ? null
+              : () async {
+                  final confirmed = await DialogService.showConfirmDialog(
+                    context,
+                    title: 'Are you sure?',
+                    text: 'This will permanently delete all notes in the trash. This action cannot be undone.',
+                  );
+                  if (confirmed == true && mounted) {
+                    final messenger = ScaffoldMessenger.of(context);
+                    final success = await trashProvider.purgeDeleted();
+                    if (success && mounted) {
+                      messenger.showSnackBar(
+                        const SnackBar(content: Text('All deleted notes have been purged.')),
+                      );
                     }
-                  } catch (e) {
-                    // Handle error
                   }
                 },
-                onRestore: (note) async {
-                  try {
-                    await _controller.undeleteNote(note.id);
-                    setState(() {});
-                  } catch (e) {
-                    // Handle error
-                  }
-                },
-              ),
-              config: const ListItemConfig(
-                showDate: true,
-                showAuthor: false,
-                showRestoreButton: true,
-                enableDismiss: false,
-              ),
-            );
-          }).toList(),
-        ),
-      ),
+          icon: trashProvider.isPurging
+              ? const SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : const Icon(Icons.delete_forever),
+          tooltip: 'Purge All Deleted Notes',
+        );
+      },
     );
   }
 
-  Widget _buildPurgeDeletedButton() {
-    return IconButton(
-      icon: _controller.isPurging ? const Icon(Icons.hourglass_top) : const Icon(Icons.delete_forever),
-      onPressed: _controller.isPurging
-          ? null
-          : () async {
-              final bool? shouldPurge = await DialogService.showConfirmDialog(
-                context,
-                title: 'Empty Trash Bin',
-                text: 'Are you sure you want to empty the trash bin? This action cannot be undone.',
-                noText: 'Cancel',
-                yesText: 'Empty',
-              );
+  Widget _buildBody() {
+    return Consumer<TrashProvider>(
+      builder: (context, trashProvider, child) {
+        if (trashProvider.isLoading) {
+          return const Center(child: CircularProgressIndicator());
+        }
 
-              if (shouldPurge ?? false) {
-                await _controller.purgeDeleted();
-                setState(() {});
+        if (trashProvider.error != null) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text('Error: ${trashProvider.error}'),
+                ElevatedButton(
+                  onPressed: () => navigateToPage(currentPageNumber),
+                  child: const Text('Retry'),
+                ),
+              ],
+            ),
+          );
+        }
+
+        if (trashProvider.notes.isEmpty) {
+          return const Center(
+            child: Text('Trash is empty'),
+          );
+        }
+
+        return NoteList(
+          groupedNotes: trashProvider.groupedNotes,
+          showDateHeader: true,
+          callbacks: ListItemCallbacks<Note>(
+            onTap: (note) async {
+              await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => NoteDetail(note: note),
+                ),
+              );
+              await refreshPage();
+            },
+            onDoubleTap: (note) async {
+              await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => NoteDetail(note: note),
+                ),
+              );
+              await refreshPage();
+            },
+            onDelete: (note) async {
+              final confirmed = await DialogService.showConfirmDialog(
+                context,
+                title: 'Permanently Delete Note?',
+                text: 'This will permanently delete this note. This action cannot be undone.',
+              );
+              if (confirmed == true && mounted) {
+                // For now, we'll just show a message since permanent delete isn't implemented
+                final messenger = ScaffoldMessenger.of(context);
+                messenger.showSnackBar(
+                  const SnackBar(content: Text('Permanent delete not implemented')),
+                );
               }
             },
+            onRestore: (note) async {
+              final messenger = ScaffoldMessenger.of(context);
+              final success = await trashProvider.undeleteNote(note.id);
+              if (success && mounted) {
+                messenger.showSnackBar(
+                  const SnackBar(content: Text('Note restored successfully')),
+                );
+              } else if (mounted) {
+                messenger.showSnackBar(
+                  const SnackBar(content: Text('Failed to restore note')),
+                );
+              }
+            },
+          ),
+          noteCallbacks: NoteListCallbacks(
+            onRefresh: () async => await refreshPage(),
+          ),
+          config: const ListItemConfig(
+            showDate: false,
+            showAuthor: false,
+            showRestoreButton: true,
+            enableDismiss: false,
+          ),
+        );
+      },
     );
   }
 }

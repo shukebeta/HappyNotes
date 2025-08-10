@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:happy_notes/app_config.dart';
 import 'package:happy_notes/entities/note.dart';
 import 'package:happy_notes/models/note_model.dart';
@@ -153,49 +154,54 @@ class NotesProvider extends AuthAwareProvider {
     _addError = null;
     notifyListeners();
 
-    final noteModel = NoteModel(
-      content: content,
-      isPrivate: isPrivate,
-      isMarkdown: isMarkdown,
-      publishDateTime: publishDateTime,
-    );
-
     try {
-      final noteId = await _notesService.post(noteModel);
+      final addRequest = NoteModel(
+        content: content,
+        isPrivate: isPrivate,
+        isMarkdown: isMarkdown,
+        publishDateTime: publishDateTime,
+      );
 
-      // Fetch the created note to get full details
-      final newNote = await _notesService.get(noteId);
+      final createdNoteId = await _notesService.post(addRequest);
 
-      // Optimistic update: Add to page 1 if we're on page 1
-      if (_currentPage == 1) {
-        _currentPageNotes.insert(0, newNote); // Add to beginning of page 1
-        _pageCache[1] = List.from(_currentPageNotes); // Update cache
-        _totalNotes++; // Increment total notes
-        _clearGroupedNotesCache(); // Clear cache to trigger recalculation
+      if (createdNoteId > 0) {
+        // Fetch the complete note using the returned ID
+        final createdNote = await _notesService.get(createdNoteId);
+        
+        // Optimistically add note to the beginning of page 1
+        if (_currentPage == 1) {
+          _currentPageNotes.insert(0, createdNote);
+          // Update cache for page 1
+          _pageCache[1] = List.from(_currentPageNotes);
+          _clearGroupedNotesCache(); // Clear cache to trigger recalculation
+          _totalNotes++;
+        } else {
+          // If not on page 1, just increment total count
+          _totalNotes++;
+        }
+        
+        return createdNote;
       }
 
-      _isLoadingAdd = false;
-      notifyListeners();
-      return newNote;
+      return null;
     } on ApiException catch (e) {
       _addError = e.toString();
+      return null;
     } catch (e) {
       _addError = e.toString();
+      return null;
     } finally {
       _isLoadingAdd = false;
       notifyListeners();
     }
-    return null;
   }
 
   Future<bool> updateNote(int noteId, String content, {bool? isPrivate, bool? isMarkdown}) async {
+    final noteIndex = _currentPageNotes.indexWhere((note) => note.id == noteId);
+    if (noteIndex == -1) return false; // Note not found
+
     try {
-      // Find the note in current page notes
-      final noteIndex = _currentPageNotes.indexWhere((note) => note.id == noteId);
-      if (noteIndex == -1) return false;
-
       final existingNote = _currentPageNotes[noteIndex];
-
       await _notesService.update(
         noteId,
         content,
@@ -280,6 +286,7 @@ class NotesProvider extends AuthAwareProvider {
   /// Clear all cached data when user logs out
   @override
   void clearAllData() {
+    debugPrint('NotesProvider: Clearing all data - before: notes=${_currentPageNotes.length}, cache=${_pageCache.keys.length} pages');
     _currentPageNotes = [];
     _pageCache.clear();
     _clearGroupedNotesCache();
@@ -291,11 +298,13 @@ class NotesProvider extends AuthAwareProvider {
     _addError = null;
     // Force immediate UI update
     notifyListeners();
+    debugPrint('NotesProvider: Data cleared - after: notes=${_currentPageNotes.length}');
   }
 
   /// Load initial data when user logs in
   @override
   Future<void> onLogin() async {
+    debugPrint('NotesProvider: Loading initial data after login');
     await loadPage(1);
   }
 }

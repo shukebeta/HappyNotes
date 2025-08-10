@@ -24,42 +24,7 @@ class InitialPageState extends State<InitialPage> {
             );
           }
           
-          // Show error if authentication initialization failed
-          if (authProvider.error != null) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(
-                    Icons.error_outline,
-                    color: Colors.red,
-                    size: 64,
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Authentication Error',
-                    style: Theme.of(context).textTheme.headlineSmall,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    authProvider.error!,
-                    style: Theme.of(context).textTheme.bodyMedium,
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () {
-                      // Retry authentication
-                      authProvider.initAuth();
-                    },
-                    child: const Text('Retry'),
-                  ),
-                ],
-              ),
-            );
-          }
-          
-          // Navigate based on authentication state
+          // Following new_words AuthWrapper pattern: simple state-based navigation
           if (authProvider.isAuthenticated) {
             return const MainMenu();
           } else {

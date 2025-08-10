@@ -33,7 +33,7 @@ void main() {
         expect(tagProvider.tagCloud, isEmpty);
         expect(tagProvider.tagNotes, isEmpty);
         expect(tagProvider.isLoadingTagCloud, isFalse);
-        expect(tagProvider.isLoadingNotes, isFalse);
+        expect(tagProvider.isLoading, isFalse);
         expect(tagProvider.currentTag, isEmpty);
         expect(tagProvider.currentPage, equals(1));
       });
@@ -106,8 +106,8 @@ void main() {
 
         expect(tagProvider.tagNotes, equals(notes));
         expect(tagProvider.currentTag, equals('flutter'));
-        expect(tagProvider.totalTagNotes, equals(1));
-        expect(tagProvider.notesError, isNull);
+        expect(tagProvider.totalPages, equals(1));
+        expect(tagProvider.error, isNull);
       });
 
       test('should clear tag notes for empty tag', () async {
@@ -231,7 +231,7 @@ void main() {
         expect(tagProvider.tagNotes, isEmpty);
         expect(tagProvider.currentTag, isEmpty);
         expect(tagProvider.isLoadingTagCloud, isFalse);
-        expect(tagProvider.isLoadingNotes, isFalse);
+        expect(tagProvider.isLoading, isFalse);
       });
 
       test('should load tag cloud on login', () async {

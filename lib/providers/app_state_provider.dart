@@ -4,6 +4,8 @@ import 'package:happy_notes/providers/notes_provider.dart';
 import 'package:happy_notes/providers/search_provider.dart';
 import 'package:happy_notes/providers/tag_provider.dart';
 import 'package:happy_notes/providers/memories_provider.dart';
+import 'package:happy_notes/providers/trash_provider.dart';
+import 'package:happy_notes/providers/discovery_provider.dart';
 import 'package:happy_notes/providers/provider_base.dart';
 
 /// Central application state coordinator
@@ -15,6 +17,8 @@ class AppStateProvider with ChangeNotifier {
   final SearchProvider _searchProvider;
   final TagProvider _tagProvider;
   final MemoriesProvider _memoriesProvider;
+  final TrashProvider _trashProvider;
+  final DiscoveryProvider _discoveryProvider;
   
   bool _isInitialized = false;
   bool get isInitialized => _isInitialized;
@@ -25,7 +29,10 @@ class AppStateProvider with ChangeNotifier {
     this._searchProvider,
     this._tagProvider,
     this._memoriesProvider,
+    this._trashProvider,
+    this._discoveryProvider,
   ) {
+    debugPrint('AppStateProvider: Constructor called - setting up listeners');
     _initializeProvider();
   }
 
@@ -41,50 +48,21 @@ class AppStateProvider with ChangeNotifier {
   /// Coordinates state across all providers when auth changes
   void _onAuthStateChanged() async {
     final isAuthenticated = _authProvider.isAuthenticated;
+    debugPrint('AppStateProvider: Auth state changed - isAuthenticated: $isAuthenticated');
     
-    if (isAuthenticated) {
-      // User logged in - initialize all provider data
-      await _onUserLogin();
-    } else {
-      // User logged out - clear all provider data
-      await _onUserLogout();
-    }
+    // Always clear data first to prevent stale data
+    await _clearAllProviderData();
+    
+    // Notify listeners immediately after clearing to update UI
+    notifyListeners();
+    
+    // Then handle the auth state change
+    await _notifyProvidersOfAuthChange(isAuthenticated);
+    
+    // Final notification
+    notifyListeners();
   }
 
-  /// Handle user login - load all provider data
-  Future<void> _onUserLogin() async {
-    try {
-      // Clear all existing data first to ensure clean state
-      await _clearAllProviderData();
-      
-      // Small delay to ensure UI updates with cleared state
-      await Future.delayed(const Duration(milliseconds: 50));
-      
-      // Notify all auth-aware providers of login
-      await _notifyProvidersOfAuthChange(true);
-    } catch (e) {
-      if (kDebugMode) {
-        print('Error during login data initialization: $e');
-      }
-    }
-  }
-
-  /// Handle user logout - clear all provider data
-  Future<void> _onUserLogout() async {
-    try {
-      // Notify all auth-aware providers of logout
-      await _notifyProvidersOfAuthChange(false);
-      
-      // Clear all provider data
-      await _clearAllProviderData();
-      
-      notifyListeners();
-    } catch (e) {
-      if (kDebugMode) {
-        print('Error during logout data clearing: $e');
-      }
-    }
-  }
 
   /// Notify all auth-aware providers of authentication state changes
   Future<void> _notifyProvidersOfAuthChange(bool isAuthenticated) async {
@@ -96,6 +74,8 @@ class AppStateProvider with ChangeNotifier {
       _searchProvider,
       _tagProvider,
       _memoriesProvider,
+      _trashProvider,
+      _discoveryProvider,
     ];
     
     // Notify all providers of auth state change
@@ -114,6 +94,8 @@ class AppStateProvider with ChangeNotifier {
       _searchProvider,
       _tagProvider,
       _memoriesProvider,
+      _trashProvider,
+      _discoveryProvider,
     ];
     
     for (final provider in providers) {
@@ -132,6 +114,8 @@ class AppStateProvider with ChangeNotifier {
       await _searchProvider.refreshSearch();
       await _tagProvider.loadTagCloud(forceRefresh: true);
       await _memoriesProvider.refreshMemories();
+      await _trashProvider.refresh();
+      await _discoveryProvider.refresh();
       
       notifyListeners();
     } catch (e) {

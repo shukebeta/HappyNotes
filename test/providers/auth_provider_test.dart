@@ -123,6 +123,7 @@ void main() {
       final result = await authProvider.login('user', 'wrong_pass');
 
       expect(result, false);
+      expect(authProvider.error, contains('Invalid credentials'));
       expect(authProvider.isAuthenticated, false);
       expect(authProvider.token, null);
       expect(authProvider.error, contains('Invalid credentials'));
@@ -159,6 +160,7 @@ void main() {
       final result = await authProvider.register('user', 'invalid_email', 'pass');
 
       expect(result, false);
+      expect(authProvider.error, contains('Invalid email'));
       expect(authProvider.isAuthenticated, false);
       expect(authProvider.token, null);
       expect(authProvider.error, contains('Invalid email'));

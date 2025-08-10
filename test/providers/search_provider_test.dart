@@ -35,7 +35,7 @@ void main() {
         expect(searchProvider.error, isNull);
         expect(searchProvider.currentQuery, isEmpty);
         expect(searchProvider.currentPage, equals(1));
-        expect(searchProvider.totalNotes, equals(1));
+        expect(searchProvider.totalPages, equals(1));
         expect(searchProvider.totalPages, equals(1));
       });
     });
@@ -54,7 +54,7 @@ void main() {
 
         expect(searchProvider.searchResults, equals(notes));
         expect(searchProvider.currentQuery, equals('test'));
-        expect(searchProvider.totalNotes, equals(1));
+        expect(searchProvider.totalPages, equals(1));
         expect(searchProvider.error, isNull);
       });
 
@@ -117,7 +117,7 @@ void main() {
         expect(deleteResult, isTrue);
         expect(searchProvider.searchResults.length, equals(1));
         expect(searchProvider.searchResults.first.id, equals(2));
-        expect(searchProvider.totalNotes, equals(1));
+        expect(searchProvider.totalPages, equals(1));
       });
 
       test('should handle delete errors', () async {

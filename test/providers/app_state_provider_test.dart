@@ -6,6 +6,8 @@ import 'package:happy_notes/providers/notes_provider.dart';
 import 'package:happy_notes/providers/search_provider.dart';
 import 'package:happy_notes/providers/tag_provider.dart';
 import 'package:happy_notes/providers/memories_provider.dart';
+import 'package:happy_notes/providers/trash_provider.dart';
+import 'package:happy_notes/providers/discovery_provider.dart';
 import 'package:happy_notes/entities/note.dart';
 import 'package:happy_notes/models/notes_result.dart';
 
@@ -89,6 +91,40 @@ class MockMemoriesProvider extends Mock implements MemoriesProvider {
   );
 }
 
+class MockTrashProvider extends Mock implements TrashProvider {
+  @override
+  void clearAllData() => super.noSuchMethod(Invocation.method(#clearAllData, []));
+  
+  @override
+  Future<void> onAuthStateChanged(bool isAuthenticated) => super.noSuchMethod(
+    Invocation.method(#onAuthStateChanged, [isAuthenticated]),
+    returnValue: Future.value(),
+  );
+  
+  @override
+  Future<void> refresh() => super.noSuchMethod(
+    Invocation.method(#refresh, []),
+    returnValue: Future.value(),
+  );
+}
+
+class MockDiscoveryProvider extends Mock implements DiscoveryProvider {
+  @override
+  void clearAllData() => super.noSuchMethod(Invocation.method(#clearAllData, []));
+  
+  @override
+  Future<void> onAuthStateChanged(bool isAuthenticated) => super.noSuchMethod(
+    Invocation.method(#onAuthStateChanged, [isAuthenticated]),
+    returnValue: Future.value(),
+  );
+  
+  @override
+  Future<void> refresh() => super.noSuchMethod(
+    Invocation.method(#refresh, []),
+    returnValue: Future.value(),
+  );
+}
+
 void main() {
   group('AppStateProvider Tests', () {
     late AppStateProvider appStateProvider;
@@ -98,6 +134,8 @@ void main() {
     late MockSearchProvider mockSearchProvider;
     late MockTagProvider mockTagProvider;
     late MockMemoriesProvider mockMemoriesProvider;
+    late MockTrashProvider mockTrashProvider;
+    late MockDiscoveryProvider mockDiscoveryProvider;
 
     setUp(() {
       mockAuthProvider = MockAuthProvider();
@@ -105,6 +143,8 @@ void main() {
       mockSearchProvider = MockSearchProvider();
       mockTagProvider = MockTagProvider();
       mockMemoriesProvider = MockMemoriesProvider();
+      mockTrashProvider = MockTrashProvider();
+      mockDiscoveryProvider = MockDiscoveryProvider();
       
       // Setup default mock responses before creating provider
       when(mockAuthProvider.isAuthenticated).thenReturn(false);
@@ -117,7 +157,9 @@ void main() {
         notesProvider, 
         mockSearchProvider, 
         mockTagProvider, 
-        mockMemoriesProvider
+        mockMemoriesProvider,
+        mockTrashProvider,
+        mockDiscoveryProvider,
       );
     });
 
