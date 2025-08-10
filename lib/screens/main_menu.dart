@@ -86,7 +86,7 @@ class MainMenuState extends State<MainMenu> {
         homePageKey.currentState?.refreshPage();
         break;
       case indexMemories:
-        memoriesKey.currentState?.refreshPage();
+        // No auto refresh; Memories lazily loads and caches itself
         break;
       case indexSharedNotes:
         memoriesKey.currentState?.setState(() {});

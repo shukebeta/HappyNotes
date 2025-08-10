@@ -78,10 +78,6 @@ class TrashProvider extends NoteListProvider {
     }
   }
 
-  @override
-  Future<void> onLogin() async {
-    await loadInitialData();
-  }
 
   @override
   void clearAllData() {

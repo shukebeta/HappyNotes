@@ -15,11 +15,10 @@ abstract class AuthAwareProvider with ChangeNotifier {
   }
 
   /// Called when the user logs out
-  /// Override this to perform custom cleanup in addition to clearAllData
+  /// Override this to perform custom cleanup. Do not clear data here by default.
   @protected
   Future<void> onLogout() async {
-    // Default implementation just clears data
-    clearAllData();
+    // Default implementation is a no-op; AppStateProvider handles clearing.
   }
 
   /// Called when auth state changes

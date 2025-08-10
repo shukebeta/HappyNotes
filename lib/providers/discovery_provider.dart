@@ -19,8 +19,4 @@ class DiscoveryProvider extends NoteListProvider {
     await _notesService.delete(noteId);
   }
 
-  @override
-  Future<void> onLogin() async {
-    await loadInitialData();
-  }
 }

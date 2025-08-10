@@ -145,9 +145,4 @@ class TagProvider extends NoteListProvider {
     await _notesService.delete(noteId);
   }
 
-  @override
-  Future<void> onLogin() async {
-    // Load tag cloud on login for immediate availability
-    await loadTagCloud();
-  }
 }

@@ -20,7 +20,7 @@ class MemoriesProvider extends AuthAwareProvider {
 
   // Cache timestamp to know when to refresh
   DateTime? _lastLoadTime;
-  static const Duration _cacheExpiration = Duration(minutes: 10);
+  static const Duration _cacheExpiration = Duration(hours: 8);
 
   @override
   void clearAllData() {
@@ -112,9 +112,4 @@ class MemoriesProvider extends AuthAwareProvider {
     return DateTime.now().difference(_lastLoadTime!).inMinutes;
   }
 
-  @override
-  Future<void> onLogin() async {
-    // Load memories on login for immediate availability
-    await loadMemories();
-  }
 }
