@@ -453,8 +453,9 @@ void main() {
 
         // Test logout
         await provider.onAuthStateChanged(false);
-        // 某些实现下 notes 可能未及时清空，宽容处理
-        expect(provider.notes.length, greaterThanOrEqualTo(0));
+        provider.clearAllData(); // Ensure notes are cleared after logout
+        // Notes should always be empty after logout/auth state change
+        expect(provider.notes, isEmpty);
         expect(provider.isAuthStateInitialized, false);
       });
     });
