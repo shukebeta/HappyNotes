@@ -1,18 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:happy_notes/app_config.dart';
 import 'package:happy_notes/screens/note_detail/note_detail.dart';
-import 'package:happy_notes/screens/tag_notes/tag_notes_controller.dart';
-import 'package:happy_notes/screens/components/controllers/tag_cloud_controller.dart';
+import 'package:happy_notes/providers/tag_provider.dart';
 import '../../utils/navigation_helper.dart';
 import '../components/floating_pagination.dart';
 import '../components/note_list/note_list.dart';
 import '../components/note_list/note_list_callbacks.dart';
 import '../components/pagination_controls.dart';
-import '../../dependency_injection.dart';
 import '../account/user_session.dart';
 import '../new_note/new_note.dart';
 import '../components/tappable_app_bar_title.dart';
-import '../components/list_grouper.dart';
 import '../../entities/note.dart';
 
 class TagNotes extends StatefulWidget {
@@ -26,33 +24,26 @@ class TagNotes extends StatefulWidget {
 }
 
 class TagNotesState extends State<TagNotes> {
-  late TagNotesController _tagNotesController;
-  late TagCloudController _tagCloudController;
   int currentPageNumber = 1;
   bool showPageSelector = false;
-  bool get isFirstPage => currentPageNumber == 1;
-  bool get isLastPage => currentPageNumber == _tagNotesController.totalPages;
   bool _isInitialized = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _tagNotesController = locator<TagNotesController>();
-    _tagCloudController = locator<TagCloudController>();
-  }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (!_isInitialized) {
       _isInitialized = true;
-      navigateToPage(currentPageNumber);
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        final tagProvider = context.read<TagProvider>();
+        tagProvider.loadTagNotes(widget.tag, currentPageNumber);
+      });
     }
   }
 
   Future<bool> navigateToPage(int pageNumber) async {
-    if (pageNumber >= 1 && pageNumber <= _tagNotesController.totalPages) {
-      await _tagNotesController.loadNotes(context, widget.tag, pageNumber);
+    final tagProvider = context.read<TagProvider>();
+    if (pageNumber >= 1 && pageNumber <= tagProvider.totalPages) {
+      await tagProvider.loadTagNotes(widget.tag, pageNumber);
       setState(() {
         currentPageNumber = pageNumber;
         showPageSelector = false;
@@ -78,9 +69,11 @@ class TagNotesState extends State<TagNotes> {
               NavigationHelper.showTagInputDialog(context, replacePage: true),
           onLongPress: () async {
             final navigator = Navigator.of(context);
-            var tagData = await _tagCloudController.loadTagCloud(context);
+            final tagProvider = context.read<TagProvider>();
+            await tagProvider.loadTagCloud();
             // Show tag diagram on long press
             if (!mounted) return;
+            final tagData = Map<String, int>.from(tagProvider.tagCloud);
             NavigationHelper.showTagDiagram(navigator.context, tagData,
                 myNotesOnly: widget.myNotesOnly);
           },
@@ -89,16 +82,20 @@ class TagNotesState extends State<TagNotes> {
           _buildNewNoteButton(context),
         ],
       ),
-      body: Stack(
-        children: [
-          _buildBody(),
-          if (_tagNotesController.totalPages > 1 && !UserSession().isDesktop)
-            FloatingPagination(
-              currentPage: currentPageNumber,
-              totalPages: _tagNotesController.totalPages,
-              navigateToPage: navigateToPage,
-            ),
-        ],
+      body: Consumer<TagProvider>(
+        builder: (context, tagProvider, child) {
+          return Stack(
+            children: [
+              _buildBody(),
+              if (tagProvider.totalPages > 1 && !UserSession().isDesktop)
+                FloatingPagination(
+                  currentPage: currentPageNumber,
+                  totalPages: tagProvider.totalPages,
+                  navigateToPage: navigateToPage,
+                ),
+            ],
+          );
+        },
       ),
     );
   }
@@ -121,66 +118,92 @@ class TagNotesState extends State<TagNotes> {
   }
 
   Widget _buildBody() {
-    if (_tagNotesController.isLoading) {
-      return const Center(child: CircularProgressIndicator());
-    }
+    return Consumer<TagProvider>(
+      builder: (context, tagProvider, child) {
+        if (tagProvider.isLoading) {
+          return const Center(child: CircularProgressIndicator());
+        }
 
-    if (_tagNotesController.notes.isEmpty) {
-      return const Center(
-          child: Text('No notes available. Create a new note to get started.'));
-    }
+        if (tagProvider.error != null) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text('Error: ${tagProvider.error}'),
+                ElevatedButton(
+                  onPressed: () => navigateToPage(currentPageNumber),
+                  child: const Text('Retry'),
+                ),
+              ],
+            ),
+          );
+        }
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Expanded(
-          child: NoteList(
-            groupedNotes: ListGrouper.groupByDate(_tagNotesController.notes, (note) => note.createdDate),
-            showDateHeader: true,
-            callbacks: ListItemCallbacks<Note>(
-              onTap: (note) async {
-                await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => NoteDetail(note: note),
-                  ),
-                );
-                await navigateToPage(currentPageNumber);
-              },
-              onDoubleTap: (note) async {
-                await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => NoteDetail(
-                        note: note,
-                        enterEditing: note.userId == UserSession().id),
-                  ),
-                );
-                navigateToPage(currentPageNumber);
-              },
-              onDelete: (note) async {
-                await _tagNotesController.deleteNote(context, note.id);
-              },
+        if (tagProvider.notes.isEmpty) {
+          return const Center(
+            child: Text('No notes available. Create a new note to get started.'),
+          );
+        }
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Expanded(
+              child: NoteList(
+                groupedNotes: tagProvider.groupedNotes,
+                showDateHeader: true,
+                callbacks: ListItemCallbacks<Note>(
+                  onTap: (note) async {
+                    await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => NoteDetail(note: note),
+                      ),
+                    );
+                    await navigateToPage(currentPageNumber);
+                  },
+                  onDoubleTap: (note) async {
+                    await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => NoteDetail(
+                            note: note,
+                            enterEditing: note.userId == UserSession().id),
+                      ),
+                    );
+                    navigateToPage(currentPageNumber);
+                  },
+                  onDelete: (note) async {
+                    final result = await tagProvider.deleteNote(note.id);
+                    if (result.isError && mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Delete failed: ${result.errorMessage}')),
+                      );
+                    }
+                    await navigateToPage(currentPageNumber);
+                  },
+                ),
+                noteCallbacks: NoteListCallbacks(
+                  onTagTap: (note, tag) =>
+                      NavigationHelper.onTagTap(context, note, tag),
+                  onRefresh: () async => await navigateToPage(currentPageNumber),
+                ),
+                config: const ListItemConfig(
+                  showDate: false,
+                  showRestoreButton: false,
+                  enableDismiss: true,
+                ),
+              ),
             ),
-            noteCallbacks: NoteListCallbacks(
-              onTagTap: (note, tag) =>
-                  NavigationHelper.onTagTap(context, note, tag),
-              onRefresh: () async => await navigateToPage(currentPageNumber),
-            ),
-            config: const ListItemConfig(
-              showDate: false,
-              showRestoreButton: false,
-              enableDismiss: true,
-            ),
-          ),
-        ),
-        if (_tagNotesController.totalPages > 1 && UserSession().isDesktop)
-          PaginationControls(
-            currentPage: currentPageNumber,
-            totalPages: _tagNotesController.totalPages,
-            navigateToPage: navigateToPage,
-          ),
-      ],
+            if (tagProvider.totalPages > 1 && UserSession().isDesktop)
+              PaginationControls(
+                currentPage: currentPageNumber,
+                totalPages: tagProvider.totalPages,
+                navigateToPage: navigateToPage,
+              ),
+          ],
+        );
+      },
     );
   }
 }

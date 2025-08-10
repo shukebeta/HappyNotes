@@ -12,7 +12,6 @@ import 'package:happy_notes/utils/util.dart';
 import 'package:happy_notes/screens/components/floating_pagination.dart';
 import 'package:happy_notes/screens/components/pagination_controls.dart';
 import 'package:happy_notes/screens/components/tappable_app_bar_title.dart';
-import 'package:happy_notes/screens/components/list_grouper.dart';
 import 'package:happy_notes/entities/note.dart';
 
 class SearchResultsPage extends StatefulWidget {
@@ -125,7 +124,7 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
       children: [
         Expanded(
           child: NoteList(
-            groupedNotes: ListGrouper.groupByDate(searchProvider.searchResults, (note) => note.createdDate),
+            groupedNotes: searchProvider.groupedNotes,
             showDateHeader: true,
             callbacks: ListItemCallbacks<Note>(
               onTap: (note) async {
@@ -149,9 +148,11 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
                 }
               },
               onDelete: (note) async {
-                final success = await searchProvider.deleteNote(note.id);
-                if (success && mounted) {
+                final result = await searchProvider.deleteNote(note.id);
+                if (result.isSuccess && mounted) {
                   Util.showInfo(ScaffoldMessenger.of(context), 'Note deleted successfully.');
+                } else if (result.isError && mounted) {
+                  Util.showError(ScaffoldMessenger.of(context), result.errorMessage!);
                 }
               },
             ),

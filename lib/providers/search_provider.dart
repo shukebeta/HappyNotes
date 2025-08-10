@@ -1,36 +1,22 @@
-import 'package:happy_notes/app_config.dart';
 import 'package:happy_notes/entities/note.dart';
 import 'package:happy_notes/models/notes_result.dart';
 import 'package:happy_notes/services/notes_services.dart';
 import 'package:happy_notes/services/note_tag_service.dart';
-import 'package:happy_notes/providers/provider_base.dart';
+import 'package:happy_notes/providers/note_list_provider.dart';
+import 'package:happy_notes/utils/operation_result.dart';
 
-class SearchProvider extends AuthAwareProvider {
+class SearchProvider extends NoteListProvider {
   final NotesService _notesService;
   final NoteTagService _noteTagService;
 
-  SearchProvider(this._notesService, this._noteTagService) {
-    try {
-      _pageSize = AppConfig.pageSize;
-    } catch (e) {
-      _pageSize = 10; // Default for tests
-    }
-  }
+  SearchProvider(this._notesService, this._noteTagService);
 
-  // Search state
-  List<Note> _searchResults = [];
-  List<Note> get searchResults => _searchResults;
-
-  int _totalCount = 0;
-  int _currentPage = 1;
+  // Search-specific state
   String _currentQuery = '';
-  late final int _pageSize;
-
-  bool _isLoading = false;
-  bool get isLoading => _isLoading;
-
-  String? _error;
-  String? get error => _error;
+  String get currentQuery => _currentQuery;
+  
+  // Alias for compatibility
+  List<Note> get searchResults => notes;
 
   // Tag cloud state
   Map<String, int> _tagCloud = {};
@@ -42,24 +28,14 @@ class SearchProvider extends AuthAwareProvider {
   String? _tagCloudError;
   String? get tagCloudError => _tagCloudError;
 
-  // Computed properties
-  int get totalNotes => _totalCount <= 0 ? 1 : _totalCount;
-  int get totalPages => (totalNotes / _pageSize).ceil();
-  int get currentPage => _currentPage;
-  String get currentQuery => _currentQuery;
 
   @override
   void clearAllData() {
-    _searchResults.clear();
-    _totalCount = 0;
-    _currentPage = 1;
     _currentQuery = '';
-    _isLoading = false;
-    _error = null;
     _tagCloud.clear();
     _isLoadingTagCloud = false;
     _tagCloudError = null;
-    notifyListeners();
+    super.clearAllData();
   }
 
   /// Search for notes with pagination
@@ -70,31 +46,13 @@ class SearchProvider extends AuthAwareProvider {
     }
 
     _currentQuery = query;
-    _currentPage = pageNumber;
-
-    final result = await executeWithErrorHandling<NotesResult>(
-      operation: () => _notesService.searchNotes(query, _pageSize, pageNumber),
-      setLoading: (loading) => _isLoading = loading,
-      setError: (error) => _error = error,
-      operationName: 'search notes',
-    );
-
-    if (result != null) {
-      _searchResults = result.notes;
-      _totalCount = result.totalNotes;
-      _error = null;
-      notifyListeners();
-    }
+    await navigateToPage(pageNumber);
   }
 
   /// Clear search results
   void clearSearchResults() {
-    _searchResults.clear();
-    _totalCount = 0;
-    _currentPage = 1;
     _currentQuery = '';
-    _error = null;
-    notifyListeners();
+    clearAllData();
   }
 
   /// Load tag cloud data
@@ -113,36 +71,30 @@ class SearchProvider extends AuthAwareProvider {
     }
   }
 
-  /// Delete a note from search results
-  Future<bool> deleteNote(int noteId) async {
-    _isLoading = true;
-    _error = null;
-    notifyListeners();
-
-    try {
-      await _notesService.delete(noteId);
-      
-      // Remove note from local results and update count
-      _searchResults.removeWhere((note) => note.id == noteId);
-      if (_totalCount > 0) _totalCount--;
-      
-      _error = null;
-      return true;
-    } catch (e) {
-      _error = handleServiceError(e, 'delete note');
-      return false;
-    } finally {
-      _isLoading = false;
-      notifyListeners();
-    }
+  @override
+  Future<OperationResult<void>> deleteNote(int noteId) async {
+    return await super.deleteNote(noteId);
   }
 
   /// Refresh current search
   Future<void> refreshSearch() async {
     if (_currentQuery.isNotEmpty) {
-      await searchNotes(_currentQuery, _currentPage);
+      await refresh();
     }
-    // Explicitly return completed future for empty query case
+  }
+
+  @override
+  Future<NotesResult> fetchNotes(int pageSize, int pageNumber) async {
+    if (_currentQuery.isEmpty) {
+      // Return empty result if no query
+      return NotesResult([], 0);
+    }
+    return await _notesService.searchNotes(_currentQuery, pageSize, pageNumber);
+  }
+
+  @override
+  Future<void> performDelete(int noteId) async {
+    await _notesService.delete(noteId);
   }
 
   @override

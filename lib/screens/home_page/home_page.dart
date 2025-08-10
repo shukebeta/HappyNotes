@@ -9,7 +9,6 @@ import '../../utils/navigation_helper.dart';
 import '../../utils/util.dart';
 import '../components/floating_pagination.dart';
 import '../memories/memories_on_day.dart';
-import '../components/list_grouper.dart';
 import '../components/note_list/note_list_callbacks.dart';
 import '../components/pagination_controls.dart';
 import '../../dependency_injection.dart';
@@ -136,14 +135,12 @@ class HomePageState extends State<HomePage> {
       return const Center(child: Text('No notes available. Create a new note to get started.'));
     }
 
-    final groupedNotes = ListGrouper.groupByDate(notesProvider.notes, (note) => note.createdDate);
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Expanded(
           child: NoteList(
-            groupedNotes: groupedNotes,
+            groupedNotes: notesProvider.groupedNotes,
             showDateHeader: true,
             callbacks: ListItemCallbacks<Note>(
               onTap: (note) async {

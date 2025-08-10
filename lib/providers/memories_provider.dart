@@ -83,6 +83,16 @@ class MemoriesProvider extends AuthAwareProvider {
     }
   }
 
+  /// Get memories for a specific date
+  Future<NotesResult?> memoriesOn(String dateString) async {
+    try {
+      return await _notesService.memoriesOn(dateString);
+    } catch (e) {
+      handleServiceError(e, 'load memories for date');
+      return null;
+    }
+  }
+
   /// Refresh memories
   Future<void> refreshMemories() async {
     await loadMemories(forceRefresh: true);

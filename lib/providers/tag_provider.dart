@@ -1,21 +1,15 @@
-import 'package:happy_notes/app_config.dart';
 import 'package:happy_notes/entities/note.dart';
 import 'package:happy_notes/models/notes_result.dart';
 import 'package:happy_notes/services/notes_services.dart';
 import 'package:happy_notes/services/note_tag_service.dart';
-import 'package:happy_notes/providers/provider_base.dart';
+import 'package:happy_notes/providers/note_list_provider.dart';
+import 'package:happy_notes/utils/operation_result.dart';
 
-class TagProvider extends AuthAwareProvider {
+class TagProvider extends NoteListProvider {
   final NotesService _notesService;
   final NoteTagService _noteTagService;
 
-  TagProvider(this._notesService, this._noteTagService) {
-    try {
-      _pageSize = AppConfig.pageSize;
-    } catch (e) {
-      _pageSize = 10; // Default for tests
-    }
-  }
+  TagProvider(this._notesService, this._noteTagService);
 
   // Tag cloud state
   Map<String, int> _tagCloud = {};
@@ -27,27 +21,12 @@ class TagProvider extends AuthAwareProvider {
   String? _tagCloudError;
   String? get tagCloudError => _tagCloudError;
 
-  // Tag notes state
+  // Tag-specific state
   String _currentTag = '';
   String get currentTag => _currentTag;
-
-  List<Note> _tagNotes = [];
-  List<Note> get tagNotes => _tagNotes;
-
-  int _totalNotes = 0;
-  int _currentPage = 1;
-  late final int _pageSize;
-
-  bool _isLoadingNotes = false;
-  bool get isLoadingNotes => _isLoadingNotes;
-
-  String? _notesError;
-  String? get notesError => _notesError;
-
-  // Computed properties
-  int get totalTagNotes => _totalNotes <= 0 ? 1 : _totalNotes;
-  int get totalPages => (totalTagNotes / _pageSize).ceil();
-  int get currentPage => _currentPage;
+  
+  // Alias for compatibility
+  List<Note> get tagNotes => notes;
 
   @override
   void clearAllData() {
@@ -55,11 +34,6 @@ class TagProvider extends AuthAwareProvider {
     _isLoadingTagCloud = false;
     _tagCloudError = null;
     _currentTag = '';
-    _tagNotes.clear();
-    _totalNotes = 0;
-    _currentPage = 1;
-    _isLoadingNotes = false;
-    _notesError = null;
     notifyListeners();
   }
 
@@ -91,71 +65,46 @@ class TagProvider extends AuthAwareProvider {
     }
 
     _currentTag = tag;
-    _currentPage = pageNumber;
-
-    final result = await executeWithErrorHandling<NotesResult>(
-      operation: () => _notesService.tagNotes(tag, _pageSize, pageNumber),
-      setLoading: (loading) => _isLoadingNotes = loading,
-      setError: (error) => _notesError = error,
-      operationName: 'load tag notes',
-    );
-
-    if (result != null) {
-      _tagNotes = result.notes;
-      _totalNotes = result.totalNotes;
-      _notesError = null;
-      notifyListeners();
-    }
+    await navigateToPage(pageNumber);
   }
 
   /// Clear tag notes data
   void clearTagNotes() {
     _currentTag = '';
-    _tagNotes.clear();
-    _totalNotes = 0;
-    _currentPage = 1;
-    _notesError = null;
-    notifyListeners();
+    clearAllData();
   }
 
-  /// Delete a note from tag notes
-  Future<bool> deleteNote(int noteId) async {
-    _isLoadingNotes = true;
-    _notesError = null;
-    notifyListeners();
-
-    try {
-      await _notesService.delete(noteId);
-      
-      // Remove note from local results and update count
-      _tagNotes.removeWhere((note) => note.id == noteId);
-      if (_totalNotes > 0) _totalNotes--;
-      
-      // Also update tag cloud count if the deleted note affects current tag
-      if (_currentTag.isNotEmpty && _tagCloud.containsKey(_currentTag)) {
-        final currentCount = _tagCloud[_currentTag] ?? 0;
-        if (currentCount > 1) {
-          _tagCloud[_currentTag] = currentCount - 1;
-        } else {
-          _tagCloud.remove(_currentTag);
-        }
+  @override
+  Future<OperationResult<void>> deleteNote(int noteId) async {
+    // Store original tag cloud for rollback
+    final originalTagCloud = Map<String, int>.from(_tagCloud);
+    
+    // Update tag cloud optimistically
+    if (_currentTag.isNotEmpty && _tagCloud.containsKey(_currentTag)) {
+      final currentCount = _tagCloud[_currentTag] ?? 0;
+      if (currentCount > 1) {
+        _tagCloud[_currentTag] = currentCount - 1;
+      } else {
+        _tagCloud.remove(_currentTag);
       }
-      
-      _notesError = null;
-      return true;
-    } catch (e) {
-      _notesError = handleServiceError(e, 'delete note');
-      return false;
-    } finally {
-      _isLoadingNotes = false;
+    }
+    
+    // Call parent delete method
+    final result = await super.deleteNote(noteId);
+    
+    // If delete failed, rollback tag cloud changes
+    if (result.isError) {
+      _tagCloud = originalTagCloud;
       notifyListeners();
     }
+    
+    return result;
   }
 
   /// Refresh current tag notes
   Future<void> refreshTagNotes() async {
     if (_currentTag.isNotEmpty) {
-      await loadTagNotes(_currentTag, _currentPage);
+      await refresh();
     }
   }
 
@@ -180,6 +129,20 @@ class TagProvider extends AuthAwareProvider {
       ..sort((a, b) => b.value.compareTo(a.value));
     
     return sortedEntries.take(limit).toList();
+  }
+
+@override
+  Future<NotesResult> fetchNotes(int pageSize, int pageNumber) async {
+    if (_currentTag.isEmpty) {
+      // Return empty result if no tag selected
+      return NotesResult([], 0);
+    }
+    return await _notesService.tagNotes(_currentTag, pageSize, pageNumber);
+  }
+
+  @override
+  Future<void> performDelete(int noteId) async {
+    await _notesService.delete(noteId);
   }
 
   @override
