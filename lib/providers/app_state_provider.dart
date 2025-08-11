@@ -3,6 +3,7 @@ import 'package:happy_notes/providers/auth_provider.dart';
 import 'package:happy_notes/providers/notes_provider.dart';
 import 'package:happy_notes/providers/search_provider.dart';
 import 'package:happy_notes/providers/tag_notes_provider.dart';
+import 'package:happy_notes/providers/tag_provider.dart';
 import 'package:happy_notes/providers/memories_provider.dart';
 import 'package:happy_notes/providers/trash_provider.dart';
 import 'package:happy_notes/providers/discovery_provider.dart';
@@ -15,10 +16,11 @@ class AppStateProvider with ChangeNotifier {
   final AuthProvider _authProvider;
   final NotesProvider _notesProvider;
   final SearchProvider _searchProvider;
-  final TagNotesProvider _tagProvider;
+  final TagNotesProvider _tagNotesProvider;
   final MemoriesProvider _memoriesProvider;
   final TrashProvider _trashProvider;
   final DiscoveryProvider _discoveryProvider;
+  final TagProvider _tagProvider;
   
   bool _isInitialized = false;
   bool get isInitialized => _isInitialized;
@@ -27,10 +29,11 @@ class AppStateProvider with ChangeNotifier {
     this._authProvider, 
     this._notesProvider,
     this._searchProvider,
-    this._tagProvider,
+    this._tagNotesProvider,
     this._memoriesProvider,
     this._trashProvider,
     this._discoveryProvider,
+    this._tagProvider,
   ) {
     debugPrint('AppStateProvider: Constructor called - setting up listeners');
     _initializeProvider();
@@ -72,7 +75,7 @@ class AppStateProvider with ChangeNotifier {
     final List<AuthAwareProvider> providers = [
       _notesProvider,
       _searchProvider,
-      _tagProvider,
+      _tagNotesProvider,
       _memoriesProvider,
       _trashProvider,
       _discoveryProvider,
@@ -92,7 +95,7 @@ class AppStateProvider with ChangeNotifier {
     final List<AuthAwareProvider> providers = [
       _notesProvider,
       _searchProvider,
-      _tagProvider,
+      _tagNotesProvider,
       _memoriesProvider,
       _trashProvider,
       _discoveryProvider,

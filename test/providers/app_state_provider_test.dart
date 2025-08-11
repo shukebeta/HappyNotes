@@ -5,6 +5,7 @@ import 'package:happy_notes/providers/auth_provider.dart';
 import 'package:happy_notes/providers/notes_provider.dart';
 import 'package:happy_notes/providers/search_provider.dart';
 import 'package:happy_notes/providers/tag_notes_provider.dart';
+import 'package:happy_notes/providers/tag_provider.dart';
 import 'package:happy_notes/providers/memories_provider.dart';
 import 'package:happy_notes/providers/trash_provider.dart';
 import 'package:happy_notes/providers/discovery_provider.dart';
@@ -57,7 +58,24 @@ class MockSearchProvider extends Mock implements SearchProvider {
   );
 }
 
-class MockTagProvider extends Mock implements TagNotesProvider {
+class MockTagNotesProvider extends Mock implements TagNotesProvider {
+  @override
+  void clearAllData() => super.noSuchMethod(Invocation.method(#clearAllData, []));
+  
+  @override
+  Future<void> onAuthStateChanged(bool isAuthenticated) => super.noSuchMethod(
+    Invocation.method(#onAuthStateChanged, [isAuthenticated]),
+    returnValue: Future.value(),
+  );
+  
+  @override
+  Future<void> loadTagCloud({bool forceRefresh = false}) => super.noSuchMethod(
+    Invocation.method(#loadTagCloud, [], {#forceRefresh: forceRefresh}),
+    returnValue: Future.value(),
+  );
+}
+
+class MockTagProvider extends Mock implements TagProvider {
   @override
   void clearAllData() => super.noSuchMethod(Invocation.method(#clearAllData, []));
   
@@ -132,6 +150,7 @@ void main() {
     late MockNotesService mockNotesService;
     late NotesProvider notesProvider;
     late MockSearchProvider mockSearchProvider;
+    late MockTagNotesProvider mockTagNotesProvider;
     late MockTagProvider mockTagProvider;
     late MockMemoriesProvider mockMemoriesProvider;
     late MockTrashProvider mockTrashProvider;
@@ -141,6 +160,7 @@ void main() {
       mockAuthProvider = MockAuthProvider();
       mockNotesService = MockNotesService();
       mockSearchProvider = MockSearchProvider();
+      mockTagNotesProvider = MockTagNotesProvider();
       mockTagProvider = MockTagProvider();
       mockMemoriesProvider = MockMemoriesProvider();
       mockTrashProvider = MockTrashProvider();
@@ -156,10 +176,11 @@ void main() {
         mockAuthProvider, 
         notesProvider, 
         mockSearchProvider, 
-        mockTagProvider, 
+        mockTagNotesProvider, 
         mockMemoriesProvider,
         mockTrashProvider,
         mockDiscoveryProvider,
+        mockTagProvider,
       );
     });
 

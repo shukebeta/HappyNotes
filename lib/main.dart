@@ -6,6 +6,7 @@ import 'package:happy_notes/providers/auth_provider.dart';
 import 'package:happy_notes/providers/notes_provider.dart';
 import 'package:happy_notes/providers/search_provider.dart';
 import 'package:happy_notes/providers/tag_notes_provider.dart';
+import 'package:happy_notes/providers/tag_provider.dart';
 import 'package:happy_notes/providers/memories_provider.dart';
 import 'package:happy_notes/providers/trash_provider.dart';
 import 'package:happy_notes/providers/discovery_provider.dart';
@@ -56,6 +57,9 @@ void main() async {
           create: (_) => TagNotesProvider(di.locator(), di.locator()),
         ),
         ChangeNotifierProvider(
+          create: (_) => TagProvider(di.locator()),
+        ),
+        ChangeNotifierProvider(
           create: (_) => MemoriesProvider(di.locator()),
         ),
         ChangeNotifierProvider(
@@ -77,6 +81,7 @@ void main() async {
               Provider.of<MemoriesProvider>(context, listen: false),
               Provider.of<TrashProvider>(context, listen: false),
               Provider.of<DiscoveryProvider>(context, listen: false),
+              Provider.of<TagProvider>(context, listen: false),
             );
           },
         ),
