@@ -11,7 +11,7 @@ import '../components/tappable_app_bar_title.dart';
 import '../components/note_list/note_list.dart';
 import '../components/note_list/note_list_callbacks.dart';
 import '../../providers/memories_provider.dart';
-import '../../providers/tag_provider.dart';
+import '../../providers/tag_notes_provider.dart';
 
 class MemoriesOnDay extends StatefulWidget {
   final DateTime date;
@@ -100,7 +100,7 @@ class MemoriesOnDayState extends State<MemoriesOnDay> with RouteAware {
           onTap: () => NavigationHelper.showTagInputDialog(context),
           onLongPress: () async {
             final navigator = Navigator.of(context);
-            final tagProvider = context.read<TagProvider>();
+            final tagProvider = context.read<TagNotesProvider>();
             await tagProvider.loadTagCloud();
             if (!mounted) return;
             final tagData = Map<String, int>.from(tagProvider.tagCloud);

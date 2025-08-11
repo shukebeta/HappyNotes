@@ -5,11 +5,11 @@ import 'package:happy_notes/services/note_tag_service.dart';
 import 'package:happy_notes/providers/note_list_provider.dart';
 import 'package:happy_notes/utils/operation_result.dart';
 
-class TagProvider extends NoteListProvider {
+class TagNotesProvider extends NoteListProvider {
   final NotesService _notesService;
   final NoteTagService _noteTagService;
 
-  TagProvider(this._notesService, this._noteTagService);
+  TagNotesProvider(this._notesService, this._noteTagService);
 
   // Tag cloud state
   Map<String, int> _tagCloud = {};

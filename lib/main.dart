@@ -5,7 +5,7 @@ import 'package:happy_notes/dependency_injection.dart' as di;
 import 'package:happy_notes/providers/auth_provider.dart';
 import 'package:happy_notes/providers/notes_provider.dart';
 import 'package:happy_notes/providers/search_provider.dart';
-import 'package:happy_notes/providers/tag_provider.dart';
+import 'package:happy_notes/providers/tag_notes_provider.dart';
 import 'package:happy_notes/providers/memories_provider.dart';
 import 'package:happy_notes/providers/trash_provider.dart';
 import 'package:happy_notes/providers/discovery_provider.dart';
@@ -53,7 +53,7 @@ void main() async {
           create: (_) => SearchProvider(di.locator(), di.locator()),
         ),
         ChangeNotifierProvider(
-          create: (_) => TagProvider(di.locator(), di.locator()),
+          create: (_) => TagNotesProvider(di.locator(), di.locator()),
         ),
         ChangeNotifierProvider(
           create: (_) => MemoriesProvider(di.locator()),
@@ -73,7 +73,7 @@ void main() async {
               Provider.of<AuthProvider>(context, listen: false),
               Provider.of<NotesProvider>(context, listen: false),
               Provider.of<SearchProvider>(context, listen: false),
-              Provider.of<TagProvider>(context, listen: false),
+              Provider.of<TagNotesProvider>(context, listen: false),
               Provider.of<MemoriesProvider>(context, listen: false),
               Provider.of<TrashProvider>(context, listen: false),
               Provider.of<DiscoveryProvider>(context, listen: false),

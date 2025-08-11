@@ -13,7 +13,7 @@ import '../account/user_session.dart';
 import '../new_note/new_note.dart';
 import '../components/tappable_app_bar_title.dart';
 import '../../providers/discovery_provider.dart';
-import '../../providers/tag_provider.dart';
+import '../../providers/tag_notes_provider.dart';
 
 class Discovery extends StatefulWidget {
   const Discovery({super.key});
@@ -66,7 +66,7 @@ class DiscoveryState extends State<Discovery> {
           onTap: () => NavigationHelper.showTagInputDialog(context),
           onLongPress: () async {
             final navigator = Navigator.of(context);
-            final tagProvider = context.read<TagProvider>();
+            final tagProvider = context.read<TagNotesProvider>();
             await tagProvider.loadTagCloud();
             if (!mounted) return;
             final tagData = Map<String, int>.from(tagProvider.tagCloud);

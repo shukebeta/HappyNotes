@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:happy_notes/app_config.dart';
 import 'package:happy_notes/screens/note_detail/note_detail.dart';
-import 'package:happy_notes/providers/tag_provider.dart';
+import 'package:happy_notes/providers/tag_notes_provider.dart';
 import '../../utils/navigation_helper.dart';
 import '../components/floating_pagination.dart';
 import '../components/note_list/note_list.dart';
@@ -34,14 +34,14 @@ class TagNotesState extends State<TagNotes> {
     if (!_isInitialized) {
       _isInitialized = true;
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        final tagProvider = context.read<TagProvider>();
+        final tagProvider = context.read<TagNotesProvider>();
         tagProvider.loadTagNotes(widget.tag, currentPageNumber);
       });
     }
   }
 
   Future<bool> navigateToPage(int pageNumber) async {
-    final tagProvider = context.read<TagProvider>();
+    final tagProvider = context.read<TagNotesProvider>();
     if (pageNumber >= 1 && pageNumber <= tagProvider.totalPages) {
       await tagProvider.loadTagNotes(widget.tag, pageNumber);
       setState(() {
@@ -69,7 +69,7 @@ class TagNotesState extends State<TagNotes> {
               NavigationHelper.showTagInputDialog(context, replacePage: true),
           onLongPress: () async {
             final navigator = Navigator.of(context);
-            final tagProvider = context.read<TagProvider>();
+            final tagProvider = context.read<TagNotesProvider>();
             await tagProvider.loadTagCloud();
             // Show tag diagram on long press
             if (!mounted) return;
@@ -82,7 +82,7 @@ class TagNotesState extends State<TagNotes> {
           _buildNewNoteButton(context),
         ],
       ),
-      body: Consumer<TagProvider>(
+      body: Consumer<TagNotesProvider>(
         builder: (context, tagProvider, child) {
           return Stack(
             children: [
@@ -118,7 +118,7 @@ class TagNotesState extends State<TagNotes> {
   }
 
   Widget _buildBody() {
-    return Consumer<TagProvider>(
+    return Consumer<TagNotesProvider>(
       builder: (context, tagProvider, child) {
         if (tagProvider.isLoading) {
           return const Center(child: CircularProgressIndicator());

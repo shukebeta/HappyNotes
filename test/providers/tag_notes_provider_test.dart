@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
-import 'package:happy_notes/providers/tag_provider.dart';
+import 'package:happy_notes/providers/tag_notes_provider.dart';
 import 'package:happy_notes/entities/note.dart';
 import 'package:happy_notes/models/notes_result.dart';
 import 'package:happy_notes/services/note_tag_service.dart';
@@ -17,15 +17,15 @@ class MockNoteTagService extends Mock implements NoteTagService {
 }
 
 void main() {
-  group('TagProvider Tests', () {
-    late TagProvider tagProvider;
+  group('TagNotesProvider Tests', () {
+    late TagNotesProvider tagProvider;
     late MockNotesService mockNotesService;
     late MockNoteTagService mockNoteTagService;
 
     setUp(() {
       mockNotesService = MockNotesService();
       mockNoteTagService = MockNoteTagService();
-      tagProvider = TagProvider(mockNotesService, mockNoteTagService);
+      tagProvider = TagNotesProvider(mockNotesService, mockNoteTagService);
     });
 
     group('Initialization', () {

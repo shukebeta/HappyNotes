@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:happy_notes/screens/components/note_list/note_list.dart';
 import 'package:happy_notes/screens/components/note_list/note_list_callbacks.dart';
 import 'package:happy_notes/providers/search_provider.dart';
-import 'package:happy_notes/providers/tag_provider.dart';
+import 'package:happy_notes/providers/tag_notes_provider.dart';
 import 'package:happy_notes/screens/note_detail/note_detail.dart';
 import 'package:happy_notes/utils/navigation_helper.dart';
 import 'package:happy_notes/screens/account/user_session.dart';
@@ -54,7 +54,7 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
               NavigationHelper.showTagInputDialog(context, replacePage: true),
           onLongPress: () async {
             final navigator = Navigator.of(context);
-            final tagProvider = context.read<TagProvider>();
+            final tagProvider = context.read<TagNotesProvider>();
             await tagProvider.loadTagCloud();
             if (!mounted) return;
             NavigationHelper.showTagDiagram(navigator.context, tagProvider.tagCloud,

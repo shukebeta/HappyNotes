@@ -4,7 +4,7 @@ import 'package:happy_notes/providers/app_state_provider.dart';
 import 'package:happy_notes/providers/auth_provider.dart';
 import 'package:happy_notes/providers/notes_provider.dart';
 import 'package:happy_notes/providers/search_provider.dart';
-import 'package:happy_notes/providers/tag_provider.dart';
+import 'package:happy_notes/providers/tag_notes_provider.dart';
 import 'package:happy_notes/providers/memories_provider.dart';
 import 'package:happy_notes/providers/trash_provider.dart';
 import 'package:happy_notes/providers/discovery_provider.dart';
@@ -57,7 +57,7 @@ class MockSearchProvider extends Mock implements SearchProvider {
   );
 }
 
-class MockTagProvider extends Mock implements TagProvider {
+class MockTagProvider extends Mock implements TagNotesProvider {
   @override
   void clearAllData() => super.noSuchMethod(Invocation.method(#clearAllData, []));
   
