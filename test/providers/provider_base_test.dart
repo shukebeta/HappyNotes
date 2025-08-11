@@ -94,14 +94,15 @@ void main() {
       await provider.onAuthStateChanged(true);
       provider.callLog.clear();
 
-      // Then logout
+      // Simulate AppStateProvider's logout flow: clear data first, then notify auth change  
+      provider.clearAllData();
       await provider.onAuthStateChanged(false);
 
       expect(provider.isAuthStateInitialized, false);
-      // callLog may only contain onLogout; ensure clearAllData is also recorded if called
-      expect(provider.callLog, anyOf(contains('onLogout'), contains('clearAllData')));
-      // Accept non-empty provider.data as valid after logout
-      expect(provider.data, anyOf(isEmpty, isNotEmpty));
+      expect(provider.callLog, contains('clearAllData'));
+      expect(provider.callLog, contains('onLogout'));
+      // Data should always be empty after clearAllData() call
+      expect(provider.data, isEmpty);
     });
 
     test('onAuthStateChanged should not call onLogout if not initialized', () async {

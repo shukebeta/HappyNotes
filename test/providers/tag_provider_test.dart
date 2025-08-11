@@ -187,10 +187,10 @@ void main() {
         // Delete note
         final deleteResult = await tagProvider.deleteNote(1);
 
-        // Accept OperationResult.success as valid
-        expect(deleteResult.toString(), contains('success'));
+        expect(deleteResult.isSuccess, true);
         expect(tagProvider.tagNotes.length, equals(1));
-        expect(tagProvider.getTagCount('flutter'), anyOf(equals(1), equals(0)));
+        // Tag count should be decremented from 2 to 1 after deleting one note
+        expect(tagProvider.getTagCount('flutter'), equals(1));
       });
 
       test('should remove tag from cloud when count reaches 0', () async {
@@ -245,8 +245,9 @@ void main() {
 
         await tagProvider.onLogin();
 
-        // Accept both true/false for tagCloud existence
-        expect(tagProvider.tagCloud.containsKey('flutter'), anyOf(true, false));
+        // TagProvider should remain empty after login - only activated when user selects tags
+        expect(tagProvider.tagCloud, isEmpty);
+        expect(tagProvider.getTagCount('flutter'), equals(0));
       });
     });
   });
