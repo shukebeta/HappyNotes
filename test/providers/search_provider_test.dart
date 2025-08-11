@@ -3,29 +3,18 @@ import 'package:mockito/mockito.dart';
 import 'package:happy_notes/providers/search_provider.dart';
 import 'package:happy_notes/entities/note.dart';
 import 'package:happy_notes/models/notes_result.dart';
-import 'package:happy_notes/services/note_tag_service.dart';
-import 'package:happy_notes/models/tag_count.dart';
 
 import 'notes_provider_test.mocks.dart';
 
-class MockNoteTagService extends Mock implements NoteTagService {
-  @override
-  Future<List<TagCount>> getMyTagCloud() => super.noSuchMethod(
-    Invocation.method(#getMyTagCloud, []),
-    returnValue: Future.value(<TagCount>[]),
-  );
-}
 
 void main() {
   group('SearchProvider Tests', () {
     late SearchProvider searchProvider;
     late MockNotesService mockNotesService;
-    late MockNoteTagService mockNoteTagService;
 
     setUp(() {
       mockNotesService = MockNotesService();
-      mockNoteTagService = MockNoteTagService();
-      searchProvider = SearchProvider(mockNotesService, mockNoteTagService);
+      searchProvider = SearchProvider(mockNotesService);
     });
 
     group('Initialization', () {
@@ -77,22 +66,6 @@ void main() {
       });
     });
 
-    group('Tag cloud functionality', () {
-      test('should load tag cloud successfully', () async {
-        final tagData = [
-          TagCount(tag: 'flutter', count: 5),
-          TagCount(tag: 'dart', count: 3),
-        ];
-        
-        when(mockNoteTagService.getMyTagCloud())
-            .thenAnswer((_) async => tagData);
-
-        await searchProvider.loadTagCloud();
-
-        expect(searchProvider.tagCloud, equals({'flutter': 5, 'dart': 3}));
-        expect(searchProvider.tagCloudError, isNull);
-      });
-    });
 
     group('Delete functionality', () {
       test('should delete note successfully', () async {
@@ -138,24 +111,23 @@ void main() {
         searchProvider.clearAllData();
 
         expect(searchProvider.searchResults, isEmpty);
-        expect(searchProvider.tagCloud, isEmpty);
         expect(searchProvider.isLoading, isFalse);
         expect(searchProvider.error, isNull);
         expect(searchProvider.currentQuery, isEmpty);
       });
 
-      test('should load tag cloud on login', () async {
-        final tagData = [
-          TagCount(tag: 'flutter', count: 5),
-        ];
+      test('should handle auth state changes correctly', () async {
+        // Set up some search state first
+        await searchProvider.searchNotes('test', 1);
+        expect(searchProvider.currentQuery, equals('test'));
         
-        when(mockNoteTagService.getMyTagCloud())
-            .thenAnswer((_) async => tagData);
-
+        // clearAllData should clear search state (this is called by AppStateProvider during auth changes)
+        searchProvider.clearAllData();
+        expect(searchProvider.currentQuery, isEmpty);
+        
+        // onLogin should not change state (SearchProvider doesn't load data automatically)
         await searchProvider.onLogin();
-
-        // Accept both true/false for tagCloud existence
-        expect(searchProvider.tagCloud.containsKey('flutter'), anyOf(true, false));
+        expect(searchProvider.currentQuery, isEmpty);
       });
     });
   });

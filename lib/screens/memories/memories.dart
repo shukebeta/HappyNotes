@@ -7,7 +7,7 @@ import '../components/memory_list.dart';
 import '../new_note/new_note.dart';
 import '../../utils/navigation_helper.dart';
 import '../../providers/memories_provider.dart';
-import '../../providers/tag_notes_provider.dart';
+import '../components/controllers/tag_cloud_controller.dart';
 import '../components/tappable_app_bar_title.dart';
 
 class Memories extends StatefulWidget {
@@ -59,10 +59,9 @@ class MemoriesState extends State<Memories> with RouteAware {
           onTap: () => NavigationHelper.showTagInputDialog(context),
           onLongPress: () async {
             final navigator = Navigator.of(context);
-            final tagProvider = context.read<TagNotesProvider>();
-            await tagProvider.loadTagCloud();
+            final tagCloudController = TagCloudController();
+            final tagData = await tagCloudController.loadTagCloud(context);
             if (!mounted) return;
-            final tagData = Map<String, int>.from(tagProvider.tagCloud);
             NavigationHelper.showTagDiagram(navigator.context, tagData);
           },
         ),

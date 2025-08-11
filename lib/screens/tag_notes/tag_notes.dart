@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:happy_notes/app_config.dart';
 import 'package:happy_notes/screens/note_detail/note_detail.dart';
 import 'package:happy_notes/providers/tag_notes_provider.dart';
+import 'package:happy_notes/screens/components/controllers/tag_cloud_controller.dart';
 import '../../utils/navigation_helper.dart';
 import '../components/floating_pagination.dart';
 import '../components/note_list/note_list.dart';
@@ -69,11 +70,10 @@ class TagNotesState extends State<TagNotes> {
               NavigationHelper.showTagInputDialog(context, replacePage: true),
           onLongPress: () async {
             final navigator = Navigator.of(context);
-            final tagProvider = context.read<TagNotesProvider>();
-            await tagProvider.loadTagCloud();
+            final tagCloudController = TagCloudController();
+            final tagData = await tagCloudController.loadTagCloud(context);
             // Show tag diagram on long press
             if (!mounted) return;
-            final tagData = Map<String, int>.from(tagProvider.tagCloud);
             NavigationHelper.showTagDiagram(navigator.context, tagData,
                 myNotesOnly: widget.myNotesOnly);
           },

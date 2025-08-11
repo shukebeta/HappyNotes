@@ -1,25 +1,13 @@
 import 'package:happy_notes/entities/note.dart';
 import 'package:happy_notes/models/notes_result.dart';
 import 'package:happy_notes/services/notes_services.dart';
-import 'package:happy_notes/services/note_tag_service.dart';
 import 'package:happy_notes/providers/note_list_provider.dart';
 import 'package:happy_notes/utils/operation_result.dart';
 
 class TagNotesProvider extends NoteListProvider {
   final NotesService _notesService;
-  final NoteTagService _noteTagService;
 
-  TagNotesProvider(this._notesService, this._noteTagService);
-
-  // Tag cloud state
-  Map<String, int> _tagCloud = {};
-  Map<String, int> get tagCloud => _tagCloud;
-
-  bool _isLoadingTagCloud = false;
-  bool get isLoadingTagCloud => _isLoadingTagCloud;
-
-  String? _tagCloudError;
-  String? get tagCloudError => _tagCloudError;
+  TagNotesProvider(this._notesService);
 
   // Tag-specific state
   String _currentTag = '';
@@ -30,32 +18,10 @@ class TagNotesProvider extends NoteListProvider {
 
   @override
   void clearAllData() {
-    _tagCloud.clear();
-    _isLoadingTagCloud = false;
-    _tagCloudError = null;
     _currentTag = '';
-    notifyListeners();
+    super.clearAllData();
   }
 
-  /// Load tag cloud data with caching
-  Future<void> loadTagCloud({bool forceRefresh = false}) async {
-    if (!forceRefresh && _tagCloud.isNotEmpty && _tagCloudError == null) {
-      return; // Use cached data
-    }
-
-    final result = await executeWithErrorHandling<List<dynamic>>(
-      operation: () => _noteTagService.getMyTagCloud(),
-      setLoading: (loading) => _isLoadingTagCloud = loading,
-      setError: (error) => _tagCloudError = error,
-      operationName: 'load tag cloud',
-    );
-
-    if (result != null) {
-      _tagCloud = {for (var item in result) item.tag: item.count};
-      _tagCloudError = null;
-      notifyListeners();
-    }
-  }
 
   /// Load notes for a specific tag with pagination
   Future<void> loadTagNotes(String tag, int pageNumber) async {
@@ -71,34 +37,12 @@ class TagNotesProvider extends NoteListProvider {
   /// Clear tag notes data
   void clearTagNotes() {
     _currentTag = '';
-    clearAllData();
+    super.clearAllData();
   }
 
   @override
   Future<OperationResult<void>> deleteNote(int noteId) async {
-    // Store original tag cloud for rollback
-    final originalTagCloud = Map<String, int>.from(_tagCloud);
-    
-    // Update tag cloud optimistically
-    if (_currentTag.isNotEmpty && _tagCloud.containsKey(_currentTag)) {
-      final currentCount = _tagCloud[_currentTag] ?? 0;
-      if (currentCount > 1) {
-        _tagCloud[_currentTag] = currentCount - 1;
-      } else {
-        _tagCloud.remove(_currentTag);
-      }
-    }
-    
-    // Call parent delete method
-    final result = await super.deleteNote(noteId);
-    
-    // If delete failed, rollback tag cloud changes
-    if (result.isError) {
-      _tagCloud = originalTagCloud;
-      notifyListeners();
-    }
-    
-    return result;
+    return await super.deleteNote(noteId);
   }
 
   /// Refresh current tag notes
@@ -108,28 +52,6 @@ class TagNotesProvider extends NoteListProvider {
     }
   }
 
-  /// Get tag count for a specific tag
-  int getTagCount(String tag) {
-    return _tagCloud[tag] ?? 0;
-  }
-
-  /// Check if a tag exists in the cloud
-  bool hasTag(String tag) {
-    return _tagCloud.containsKey(tag);
-  }
-
-  /// Get all available tags
-  List<String> get allTags {
-    return _tagCloud.keys.toList()..sort();
-  }
-
-  /// Get top N tags by count
-  List<MapEntry<String, int>> getTopTags(int limit) {
-    final sortedEntries = _tagCloud.entries.toList()
-      ..sort((a, b) => b.value.compareTo(a.value));
-    
-    return sortedEntries.take(limit).toList();
-  }
 
 @override
   Future<NotesResult> fetchNotes(int pageSize, int pageNumber) async {

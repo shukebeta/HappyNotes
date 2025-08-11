@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 
+import '../components/controllers/tag_cloud_controller.dart';
+import '../../providers/memories_provider.dart';
 import '../../utils/navigation_helper.dart';
 import '../account/user_session.dart';
 import '../../entities/note.dart';
@@ -10,8 +12,6 @@ import '../note_detail/note_detail.dart';
 import '../components/tappable_app_bar_title.dart';
 import '../components/note_list/note_list.dart';
 import '../components/note_list/note_list_callbacks.dart';
-import '../../providers/memories_provider.dart';
-import '../../providers/tag_notes_provider.dart';
 
 class MemoriesOnDay extends StatefulWidget {
   final DateTime date;
@@ -100,10 +100,9 @@ class MemoriesOnDayState extends State<MemoriesOnDay> with RouteAware {
           onTap: () => NavigationHelper.showTagInputDialog(context),
           onLongPress: () async {
             final navigator = Navigator.of(context);
-            final tagProvider = context.read<TagNotesProvider>();
-            await tagProvider.loadTagCloud();
+            final tagCloudController = TagCloudController();
+            final tagData = await tagCloudController.loadTagCloud(context);
             if (!mounted) return;
-            final tagData = Map<String, int>.from(tagProvider.tagCloud);
             NavigationHelper.showTagDiagram(navigator.context, tagData);
           },
         ),

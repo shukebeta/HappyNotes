@@ -5,7 +5,6 @@ import 'package:happy_notes/providers/auth_provider.dart';
 import 'package:happy_notes/providers/notes_provider.dart';
 import 'package:happy_notes/providers/search_provider.dart';
 import 'package:happy_notes/providers/tag_notes_provider.dart';
-import 'package:happy_notes/providers/tag_provider.dart';
 import 'package:happy_notes/providers/memories_provider.dart';
 import 'package:happy_notes/providers/trash_provider.dart';
 import 'package:happy_notes/providers/discovery_provider.dart';
@@ -75,22 +74,6 @@ class MockTagNotesProvider extends Mock implements TagNotesProvider {
   );
 }
 
-class MockTagProvider extends Mock implements TagProvider {
-  @override
-  void clearAllData() => super.noSuchMethod(Invocation.method(#clearAllData, []));
-  
-  @override
-  Future<void> onAuthStateChanged(bool isAuthenticated) => super.noSuchMethod(
-    Invocation.method(#onAuthStateChanged, [isAuthenticated]),
-    returnValue: Future.value(),
-  );
-  
-  @override
-  Future<void> loadTagCloud({bool forceRefresh = false}) => super.noSuchMethod(
-    Invocation.method(#loadTagCloud, [], {#forceRefresh: forceRefresh}),
-    returnValue: Future.value(),
-  );
-}
 
 class MockMemoriesProvider extends Mock implements MemoriesProvider {
   @override
@@ -151,7 +134,6 @@ void main() {
     late NotesProvider notesProvider;
     late MockSearchProvider mockSearchProvider;
     late MockTagNotesProvider mockTagNotesProvider;
-    late MockTagProvider mockTagProvider;
     late MockMemoriesProvider mockMemoriesProvider;
     late MockTrashProvider mockTrashProvider;
     late MockDiscoveryProvider mockDiscoveryProvider;
@@ -161,7 +143,6 @@ void main() {
       mockNotesService = MockNotesService();
       mockSearchProvider = MockSearchProvider();
       mockTagNotesProvider = MockTagNotesProvider();
-      mockTagProvider = MockTagProvider();
       mockMemoriesProvider = MockMemoriesProvider();
       mockTrashProvider = MockTrashProvider();
       mockDiscoveryProvider = MockDiscoveryProvider();
@@ -180,7 +161,6 @@ void main() {
         mockMemoriesProvider,
         mockTrashProvider,
         mockDiscoveryProvider,
-        mockTagProvider,
       );
     });
 
@@ -255,8 +235,6 @@ void main() {
         // Explicitly mock all provider refresh methods
         when(mockSearchProvider.refreshSearch())
             .thenAnswer((_) async {});
-        when(mockTagProvider.loadTagCloud(forceRefresh: true))
-            .thenAnswer((_) async {});
         when(mockMemoriesProvider.refreshMemories())
             .thenAnswer((_) async {});
 
@@ -266,7 +244,6 @@ void main() {
         verify(mockNotesService.myLatest(10, 1)).called(1);
         // Verify other providers were called
         verify(mockSearchProvider.refreshSearch()).called(1);
-        verify(mockTagProvider.loadTagCloud(forceRefresh: true)).called(1);
         verify(mockMemoriesProvider.refreshMemories()).called(1);
       });
 
