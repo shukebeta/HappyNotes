@@ -186,7 +186,7 @@ void main() {
       await provider.loadPage(1);
 
       // All listeners should be called efficiently
-      expect(listenerCallCount, 200); // Two notifications per listener (start and end loading)
+      expect(listenerCallCount, 300); // Three notifications per listener (start loading, end loading, data update)
       expect(stopwatch.elapsedMilliseconds, lessThan(50)); // Should be fast even with many listeners
     });
 

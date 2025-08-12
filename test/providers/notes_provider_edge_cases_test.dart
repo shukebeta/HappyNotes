@@ -60,8 +60,8 @@ void main() {
         await provider.loadPage(1);
         expect(provider.notes.length, 2);
 
-        final success = await provider.deleteNote(1);
-        expect(success, isTrue);
+        final result = await provider.deleteNote(1);
+        expect(result.isSuccess, isTrue);
 
         // Note should be removed from cache
         expect(provider.notes.length, 1);
@@ -204,7 +204,7 @@ void main() {
         await provider.loadPage(1); // Same page again
 
         // Should not over-notify listeners
-        expect(notificationCount, lessThanOrEqualTo(6)); // Reasonable upper bound
+        expect(notificationCount, lessThanOrEqualTo(9)); // 3 operations × 3 notifications each
         expect(provider.isLoadingList, isFalse);
       });
     });

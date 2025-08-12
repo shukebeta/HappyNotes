@@ -165,15 +165,15 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
     final navigator = Navigator.of(context);
     final scaffoldMessenger = ScaffoldMessenger.of(context);
 
-    final success = await notesProvider.removeNote(note?.id ?? widget.noteId!);
+    final result = await notesProvider.deleteNote(note?.id ?? widget.noteId!);
 
-    if (success) {
+    if (result.isSuccess) {
       navigator.pop(true);
       if (mounted) {
         Util.showInfo(scaffoldMessenger, 'Note successfully deleted.');
       }
     } else if (mounted) {
-      Util.showError(scaffoldMessenger, 'Failed to delete note');
+      Util.showError(scaffoldMessenger, result.errorMessage!);
     }
   }
 

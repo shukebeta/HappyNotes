@@ -77,11 +77,12 @@ void main() {
     });
 
     test('provider should handle pagination correctly', () async {
-      // Setup mock for multiple pages
+      // Setup mock for multiple pages with pageSize=10 (default from AppConfig)
+      // totalNotes=20 means totalPages=2, which is mathematically correct
       when(mockNotesService.myLatest(10, 1))
-          .thenAnswer((_) async => NotesResult([mockNotes[0]], 2));
+          .thenAnswer((_) async => NotesResult([mockNotes[0]], 20));
       when(mockNotesService.myLatest(10, 2))
-          .thenAnswer((_) async => NotesResult([mockNotes[1]], 2));
+          .thenAnswer((_) async => NotesResult([mockNotes[1]], 20));
 
       // Load page 1
       await notesProvider.loadPage(1);
@@ -89,7 +90,7 @@ void main() {
       expect(notesProvider.notes.length, 1);
       verify(mockNotesService.myLatest(10, 1)).called(1);
 
-      // Load page 2
+      // Load page 2 
       await notesProvider.loadPage(2);
       expect(notesProvider.currentPage, 2);
       expect(notesProvider.notes.length, 1);

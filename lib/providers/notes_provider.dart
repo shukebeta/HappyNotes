@@ -170,17 +170,6 @@ class NotesProvider extends NoteListProvider {
     }
   }
 
-  /// Legacy deleteNote method for backward compatibility (returns bool)
-  Future<bool> deleteNoteLegacy(int noteId) async {
-    final result = await super.deleteNote(noteId);
-    return result.isSuccess;
-  }
-
-  /// Remove a note and return success status for UI compatibility
-  Future<bool> removeNote(int noteId) async {
-    final result = await super.deleteNote(noteId);
-    return result.isSuccess;
-  }
 
 
   /// Undelete a note

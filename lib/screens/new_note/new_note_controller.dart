@@ -1,29 +1,24 @@
-import 'package:happy_notes/services/dialog_services.dart';
-import 'package:flutter/material.dart';
-import '../../entities/note.dart';
 import '../../models/note_model.dart';
+import '../../models/save_note_result.dart';
 import '../../providers/notes_provider.dart';
-import '../../utils/util.dart';
-import 'package:provider/provider.dart';
 
 class NewNoteController {
   NewNoteController();
 
-  // Returns created Note if saved successfully (when used modally), null otherwise.
-  // Calls onSaveSuccessInMainMenu if provided (when used in MainMenu).
-  Future<Note?> saveNote(BuildContext context, {VoidCallback? onSaveSuccessInMainMenu}) async {
-    final scaffoldMessengerSate = ScaffoldMessenger.of(context);
-    final navigator = Navigator.of(context); // Get navigator
-    final noteModel = context.read<NoteModel>();
-    final notesProvider = context.read<NotesProvider>();
-
-    if (noteModel.content.trim() == '') {
-      Util.showInfo(scaffoldMessengerSate, 'Please write something');
-      return null; // Indicate failure
+  /// New save note method without BuildContext dependency
+  /// Returns SaveNoteResult for UI layer to handle
+  Future<SaveNoteResult> saveNoteAsync(
+    NoteModel noteModel,
+    NotesProvider notesProvider, {
+    bool useCallback = false,
+  }) async {
+    // Validate input
+    if (noteModel.content.trim().isEmpty) {
+      return const SaveNoteValidationError('Please write something');
     }
 
     try {
-      // Use NotesProvider.addNote instead of direct service call
+      // Use NotesProvider.addNote for consistency
       final savedNote = await notesProvider.addNote(
         noteModel.content,
         isPrivate: noteModel.isPrivate,
@@ -32,43 +27,40 @@ class NewNoteController {
       );
 
       if (savedNote != null) {
+        // Clear the note model
         noteModel.initialContent = '';
         noteModel.content = '';
         noteModel.unfocus();
 
-        if (onSaveSuccessInMainMenu != null) {
-          // If callback provided (MainMenu context), call it instead of popping
-          onSaveSuccessInMainMenu();
-        } else {
-          // Otherwise (modal context), pop with saved note for caller to use
-          navigator.pop(savedNote);
-        }
-        return savedNote; // Return the created note
+        // Determine the action based on usage context
+        final action = useCallback 
+            ? SaveNoteAction.executeCallback 
+            : SaveNoteAction.popWithNote;
+
+        return SaveNoteSuccess(savedNote, action);
       } else {
         // Handle case where addNote returned null (failed)
         final errorMessage = notesProvider.addError ?? 'Failed to save note';
-        Util.showError(scaffoldMessengerSate, errorMessage);
-        return null; // Indicate failure
+        return SaveNoteServiceError(errorMessage);
       }
     } catch (e) {
-      Util.showError(scaffoldMessengerSate, 'Failed to save note: $e');
-      return null;
+      return SaveNoteServiceError('Failed to save note: $e');
     }
   }
 
-  onPopHandler(BuildContext context, bool didPop) async {
-    if (!didPop) {
-      final noteModel = context.read<NoteModel>();
-      final navigator = Navigator.of(context);
-      var focusScopeNode = FocusScope.of(context);
 
+  /// New pop handler method without BuildContext dependency
+  /// Returns PopHandlerResult for UI layer to handle
+  PopHandlerResult handlePopAsync(NoteModel noteModel, bool didPop) {
+    if (!didPop) {
       if (noteModel.content.isEmpty ||
-          noteModel.content.trim() == '#${noteModel.initialContent}' ||
-          (await DialogService.showUnsavedChangesDialog(context) ?? false)) {
-        noteModel.initialContent = '';
-        focusScopeNode.unfocus();
-        navigator.pop();
+          noteModel.content.trim() == noteModel.initialContent.trim()) {
+        return const PopHandlerAllow();
+      } else {
+        return PopHandlerShowDialog(noteModel.content, noteModel.initialContent);
       }
     }
+    return const PopHandlerPrevent();
   }
+
 }

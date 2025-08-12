@@ -168,7 +168,10 @@ class HomePageState extends State<HomePage> {
                 }
               },
               onDelete: (note) async {
-                await notesProvider.removeNote(note.id);
+                final result = await notesProvider.deleteNote(note.id);
+                if (!result.isSuccess && mounted) {
+                  Util.showError(ScaffoldMessenger.of(context), result.errorMessage!);
+                }
               },
             ),
             noteCallbacks: NoteListCallbacks(

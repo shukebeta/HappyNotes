@@ -5,6 +5,10 @@ import 'package:provider/provider.dart';
 import 'package:happy_notes/screens/new_note/new_note_controller.dart';
 import '../../dependency_injection.dart';
 import '../../models/note_model.dart';
+import '../../models/save_note_result.dart';
+import '../../providers/notes_provider.dart';
+import '../../services/dialog_services.dart';
+import '../../utils/util.dart';
 import '../components/note_edit.dart';
 
 class NewNote extends StatefulWidget {
@@ -47,6 +51,59 @@ class NewNoteState extends State<NewNote> {
     }
   }
 
+  /// Handle SaveNoteResult from controller
+  void _handleSaveResultSync(
+    ScaffoldMessengerState scaffoldMessenger,
+    NavigatorState navigator,
+    SaveNoteResult result,
+    VoidCallback? onSaveSuccessInMainMenu,
+  ) {
+    switch (result) {
+      case SaveNoteSuccess success:
+        switch (success.action) {
+          case SaveNoteAction.executeCallback:
+            onSaveSuccessInMainMenu?.call();
+            break;
+          case SaveNoteAction.popWithNote:
+            navigator.pop(success.savedNote);
+            break;
+        }
+        break;
+      case SaveNoteValidationError validationError:
+        Util.showInfo(scaffoldMessenger, validationError.message);
+        break;
+      case SaveNoteServiceError serviceError:
+        Util.showError(scaffoldMessenger, serviceError.message);
+        break;
+    }
+  }
+
+  /// Handle PopHandlerResult from controller  
+  Future<void> _handlePopResult(
+    BuildContext context,
+    PopHandlerResult result,
+    NoteModel noteModel,
+  ) async {
+    switch (result) {
+      case PopHandlerAllow():
+        noteModel.initialContent = '';
+        FocusScope.of(context).unfocus();
+        Navigator.of(context).pop();
+        break;
+      case PopHandlerShowDialog():
+        final shouldPop = await DialogService.showUnsavedChangesDialog(context) ?? false;
+        if (shouldPop && context.mounted) {
+          noteModel.initialContent = '';
+          FocusScope.of(context).unfocus();
+          Navigator.of(context).pop();
+        }
+        break;
+      case PopHandlerPrevent():
+        // Do nothing - pop is already prevented
+        break;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
@@ -58,10 +115,25 @@ class NewNoteState extends State<NewNote> {
             isSaving = true; // Set synchronously first
             setState(() {}); // Then trigger rebuild
             try {
-              await _newNoteController.saveNote(
-                providerContext, // Use the context that has access to the provider
-                onSaveSuccessInMainMenu: widget.onSaveSuccessInMainMenu,
+              final noteModel = providerContext.read<NoteModel>();
+              final notesProvider = providerContext.read<NotesProvider>();
+              final scaffoldMessenger = ScaffoldMessenger.of(context);
+              final navigator = Navigator.of(context);
+              
+              final result = await _newNoteController.saveNoteAsync(
+                noteModel,
+                notesProvider,
+                useCallback: widget.onSaveSuccessInMainMenu != null,
               );
+              
+              if (mounted) {
+                _handleSaveResultSync(
+                  scaffoldMessenger,
+                  navigator,
+                  result,
+                  widget.onSaveSuccessInMainMenu,
+                );
+              }
             } finally {
               if (mounted) {
                 isSaving = false; // Reset synchronously
@@ -71,8 +143,11 @@ class NewNoteState extends State<NewNote> {
           };
           return PopScope(
             canPop: false,
-            onPopInvokedWithResult: (didPop, result) =>
-                _newNoteController.onPopHandler(providerContext, didPop),
+            onPopInvokedWithResult: (didPop, result) async {
+              final noteModel = providerContext.read<NoteModel>();
+              final popResult = _newNoteController.handlePopAsync(noteModel, didPop);
+              await _handlePopResult(context, popResult, noteModel);
+            },
             child: Scaffold(
               appBar: AppBar(
                 title: Consumer<NoteModel>(
