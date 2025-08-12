@@ -21,6 +21,7 @@ class NewNoteController {
       Util.showInfo(scaffoldMessengerSate, 'Please write something');
       return null; // Indicate failure
     }
+    
     try {
       // Use NotesProvider.addNote instead of direct service call
       final savedNote = await notesProvider.addNote(
@@ -39,13 +40,14 @@ class NewNoteController {
           // If callback provided (MainMenu context), call it instead of popping
           onSaveSuccessInMainMenu();
         } else {
-          // Otherwise (modal context), pop with saved note on success
+          // Otherwise (modal context), pop with saved note for caller to use
           navigator.pop(savedNote);
         }
         return savedNote; // Return the created note
       } else {
         // Handle case where addNote returned null (failed)
-        Util.showError(scaffoldMessengerSate, notesProvider.addError ?? 'Failed to save note');
+        final errorMessage = notesProvider.addError ?? 'Failed to save note';
+        Util.showError(scaffoldMessengerSate, errorMessage);
         return null; // Indicate failure
       }
     } catch (e) {
@@ -59,6 +61,7 @@ class NewNoteController {
       final noteModel = context.read<NoteModel>();
       final navigator = Navigator.of(context);
       var focusScopeNode = FocusScope.of(context);
+      
       if (noteModel.content.isEmpty ||
           noteModel.content.trim() == '#${noteModel.initialContent}' ||
           (await DialogService.showUnsavedChangesDialog(context) ?? false)) {

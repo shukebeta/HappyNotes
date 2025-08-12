@@ -104,7 +104,7 @@ class HomePageState extends State<HomePage> {
       onPressed: () async {
         final scaffoldMessenger = ScaffoldMessenger.of(context);
         final provider = Provider.of<NotesProvider>(context, listen: false);
-        final bool? savedSuccessfully = await Navigator.push<bool>(
+        final Note? savedNote = await Navigator.push<Note>(
           context,
           MaterialPageRoute(
             builder: (context) => NewNote(
@@ -113,7 +113,7 @@ class HomePageState extends State<HomePage> {
           ),
         );
         if (!mounted) return;
-        if (savedSuccessfully ?? false) {
+        if (savedNote != null) {
           // Smart update: Only refresh if on page 1, otherwise show message
           if (provider.currentPage == 1) {
             // Note was already added optimistically to page 1, no need to refresh
