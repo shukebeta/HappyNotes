@@ -117,29 +117,37 @@ class MemoriesOnDayState extends State<MemoriesOnDay> with RouteAware {
             onPressed: _goToNextDay,
             tooltip: 'Next Day',
           ),
-          _buildNewNoteButton(),
         ],
       ),
-      body: _buildBody(),
+      body: Stack(
+        children: [
+          _buildBody(),
+          // Add Note Button
+          Positioned(
+            right: 0,
+            bottom: 16,
+            child: Opacity(
+              opacity: 0.5,
+              child: FloatingActionButton(
+                onPressed: () async {
+                  await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => NewNote(isPrivate: false, date: widget.date),
+                    ),
+                  );
+                  // Refresh after adding new note
+                  await _loadMemoriesForDate();
+                },
+                child: const Icon(Icons.add),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
-  Widget _buildNewNoteButton() {
-    return IconButton(
-      icon: const Icon(Icons.add),
-      onPressed: () async {
-        await Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const NewNote(isPrivate: false),
-          ),
-        );
-        // Refresh after adding new note
-        await _loadMemoriesForDate();
-      },
-      tooltip: 'New Note',
-    );
-  }
 
   Widget _buildBody() {
     if (_isLoading) {
@@ -173,7 +181,7 @@ class MemoriesOnDayState extends State<MemoriesOnDay> with RouteAware {
                 await Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const NewNote(isPrivate: false),
+                    builder: (context) => NewNote(isPrivate: false, date: widget.date),
                   ),
                 );
                 await _loadMemoriesForDate();
