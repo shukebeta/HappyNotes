@@ -72,7 +72,7 @@ class MemoriesOnDayState extends State<MemoriesOnDay> with RouteAware {
 
     try {
       final memoriesProvider = context.read<MemoriesProvider>();
-      final dateString = DateFormat('yyyy-MM-dd').format(widget.date);
+      final dateString = DateFormat('yyyyMMdd').format(widget.date);
       final result = await memoriesProvider.memoriesOn(dateString);
 
       if (mounted) {
