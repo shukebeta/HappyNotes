@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'registration_controller.dart';
+import 'package:provider/provider.dart';
+import '../../providers/auth_provider.dart';
+import '../../utils/util.dart';
+import '../main_menu.dart';
 
 class Registration extends StatefulWidget {
   const Registration({Key? key, required this.title}) : super(key: key);
@@ -11,23 +14,69 @@ class Registration extends StatefulWidget {
 }
 
 class _RegistrationState extends State<Registration> {
-  final _formModel = RegistrationController();
-  bool _isSubmitting = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _formModel.onSubmittingStateChanged = (isSubmitting) {
-      setState(() {
-        _isSubmitting = isSubmitting;
-      });
-    };
-  }
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
   void dispose() {
-    _formModel.dispose();
+    _usernameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
     super.dispose();
+  }
+
+  String? _validateUsername(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Please enter your username';
+    }
+    return null;
+  }
+
+  String? _validateEmail(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Please enter your email or username';
+    }
+    if (!value.contains('@')) {
+      return 'Please enter a valid email address';
+    }
+    return null;
+  }
+
+  String? _validatePassword(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Please enter your password';
+    }
+    if (value.length < 6) {
+      return 'Password must be at least 6 characters long';
+    }
+    return null;
+  }
+
+  Future<void> _registerUser(BuildContext context, AuthProvider authProvider) async {
+    if (!_formKey.currentState!.validate()) return;
+    
+    final username = _usernameController.text;
+    final email = _emailController.text;
+    final password = _passwordController.text;
+
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    final navigator = Navigator.of(context);
+    
+    final success = await authProvider.register(username, email, password);
+    
+    if (success && mounted) {
+      Util.showInfo(scaffoldMessenger, 'Registration successful');
+      navigator.pushAndRemoveUntil(
+        MaterialPageRoute(builder: (context) => const MainMenu()),
+        (route) => false,
+      );
+    } else if (mounted) {
+      // Error is stored in authProvider.error
+      final errorMessage = authProvider.error ?? 'Registration failed';
+      Util.showError(scaffoldMessenger, errorMessage);
+    }
   }
 
   @override
@@ -37,7 +86,7 @@ class _RegistrationState extends State<Registration> {
         title: Text(widget.title),
       ),
       body: Form(
-        key: _formModel.formKey,
+        key: _formKey,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
           child: Column(
@@ -46,51 +95,57 @@ class _RegistrationState extends State<Registration> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
                 child: TextFormField(
-                  controller: _formModel.usernameController,
+                  controller: _usernameController,
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: "Username",
                   ),
-                  validator: _formModel.validateUsername,
+                  validator: _validateUsername,
                 ),
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
                 child: TextFormField(
-                  controller: _formModel.emailController,
+                  controller: _emailController,
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: "Email",
                   ),
-                  validator: _formModel.validateEmail,
+                  validator: _validateEmail,
                 ),
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-                child: TextFormField(
-                  controller: _formModel.passwordController,
-                  obscureText: true,
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: "Password",
-                  ),
-                  validator: _formModel.validatePassword,
-                  onFieldSubmitted: (_) => _formModel.registerUser(context),
+                child: Consumer<AuthProvider>(
+                  builder: (context, authProvider, child) {
+                    return TextFormField(
+                      controller: _passwordController,
+                      obscureText: true,
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: "Password",
+                      ),
+                      validator: _validatePassword,
+                      onFieldSubmitted: (_) => _registerUser(context, authProvider),
+                    );
+                  },
                 ),
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16.0),
-                child: Center(
-                  child: ElevatedButton(
-                    onPressed: _isSubmitting
-                        ? null
-                        : () {
-                            _formModel.registerUser(context);
-                          },
-                    child: _isSubmitting
-                        ? const CircularProgressIndicator(color: Colors.white)
-                        : const Text('Register'),
-                  ),
+                child: Consumer<AuthProvider>(
+                  builder: (context, authProvider, child) {
+                    return Center(
+                      child: ElevatedButton(
+                        onPressed: authProvider.isLoading
+                            ? null
+                            : () => _registerUser(context, authProvider),
+                        child: authProvider.isLoading
+                            ? const CircularProgressIndicator(color: Colors.white)
+                            : const Text('Register'),
+                      ),
+                    );
+                  },
                 ),
               ),
             ],

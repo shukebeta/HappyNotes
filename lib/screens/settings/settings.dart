@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:happy_notes/screens/settings/mastodon_sync_settings.dart';
 import 'package:happy_notes/screens/settings/settings_controller.dart';
 import 'package:happy_notes/screens/settings/telegram_sync_settings.dart';
 import 'package:happy_notes/screens/settings/profile_page.dart';
 import 'package:happy_notes/entities/user.dart';
 import 'package:happy_notes/apis/account_api.dart';
+import 'package:happy_notes/providers/auth_provider.dart';
 
 import '../../app_config.dart';
 import '../../app_constants.dart';
@@ -16,7 +18,7 @@ import '../trash_bin/trash_bin_page.dart';
 class Settings extends StatefulWidget {
   final VoidCallback? onLogout;
 
-  const Settings({super.key, required this.onLogout});
+  const Settings({super.key, this.onLogout});
 
   @override
   SettingsState createState() => SettingsState();
@@ -38,6 +40,18 @@ class SettingsState extends State<Settings> {
   }
 
   Future<void> _fetchUserInfoForAvatar() async {
+    // Don't fetch user info if not authenticated
+    final authProvider = context.read<AuthProvider>();
+    if (!authProvider.isAuthenticated) {
+      if (mounted) {
+        setState(() {
+          _isLoadingAvatar = false;
+          _currentUser = null;
+        });
+      }
+      return;
+    }
+
     setState(() {
       _isLoadingAvatar = true;
     });
@@ -81,17 +95,18 @@ class SettingsState extends State<Settings> {
                   ),
                 )
               : IconButton(
-            icon: CircleAvatar(
-              radius: 18,
-              backgroundImage: (_currentUser?.gravatar != null && _currentUser!.gravatar.isNotEmpty)
-                  ? NetworkImage(_currentUser!.gravatar)
-                  : null,
-              onBackgroundImageError: (_, __) {},
-              backgroundColor: Colors.grey[300],
-              child: (_currentUser?.gravatar == null || _currentUser!.gravatar.isEmpty)
-                  ? const Icon(Icons.person, size: 18)
-                  : null,
-            ),
+            icon: (_currentUser?.gravatar != null && _currentUser!.gravatar.isNotEmpty)
+                ? CircleAvatar(
+                    radius: 18,
+                    backgroundImage: NetworkImage(_currentUser!.gravatar),
+                    onBackgroundImageError: (_, __) {},
+                    backgroundColor: Colors.grey[300],
+                  )
+                : CircleAvatar(
+                    radius: 18,
+                    backgroundColor: Colors.grey[300],
+                    child: const Icon(Icons.person, size: 18),
+                  ),
             tooltip: 'Profile',
             onPressed: () {
               Navigator.push(
@@ -221,8 +236,10 @@ class SettingsState extends State<Settings> {
             Center(
               child: ElevatedButton(
                 onPressed: () async {
-                  await _settingsController.logout();
-                  widget.onLogout!();
+                  final authProvider = context.read<AuthProvider>();
+                  await authProvider.logout();
+                  // Navigation will be handled automatically by InitialPage Consumer<AuthProvider>
+                  // No need to call widget.onLogout
                 },
                 child: const Text('Logout'),
               ),

@@ -49,31 +49,30 @@ class NewNoteState extends State<NewNote> {
 
   @override
   Widget build(BuildContext context) {
-    // Define FloatingActionButton callback that can be reused
-    _floatingActionButtonOnPressed = () async {
-      if (isSaving) return;
-      isSaving = true; // Set synchronously first
-      setState(() {}); // Then trigger rebuild
-      try {
-        await _newNoteController.saveNote(
-          context,
-          onSaveSuccessInMainMenu: widget.onSaveSuccessInMainMenu,
-        );
-      } finally {
-        if (mounted) {
-          isSaving = false; // Reset synchronously
-          setState(() {}); // Then trigger rebuild
-        }
-      }
-    };
-
     return ChangeNotifierProvider(
         create: (_) => noteModel,
-        builder: (context, child) {
+        builder: (providerContext, child) {
+          // Define FloatingActionButton callback inside the provider context
+          _floatingActionButtonOnPressed = () async {
+            if (isSaving) return;
+            isSaving = true; // Set synchronously first
+            setState(() {}); // Then trigger rebuild
+            try {
+              await _newNoteController.saveNote(
+                providerContext, // Use the context that has access to the provider
+                onSaveSuccessInMainMenu: widget.onSaveSuccessInMainMenu,
+              );
+            } finally {
+              if (mounted) {
+                isSaving = false; // Reset synchronously
+                setState(() {}); // Then trigger rebuild
+              }
+            }
+          };
           return PopScope(
             canPop: false,
             onPopInvokedWithResult: (didPop, result) =>
-                _newNoteController.onPopHandler(context, didPop),
+                _newNoteController.onPopHandler(providerContext, didPop),
             child: Scaffold(
               appBar: AppBar(
                 title: Consumer<NoteModel>(

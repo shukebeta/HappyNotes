@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:happy_notes/screens/components/note_list/note_list.dart';
 import 'package:happy_notes/screens/components/note_list/note_list_callbacks.dart';
-import 'package:happy_notes/screens/search/search_results_controller.dart';
+import 'package:happy_notes/providers/search_provider.dart';
 import 'package:happy_notes/screens/components/controllers/tag_cloud_controller.dart';
-import 'package:happy_notes/dependency_injection.dart';
 import 'package:happy_notes/screens/note_detail/note_detail.dart';
 import 'package:happy_notes/utils/navigation_helper.dart';
 import 'package:happy_notes/screens/account/user_session.dart';
@@ -12,7 +12,6 @@ import 'package:happy_notes/utils/util.dart';
 import 'package:happy_notes/screens/components/floating_pagination.dart';
 import 'package:happy_notes/screens/components/pagination_controls.dart';
 import 'package:happy_notes/screens/components/tappable_app_bar_title.dart';
-import 'package:happy_notes/screens/components/list_grouper.dart';
 import 'package:happy_notes/entities/note.dart';
 
 class SearchResultsPage extends StatefulWidget {
@@ -25,34 +24,21 @@ class SearchResultsPage extends StatefulWidget {
 }
 
 class _SearchResultsPageState extends State<SearchResultsPage> {
-  late SearchResultsController _controller;
-  late TagCloudController _tagCloudController;
   int currentPageNumber = 1;
 
   @override
   void initState() {
     super.initState();
-    _controller = locator<SearchResultsController>();
-    _tagCloudController = locator<TagCloudController>();
-    _controller.addListener(_onControllerUpdate);
-    navigateToPage(currentPageNumber);
-  }
-
-  @override
-  void dispose() {
-    _controller.removeListener(_onControllerUpdate);
-    super.dispose();
-  }
-
-  void _onControllerUpdate() {
-    setState(() {});
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      navigateToPage(currentPageNumber);
+    });
   }
 
   Future<bool> navigateToPage(int pageNumber) async {
-    if (pageNumber >= 1 && pageNumber <= _controller.totalPages) {
-      await _controller.fetchSearchResults(widget.query, pageNumber);
+    final searchProvider = context.read<SearchProvider>();
+    if (pageNumber >= 1 && pageNumber <= searchProvider.totalPages) {
+      await searchProvider.searchNotes(widget.query, pageNumber);
       currentPageNumber = pageNumber;
-      setState(() {});
       return true;
     }
     return false;
@@ -68,7 +54,8 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
               NavigationHelper.showTagInputDialog(context, replacePage: true),
           onLongPress: () async {
             final navigator = Navigator.of(context);
-            var tagData = await _tagCloudController.loadTagCloud(context);
+            final tagCloudController = TagCloudController();
+            final tagData = await tagCloudController.loadTagCloud(context);
             if (!mounted) return;
             NavigationHelper.showTagDiagram(navigator.context, tagData,
                 myNotesOnly: true);
@@ -96,36 +83,40 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
           ),
         ],
       ),
-      body: Stack(
-        children: [
-          _buildBody(),
-          if (_controller.totalPages > 1 && !UserSession().isDesktop)
-            FloatingPagination(
-              currentPage: currentPageNumber,
-              totalPages: _controller.totalPages,
-              navigateToPage: navigateToPage,
-            ),
-        ],
+      body: Consumer<SearchProvider>(
+        builder: (context, searchProvider, child) {
+          return Stack(
+            children: [
+              _buildBody(searchProvider),
+              if (searchProvider.totalPages > 1 && !UserSession().isDesktop)
+                FloatingPagination(
+                  currentPage: currentPageNumber,
+                  totalPages: searchProvider.totalPages,
+                  navigateToPage: navigateToPage,
+                ),
+            ],
+          );
+        },
       ),
     );
   }
 
-  Widget _buildBody() {
-    if (_controller.isLoading) {
+  Widget _buildBody(SearchProvider searchProvider) {
+    if (searchProvider.isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
 
-    if (_controller.error != null) {
+    if (searchProvider.error != null) {
       return Center(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: Text('Error: ${_controller.error}',
+          child: Text('Error: ${searchProvider.error}',
               style: const TextStyle(color: Colors.red)),
         ),
       );
     }
 
-    if (_controller.results.isEmpty) {
+    if (searchProvider.searchResults.isEmpty) {
       return const Center(child: Text('No notes found matching your query.'));
     }
 
@@ -133,7 +124,7 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
       children: [
         Expanded(
           child: NoteList(
-            groupedNotes: ListGrouper.groupByDate(_controller.results, (note) => note.createdDate),
+            groupedNotes: searchProvider.groupedNotes,
             showDateHeader: true,
             callbacks: ListItemCallbacks<Note>(
               onTap: (note) async {
@@ -157,7 +148,12 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
                 }
               },
               onDelete: (note) async {
-                await _controller.deleteNote(context, note.id);
+                final result = await searchProvider.deleteNote(note.id);
+                if (result.isSuccess && mounted) {
+                  Util.showInfo(ScaffoldMessenger.of(context), 'Note deleted successfully.');
+                } else if (result.isError && mounted) {
+                  Util.showError(ScaffoldMessenger.of(context), result.errorMessage!);
+                }
               },
             ),
             noteCallbacks: NoteListCallbacks(
@@ -172,10 +168,10 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
             ),
           ),
         ),
-        if (_controller.totalPages > 1 && UserSession().isDesktop)
+        if (searchProvider.totalPages > 1 && UserSession().isDesktop)
           PaginationControls(
               currentPage: currentPageNumber,
-              totalPages: _controller.totalPages,
+              totalPages: searchProvider.totalPages,
               navigateToPage: navigateToPage),
       ],
     );
