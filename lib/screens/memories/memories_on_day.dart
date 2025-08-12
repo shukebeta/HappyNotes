@@ -1,20 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:happy_notes/models/notes_result.dart';
+import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 
+import '../components/controllers/tag_cloud_controller.dart';
+import '../../providers/memories_provider.dart';
 import '../../utils/navigation_helper.dart';
 import '../account/user_session.dart';
-import '../../dependency_injection.dart';
 import '../../entities/note.dart';
-import '../../services/notes_services.dart';
 import '../new_note/new_note.dart';
 import '../note_detail/note_detail.dart';
-import 'memories_on_day_controller.dart';
-import '../components/controllers/tag_cloud_controller.dart';
 import '../components/tappable_app_bar_title.dart';
 import '../components/note_list/note_list.dart';
 import '../components/note_list/note_list_callbacks.dart';
-import '../components/list_grouper.dart';
 
 class MemoriesOnDay extends StatefulWidget {
   final DateTime date;
@@ -29,9 +26,36 @@ class MemoriesOnDay extends StatefulWidget {
 }
 
 class MemoriesOnDayState extends State<MemoriesOnDay> with RouteAware {
-  late List<Note> _notes;
-  late MemoriesOnDayController _controller;
-  late TagCloudController _tagCloudController;
+  bool _hasInitialized = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      UserSession.routeObserver.subscribe(this, ModalRoute.of(context)!);
+    });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    // Auto-load memories for the date when widget initializes
+    if (!_hasInitialized) {
+      _hasInitialized = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        final provider = context.read<MemoriesProvider>();
+        final dateString = DateFormat('yyyyMMdd').format(widget.date);
+        provider.loadMemoriesForDate(dateString);
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    UserSession.routeObserver.unsubscribe(this);
+    super.dispose();
+  }
 
   void _navigateToDate(DateTime date) {
     Navigator.pushReplacement(
@@ -52,44 +76,29 @@ class MemoriesOnDayState extends State<MemoriesOnDay> with RouteAware {
     _navigateToDate(nextDay);
   }
 
-  @override
-  void initState() {
-    _controller =
-        MemoriesOnDayController(notesService: locator<NotesService>());
-    _tagCloudController = locator<TagCloudController>();
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      UserSession.routeObserver.subscribe(this, ModalRoute.of(context)!);
-    });
-    super.initState();
+  void _onNoteSaved(Note savedNote) {
+    final provider = context.read<MemoriesProvider>();
+    final dateString = DateFormat('yyyyMMdd').format(widget.date);
+    provider.addMemoryToDate(dateString, savedNote);
   }
 
-  @override
-  void didPopNext() {
-    // No need to call setState here just because a route was popped.
-    // Refresh should happen based on actual data changes if necessary.
-  }
-
-  @override
-  void dispose() {
-    UserSession.routeObserver.unsubscribe(this);
-    super.dispose();
-  }
-
-  Future<void> _refreshNotes() async {
-    setState(() {});
+  void _onNoteUpdated(Note updatedNote) {
+    final provider = context.read<MemoriesProvider>();
+    final dateString = DateFormat('yyyyMMdd').format(widget.date);
+    provider.updateMemoryForDate(dateString, updatedNote);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        centerTitle: true,
         title: TappableAppBarTitle(
-          title: DateFormat('EEE, MMM d, yyyy').format(widget.date),
+          title: 'Memories: ${DateFormat('MMM dd, yyyy').format(widget.date)}',
           onTap: () => NavigationHelper.showTagInputDialog(context),
           onLongPress: () async {
             final navigator = Navigator.of(context);
-            var tagData = await _tagCloudController.loadTagCloud(context);
+            final tagCloudController = TagCloudController();
+            final tagData = await tagCloudController.loadTagCloud(context);
             if (!mounted) return;
             NavigationHelper.showTagDiagram(navigator.context, tagData);
           },
@@ -98,98 +107,161 @@ class MemoriesOnDayState extends State<MemoriesOnDay> with RouteAware {
           IconButton(
             icon: const Icon(Icons.chevron_left),
             onPressed: _goToPreviousDay,
+            tooltip: 'Previous Day',
           ),
           IconButton(
             icon: const Icon(Icons.chevron_right),
             onPressed: _goToNextDay,
+            tooltip: 'Next Day',
           ),
         ],
       ),
-      body: FutureBuilder<NotesResult>(
-        future: _controller.fetchMemories(widget.date),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else if (snapshot.hasData) {
-            _notes = snapshot.data!.notes;
-            return Stack(
-              children: [
-                NoteList(
-                  groupedNotes: ListGrouper.groupByDate(_notes, (note) => note.createdDate),
-                  showDateHeader: false,
-                  callbacks: ListItemCallbacks<Note>(
-                    onTap: (note) async {
-                      await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => NoteDetail(note: note),
-                        ),
-                      );
-                    },
-                    onDoubleTap: (note) async {
-                      await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              NoteDetail(note: note, enterEditing: note.userId == UserSession().id),
-                        ),
-                      );
-                    },
-                    onDelete: (note) async {
-                      await _controller.deleteNote(context, note.id);
-                    },
-                  ),
-                  noteCallbacks: NoteListCallbacks(
-                    onTagTap: (note, tag) =>
-                        NavigationHelper.onTagTap(context, note, tag),
-                    onRefresh: _refreshNotes,
-                  ),
-                  config: const ListItemConfig(
-                    showDate: false,
-                    showAuthor: false,
-                    showRestoreButton: false,
-                    enableDismiss: true,
-                  ),
-                ),
-                // Add Note Button
-                Positioned(
-                  right: 0,
-                  bottom: 16,
-                  child: Opacity(
-                    opacity: 0.5,
-                    child: FloatingActionButton(
-                      onPressed: () async {
-                        // Await the result of pushing the NewNote screen
-                        final bool? savedSuccessfully =
-                            await Navigator.push<bool>(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => NewNote(
-                              date: widget.date,
-                              isPrivate: true,
-                            ),
-                          ),
-                        );
-                        // If savedSuccessfully is true (or not null and true), trigger a rebuild
-                        if (savedSuccessfully ?? false) {
-                          // Calling setState will cause the FutureBuilder to re-fetch data
-                          if (mounted) {
-                            setState(() {});
-                          }
-                        }
-                      },
-                      child: const Icon(Icons.add),
+      body: Stack(
+        children: [
+          Consumer<MemoriesProvider>(
+            builder: (context, provider, child) {
+              final dateString = DateFormat('yyyyMMdd').format(widget.date);
+              final isLoading = provider.isLoadingForDate(dateString);
+              final notes = provider.memoriesOnDate(dateString);
+              final error = provider.getErrorForDate(dateString);
+
+              return _buildBody(isLoading, notes, error);
+            },
+          ),
+          // Add Note Button
+          Positioned(
+            right: 0,
+            bottom: 16,
+            child: Opacity(
+              opacity: 0.5,
+              child: FloatingActionButton(
+                onPressed: () async {
+                  final newNote = await Navigator.push<Note>(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => NewNote(isPrivate: false, date: widget.date),
                     ),
+                  );
+                  if (newNote != null) {
+                    _onNoteSaved(newNote);
+                  }
+                },
+                child: const Icon(Icons.add),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+
+  Widget _buildBody(bool isLoading, List<Note> notes, String? error) {
+    if (isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (error != null) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text('Error: $error'),
+            ElevatedButton(
+              onPressed: () {
+                final provider = context.read<MemoriesProvider>();
+                final dateString = DateFormat('yyyyMMdd').format(widget.date);
+                provider.loadMemoriesForDate(dateString, forceRefresh: true);
+              },
+              child: const Text('Retry'),
+            ),
+          ],
+        ),
+      );
+    }
+
+    if (notes.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text('No memories on ${DateFormat('MMM dd, yyyy').format(widget.date)}'),
+            const SizedBox(height: 16),
+            ElevatedButton.icon(
+              onPressed: () async {
+                final newNote = await Navigator.push<Note>(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => NewNote(isPrivate: false, date: widget.date),
                   ),
-                ),
-              ],
-            );
-          } else {
-            return const Center(child: Text('No notes found on this day.'));
-          }
+                );
+                if (newNote != null) {
+                  _onNoteSaved(newNote);
+                }
+              },
+              icon: const Icon(Icons.add),
+              label: const Text('Create First Memory'),
+            ),
+          ],
+        ),
+      );
+    }
+
+    // Group notes by date for consistent display
+    final groupedNotes = <String, List<Note>>{};
+    for (final note in notes) {
+      final dateKey = note.createdDate;
+      groupedNotes[dateKey] = groupedNotes[dateKey] ?? [];
+      groupedNotes[dateKey]!.add(note);
+    }
+
+    return NoteList(
+      groupedNotes: groupedNotes,
+      showDateHeader: true,
+      callbacks: ListItemCallbacks<Note>(
+        onTap: (note) async {
+          await Navigator.push<bool>(
+            context,
+            MaterialPageRoute(
+              builder: (context) => NoteDetail(note: note),
+            ),
+          );
+          // No need to reload - NoteDetail in view mode doesn't change data
         },
+        onDoubleTap: (note) async {
+          await Navigator.push<bool>(
+            context,
+            MaterialPageRoute(
+              builder: (context) => NoteDetail(
+                note: note,
+                enterEditing: note.userId == UserSession().id,
+                onNoteSaved: _onNoteUpdated,
+              ),
+            ),
+          );
+          // The callback will handle cache updates automatically
+        },
+        onDelete: (note) async {
+          // Delete note through memories provider - it doesn't implement delete
+          // So we'll show a message for now
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Delete not available on memories page')),
+          );
+        },
+      ),
+      noteCallbacks: NoteListCallbacks(
+        onTagTap: (note, tag) => NavigationHelper.onTagTap(context, note, tag),
+        onRefresh: () async {
+          final provider = context.read<MemoriesProvider>();
+          final dateString = DateFormat('yyyyMMdd').format(widget.date);
+          await provider.loadMemoriesForDate(dateString, forceRefresh: true);
+        },
+      ),
+      config: const ListItemConfig(
+        showDate: false,
+        showAuthor: false,
+        showRestoreButton: false,
+        enableDismiss: false,
       ),
     );
   }

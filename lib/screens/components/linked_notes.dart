@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../entities/note.dart';
 import '../../utils/navigation_helper.dart';
 import '../account/user_session.dart';
 import '../note_detail/note_detail.dart';
 import '../components/note_list/note_list_item.dart';
 import '../components/note_list/note_list.dart';
-import '../../services/notes_services.dart';
-import '../../dependency_injection.dart';
-import '../../models/notes_result.dart';
+import '../../providers/linked_notes_provider.dart';
 
 class LinkedNotes extends StatefulWidget {
-  final List<Note> linkedNotes;
+  final List<Note> linkedNotes; // Keep for compatibility but won't be used
   final Note parentNote;
 
   const LinkedNotes({
@@ -24,91 +23,101 @@ class LinkedNotes extends StatefulWidget {
 }
 
 class LinkedNotesState extends State<LinkedNotes> {
-  late List<Note> _linkedNotes;
-  final NotesService _notesService = locator<NotesService>();
-  bool _isLoading = false;
+  bool _hasInitialized = false;
 
   @override
-  void initState() {
-    super.initState();
-    _linkedNotes = List<Note>.from(widget.linkedNotes); // Create a copy of the list
-    refreshNotes(); // Auto-load linked notes when widget initializes
-  }
+  void didChangeDependencies() {
+    super.didChangeDependencies();
 
-  Future<void> refreshNotes() async {
-    if (_isLoading) return; // Prevent multiple refreshes at once
-
-    setState(() {
-      _isLoading = true;
-    });
-
-    try {
-      // Fetch all linked notes in one go
-      NotesResult result = await _notesService.getLinkedNotes(widget.parentNote.id);
-      setState(() {
-        _linkedNotes = result.notes;
-      });
-    } catch (error) {
-      // Handle error if needed
-    } finally {
-      setState(() {
-        _isLoading = false;
+    // Auto-load linked notes when widget initializes
+    if (!_hasInitialized) {
+      _hasInitialized = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        final provider = context.read<LinkedNotesProvider>();
+        provider.loadLinkedNotes(widget.parentNote.id);
       });
     }
+  }
+
+  void onNoteSaved(Note updatedNote) {
+    final provider = context.read<LinkedNotesProvider>();
+    provider.updateLinkedNote(widget.parentNote.id, updatedNote);
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_isLoading) {
-      return const SliverToBoxAdapter(
-        child: Center(child: CircularProgressIndicator()),
-      );
-    }
+    return Consumer<LinkedNotesProvider>(
+      builder: (context, provider, child) {
+        final isLoading = provider.isLoading(widget.parentNote.id);
+        final linkedNotes = provider.getLinkedNotes(widget.parentNote.id);
+        final error = provider.getError(widget.parentNote.id);
 
-    if (_linkedNotes.isEmpty) return const SliverToBoxAdapter(child: SizedBox.shrink());
+        if (isLoading) {
+          return const SliverToBoxAdapter(
+            child: Center(child: CircularProgressIndicator()),
+          );
+        }
 
-    return SliverList(
-      delegate: SliverChildListDelegate([
-        // "Linked Notes" header
-        Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Text(
-            "Linked Notes",
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
-        ),
-
-        // Linked notes list
-        ..._linkedNotes.map((note) => NoteListItem(
-          note: note,
-          callbacks: ListItemCallbacks<Note>(
-            onTap: (note) => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => NoteDetail(note: note),
+        if (error != null) {
+          return SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Text(
+                'Error loading linked notes: $error',
+                style: TextStyle(color: Theme.of(context).colorScheme.error),
               ),
             ),
-            onDoubleTap: (note) => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => NoteDetail(
-                  note: note,
-                  enterEditing: widget.parentNote.userId == UserSession().id,
-                  onNoteSaved: refreshNotes, // Pass the refresh callback
-                  fromDetailPage: false, // Not coming from detail page
+          );
+        }
+
+        if (linkedNotes.isEmpty) {
+          return const SliverToBoxAdapter(child: SizedBox.shrink());
+        }
+
+        return SliverList(
+          delegate: SliverChildListDelegate([
+            // "Linked Notes" header
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Text(
+                "Linked Notes",
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+            ),
+
+            // Linked notes list
+            ...linkedNotes.map((note) => NoteListItem(
+              note: note,
+              callbacks: ListItemCallbacks<Note>(
+                onTap: (note) => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => NoteDetail(note: note),
+                  ),
+                ),
+                onDoubleTap: (note) => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => NoteDetail(
+                      note: note,
+                      enterEditing: widget.parentNote.userId == UserSession().id,
+                      onNoteSaved: onNoteSaved, // Pass the optimized callback
+                      fromDetailPage: false, // Not coming from detail page
+                    ),
+                  ),
                 ),
               ),
-            ),
-          ),
-          onTagTap: (note, tag) => NavigationHelper.onTagTap(context, note, tag),
-          config: const ListItemConfig(
-            showDate: true,
-            showAuthor: true, // Show author for linked notes
-            showRestoreButton: false,
-            enableDismiss: false,
-          ),
-        )).toList(),
-      ]),
+              onTagTap: (note, tag) => NavigationHelper.onTagTap(context, note, tag),
+              config: const ListItemConfig(
+                showDate: true,
+                showAuthor: true, // Show author for linked notes
+                showRestoreButton: false,
+                enableDismiss: false,
+              ),
+            )).toList(),
+          ]),
+        );
+      },
     );
   }
 }

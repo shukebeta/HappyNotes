@@ -2,7 +2,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:happy_notes/screens/discovery/discovery.dart';
-import 'package:happy_notes/screens/initial_page.dart';
 import 'package:happy_notes/screens/navigation/rail_navigation.dart';
 import 'package:happy_notes/screens/settings/settings.dart';
 import 'package:lazy_load_indexed_stack/lazy_load_indexed_stack.dart';
@@ -55,16 +54,12 @@ class MainMenuState extends State<MainMenu> {
         if (kIsWeb) const Discovery(),
         Settings(
           key: settingsKey,
-          onLogout: _onLogout,
+          onLogout: null, // No longer needed - AuthProvider handles logout automatically
         ),
       ],
     );
   }
 
-  void _onLogout() {
-    Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => const InitialPage()));
-  }
 
   // This method is called by NewNote when save is successful in the MainMenu context
   void _handleSaveSuccessFromNewNoteTab() {
@@ -88,10 +83,10 @@ class MainMenuState extends State<MainMenu> {
         }
         break;
       case indexNotes:
-        homePageKey.currentState?.refreshPage();
+        // No auto refresh; Notes lazily loads and caches itself
         break;
       case indexMemories:
-        memoriesKey.currentState?.refreshPage();
+        // No auto refresh; Memories lazily loads and caches itself
         break;
       case indexSharedNotes:
         memoriesKey.currentState?.setState(() {});

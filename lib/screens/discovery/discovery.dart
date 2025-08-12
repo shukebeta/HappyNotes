@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:happy_notes/app_config.dart';
 import 'package:happy_notes/screens/components/note_list/note_list.dart';
 import 'package:happy_notes/screens/note_detail/note_detail.dart';
@@ -6,15 +7,13 @@ import '../../entities/note.dart';
 import '../../utils/navigation_helper.dart';
 import '../../utils/util.dart';
 import '../components/floating_pagination.dart';
-import '../components/list_grouper.dart';
 import '../components/note_list/note_list_callbacks.dart';
 import '../components/pagination_controls.dart';
-import '../../dependency_injection.dart';
 import '../account/user_session.dart';
 import '../new_note/new_note.dart';
-import 'discovery_controller.dart';
-import '../components/controllers/tag_cloud_controller.dart';
 import '../components/tappable_app_bar_title.dart';
+import '../../providers/discovery_provider.dart';
+import '../components/controllers/tag_cloud_controller.dart';
 
 class Discovery extends StatefulWidget {
   const Discovery({super.key});
@@ -24,31 +23,26 @@ class Discovery extends StatefulWidget {
 }
 
 class DiscoveryState extends State<Discovery> {
-  late DiscoveryController _discoveryController;
-  late TagCloudController _tagCloudController;
   int currentPageNumber = 1;
   bool showPageSelector = false;
-
-  bool get isFirstPage => currentPageNumber == 1;
-
-  bool get isLastPage => currentPageNumber == _discoveryController.totalPages;
-
-  @override
-  void initState() {
-    super.initState();
-    _discoveryController = locator<DiscoveryController>();
-    _tagCloudController = locator<TagCloudController>();
-  }
+  bool _isInitialized = false;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    navigateToPage(currentPageNumber);
+    if (!_isInitialized) {
+      _isInitialized = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        final discoveryProvider = context.read<DiscoveryProvider>();
+        discoveryProvider.navigateToPage(currentPageNumber);
+      });
+    }
   }
 
   Future<bool> navigateToPage(int pageNumber) async {
-    if (pageNumber >= 1 && pageNumber <= _discoveryController.totalPages) {
-      await _discoveryController.loadNotes(context, pageNumber);
+    final discoveryProvider = context.read<DiscoveryProvider>();
+    if (pageNumber >= 1 && pageNumber <= discoveryProvider.totalPages) {
+      await discoveryProvider.navigateToPage(pageNumber);
       setState(() {
         currentPageNumber = pageNumber;
         showPageSelector = false;
@@ -68,11 +62,12 @@ class DiscoveryState extends State<Discovery> {
     return Scaffold(
       appBar: AppBar(
         title: TappableAppBarTitle(
-          title: 'My Notes',
+          title: 'Discover Notes',
           onTap: () => NavigationHelper.showTagInputDialog(context),
           onLongPress: () async {
             final navigator = Navigator.of(context);
-            var tagData = await _tagCloudController.loadTagCloud(context);
+            final tagCloudController = TagCloudController();
+            final tagData = await tagCloudController.loadTagCloud(context);
             if (!mounted) return;
             NavigationHelper.showTagDiagram(navigator.context, tagData);
           },
@@ -84,12 +79,18 @@ class DiscoveryState extends State<Discovery> {
       body: Stack(
         children: [
           _buildBody(),
-          if (_discoveryController.totalPages > 1 && !UserSession().isDesktop)
-            FloatingPagination(
-              currentPage: currentPageNumber,
-              totalPages: _discoveryController.totalPages,
-              navigateToPage: navigateToPage,
-            ),
+          Consumer<DiscoveryProvider>(
+            builder: (context, discoveryProvider, child) {
+              if (discoveryProvider.totalPages > 1 && !UserSession().isDesktop) {
+                return FloatingPagination(
+                  currentPage: currentPageNumber,
+                  totalPages: discoveryProvider.totalPages,
+                  navigateToPage: navigateToPage,
+                );
+              }
+              return const SizedBox.shrink();
+            },
+          ),
         ],
       ),
     );
@@ -98,11 +99,12 @@ class DiscoveryState extends State<Discovery> {
   IconButton _buildNewNoteButton(BuildContext context) {
     return IconButton(
       icon: Util.writeNoteIcon(),
-      tooltip: AppConfig.privateNoteOnlyIsEnabled ? 'New Private Note' : 'New Public Note',
+      tooltip: AppConfig.privateNoteOnlyIsEnabled
+          ? 'New Private Note'
+          : 'New Public Note',
       onPressed: () async {
-        // Await the result
         final scaffoldMessenger = ScaffoldMessenger.of(context);
-        final bool? savedSuccessfully = await Navigator.push<bool>(
+        final savedSuccessfully = await Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => NewNote(
@@ -113,7 +115,7 @@ class DiscoveryState extends State<Discovery> {
         if (!mounted) return;
         if (savedSuccessfully ?? false) {
           // Only refresh if on the first page, otherwise let the snackbar handle it (existing logic)
-          if (isFirstPage) {
+          if (currentPageNumber == 1) {
             await refreshPage();
           } else {
             Util.showInfo(scaffoldMessenger, 'Note saved successfully.'); // Replaced showSnackBar
@@ -124,71 +126,94 @@ class DiscoveryState extends State<Discovery> {
   }
 
   Widget _buildBody() {
-    if (_discoveryController.isLoading) {
-      return const Center(child: CircularProgressIndicator());
-    }
+    return Consumer<DiscoveryProvider>(
+      builder: (context, discoveryProvider, child) {
+        if (discoveryProvider.isLoading) {
+          return const Center(child: CircularProgressIndicator());
+        }
 
-    if (_discoveryController.notes.isEmpty) {
-      return const Center(child: Text('No notes available. Create a new note to get started.'));
-    }
+        if (discoveryProvider.error != null) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text('Error: ${discoveryProvider.error}'),
+                ElevatedButton(
+                  onPressed: () => navigateToPage(currentPageNumber),
+                  child: const Text('Retry'),
+                ),
+              ],
+            ),
+          );
+        }
 
-    final groupedNotes = ListGrouper.groupByDate(_discoveryController.notes, (note) => note.createdDate);
+        if (discoveryProvider.notes.isEmpty) {
+          return const Center(child: Text('No notes available. Create a new note to get started.'));
+        }
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Expanded(
-          child: NoteList(
-            groupedNotes: groupedNotes,
-            showDateHeader: true,
-            callbacks: ListItemCallbacks<Note>(
-              onTap: (note) async {
-                var needRefresh = await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => NoteDetail(note: note),
-                      ),
-                    ) ??
-                    false;
-                if (needRefresh) {
-                  refreshPage();
-                }
-              },
-              onDoubleTap: (note) async {
-                var needRefresh = await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => NoteDetail(note: note, enterEditing: note.userId == UserSession().id),
-                      ),
-                    ) ??
-                    false;
-                if (needRefresh) {
-                  refreshPage();
-                }
-              },
-              onDelete: (note) async {
-                await _discoveryController.deleteNote(context, note.id);
-              },
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Expanded(
+              child: NoteList(
+                groupedNotes: discoveryProvider.groupedNotes,
+                showDateHeader: true,
+                callbacks: ListItemCallbacks<Note>(
+                  onTap: (note) async {
+                    var needRefresh = await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => NoteDetail(note: note),
+                          ),
+                        ) ??
+                        false;
+                    if (needRefresh) {
+                      refreshPage();
+                    }
+                  },
+                  onDoubleTap: (note) async {
+                    var needRefresh = await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => NoteDetail(note: note, enterEditing: note.userId == UserSession().id),
+                          ),
+                        ) ??
+                        false;
+                    if (needRefresh) {
+                      refreshPage();
+                    }
+                  },
+                  onDelete: (note) async {
+                    final messenger = ScaffoldMessenger.of(context);
+                    final result = await discoveryProvider.deleteNote(note.id);
+                    if (result.isError && mounted) {
+                      messenger.showSnackBar(
+                        SnackBar(content: Text('Delete failed: ${result.errorMessage}')),
+                      );
+                    }
+                  },
+                ),
+                noteCallbacks: NoteListCallbacks(
+                  onTagTap: (note, tag) => NavigationHelper.onTagTap(context, note, tag),
+                  onRefresh: () async => await refreshPage(),
+                ),
+                config: const ListItemConfig(
+                  showDate: false,
+                  showAuthor: true, // Show author for discovery page
+                  showRestoreButton: false,
+                  enableDismiss: true,
+                ),
+              ),
             ),
-            noteCallbacks: NoteListCallbacks(
-              onTagTap: (note, tag) => (note, tag) => NavigationHelper.onTagTap(context, note, tag),
-              onDateHeaderTap: (date) => {},
-            ),
-            config: const ListItemConfig(
-              showDate: false,
-              showAuthor: true, // Show author for discovery page
-              showRestoreButton: false,
-              enableDismiss: true,
-            ),
-          ),
-        ),
-        if (_discoveryController.totalPages > 1 && UserSession().isDesktop)
-          PaginationControls(
-            currentPage: currentPageNumber,
-            totalPages: _discoveryController.totalPages,
-            navigateToPage: navigateToPage,
-          ),
-      ],
+            if (discoveryProvider.totalPages > 1 && UserSession().isDesktop)
+              PaginationControls(
+                currentPage: currentPageNumber,
+                totalPages: discoveryProvider.totalPages,
+                navigateToPage: navigateToPage,
+              ),
+          ],
+        );
+      },
     );
   }
 }

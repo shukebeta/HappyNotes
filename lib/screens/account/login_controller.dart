@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:happy_notes/screens/initial_page.dart';
 import 'package:happy_notes/utils/token_utils.dart';
+import 'package:provider/provider.dart';
+import 'package:happy_notes/providers/auth_provider.dart';
 import '../../dependency_injection.dart';
 import '../../services/account_service.dart';
 import '../../utils/util.dart';
@@ -38,22 +39,22 @@ class LoginController {
 
       // capture the context before entering await
       final scaffoldContext = ScaffoldMessenger.of(context);
-      final navigator = Navigator.of(context);
       try {
-        // Call AuthService for login
-        final apiResponse = await accountService.login(username, password);
+        // Use AuthProvider for login following new_words pattern
+        final authProvider = context.read<AuthProvider>();
+        final success = await authProvider.login(username, password);
 
-        if (apiResponse['successful']) {
-          // Navigate to the home page
-          navigator.pushReplacement(
-            MaterialPageRoute(builder: (context) => const InitialPage()));
+        if (success) {
+          // Login successful - AuthProvider will notify UI automatically
+          // No manual navigation needed, InitialPage will respond to state change
         } else {
           // Show error message if login fails
-          Util.showError(scaffoldContext, 'Login failed: ${apiResponse['message']}'); // Replaced showSnackBar
+          final errorMessage = authProvider.error ?? 'Login failed';
+          Util.showError(scaffoldContext, errorMessage);
         }
 
       } catch (e) {
-        Util.showError(scaffoldContext, e.toString());
+        Util.showError(scaffoldContext, 'An unexpected error occurred: ${e.toString()}');
       } finally {
         _isSubmitting = false;
         onSubmittingStateChanged?.call(false);

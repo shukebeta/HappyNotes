@@ -1,14 +1,10 @@
 import 'package:happy_notes/apis/account_api.dart';
 import 'package:happy_notes/apis/file_uploader_api.dart';
 import 'package:happy_notes/apis/user_settings_api.dart';
-import 'package:happy_notes/screens/discovery/discovery_controller.dart';
-import 'package:happy_notes/screens/home_page/home_page_controller.dart';
 import 'package:happy_notes/screens/new_note/new_note_controller.dart';
 import 'package:happy_notes/screens/settings/mastodon_sync_settings_controller.dart';
 import 'package:happy_notes/screens/settings/telegram_sync_settings_controller.dart';
 import 'package:happy_notes/screens/settings/settings_controller.dart';
-import 'package:happy_notes/screens/tag_notes/tag_notes_controller.dart';
-import 'package:happy_notes/screens/search/search_results_controller.dart';
 import 'package:happy_notes/screens/components/controllers/tag_cloud_controller.dart';
 import 'package:happy_notes/services/account_service.dart';
 import 'package:happy_notes/services/image_service.dart';
@@ -32,6 +28,7 @@ final locator = GetIt.instance;
 void init() {
   _registerApis();
   _registerServices();
+  _registerProviders();
   _registerControllers();
   _registerUtils();
 }
@@ -77,19 +74,13 @@ void _registerControllers() {
       () => TelegramSyncSettingsController(telegramSettingService: locator()));
   locator.registerLazySingleton(() =>
       MastodonSyncSettingsController(mastodonUserAccountService: locator()));
-  locator.registerFactory(() => NewNoteController(notesService: locator()));
-  locator.registerFactory(() => SearchResultsController(
-      notesService: locator(), noteTagService: locator()));
-  locator.registerFactory(() => HomePageController(
-        notesService: locator(),
-        noteTagService: locator(),
-      ));
-  locator.registerFactory(() => TagNotesController(
-        notesService: locator(),
-        noteTagService: locator(),
-      ));
-  locator.registerFactory(() => DiscoveryController(notesService: locator()));
+  locator.registerFactory(() => NewNoteController());
   locator.registerFactory(() => TagCloudController());
+}
+
+void _registerProviders() {
+  // Register providers for dependency injection when needed
+  // Note: Providers will be created via MultiProvider in main.dart
 }
 
 void _registerUtils() {

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../entities/note.dart';
 import '../../models/note_model.dart';
+import '../../providers/linked_notes_provider.dart';
 import '../new_note/new_note.dart';
 import 'linked_notes.dart';
 import 'markdown_body_here.dart';
@@ -19,7 +20,6 @@ class NoteView extends StatefulWidget {
 }
 
 class NoteViewState extends State<NoteView> {
-  final GlobalKey<LinkedNotesState> _linkedNotesKey = GlobalKey<LinkedNotesState>();
 
 
   @override
@@ -56,7 +56,6 @@ class NoteViewState extends State<NoteView> {
 
                 // Linked notes section
                 LinkedNotes(
-                  key: _linkedNotesKey,
                   linkedNotes: const [],
                   parentNote: widget.note,
                 ),
@@ -71,8 +70,9 @@ class NoteViewState extends State<NoteView> {
                 opacity: 0.5,
                 child: FloatingActionButton(
                   onPressed: () async {
-                    final newNoteSaved = await Navigator.push(
-                      context,
+                    final navigator = Navigator.of(context);
+                    final linkedNotesProvider = context.read<LinkedNotesProvider>();
+                    final newNote = await navigator.push(
                       MaterialPageRoute(
                         builder: (context) => NewNote(
                           isPrivate: widget.note.isPrivate,
@@ -80,8 +80,8 @@ class NoteViewState extends State<NoteView> {
                         ),
                       ),
                     );
-                    if (newNoteSaved ?? false) {
-                      _linkedNotesKey.currentState?.refreshNotes();
+                    if (newNote != null && mounted) {
+                      linkedNotesProvider.addLinkedNote(widget.note.id, newNote);
                     }
                   },
                   child: const Icon(Icons.add),
