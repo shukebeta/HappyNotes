@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html oncontextmenu="event.preventDefault();">
 <head>
   <!--
     If you are serving your web app in a path other than the root, change the
@@ -31,8 +31,46 @@
 
   <title>happy_notes</title>
   <link rel="manifest" href="manifest.json">
+
+  <style>
+    * {
+      -webkit-user-select: none;
+      /* Safari */
+      -moz-user-select: none;
+      /* Firefox */
+      -ms-user-select: none;
+      /* IE 10 and Edge */
+      user-select: none;
+      /* Standard syntax */
+      /* avoid double selection */
+      caret-color: rgba(255, 255, 255, 0) !important;
+    }
+  </style>
 </head>
-<body>
+<body
+  oncontextmenu="event.preventDefault();"
+>
+  <script>
+    document.addEventListener('touchstart', function(e) {
+      if (!isEditableElement(e.target)) {
+        e.preventDefault();
+      }
+    }, { passive: false });
+
+    document.addEventListener('touchend', function(e) {
+      if (!isEditableElement(e.target)) {
+        e.preventDefault();
+      }
+    }, { passive: false });
+
+    function isEditableElement(element) {
+      const tagName = element.tagName.toLowerCase();
+      const contentEditable = element.contentEditable;
+      const isInput = tagName === 'input' || tagName === 'textarea';
+      const isEditable = contentEditable === 'true' || contentEditable === '';
+      return isInput || isEditable || element.closest('[contenteditable="true"]');
+    }
+  </script>
   <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>
