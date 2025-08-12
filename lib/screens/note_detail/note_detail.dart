@@ -14,7 +14,7 @@ class NoteDetail extends StatefulWidget {
   final Note? note;
   final int? noteId;
   final bool? enterEditing;
-  final VoidCallback? onNoteSaved; // Callback when note is saved
+  final void Function(Note)? onNoteSaved; // Callback when note is saved
   final bool fromDetailPage; // Flag to indicate if coming from detail page
 
   const NoteDetail({
@@ -129,7 +129,7 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
     final navigator = Navigator.of(context);
     final scaffoldMessenger = ScaffoldMessenger.of(context);
     
-    final success = await notesProvider.updateNote(
+    final updatedNote = await notesProvider.updateNoteAndReturn(
       note?.id ?? widget.noteId!,
       noteModel.content,
       isPrivate: noteModel.isPrivate,
@@ -140,12 +140,16 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
       _isSaving = false;
     });
 
-    if (success) {
-      _isEditing = false;
-      widget.onNoteSaved?.call();
+    if (updatedNote != null) {
+      widget.onNoteSaved?.call(updatedNote);
+      
       if (_editingFromDetailPage) {
+        // Only switch to view mode when editing from detail page
+        _isEditing = false;
         _updateNoteContent(noteModel);
       } else {
+        // Don't set _isEditing = false to avoid unnecessary re-render before pop
+        // The page will be disposed anyway when navigator.pop() is called
         navigator.pop(true);
       }
       if (mounted) {

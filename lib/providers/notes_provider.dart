@@ -233,6 +233,43 @@ class NotesProvider extends AuthAwareProvider {
     }
   }
 
+  Future<Note?> updateNoteAndReturn(int noteId, String content, {bool? isPrivate, bool? isMarkdown}) async {
+    final noteIndex = _currentPageNotes.indexWhere((note) => note.id == noteId);
+    if (noteIndex == -1) return null; // Note not found
+
+    try {
+      final existingNote = _currentPageNotes[noteIndex];
+      await _notesService.update(
+        noteId,
+        content,
+        isPrivate ?? existingNote.isPrivate,
+        isMarkdown ?? existingNote.isMarkdown
+      );
+      
+      // Optimistically update the note in our list
+      final updatedNote = Note(
+        id: existingNote.id,
+        userId: existingNote.userId,
+        content: content,
+        isPrivate: isPrivate ?? existingNote.isPrivate,
+        isMarkdown: isMarkdown ?? existingNote.isMarkdown,
+        isLong: existingNote.isLong,
+        createdAt: existingNote.createdAt,
+        deletedAt: existingNote.deletedAt,
+        user: existingNote.user,
+        tags: existingNote.tags,
+      );
+      
+      _currentPageNotes[noteIndex] = updatedNote;
+      _pageCache[_currentPage] = List.from(_currentPageNotes); // Update cache
+      _clearGroupedNotesCache(); // Clear cache to trigger recalculation
+      notifyListeners();
+      return updatedNote;
+    } catch (e) {
+      return null;
+    }
+  }
+
   Future<bool> deleteNote(int noteId) async {
     try {
       await _notesService.delete(noteId);

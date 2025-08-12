@@ -9,6 +9,7 @@ import 'package:happy_notes/providers/tag_notes_provider.dart';
 import 'package:happy_notes/providers/memories_provider.dart';
 import 'package:happy_notes/providers/trash_provider.dart';
 import 'package:happy_notes/providers/discovery_provider.dart';
+import 'package:happy_notes/providers/linked_notes_provider.dart';
 import 'package:happy_notes/providers/app_state_provider.dart';
 import 'package:happy_notes/screens/account/user_session.dart';
 import 'package:happy_notes/screens/initial_page.dart';
@@ -63,6 +64,9 @@ void main() async {
         ),
         ChangeNotifierProvider(
           create: (_) => DiscoveryProvider(di.locator()),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => LinkedNotesProvider(di.locator()),
         ),
         // Create AppStateProvider after individual providers - lazy: false to force immediate creation
         ChangeNotifierProvider<AppStateProvider>(
