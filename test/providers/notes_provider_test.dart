@@ -65,7 +65,7 @@ void main() {
         final mockResult = NotesResult(mockNotes, 2);
         when(mockNotesService.myLatest(any, any)).thenAnswer((_) async => mockResult);
 
-        await provider.fetchNotes();
+        await provider.fetchNotesLegacy();
 
         expect(provider.notes, mockNotes);
         expect(provider.isLoadingList, false);
@@ -108,9 +108,9 @@ void main() {
         });
 
         // Start multiple fetchNotes calls
-        final future1 = provider.fetchNotes();
-        final future2 = provider.fetchNotes();
-        final future3 = provider.fetchNotes();
+        final future1 = provider.fetchNotesLegacy();
+        final future2 = provider.fetchNotesLegacy();
+        final future3 = provider.fetchNotesLegacy();
 
         await Future.wait([future1, future2, future3]);
 
@@ -136,7 +136,7 @@ void main() {
         final apiException = ApiException({'message': 'API Error'});
         when(mockNotesService.myLatest(any, any)).thenThrow(apiException);
 
-        await provider.fetchNotes();
+        await provider.fetchNotesLegacy();
 
         expect(provider.notes, isEmpty);
         expect(provider.isLoadingList, false);
@@ -146,7 +146,7 @@ void main() {
       test('should handle generic exception correctly', () async {
         when(mockNotesService.myLatest(any, any)).thenThrow(Exception('Network error'));
 
-        await provider.fetchNotes();
+        await provider.fetchNotesLegacy();
 
         expect(provider.notes, isEmpty);
         expect(provider.isLoadingList, false);
@@ -157,7 +157,7 @@ void main() {
         final mockResult = NotesResult(mockNotes, 2);
         when(mockNotesService.myLatest(any, any)).thenAnswer((_) async => mockResult);
 
-        await provider.fetchNotes();
+        await provider.fetchNotesLegacy();
 
         expect(provider.groupedNotes.length, 2);
         expect(provider.groupedNotes['2022-01-01']?.length, 1);
@@ -428,7 +428,7 @@ void main() {
         // Add some data first
         final mockResult = NotesResult(mockNotes, 2);
         when(mockNotesService.myLatest(10, 1)).thenAnswer((_) async => mockResult);
-        await provider.fetchNotes();
+        await provider.fetchNotesLegacy();
         expect(provider.notes.isNotEmpty, true);
 
         // Clear data
@@ -470,7 +470,7 @@ void main() {
         final mockResult = NotesResult(mockNotes, 2);
         when(mockNotesService.myLatest(10, 1)).thenAnswer((_) async => mockResult);
 
-        await provider.fetchNotes();
+        await provider.fetchNotesLegacy();
 
         expect(notified, true);
       });

@@ -1,152 +1,60 @@
 import 'package:flutter/foundation.dart';
-import 'package:happy_notes/app_config.dart';
 import 'package:happy_notes/entities/note.dart';
 import 'package:happy_notes/models/note_model.dart';
+import 'package:happy_notes/models/notes_result.dart';
 import 'package:happy_notes/services/notes_services.dart';
-import 'package:happy_notes/providers/provider_base.dart';
+import 'package:happy_notes/providers/note_list_provider.dart';
 import 'package:happy_notes/exceptions/api_exception.dart';
 
-class NotesProvider extends AuthAwareProvider {
+class NotesProvider extends NoteListProvider {
   final NotesService _notesService;
 
-  NotesProvider(this._notesService) {
-    try {
-      _pageSize = AppConfig.pageSize;
-    } catch (e) {
-      _pageSize = 10; // Default for tests
-    }
-  }
+  NotesProvider(this._notesService);
 
-  // Page-based state management
-  int _currentPage = 1;
-  int get currentPage => _currentPage;
-
-  List<Note> _currentPageNotes = [];
-  List<Note> get notes => _currentPageNotes; // For compatibility with existing code
-
-  // Cache for pages we've loaded
-  final Map<int, List<Note>> _pageCache = {};
-
-  int _totalNotes = 0;
-  late final int _pageSize;
-
-  int get totalPages => _totalNotes <= 0 ? 1 : (_totalNotes / _pageSize).ceil();
-
-  // New property for grouped notes by date string (for current page)
-  Map<String, List<Note>> _cachedGroupedNotes = {};
-  List<Note> _lastGroupedNotesSource = [];
-
-  /// Get grouped notes with memoization for performance
-  Map<String, List<Note>> get groupedNotes {
-    // Check if we need to recalculate grouping
-    if (_cachedGroupedNotes.isEmpty ||
-        _lastGroupedNotesSource.length != _currentPageNotes.length ||
-        !_listsEqual(_lastGroupedNotesSource, _currentPageNotes)) {
-      _groupNotesByDate();
-      _lastGroupedNotesSource = List.from(_currentPageNotes);
-    }
-    return _cachedGroupedNotes;
-  }
-
-  bool _isLoadingList = false;
-  bool get isLoadingList => _isLoadingList;
-
+  // Loading state for add operations
   bool _isLoadingAdd = false;
   bool get isLoadingAdd => _isLoadingAdd;
-
-  String? _listError;
-  String? get listError => _listError;
 
   String? _addError;
   String? get addError => _addError;
 
-  // Load a specific page
+  // Compatibility getters for existing UI code
+  bool get isLoadingList => isLoading;
+  String? get listError => error;
+
+  /// Implement abstract method from NoteListProvider
+  @override
+  Future<NotesResult> fetchNotes(int pageSize, int pageNumber) async {
+    return await _notesService.myLatest(pageSize, pageNumber);
+  }
+
+  /// Implement abstract method from NoteListProvider
+  @override
+  Future<void> performDelete(int noteId) async {
+    await _notesService.delete(noteId);
+  }
+
+  /// Compatibility method for existing code
   Future<void> loadPage(int pageNumber) async {
-    if (_isLoadingList) return;
-    if (pageNumber < 1) return;
-
-    _isLoadingList = true;
-    _listError = null;
-    notifyListeners();
-
-    try {
-      // Check cache first
-      if (_pageCache.containsKey(pageNumber)) {
-        _currentPage = pageNumber;
-        _currentPageNotes = List.from(_pageCache[pageNumber]!);
-        _clearGroupedNotesCache(); // Clear cache to trigger recalculation
-      } else {
-        // Load from API
-        final notesResult = await _notesService.myLatest(_pageSize, pageNumber);
-
-        _currentPage = pageNumber;
-        _currentPageNotes = notesResult.notes;
-        _totalNotes = notesResult.totalNotes;
-
-        // Cache the loaded page
-        _pageCache[pageNumber] = List.from(notesResult.notes);
-
-        _clearGroupedNotesCache(); // Clear cache to trigger recalculation
-      }
-    } on ApiException catch (e) {
-      _listError = e.toString();
-    } catch (e) {
-      _listError = e.toString();
-    } finally {
-      _isLoadingList = false;
-      notifyListeners();
-    }
+    await navigateToPage(pageNumber);
   }
 
-  // Compatibility method for existing code
-  Future<void> fetchNotes({bool loadMore = false}) async {
-    await loadPage(_currentPage);
+  /// Compatibility method for existing code (no parameters)
+  Future<void> fetchNotesLegacy() async {
+    await refresh();
   }
 
-  // Refresh current page (clear cache and reload)
+  /// Compatibility method for existing code
   Future<void> refreshCurrentPage() async {
-    _pageCache.remove(_currentPage);
-    await loadPage(_currentPage);
+    await refresh();
   }
 
-  /// Helper method to compare two note lists for memoization
-  bool _listsEqual(List<Note> list1, List<Note> list2) {
-    if (list1.length != list2.length) return false;
-    for (int i = 0; i < list1.length; i++) {
-      if (list1[i].id != list2[i].id ||
-          list1[i].content != list2[i].content ||
-          list1[i].createdAt != list2[i].createdAt) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  /// Group notes by date with caching for performance
-  void _groupNotesByDate() {
-    _cachedGroupedNotes = {};
-    for (final note in _currentPageNotes) {
-      // Use the Note entity's built-in createdDate getter for consistency
-      final dateKey = note.createdDate;
-
-      if (!_cachedGroupedNotes.containsKey(dateKey)) {
-        _cachedGroupedNotes[dateKey] = [];
-      }
-      _cachedGroupedNotes[dateKey]!.add(note);
-    }
-  }
-
-  /// Clear cached grouped notes (called when data changes)
-  void _clearGroupedNotesCache() {
-    _cachedGroupedNotes.clear();
-    _lastGroupedNotesSource.clear();
-  }
-
+  /// Compatibility method for existing code
   Future<void> refreshNotes() async {
-    _pageCache.clear(); // Clear all cached pages
-    await loadPage(1); // Load first page
+    await refresh();
   }
 
+  /// Add a new note with optimistic updates
   Future<Note?> addNote(String content, {bool isPrivate = false, bool isMarkdown = false, String publishDateTime = ''}) async {
     if (_isLoadingAdd) return null;
 
@@ -168,16 +76,10 @@ class NotesProvider extends AuthAwareProvider {
         // Fetch the complete note using the returned ID
         final createdNote = await _notesService.get(createdNoteId);
 
-        // Optimistically add note to the beginning of page 1
-        if (_currentPage == 1) {
-          _currentPageNotes.insert(0, createdNote);
-          // Update cache for page 1
-          _pageCache[1] = List.from(_currentPageNotes);
-          _clearGroupedNotesCache(); // Clear cache to trigger recalculation
-          _totalNotes++;
-        } else {
-          // If not on page 1, just increment total count
-          _totalNotes++;
+        // Optimistically add note to the beginning if on page 1
+        if (currentPage == 1) {
+          notes.insert(0, createdNote);
+          notifyListeners();
         }
 
         return createdNote;
@@ -196,12 +98,13 @@ class NotesProvider extends AuthAwareProvider {
     }
   }
 
+  /// Update an existing note
   Future<bool> updateNote(int noteId, String content, {bool? isPrivate, bool? isMarkdown}) async {
-    final noteIndex = _currentPageNotes.indexWhere((note) => note.id == noteId);
+    final noteIndex = notes.indexWhere((note) => note.id == noteId);
     if (noteIndex == -1) return false; // Note not found
 
     try {
-      final existingNote = _currentPageNotes[noteIndex];
+      final existingNote = notes[noteIndex];
       await _notesService.update(
         noteId,
         content,
@@ -223,9 +126,7 @@ class NotesProvider extends AuthAwareProvider {
         tags: existingNote.tags,
       );
 
-      _currentPageNotes[noteIndex] = updatedNote;
-      _pageCache[_currentPage] = List.from(_currentPageNotes); // Update cache
-      _clearGroupedNotesCache(); // Clear cache to trigger recalculation
+      notes[noteIndex] = updatedNote;
       notifyListeners();
       return true;
     } catch (e) {
@@ -233,12 +134,13 @@ class NotesProvider extends AuthAwareProvider {
     }
   }
 
+  /// Update an existing note and return the updated note
   Future<Note?> updateNoteAndReturn(int noteId, String content, {bool? isPrivate, bool? isMarkdown}) async {
-    final noteIndex = _currentPageNotes.indexWhere((note) => note.id == noteId);
+    final noteIndex = notes.indexWhere((note) => note.id == noteId);
     if (noteIndex == -1) return null; // Note not found
 
     try {
-      final existingNote = _currentPageNotes[noteIndex];
+      final existingNote = notes[noteIndex];
       await _notesService.update(
         noteId,
         content,
@@ -260,9 +162,7 @@ class NotesProvider extends AuthAwareProvider {
         tags: existingNote.tags,
       );
 
-      _currentPageNotes[noteIndex] = updatedNote;
-      _pageCache[_currentPage] = List.from(_currentPageNotes); // Update cache
-      _clearGroupedNotesCache(); // Clear cache to trigger recalculation
+      notes[noteIndex] = updatedNote;
       notifyListeners();
       return updatedNote;
     } catch (e) {
@@ -270,32 +170,32 @@ class NotesProvider extends AuthAwareProvider {
     }
   }
 
-  Future<bool> deleteNote(int noteId) async {
-    try {
-      await _notesService.delete(noteId);
-      // Remove the note from current page
-      _currentPageNotes.removeWhere((note) => note.id == noteId);
-      _pageCache[_currentPage] = List.from(_currentPageNotes); // Update cache
-      _totalNotes--; // Decrement total notes
-      _clearGroupedNotesCache(); // Clear cache to trigger recalculation
-      notifyListeners();
-      return true;
-    } catch (e) {
-      return false;
-    }
+  /// Legacy deleteNote method for backward compatibility (returns bool)
+  Future<bool> deleteNoteLegacy(int noteId) async {
+    final result = await super.deleteNote(noteId);
+    return result.isSuccess;
   }
 
+  /// Remove a note and return success status for UI compatibility
+  Future<bool> removeNote(int noteId) async {
+    final result = await super.deleteNote(noteId);
+    return result.isSuccess;
+  }
+
+
+  /// Undelete a note
   Future<bool> undeleteNote(int noteId) async {
     try {
       await _notesService.undelete(noteId);
-      // For simplicity, refresh the notes list after undelete
-      await refreshNotes();
+      // Refresh the notes list after undelete
+      await refresh();
       return true;
     } catch (e) {
       return false;
     }
   }
 
+  /// Get a specific note by ID
   Future<Note?> getNote(int noteId, {bool includeDeleted = false}) async {
     try {
       return await _notesService.get(noteId, includeDeleted: includeDeleted);
@@ -304,44 +204,33 @@ class NotesProvider extends AuthAwareProvider {
     }
   }
 
-  /// Search notes by keyword - simplified for page-based system
+  /// Search notes by keyword
   Future<void> searchNotes(String query) async {
     // For now, search will reset to show search results on current system
     // This can be enhanced later to support search pagination
-    _pageCache.clear();
-    await loadPage(1);
+    await refresh();
   }
 
-  /// Get notes by tag - simplified for page-based system
+  /// Get notes by tag
   Future<void> fetchTagNotes(String tag) async {
     // For now, tag filtering will reset to show current system
     // This can be enhanced later to support tag-based pagination
-    _pageCache.clear();
-    await loadPage(1);
+    await refresh();
   }
 
-  /// Clear all cached data when user logs out
   @override
   void clearAllData() {
-    debugPrint('NotesProvider: Clearing all data - before: notes=${_currentPageNotes.length}, cache=${_pageCache.keys.length} pages');
-    _currentPageNotes = [];
-    _pageCache.clear();
-    _clearGroupedNotesCache();
-    _currentPage = 1;
-    _totalNotes = 0;
-    _isLoadingList = false;
+    debugPrint('NotesProvider: Clearing all data');
     _isLoadingAdd = false;
-    _listError = null;
     _addError = null;
-    // Force immediate UI update
-    notifyListeners();
-    debugPrint('NotesProvider: Data cleared - after: notes=${_currentPageNotes.length}');
+    super.clearAllData();
+    debugPrint('NotesProvider: Data cleared');
   }
 
   /// Load initial data when user logs in
   @override
   Future<void> onLogin() async {
     debugPrint('NotesProvider: Loading initial data after login');
-    await loadPage(1);
+    await loadInitialData();
   }
 }

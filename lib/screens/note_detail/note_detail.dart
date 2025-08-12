@@ -165,7 +165,7 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
     final navigator = Navigator.of(context);
     final scaffoldMessenger = ScaffoldMessenger.of(context);
 
-    final success = await notesProvider.deleteNote(note?.id ?? widget.noteId!);
+    final success = await notesProvider.removeNote(note?.id ?? widget.noteId!);
 
     if (success) {
       navigator.pop(true);

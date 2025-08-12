@@ -168,7 +168,7 @@ class HomePageState extends State<HomePage> {
                 }
               },
               onDelete: (note) async {
-                await notesProvider.deleteNote(note.id);
+                await notesProvider.removeNote(note.id);
               },
             ),
             noteCallbacks: NoteListCallbacks(
