@@ -22,12 +22,28 @@ class MemoriesProvider extends AuthAwareProvider {
   DateTime? _lastLoadTime;
   static const Duration _cacheExpiration = Duration(hours: 8);
 
+  // Date-specific caching - structure: dateString -> List<Note>
+  final Map<String, List<Note>> _memoriesByDateCache = {};
+  
+  // Loading states per date
+  final Map<String, bool> _loadingStates = {};
+  
+  // Error states per date
+  final Map<String, String?> _errorStates = {};
+
+  // Last load time per date for cache expiration
+  final Map<String, DateTime> _lastLoadTimeByDate = {};
+
   @override
   void clearAllData() {
     _memories.clear();
     _isLoading = false;
     _error = null;
     _lastLoadTime = null;
+    _memoriesByDateCache.clear();
+    _loadingStates.clear();
+    _errorStates.clear();
+    _lastLoadTimeByDate.clear();
     notifyListeners();
   }
 
@@ -91,6 +107,107 @@ class MemoriesProvider extends AuthAwareProvider {
       handleServiceError(e, 'load memories for date');
       return null;
     }
+  }
+
+  /// Get cached memories for a specific date
+  List<Note> memoriesOnDate(String dateString) {
+    return _memoriesByDateCache[dateString] ?? [];
+  }
+
+  /// Check if memories are currently loading for a specific date
+  bool isLoadingForDate(String dateString) {
+    return _loadingStates[dateString] ?? false;
+  }
+
+  /// Get error message for a specific date, if any
+  String? getErrorForDate(String dateString) {
+    return _errorStates[dateString];
+  }
+
+  /// Load memories for a specific date with caching
+  Future<void> loadMemoriesForDate(String dateString, {bool forceRefresh = false}) async {
+    // Check if we should use cached data
+    if (!forceRefresh && 
+        _memoriesByDateCache[dateString]?.isNotEmpty == true &&
+        _errorStates[dateString] == null &&
+        _lastLoadTimeByDate[dateString] != null &&
+        DateTime.now().difference(_lastLoadTimeByDate[dateString]!) < _cacheExpiration) {
+      return; // Use cached data
+    }
+
+    // Prevent multiple simultaneous loads for the same date
+    if (isLoadingForDate(dateString)) return;
+
+    _setLoadingStateForDate(dateString, true);
+    _clearErrorForDate(dateString);
+
+    try {
+      final result = await _notesService.memoriesOn(dateString);
+      _memoriesByDateCache[dateString] = result.notes;
+      _lastLoadTimeByDate[dateString] = DateTime.now();
+      notifyListeners();
+    } catch (error) {
+      _setErrorForDate(dateString, handleServiceError(error, 'load memories for date'));
+    } finally {
+      _setLoadingStateForDate(dateString, false);
+    }
+  }
+
+  /// Add a new memory to a specific date cache
+  void addMemoryToDate(String dateString, Note newNote) {
+    _memoriesByDateCache[dateString] ??= [];
+    
+    // Check if note already exists (avoid duplicates)
+    final existingIndex = _memoriesByDateCache[dateString]!
+        .indexWhere((note) => note.id == newNote.id);
+    
+    if (existingIndex == -1) {
+      // Add new note and sort by creation date (newest first)
+      _memoriesByDateCache[dateString]!.add(newNote);
+      _memoriesByDateCache[dateString]!.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+      notifyListeners();
+    }
+  }
+
+  /// Update a memory in a specific date cache
+  void updateMemoryForDate(String dateString, Note updatedNote) {
+    final notes = _memoriesByDateCache[dateString];
+    if (notes == null) return;
+
+    final index = notes.indexWhere((note) => note.id == updatedNote.id);
+    if (index != -1) {
+      notes[index] = updatedNote;
+      notifyListeners();
+    }
+  }
+
+  /// Remove a memory from a specific date cache
+  void removeMemoryFromDate(String dateString, int noteId) {
+    final notes = _memoriesByDateCache[dateString];
+    if (notes == null) return;
+
+    final originalLength = notes.length;
+    notes.removeWhere((note) => note.id == noteId);
+    if (notes.length < originalLength) {
+      notifyListeners();
+    }
+  }
+
+  /// Set loading state for a specific date
+  void _setLoadingStateForDate(String dateString, bool loading) {
+    _loadingStates[dateString] = loading;
+    notifyListeners();
+  }
+
+  /// Set error state for a specific date
+  void _setErrorForDate(String dateString, String error) {
+    _errorStates[dateString] = error;
+    notifyListeners();
+  }
+
+  /// Clear error state for a specific date
+  void _clearErrorForDate(String dateString) {
+    _errorStates.remove(dateString);
   }
 
   /// Refresh memories

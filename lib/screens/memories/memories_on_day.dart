@@ -26,9 +26,7 @@ class MemoriesOnDay extends StatefulWidget {
 }
 
 class MemoriesOnDayState extends State<MemoriesOnDay> with RouteAware {
-  List<Note> _notes = [];
-  bool _isLoading = true;
-  String? _error;
+  bool _hasInitialized = false;
 
   @override
   void initState() {
@@ -36,7 +34,21 @@ class MemoriesOnDayState extends State<MemoriesOnDay> with RouteAware {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       UserSession.routeObserver.subscribe(this, ModalRoute.of(context)!);
     });
-    _loadMemoriesForDate();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    
+    // Auto-load memories for the date when widget initializes
+    if (!_hasInitialized) {
+      _hasInitialized = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        final provider = context.read<MemoriesProvider>();
+        final dateString = DateFormat('yyyyMMdd').format(widget.date);
+        provider.loadMemoriesForDate(dateString);
+      });
+    }
   }
 
   @override
@@ -64,31 +76,16 @@ class MemoriesOnDayState extends State<MemoriesOnDay> with RouteAware {
     _navigateToDate(nextDay);
   }
 
-  Future<void> _loadMemoriesForDate() async {
-    setState(() {
-      _isLoading = true;
-      _error = null;
-    });
+  void _onNoteSaved(Note savedNote) {
+    final provider = context.read<MemoriesProvider>();
+    final dateString = DateFormat('yyyyMMdd').format(widget.date);
+    provider.addMemoryToDate(dateString, savedNote);
+  }
 
-    try {
-      final memoriesProvider = context.read<MemoriesProvider>();
-      final dateString = DateFormat('yyyyMMdd').format(widget.date);
-      final result = await memoriesProvider.memoriesOn(dateString);
-
-      if (mounted) {
-        setState(() {
-          _notes = result?.notes ?? [];
-          _isLoading = false;
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _error = e.toString();
-          _isLoading = false;
-        });
-      }
-    }
+  void _onNoteUpdated(Note updatedNote) {
+    final provider = context.read<MemoriesProvider>();
+    final dateString = DateFormat('yyyyMMdd').format(widget.date);
+    provider.updateMemoryForDate(dateString, updatedNote);
   }
 
   @override
@@ -121,7 +118,16 @@ class MemoriesOnDayState extends State<MemoriesOnDay> with RouteAware {
       ),
       body: Stack(
         children: [
-          _buildBody(),
+          Consumer<MemoriesProvider>(
+            builder: (context, provider, child) {
+              final dateString = DateFormat('yyyyMMdd').format(widget.date);
+              final isLoading = provider.isLoadingForDate(dateString);
+              final notes = provider.memoriesOnDate(dateString);
+              final error = provider.getErrorForDate(dateString);
+              
+              return _buildBody(isLoading, notes, error);
+            },
+          ),
           // Add Note Button
           Positioned(
             right: 0,
@@ -130,14 +136,15 @@ class MemoriesOnDayState extends State<MemoriesOnDay> with RouteAware {
               opacity: 0.5,
               child: FloatingActionButton(
                 onPressed: () async {
-                  await Navigator.push(
+                  final newNote = await Navigator.push<Note>(
                     context,
                     MaterialPageRoute(
                       builder: (context) => NewNote(isPrivate: false, date: widget.date),
                     ),
                   );
-                  // Refresh after adding new note
-                  await _loadMemoriesForDate();
+                  if (newNote != null) {
+                    _onNoteSaved(newNote);
+                  }
                 },
                 child: const Icon(Icons.add),
               ),
@@ -149,19 +156,23 @@ class MemoriesOnDayState extends State<MemoriesOnDay> with RouteAware {
   }
 
 
-  Widget _buildBody() {
-    if (_isLoading) {
+  Widget _buildBody(bool isLoading, List<Note> notes, String? error) {
+    if (isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
 
-    if (_error != null) {
+    if (error != null) {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('Error: $_error'),
+            Text('Error: $error'),
             ElevatedButton(
-              onPressed: _loadMemoriesForDate,
+              onPressed: () {
+                final provider = context.read<MemoriesProvider>();
+                final dateString = DateFormat('yyyyMMdd').format(widget.date);
+                provider.loadMemoriesForDate(dateString, forceRefresh: true);
+              },
               child: const Text('Retry'),
             ),
           ],
@@ -169,7 +180,7 @@ class MemoriesOnDayState extends State<MemoriesOnDay> with RouteAware {
       );
     }
 
-    if (_notes.isEmpty) {
+    if (notes.isEmpty) {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -178,13 +189,15 @@ class MemoriesOnDayState extends State<MemoriesOnDay> with RouteAware {
             const SizedBox(height: 16),
             ElevatedButton.icon(
               onPressed: () async {
-                await Navigator.push(
+                final newNote = await Navigator.push<Note>(
                   context,
                   MaterialPageRoute(
                     builder: (context) => NewNote(isPrivate: false, date: widget.date),
                   ),
                 );
-                await _loadMemoriesForDate();
+                if (newNote != null) {
+                  _onNoteSaved(newNote);
+                }
               },
               icon: const Icon(Icons.add),
               label: const Text('Create First Memory'),
@@ -196,7 +209,7 @@ class MemoriesOnDayState extends State<MemoriesOnDay> with RouteAware {
 
     // Group notes by date for consistent display
     final groupedNotes = <String, List<Note>>{};
-    for (final note in _notes) {
+    for (final note in notes) {
       final dateKey = note.createdDate;
       groupedNotes[dateKey] = groupedNotes[dateKey] ?? [];
       groupedNotes[dateKey]!.add(note);
@@ -207,25 +220,26 @@ class MemoriesOnDayState extends State<MemoriesOnDay> with RouteAware {
       showDateHeader: true,
       callbacks: ListItemCallbacks<Note>(
         onTap: (note) async {
-          await Navigator.push(
+          await Navigator.push<bool>(
             context,
             MaterialPageRoute(
               builder: (context) => NoteDetail(note: note),
             ),
           );
-          await _loadMemoriesForDate();
+          // No need to reload - NoteDetail in view mode doesn't change data
         },
         onDoubleTap: (note) async {
-          await Navigator.push(
+          await Navigator.push<bool>(
             context,
             MaterialPageRoute(
               builder: (context) => NoteDetail(
                 note: note,
                 enterEditing: note.userId == UserSession().id,
+                onNoteSaved: _onNoteUpdated,
               ),
             ),
           );
-          await _loadMemoriesForDate();
+          // The callback will handle cache updates automatically
         },
         onDelete: (note) async {
           // Delete note through memories provider - it doesn't implement delete
@@ -237,7 +251,11 @@ class MemoriesOnDayState extends State<MemoriesOnDay> with RouteAware {
       ),
       noteCallbacks: NoteListCallbacks(
         onTagTap: (note, tag) => NavigationHelper.onTagTap(context, note, tag),
-        onRefresh: () async => await _loadMemoriesForDate(),
+        onRefresh: () async {
+          final provider = context.read<MemoriesProvider>();
+          final dateString = DateFormat('yyyyMMdd').format(widget.date);
+          await provider.loadMemoriesForDate(dateString, forceRefresh: true);
+        },
       ),
       config: const ListItemConfig(
         showDate: false,
