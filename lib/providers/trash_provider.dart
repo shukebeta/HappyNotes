@@ -12,6 +12,9 @@ class TrashProvider extends NoteListProvider {
 
   TrashProvider(this._notesService);
 
+  @override
+  NotesService get notesService => _notesService;
+
   // Additional getters for trash-specific functionality
   List<Note> get trashedNotes => notes; // Alias for compatibility
   bool get isPurging => _isPurging;

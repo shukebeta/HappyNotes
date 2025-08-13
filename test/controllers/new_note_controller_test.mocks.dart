@@ -3,15 +3,16 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'dart:async' as _i6;
-import 'dart:ui' as _i8;
+import 'dart:async' as _i7;
+import 'dart:ui' as _i9;
 
-import 'package:happy_notes/entities/note.dart' as _i5;
-import 'package:happy_notes/models/notes_result.dart' as _i2;
-import 'package:happy_notes/providers/notes_provider.dart' as _i4;
-import 'package:happy_notes/utils/operation_result.dart' as _i3;
+import 'package:happy_notes/entities/note.dart' as _i6;
+import 'package:happy_notes/models/notes_result.dart' as _i3;
+import 'package:happy_notes/providers/notes_provider.dart' as _i5;
+import 'package:happy_notes/services/notes_services.dart' as _i2;
+import 'package:happy_notes/utils/operation_result.dart' as _i4;
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:mockito/src/dummies.dart' as _i7;
+import 'package:mockito/src/dummies.dart' as _i8;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -27,8 +28,8 @@ import 'package:mockito/src/dummies.dart' as _i7;
 // ignore_for_file: camel_case_types
 // ignore_for_file: subtype_of_sealed_class
 
-class _FakeNotesResult_0 extends _i1.SmartFake implements _i2.NotesResult {
-  _FakeNotesResult_0(
+class _FakeNotesService_0 extends _i1.SmartFake implements _i2.NotesService {
+  _FakeNotesService_0(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -37,9 +38,19 @@ class _FakeNotesResult_0 extends _i1.SmartFake implements _i2.NotesResult {
         );
 }
 
-class _FakeOperationResult_1<T> extends _i1.SmartFake
-    implements _i3.OperationResult<T> {
-  _FakeOperationResult_1(
+class _FakeNotesResult_1 extends _i1.SmartFake implements _i3.NotesResult {
+  _FakeNotesResult_1(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
+class _FakeOperationResult_2<T> extends _i1.SmartFake
+    implements _i4.OperationResult<T> {
+  _FakeOperationResult_2(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -51,10 +62,19 @@ class _FakeOperationResult_1<T> extends _i1.SmartFake
 /// A class which mocks [NotesProvider].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockNotesProvider extends _i1.Mock implements _i4.NotesProvider {
+class MockNotesProvider extends _i1.Mock implements _i5.NotesProvider {
   MockNotesProvider() {
     _i1.throwOnMissingStub(this);
   }
+
+  @override
+  _i2.NotesService get notesService => (super.noSuchMethod(
+        Invocation.getter(#notesService),
+        returnValue: _FakeNotesService_0(
+          this,
+          Invocation.getter(#notesService),
+        ),
+      ) as _i2.NotesService);
 
   @override
   bool get isLoadingAdd => (super.noSuchMethod(
@@ -69,10 +89,10 @@ class MockNotesProvider extends _i1.Mock implements _i4.NotesProvider {
       ) as bool);
 
   @override
-  List<_i5.Note> get notes => (super.noSuchMethod(
+  List<_i6.Note> get notes => (super.noSuchMethod(
         Invocation.getter(#notes),
-        returnValue: <_i5.Note>[],
-      ) as List<_i5.Note>);
+        returnValue: <_i6.Note>[],
+      ) as List<_i6.Note>);
 
   @override
   int get currentPage => (super.noSuchMethod(
@@ -93,10 +113,10 @@ class MockNotesProvider extends _i1.Mock implements _i4.NotesProvider {
       ) as bool);
 
   @override
-  Map<String, List<_i5.Note>> get groupedNotes => (super.noSuchMethod(
+  Map<String, List<_i6.Note>> get groupedNotes => (super.noSuchMethod(
         Invocation.getter(#groupedNotes),
-        returnValue: <String, List<_i5.Note>>{},
-      ) as Map<String, List<_i5.Note>>);
+        returnValue: <String, List<_i6.Note>>{},
+      ) as Map<String, List<_i6.Note>>);
 
   @override
   bool get isAuthStateInitialized => (super.noSuchMethod(
@@ -111,7 +131,7 @@ class MockNotesProvider extends _i1.Mock implements _i4.NotesProvider {
       ) as bool);
 
   @override
-  _i6.Future<_i2.NotesResult> fetchNotes(
+  _i7.Future<_i3.NotesResult> fetchNotes(
     int? pageSize,
     int? pageNumber,
   ) =>
@@ -123,7 +143,7 @@ class MockNotesProvider extends _i1.Mock implements _i4.NotesProvider {
             pageNumber,
           ],
         ),
-        returnValue: _i6.Future<_i2.NotesResult>.value(_FakeNotesResult_0(
+        returnValue: _i7.Future<_i3.NotesResult>.value(_FakeNotesResult_1(
           this,
           Invocation.method(
             #fetchNotes,
@@ -133,60 +153,60 @@ class MockNotesProvider extends _i1.Mock implements _i4.NotesProvider {
             ],
           ),
         )),
-      ) as _i6.Future<_i2.NotesResult>);
+      ) as _i7.Future<_i3.NotesResult>);
 
   @override
-  _i6.Future<void> performDelete(int? noteId) => (super.noSuchMethod(
+  _i7.Future<void> performDelete(int? noteId) => (super.noSuchMethod(
         Invocation.method(
           #performDelete,
           [noteId],
         ),
-        returnValue: _i6.Future<void>.value(),
-        returnValueForMissingStub: _i6.Future<void>.value(),
-      ) as _i6.Future<void>);
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
 
   @override
-  _i6.Future<void> loadPage(int? pageNumber) => (super.noSuchMethod(
+  _i7.Future<void> loadPage(int? pageNumber) => (super.noSuchMethod(
         Invocation.method(
           #loadPage,
           [pageNumber],
         ),
-        returnValue: _i6.Future<void>.value(),
-        returnValueForMissingStub: _i6.Future<void>.value(),
-      ) as _i6.Future<void>);
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
 
   @override
-  _i6.Future<void> fetchNotesLegacy() => (super.noSuchMethod(
+  _i7.Future<void> fetchNotesLegacy() => (super.noSuchMethod(
         Invocation.method(
           #fetchNotesLegacy,
           [],
         ),
-        returnValue: _i6.Future<void>.value(),
-        returnValueForMissingStub: _i6.Future<void>.value(),
-      ) as _i6.Future<void>);
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
 
   @override
-  _i6.Future<void> refreshCurrentPage() => (super.noSuchMethod(
+  _i7.Future<void> refreshCurrentPage() => (super.noSuchMethod(
         Invocation.method(
           #refreshCurrentPage,
           [],
         ),
-        returnValue: _i6.Future<void>.value(),
-        returnValueForMissingStub: _i6.Future<void>.value(),
-      ) as _i6.Future<void>);
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
 
   @override
-  _i6.Future<void> refreshNotes() => (super.noSuchMethod(
+  _i7.Future<void> refreshNotes() => (super.noSuchMethod(
         Invocation.method(
           #refreshNotes,
           [],
         ),
-        returnValue: _i6.Future<void>.value(),
-        returnValueForMissingStub: _i6.Future<void>.value(),
-      ) as _i6.Future<void>);
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
 
   @override
-  _i6.Future<_i5.Note?> addNote(
+  _i7.Future<_i6.Note?> addNote(
     String? content, {
     bool? isPrivate = false,
     bool? isMarkdown = false,
@@ -202,11 +222,110 @@ class MockNotesProvider extends _i1.Mock implements _i4.NotesProvider {
             #publishDateTime: publishDateTime,
           },
         ),
-        returnValue: _i6.Future<_i5.Note?>.value(),
-      ) as _i6.Future<_i5.Note?>);
+        returnValue: _i7.Future<_i6.Note?>.value(),
+      ) as _i7.Future<_i6.Note?>);
 
   @override
-  _i6.Future<bool> updateNote(
+  _i7.Future<bool> undeleteNote(int? noteId) => (super.noSuchMethod(
+        Invocation.method(
+          #undeleteNote,
+          [noteId],
+        ),
+        returnValue: _i7.Future<bool>.value(false),
+      ) as _i7.Future<bool>);
+
+  @override
+  _i7.Future<_i6.Note?> getNote(
+    int? noteId, {
+    bool? includeDeleted = false,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getNote,
+          [noteId],
+          {#includeDeleted: includeDeleted},
+        ),
+        returnValue: _i7.Future<_i6.Note?>.value(),
+      ) as _i7.Future<_i6.Note?>);
+
+  @override
+  _i7.Future<void> searchNotes(String? query) => (super.noSuchMethod(
+        Invocation.method(
+          #searchNotes,
+          [query],
+        ),
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
+
+  @override
+  _i7.Future<void> fetchTagNotes(String? tag) => (super.noSuchMethod(
+        Invocation.method(
+          #fetchTagNotes,
+          [tag],
+        ),
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
+
+  @override
+  void clearAllData() => super.noSuchMethod(
+        Invocation.method(
+          #clearAllData,
+          [],
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  _i7.Future<void> onLogin() => (super.noSuchMethod(
+        Invocation.method(
+          #onLogin,
+          [],
+        ),
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
+
+  @override
+  _i7.Future<void> navigateToPage(int? pageNumber) => (super.noSuchMethod(
+        Invocation.method(
+          #navigateToPage,
+          [pageNumber],
+        ),
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
+
+  @override
+  _i7.Future<void> refresh() => (super.noSuchMethod(
+        Invocation.method(
+          #refresh,
+          [],
+        ),
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
+
+  @override
+  _i7.Future<_i4.OperationResult<void>> deleteNote(int? noteId) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #deleteNote,
+          [noteId],
+        ),
+        returnValue: _i7.Future<_i4.OperationResult<void>>.value(
+            _FakeOperationResult_2<void>(
+          this,
+          Invocation.method(
+            #deleteNote,
+            [noteId],
+          ),
+        )),
+      ) as _i7.Future<_i4.OperationResult<void>>);
+
+  @override
+  _i7.Future<_i6.Note?> updateNote(
     int? noteId,
     String? content, {
     bool? isPrivate,
@@ -224,160 +343,39 @@ class MockNotesProvider extends _i1.Mock implements _i4.NotesProvider {
             #isMarkdown: isMarkdown,
           },
         ),
-        returnValue: _i6.Future<bool>.value(false),
-      ) as _i6.Future<bool>);
+        returnValue: _i7.Future<_i6.Note?>.value(),
+      ) as _i7.Future<_i6.Note?>);
 
   @override
-  _i6.Future<_i5.Note?> updateNoteAndReturn(
-    int? noteId,
-    String? content, {
-    bool? isPrivate,
-    bool? isMarkdown,
-  }) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #updateNoteAndReturn,
-          [
-            noteId,
-            content,
-          ],
-          {
-            #isPrivate: isPrivate,
-            #isMarkdown: isMarkdown,
-          },
-        ),
-        returnValue: _i6.Future<_i5.Note?>.value(),
-      ) as _i6.Future<_i5.Note?>);
-
-  @override
-  _i6.Future<bool> undeleteNote(int? noteId) => (super.noSuchMethod(
-        Invocation.method(
-          #undeleteNote,
-          [noteId],
-        ),
-        returnValue: _i6.Future<bool>.value(false),
-      ) as _i6.Future<bool>);
-
-  @override
-  _i6.Future<_i5.Note?> getNote(
-    int? noteId, {
-    bool? includeDeleted = false,
-  }) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #getNote,
-          [noteId],
-          {#includeDeleted: includeDeleted},
-        ),
-        returnValue: _i6.Future<_i5.Note?>.value(),
-      ) as _i6.Future<_i5.Note?>);
-
-  @override
-  _i6.Future<void> searchNotes(String? query) => (super.noSuchMethod(
-        Invocation.method(
-          #searchNotes,
-          [query],
-        ),
-        returnValue: _i6.Future<void>.value(),
-        returnValueForMissingStub: _i6.Future<void>.value(),
-      ) as _i6.Future<void>);
-
-  @override
-  _i6.Future<void> fetchTagNotes(String? tag) => (super.noSuchMethod(
-        Invocation.method(
-          #fetchTagNotes,
-          [tag],
-        ),
-        returnValue: _i6.Future<void>.value(),
-        returnValueForMissingStub: _i6.Future<void>.value(),
-      ) as _i6.Future<void>);
-
-  @override
-  void clearAllData() => super.noSuchMethod(
-        Invocation.method(
-          #clearAllData,
-          [],
-        ),
-        returnValueForMissingStub: null,
-      );
-
-  @override
-  _i6.Future<void> onLogin() => (super.noSuchMethod(
-        Invocation.method(
-          #onLogin,
-          [],
-        ),
-        returnValue: _i6.Future<void>.value(),
-        returnValueForMissingStub: _i6.Future<void>.value(),
-      ) as _i6.Future<void>);
-
-  @override
-  _i6.Future<void> navigateToPage(int? pageNumber) => (super.noSuchMethod(
-        Invocation.method(
-          #navigateToPage,
-          [pageNumber],
-        ),
-        returnValue: _i6.Future<void>.value(),
-        returnValueForMissingStub: _i6.Future<void>.value(),
-      ) as _i6.Future<void>);
-
-  @override
-  _i6.Future<void> refresh() => (super.noSuchMethod(
-        Invocation.method(
-          #refresh,
-          [],
-        ),
-        returnValue: _i6.Future<void>.value(),
-        returnValueForMissingStub: _i6.Future<void>.value(),
-      ) as _i6.Future<void>);
-
-  @override
-  _i6.Future<_i3.OperationResult<void>> deleteNote(int? noteId) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #deleteNote,
-          [noteId],
-        ),
-        returnValue: _i6.Future<_i3.OperationResult<void>>.value(
-            _FakeOperationResult_1<void>(
-          this,
-          Invocation.method(
-            #deleteNote,
-            [noteId],
-          ),
-        )),
-      ) as _i6.Future<_i3.OperationResult<void>>);
-
-  @override
-  _i6.Future<void> loadInitialData() => (super.noSuchMethod(
+  _i7.Future<void> loadInitialData() => (super.noSuchMethod(
         Invocation.method(
           #loadInitialData,
           [],
         ),
-        returnValue: _i6.Future<void>.value(),
-        returnValueForMissingStub: _i6.Future<void>.value(),
-      ) as _i6.Future<void>);
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
 
   @override
-  _i6.Future<void> onLogout() => (super.noSuchMethod(
+  _i7.Future<void> onLogout() => (super.noSuchMethod(
         Invocation.method(
           #onLogout,
           [],
         ),
-        returnValue: _i6.Future<void>.value(),
-        returnValueForMissingStub: _i6.Future<void>.value(),
-      ) as _i6.Future<void>);
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
 
   @override
-  _i6.Future<void> onAuthStateChanged(bool? isAuthenticated) =>
+  _i7.Future<void> onAuthStateChanged(bool? isAuthenticated) =>
       (super.noSuchMethod(
         Invocation.method(
           #onAuthStateChanged,
           [isAuthenticated],
         ),
-        returnValue: _i6.Future<void>.value(),
-        returnValueForMissingStub: _i6.Future<void>.value(),
-      ) as _i6.Future<void>);
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
 
   @override
   void resetAuthState() => super.noSuchMethod(
@@ -401,7 +399,7 @@ class MockNotesProvider extends _i1.Mock implements _i4.NotesProvider {
             operation,
           ],
         ),
-        returnValue: _i7.dummyValue<String>(
+        returnValue: _i8.dummyValue<String>(
           this,
           Invocation.method(
             #handleServiceError,
@@ -414,8 +412,8 @@ class MockNotesProvider extends _i1.Mock implements _i4.NotesProvider {
       ) as String);
 
   @override
-  _i6.Future<T?> executeWithErrorHandling<T>({
-    required _i6.Future<T> Function()? operation,
+  _i7.Future<T?> executeWithErrorHandling<T>({
+    required _i7.Future<T> Function()? operation,
     required void Function(bool)? setLoading,
     required void Function(String?)? setError,
     required String? operationName,
@@ -433,11 +431,11 @@ class MockNotesProvider extends _i1.Mock implements _i4.NotesProvider {
             #onSuccess: onSuccess,
           },
         ),
-        returnValue: _i6.Future<T?>.value(),
-      ) as _i6.Future<T?>);
+        returnValue: _i7.Future<T?>.value(),
+      ) as _i7.Future<T?>);
 
   @override
-  void addListener(_i8.VoidCallback? listener) => super.noSuchMethod(
+  void addListener(_i9.VoidCallback? listener) => super.noSuchMethod(
         Invocation.method(
           #addListener,
           [listener],
@@ -446,7 +444,7 @@ class MockNotesProvider extends _i1.Mock implements _i4.NotesProvider {
       );
 
   @override
-  void removeListener(_i8.VoidCallback? listener) => super.noSuchMethod(
+  void removeListener(_i9.VoidCallback? listener) => super.noSuchMethod(
         Invocation.method(
           #removeListener,
           [listener],

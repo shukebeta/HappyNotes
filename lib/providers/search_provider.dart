@@ -9,6 +9,9 @@ class SearchProvider extends NoteListProvider {
 
   SearchProvider(this._notesService);
 
+  @override
+  NotesService get notesService => _notesService;
+
   // Search-specific state
   String _currentQuery = '';
   String get currentQuery => _currentQuery;

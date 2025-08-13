@@ -62,7 +62,7 @@ void main() {
 
     group('fetchNotes', () {
       test('should fetch notes successfully', () async {
-        final mockResult = NotesResult(mockNotes, 2);
+        final mockResult = NotesResult(mockNotes, 20);
         when(mockNotesService.myLatest(any, any)).thenAnswer((_) async => mockResult);
 
         await provider.fetchNotesLegacy();
@@ -70,38 +70,38 @@ void main() {
         expect(provider.notes, mockNotes);
         expect(provider.isLoadingList, false);
         expect(provider.listError, null);
-        expect(provider.totalPages, 1);
+        expect(provider.totalPages, 2);
         expect(provider.groupedNotes.length, 2);
         verify(mockNotesService.myLatest(10, 1)).called(1);
       });
 
       test('should handle page loading correctly', () async {
         // Load page 1
-        final firstResult = NotesResult([mockNotes[0]], 2);
+        final firstResult = NotesResult([mockNotes[0]], 20);
         when(mockNotesService.myLatest(10, 1)).thenAnswer((_) async => firstResult);
         await provider.loadPage(1);
 
         expect(provider.notes.length, 1);
         expect(provider.notes, [mockNotes[0]]);
         expect(provider.currentPage, 1);
-        expect(provider.totalPages, 1);
+        expect(provider.totalPages, 2);
 
         // Load page 2
-        final secondResult = NotesResult([mockNotes[1]], 2);
+        final secondResult = NotesResult([mockNotes[1]], 20);
         when(mockNotesService.myLatest(10, 2)).thenAnswer((_) async => secondResult);
         await provider.loadPage(2);
 
         expect(provider.notes.length, 1);
         expect(provider.notes, [mockNotes[1]]);
         expect(provider.currentPage, 2);
-        expect(provider.totalPages, 1);
+        expect(provider.totalPages, 2);
 
         verify(mockNotesService.myLatest(10, 1)).called(1);
         verify(mockNotesService.myLatest(10, 2)).called(1);
       });
 
       test('should prevent multiple simultaneous loads', () async {
-        final mockResult = NotesResult(mockNotes, 2);
+        final mockResult = NotesResult(mockNotes, 20);
         when(mockNotesService.myLatest(any, any)).thenAnswer((_) async {
           await Future.delayed(const Duration(milliseconds: 100));
           return mockResult;
@@ -119,7 +119,7 @@ void main() {
       });
 
       test('should not load invalid page numbers', () async {
-        final mockResult = NotesResult(mockNotes, 2);
+        final mockResult = NotesResult(mockNotes, 20);
         when(mockNotesService.myLatest(any, any)).thenAnswer((_) async => mockResult);
 
         // Try to load page 0 (invalid)
@@ -154,7 +154,7 @@ void main() {
       });
 
       test('should group notes by date correctly', () async {
-        final mockResult = NotesResult(mockNotes, 2);
+        final mockResult = NotesResult(mockNotes, 20);
         when(mockNotesService.myLatest(any, any)).thenAnswer((_) async => mockResult);
 
         await provider.fetchNotesLegacy();
@@ -277,18 +277,31 @@ void main() {
 
         when(mockNotesService.update(1, 'Updated content', false, false))
             .thenAnswer((_) async => 1);
+        when(mockNotesService.get(1))
+            .thenAnswer((_) async => Note(
+              id: existingNote.id,
+              userId: existingNote.userId,
+              content: 'Updated content',
+              isPrivate: existingNote.isPrivate,
+              isLong: existingNote.isLong,
+              isMarkdown: existingNote.isMarkdown,
+              createdAt: existingNote.createdAt,
+              deletedAt: existingNote.deletedAt,
+              user: existingNote.user,
+              tags: existingNote.tags,
+            ));
 
         final result = await provider.updateNote(1, 'Updated content');
 
-        expect(result, true);
+        expect(result, isNotNull);
         expect(provider.notes.first.content, 'Updated content');
         verify(mockNotesService.update(1, 'Updated content', false, false)).called(1);
       });
 
-      test('should return false when note not found', () async {
+      test('should return null when note not found', () async {
         final result = await provider.updateNote(999, 'Updated content');
 
-        expect(result, false);
+        expect(result, isNull);
         verifyNever(mockNotesService.update(any, any, any, any));
       });
 
@@ -301,7 +314,7 @@ void main() {
 
         final result = await provider.updateNote(1, 'Updated content');
 
-        expect(result, false);
+        expect(result, isNull);
       });
     });
 
@@ -313,7 +326,7 @@ void main() {
 
         final result = await provider.deleteNote(1);
 
-        expect(result, true);
+        expect(result.isSuccess, isTrue);
         expect(provider.notes.length, 1);
         expect(provider.notes.first.id, 2);
         verify(mockNotesService.delete(1)).called(1);
@@ -326,14 +339,14 @@ void main() {
 
         final result = await provider.deleteNote(1);
 
-        expect(result, false);
+        expect(result.isSuccess, isFalse);
         expect(provider.notes.length, 2); // No change
       });
     });
 
     group('undeleteNote', () {
       test('should undelete note and refresh list', () async {
-        final mockResult = NotesResult(mockNotes, 2);
+        final mockResult = NotesResult(mockNotes, 20);
         when(mockNotesService.undelete(1)).thenAnswer((_) async => 1);
         when(mockNotesService.myLatest(10, 1)).thenAnswer((_) async => mockResult);
 
@@ -378,7 +391,7 @@ void main() {
     group('searchNotes', () {
       test('should clear cache and load page 1 (placeholder implementation)', () async {
         // Set up initial data
-        final initialResult = NotesResult(mockNotes, 2);
+        final initialResult = NotesResult(mockNotes, 20);
         when(mockNotesService.myLatest(10, 1)).thenAnswer((_) async => initialResult);
         await provider.loadPage(1);
 
@@ -397,7 +410,7 @@ void main() {
     group('fetchTagNotes', () {
       test('should clear cache and load page 1 (placeholder implementation)', () async {
         // Set up initial data
-        final initialResult = NotesResult(mockNotes, 2);
+        final initialResult = NotesResult(mockNotes, 20);
         when(mockNotesService.myLatest(10, 1)).thenAnswer((_) async => initialResult);
         await provider.loadPage(1);
 
@@ -415,7 +428,7 @@ void main() {
 
     group('AuthAwareProvider behavior', () {
       test('should load data on login', () async {
-        final mockResult = NotesResult(mockNotes, 2);
+        final mockResult = NotesResult(mockNotes, 20);
         when(mockNotesService.myLatest(10, 1)).thenAnswer((_) async => mockResult);
 
         await provider.onLogin();
@@ -426,7 +439,7 @@ void main() {
 
       test('should clear all data on logout', () async {
         // Add some data first
-        final mockResult = NotesResult(mockNotes, 2);
+        final mockResult = NotesResult(mockNotes, 20);
         when(mockNotesService.myLatest(10, 1)).thenAnswer((_) async => mockResult);
         await provider.fetchNotesLegacy();
         expect(provider.notes.isNotEmpty, true);
@@ -443,7 +456,7 @@ void main() {
       });
 
       test('should handle auth state changes', () async {
-        final mockResult = NotesResult(mockNotes, 2);
+        final mockResult = NotesResult(mockNotes, 20);
         when(mockNotesService.myLatest(10, 1)).thenAnswer((_) async => mockResult);
 
         // Test login
@@ -467,7 +480,7 @@ void main() {
           notified = true;
         });
 
-        final mockResult = NotesResult(mockNotes, 2);
+        final mockResult = NotesResult(mockNotes, 20);
         when(mockNotesService.myLatest(10, 1)).thenAnswer((_) async => mockResult);
 
         await provider.fetchNotesLegacy();

@@ -129,7 +129,7 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
     final navigator = Navigator.of(context);
     final scaffoldMessenger = ScaffoldMessenger.of(context);
 
-    final updatedNote = await notesProvider.updateNoteAndReturn(
+    final updatedNote = await notesProvider.updateNote(
       note?.id ?? widget.noteId!,
       noteModel.content,
       isPrivate: noteModel.isPrivate,

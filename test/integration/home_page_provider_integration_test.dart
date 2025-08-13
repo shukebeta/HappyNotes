@@ -69,10 +69,23 @@ void main() {
       // Mock update operation
       when(mockNotesService.update(1, 'Updated content', false, false))
           .thenAnswer((_) async => 1);
+      when(mockNotesService.get(1))
+          .thenAnswer((_) async => Note(
+            id: mockNotes[0].id,
+            userId: mockNotes[0].userId,
+            content: 'Updated content',
+            isPrivate: mockNotes[0].isPrivate,
+            isLong: mockNotes[0].isLong,
+            isMarkdown: mockNotes[0].isMarkdown,
+            createdAt: mockNotes[0].createdAt,
+            deletedAt: mockNotes[0].deletedAt,
+            user: mockNotes[0].user,
+            tags: mockNotes[0].tags,
+          ));
 
       // Update note
-      final success = await notesProvider.updateNote(1, 'Updated content');
-      expect(success, isTrue);
+      final result = await notesProvider.updateNote(1, 'Updated content');
+      expect(result, isNotNull);
       expect(notesProvider.notes.first.content, 'Updated content');
     });
 

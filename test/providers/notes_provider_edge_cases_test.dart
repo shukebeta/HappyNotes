@@ -35,9 +35,22 @@ void main() {
         // Modify note - cache should update
         when(mockNotesService.update(1, 'Updated content', false, false))
             .thenAnswer((_) async => 1); // Returns noteId
+        when(mockNotesService.get(1))
+            .thenAnswer((_) async => Note(
+              id: notes[0].id,
+              userId: notes[0].userId,
+              content: 'Updated content',
+              isPrivate: notes[0].isPrivate,
+              isLong: notes[0].isLong,
+              isMarkdown: notes[0].isMarkdown,
+              createdAt: notes[0].createdAt,
+              deletedAt: notes[0].deletedAt,
+              user: notes[0].user,
+              tags: notes[0].tags,
+            ));
 
-        final success = await provider.updateNote(1, 'Updated content');
-        expect(success, isTrue);
+        final result = await provider.updateNote(1, 'Updated content');
+        expect(result, isNotNull);
 
         // Cache should be updated
         expect(provider.notes.first.content, 'Updated content');
@@ -112,7 +125,7 @@ void main() {
                 Note(id: page, userId: 123, content: 'Page $page note',
                      isPrivate: false, isMarkdown: false, isLong: false,
                      createdAt: 1640995200, deletedAt: null, user: null, tags: [])
-              ], 1));
+              ], 150));
 
           await provider.loadPage(page);
         }

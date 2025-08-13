@@ -11,6 +11,9 @@ class NotesProvider extends NoteListProvider {
 
   NotesProvider(this._notesService);
 
+  @override
+  NotesService get notesService => _notesService;
+
   // Loading state for add operations
   bool _isLoadingAdd = false;
   bool get isLoadingAdd => _isLoadingAdd;
@@ -98,77 +101,7 @@ class NotesProvider extends NoteListProvider {
     }
   }
 
-  /// Update an existing note
-  Future<bool> updateNote(int noteId, String content, {bool? isPrivate, bool? isMarkdown}) async {
-    final noteIndex = notes.indexWhere((note) => note.id == noteId);
-    if (noteIndex == -1) return false; // Note not found
 
-    try {
-      final existingNote = notes[noteIndex];
-      await _notesService.update(
-        noteId,
-        content,
-        isPrivate ?? existingNote.isPrivate,
-        isMarkdown ?? existingNote.isMarkdown
-      );
-
-      // Optimistically update the note in our list
-      final updatedNote = Note(
-        id: existingNote.id,
-        userId: existingNote.userId,
-        content: content,
-        isPrivate: isPrivate ?? existingNote.isPrivate,
-        isMarkdown: isMarkdown ?? existingNote.isMarkdown,
-        isLong: existingNote.isLong,
-        createdAt: existingNote.createdAt,
-        deletedAt: existingNote.deletedAt,
-        user: existingNote.user,
-        tags: existingNote.tags,
-      );
-
-      notes[noteIndex] = updatedNote;
-      notifyListeners();
-      return true;
-    } catch (e) {
-      return false;
-    }
-  }
-
-  /// Update an existing note and return the updated note
-  Future<Note?> updateNoteAndReturn(int noteId, String content, {bool? isPrivate, bool? isMarkdown}) async {
-    final noteIndex = notes.indexWhere((note) => note.id == noteId);
-    if (noteIndex == -1) return null; // Note not found
-
-    try {
-      final existingNote = notes[noteIndex];
-      await _notesService.update(
-        noteId,
-        content,
-        isPrivate ?? existingNote.isPrivate,
-        isMarkdown ?? existingNote.isMarkdown
-      );
-
-      // Optimistically update the note in our list
-      final updatedNote = Note(
-        id: existingNote.id,
-        userId: existingNote.userId,
-        content: content,
-        isPrivate: isPrivate ?? existingNote.isPrivate,
-        isMarkdown: isMarkdown ?? existingNote.isMarkdown,
-        isLong: existingNote.isLong,
-        createdAt: existingNote.createdAt,
-        deletedAt: existingNote.deletedAt,
-        user: existingNote.user,
-        tags: existingNote.tags,
-      );
-
-      notes[noteIndex] = updatedNote;
-      notifyListeners();
-      return updatedNote;
-    } catch (e) {
-      return null;
-    }
-  }
 
 
 

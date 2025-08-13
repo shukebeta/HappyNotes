@@ -9,6 +9,9 @@ class TagNotesProvider extends NoteListProvider {
 
   TagNotesProvider(this._notesService);
 
+  @override
+  NotesService get notesService => _notesService;
+
   // Tag-specific state
   String _currentTag = '';
   String get currentTag => _currentTag;

@@ -10,6 +10,9 @@ class DiscoveryProvider extends NoteListProvider {
   DiscoveryProvider(this._notesService);
 
   @override
+  NotesService get notesService => _notesService;
+
+  @override
   Future<NotesResult> fetchNotes(int pageSize, int pageNumber) async {
     return await _notesService.latest(pageSize, pageNumber);
   }

@@ -145,6 +145,19 @@ void main() {
           .thenAnswer((_) async => NotesResult(initialNotes, 5));
       when(mockNotesService.update(1, 'Updated content', false, false))
           .thenAnswer((_) async => 1); // Returns note ID
+      when(mockNotesService.get(1))
+          .thenAnswer((_) async => Note(
+            id: initialNotes[0].id,
+            userId: initialNotes[0].userId,
+            content: 'Updated content',
+            isPrivate: initialNotes[0].isPrivate,
+            isLong: initialNotes[0].isLong,
+            isMarkdown: initialNotes[0].isMarkdown,
+            createdAt: initialNotes[0].createdAt,
+            deletedAt: initialNotes[0].deletedAt,
+            user: initialNotes[0].user,
+            tags: initialNotes[0].tags,
+          ));
 
       // Initial load
       await provider.loadPage(1);
