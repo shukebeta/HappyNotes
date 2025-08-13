@@ -207,16 +207,22 @@ class MockNotesService extends _i1.Mock implements _i4.NotesService {
       ) as _i5.Future<_i2.NotesResult>);
 
   @override
-  _i5.Future<int> post(_i6.NoteModel? noteModel) => (super.noSuchMethod(
+  _i5.Future<_i3.Note> post(_i6.NoteModel? noteModel) => (super.noSuchMethod(
         Invocation.method(
           #post,
           [noteModel],
         ),
-        returnValue: _i5.Future<int>.value(0),
-      ) as _i5.Future<int>);
+        returnValue: _i5.Future<_i3.Note>.value(_FakeNote_1(
+          this,
+          Invocation.method(
+            #post,
+            [noteModel],
+          ),
+        )),
+      ) as _i5.Future<_i3.Note>);
 
   @override
-  _i5.Future<int> update(
+  _i5.Future<_i3.Note> update(
     int? noteId,
     String? content,
     bool? isPrivate,
@@ -232,8 +238,19 @@ class MockNotesService extends _i1.Mock implements _i4.NotesService {
             isMarkdown,
           ],
         ),
-        returnValue: _i5.Future<int>.value(0),
-      ) as _i5.Future<int>);
+        returnValue: _i5.Future<_i3.Note>.value(_FakeNote_1(
+          this,
+          Invocation.method(
+            #update,
+            [
+              noteId,
+              content,
+              isPrivate,
+              isMarkdown,
+            ],
+          ),
+        )),
+      ) as _i5.Future<_i3.Note>);
 
   @override
   _i5.Future<int> delete(int? noteId) => (super.noSuchMethod(

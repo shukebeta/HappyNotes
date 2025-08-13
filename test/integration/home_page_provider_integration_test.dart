@@ -67,10 +67,7 @@ void main() {
       expect(notesProvider.notes.length, 2);
 
       // Mock update operation
-      when(mockNotesService.update(1, 'Updated content', false, false))
-          .thenAnswer((_) async => 1);
-      when(mockNotesService.get(1))
-          .thenAnswer((_) async => Note(
+      final updatedNote = Note(
             id: mockNotes[0].id,
             userId: mockNotes[0].userId,
             content: 'Updated content',
@@ -81,7 +78,9 @@ void main() {
             deletedAt: mockNotes[0].deletedAt,
             user: mockNotes[0].user,
             tags: mockNotes[0].tags,
-          ));
+          );
+      when(mockNotesService.update(1, 'Updated content', false, false))
+          .thenAnswer((_) async => updatedNote);
 
       // Update note
       final result = await notesProvider.updateNote(1, 'Updated content');

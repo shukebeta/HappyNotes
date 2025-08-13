@@ -118,14 +118,12 @@ abstract class NoteListProvider extends AuthAwareProvider {
         existingNote = await notesService.get(noteId);
       }
       
-      await notesService.update(
+      final updatedNote = await notesService.update(
         noteId,
         content,
         isPrivate ?? existingNote.isPrivate,
         isMarkdown ?? existingNote.isMarkdown
       );
-
-      final updatedNote = await notesService.get(noteId);
       
       if (noteIndex != -1) {
         notes[noteIndex] = updatedNote;

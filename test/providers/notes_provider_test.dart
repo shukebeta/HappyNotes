@@ -195,8 +195,7 @@ void main() {
       );
 
       test('should add note successfully', () async {
-        when(mockNotesService.post(any)).thenAnswer((_) async => 3);
-        when(mockNotesService.get(3)).thenAnswer((_) async => newNote);
+        when(mockNotesService.post(any)).thenAnswer((_) async => newNote);
 
         final result = await provider.addNote('New test note');
 
@@ -205,15 +204,13 @@ void main() {
         expect(provider.isLoadingAdd, false);
         expect(provider.addError, null);
         verify(mockNotesService.post(any)).called(1);
-        verify(mockNotesService.get(3)).called(1);
       });
 
       test('should prevent multiple simultaneous adds', () async {
         when(mockNotesService.post(any)).thenAnswer((_) async {
           await Future.delayed(const Duration(milliseconds: 100));
-          return 3;
+          return newNote;
         });
-        when(mockNotesService.get(3)).thenAnswer((_) async => newNote);
 
         // Start multiple addNote calls
         final future1 = provider.addNote('Test note 1');
@@ -252,8 +249,7 @@ void main() {
       });
 
       test('should add note with custom parameters', () async {
-        when(mockNotesService.post(any)).thenAnswer((_) async => 3);
-        when(mockNotesService.get(3)).thenAnswer((_) async => newNote);
+        when(mockNotesService.post(any)).thenAnswer((_) async => newNote);
 
         await provider.addNote(
           'Private markdown note',
@@ -275,10 +271,7 @@ void main() {
         final existingNote = mockNotes[0];
         provider.notes.addAll([existingNote]);
 
-        when(mockNotesService.update(1, 'Updated content', false, false))
-            .thenAnswer((_) async => 1);
-        when(mockNotesService.get(1))
-            .thenAnswer((_) async => Note(
+        final updatedNote = Note(
               id: existingNote.id,
               userId: existingNote.userId,
               content: 'Updated content',
@@ -289,7 +282,9 @@ void main() {
               deletedAt: existingNote.deletedAt,
               user: existingNote.user,
               tags: existingNote.tags,
-            ));
+            );
+        when(mockNotesService.update(1, 'Updated content', false, false))
+            .thenAnswer((_) async => updatedNote);
 
         final result = await provider.updateNote(1, 'Updated content');
 

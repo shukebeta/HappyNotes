@@ -73,22 +73,15 @@ class NotesProvider extends NoteListProvider {
         publishDateTime: publishDateTime,
       );
 
-      final createdNoteId = await _notesService.post(addRequest);
+      final createdNote = await _notesService.post(addRequest);
 
-      if (createdNoteId > 0) {
-        // Fetch the complete note using the returned ID
-        final createdNote = await _notesService.get(createdNoteId);
-
-        // Optimistically add note to the beginning if on page 1
-        if (currentPage == 1) {
-          notes.insert(0, createdNote);
-          notifyListeners();
-        }
-
-        return createdNote;
+      // Optimistically add note to the beginning if on page 1
+      if (currentPage == 1) {
+        notes.insert(0, createdNote);
+        notifyListeners();
       }
 
-      return null;
+      return createdNote;
     } on ApiException catch (e) {
       _addError = e.toString();
       return null;

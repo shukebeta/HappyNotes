@@ -143,10 +143,7 @@ void main() {
 
       when(mockNotesService.myLatest(10, 1))
           .thenAnswer((_) async => NotesResult(initialNotes, 5));
-      when(mockNotesService.update(1, 'Updated content', false, false))
-          .thenAnswer((_) async => 1); // Returns note ID
-      when(mockNotesService.get(1))
-          .thenAnswer((_) async => Note(
+      final updatedNote = Note(
             id: initialNotes[0].id,
             userId: initialNotes[0].userId,
             content: 'Updated content',
@@ -157,7 +154,9 @@ void main() {
             deletedAt: initialNotes[0].deletedAt,
             user: initialNotes[0].user,
             tags: initialNotes[0].tags,
-          ));
+          );
+      when(mockNotesService.update(1, 'Updated content', false, false))
+          .thenAnswer((_) async => updatedNote); // Returns complete note
 
       // Initial load
       await provider.loadPage(1);

@@ -33,10 +33,7 @@ void main() {
         expect(provider.notes.length, 1);
 
         // Modify note - cache should update
-        when(mockNotesService.update(1, 'Updated content', false, false))
-            .thenAnswer((_) async => 1); // Returns noteId
-        when(mockNotesService.get(1))
-            .thenAnswer((_) async => Note(
+        final updatedNote = Note(
               id: notes[0].id,
               userId: notes[0].userId,
               content: 'Updated content',
@@ -47,7 +44,9 @@ void main() {
               deletedAt: notes[0].deletedAt,
               user: notes[0].user,
               tags: notes[0].tags,
-            ));
+            );
+        when(mockNotesService.update(1, 'Updated content', false, false))
+            .thenAnswer((_) async => updatedNote); // Returns complete note
 
         final result = await provider.updateNote(1, 'Updated content');
         expect(result, isNotNull);
@@ -102,8 +101,13 @@ void main() {
       test('should handle concurrent add and load operations', () async {
         when(mockNotesService.myLatest(10, 1))
             .thenAnswer((_) async => NotesResult([], 0));
+        final newNote = Note(
+              id: 1, userId: 123, content: 'New note',
+              isPrivate: false, isMarkdown: false, isLong: false,
+              createdAt: 1640995200, deletedAt: null, user: null, tags: []
+            );
         when(mockNotesService.post(any))
-            .thenAnswer((_) async => 1); // Returns new note ID
+            .thenAnswer((_) async => newNote); // Returns new note
 
         // Start both operations simultaneously
         final loadFuture = provider.loadPage(1);

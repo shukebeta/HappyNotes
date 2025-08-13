@@ -20,7 +20,7 @@ class NotesApi {
   }
 
   static Future<Response> post(Map<String, dynamic> params) async {
-    return await _dio.post('/note/post', data: params);
+    return await _dio.post('/api/notev2', data: params);
   }
 
   static Future<Response> update(Map<String, dynamic> params) async {
@@ -28,7 +28,7 @@ class NotesApi {
       throw ArgumentError(
           'The "id" parameter is required for the update operation.');
     }
-    return await _dio.post('/note/update/${params['id']}', data: params);
+    return await _dio.put('/api/notev2/${params['id']}', data: params);
   }
 
   static Future<Response> latest(Map<String, dynamic> params) async {

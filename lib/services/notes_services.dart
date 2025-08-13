@@ -77,8 +77,8 @@ class NotesService {
     return fetchedNotesData.map((json) => Note.fromJson(json)).toList();
   }
 
-  // post a note and get its noteId
-  Future<int> post(NoteModel noteModel) async {
+  // post a note and get the created note
+  Future<Note> post(NoteModel noteModel) async {
     var now = DateTime.now();
     var params = {
       'content': noteModel.content,
@@ -100,11 +100,11 @@ class NotesService {
         apiResult['errorCode'] != AppConfig.quietErrorCode) {
       throw ApiException(apiResult);
     }
-    return apiResult['data']; //note id
+    return Note.fromJson(apiResult['data']); //complete note object
   }
 
-  // update a note and get its noteId
-  Future<int> update(
+  // update a note and get the updated note
+  Future<Note> update(
       int noteId, String content, bool isPrivate, bool isMarkdown) async {
     var params = {
       'id': noteId,
@@ -117,7 +117,7 @@ class NotesService {
         apiResult['errorCode'] != AppConfig.quietErrorCode) {
       throw ApiException(apiResult);
     }
-    return apiResult['data']; //note id
+    return Note.fromJson(apiResult['data']); //complete note object
   }
 
   Future<int> delete(int noteId) async {
