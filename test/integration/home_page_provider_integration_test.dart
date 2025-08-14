@@ -6,6 +6,7 @@ import 'package:happy_notes/models/notes_result.dart';
 
 // Import the mocks
 import '../providers/notes_provider_test.mocks.dart';
+import '../test_helpers/service_locator.dart';
 
 void main() {
   group('Provider-Consumer Integration Tests', () {
@@ -40,12 +41,17 @@ void main() {
     ];
 
     setUp(() {
+      setupTestServiceLocator();
       mockNotesService = MockNotesService();
       notesProvider = NotesProvider(mockNotesService);
 
       // Setup default mock responses
       when(mockNotesService.myLatest(any, any))
           .thenAnswer((_) async => NotesResult(mockNotes, 2));
+    });
+
+    tearDown(() {
+      tearDownTestServiceLocator();
     });
 
     test('provider should integrate properly with listeners', () async {
@@ -83,7 +89,7 @@ void main() {
           .thenAnswer((_) async => updatedNote);
 
       // Update note
-      final result = await notesProvider.updateNote(1, 'Updated content');
+      final result = await notesProvider.updateNote(1, 'Updated content', isPrivate: false, isMarkdown: false);
       expect(result, isNotNull);
       expect(notesProvider.notes.first.content, 'Updated content');
     });

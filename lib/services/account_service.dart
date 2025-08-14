@@ -2,6 +2,7 @@ import 'package:happy_notes/apis/account_api.dart';
 import 'package:happy_notes/app_config.dart';
 import 'package:happy_notes/services/user_settings_service.dart';
 import 'package:happy_notes/utils/app_logger.dart';
+import 'package:happy_notes/utils/app_logger_interface.dart';
 import 'package:happy_notes/utils/token_utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../exceptions/api_exception.dart';
@@ -11,16 +12,19 @@ class AccountService {
   final AccountApi _accountApi;
   final UserSettingsService _userSettingsService;
   final TokenUtils _tokenUtils;
+  final AppLoggerInterface _logger;
 
   AccountService({
     required AccountApi accountApi,
     required UserSettingsService userSettingsService,
     required TokenUtils tokenUtils,
+    required AppLoggerInterface logger,
   })
       :
         _accountApi = accountApi,
         _userSettingsService = userSettingsService,
-        _tokenUtils = tokenUtils;
+        _tokenUtils = tokenUtils,
+        _logger = logger;
 
   Future<dynamic> login(String username, String password) async {
     var params = {'username': username, 'password': password};
@@ -108,7 +112,7 @@ class AccountService {
         try {
           return (await _tokenUtils.getTokenRemainingTime(token)).inSeconds >= 1;
         } catch (e) {
-          AppLogger.e(e.toString());
+          _logger.e(e.toString());
           return false;
         }
       }

@@ -9,6 +9,8 @@ import '../components/note_view.dart';
 import '../trash_bin/trash_bin_page.dart';
 import '../../providers/notes_provider.dart';
 import '../../utils/util.dart';
+import '../../utils/app_logger_interface.dart';
+import 'package:get_it/get_it.dart';
 
 class NoteDetail extends StatefulWidget {
   final Note? note;
@@ -119,7 +121,15 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
   }
 
   Future<void> _saveNote(NoteModel noteModel) async {
-    if (_isSaving) return;
+    final logger = GetIt.instance<AppLoggerInterface>();
+    final noteId = note?.id ?? widget.noteId!;
+    
+    logger.d('NoteDetail._saveNote called: noteId=$noteId, content length=${noteModel.content.length}, fromDetailPage=$_editingFromDetailPage');
+    
+    if (_isSaving) {
+      logger.d('NoteDetail._saveNote already saving, returning');
+      return;
+    }
 
     setState(() {
       _isSaving = true;
@@ -130,7 +140,7 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
     final scaffoldMessenger = ScaffoldMessenger.of(context);
 
     final updatedNote = await notesProvider.updateNote(
-      note?.id ?? widget.noteId!,
+      noteId,
       noteModel.content,
       isPrivate: noteModel.isPrivate,
       isMarkdown: noteModel.isMarkdown,
@@ -155,8 +165,11 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
       if (mounted) {
         Util.showInfo(scaffoldMessenger, 'Note successfully updated.');
       }
-    } else if (mounted) {
-      Util.showError(scaffoldMessenger, 'Failed to update note');
+    } else {
+      logger.e('NoteDetail._saveNote failed: updatedNote is null for noteId=$noteId');
+      if (mounted) {
+        Util.showError(scaffoldMessenger, 'Failed to update note');
+      }
     }
   }
 
@@ -203,7 +216,7 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
       if (!_isEditing ||
           (_originalNote != null && currentContent == _originalNote!.content) ||
           (await DialogService.showUnsavedChangesDialog(context) ?? false)) {
-        navigator.pop(false);
+        navigator.pop();
         return true;
       }
       return false;

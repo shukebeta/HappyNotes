@@ -9,6 +9,7 @@ import 'package:happy_notes/models/note_model.dart';
 import 'package:happy_notes/exceptions/api_exception.dart';
 
 import 'notes_provider_test.mocks.dart';
+import '../test_helpers/service_locator.dart';
 
 @GenerateMocks([NotesService])
 void main() {
@@ -44,8 +45,13 @@ void main() {
     ];
 
     setUp(() {
+      setupTestServiceLocator();
       mockNotesService = MockNotesService();
       provider = NotesProvider(mockNotesService);
+    });
+
+    tearDown(() {
+      tearDownTestServiceLocator();
     });
 
     group('initial state', () {
@@ -286,18 +292,29 @@ void main() {
         when(mockNotesService.update(1, 'Updated content', false, false))
             .thenAnswer((_) async => updatedNote);
 
-        final result = await provider.updateNote(1, 'Updated content');
+        final result = await provider.updateNote(1, 'Updated content', isPrivate: false, isMarkdown: false);
 
         expect(result, isNotNull);
         expect(provider.notes.first.content, 'Updated content');
         verify(mockNotesService.update(1, 'Updated content', false, false)).called(1);
       });
 
-      test('should return null when note not found', () async {
-        final result = await provider.updateNote(999, 'Updated content');
+      test('should return null when service fails to find and update note', () async {
+        // Arrange: Simulate the API returning an error for a non-existent note.
+        final apiError = {
+          'successful': false,
+          'errorCode': 404,
+          'errorMessage': 'Note with ID 999 not found.'
+        };
+        when(mockNotesService.update(999, 'Updated content', false, false))
+            .thenThrow(ApiException(apiError));
 
+        // Act
+        final result = await provider.updateNote(999, 'Updated content', isPrivate: false, isMarkdown: false);
+
+        // Assert
         expect(result, isNull);
-        verifyNever(mockNotesService.update(any, any, any, any));
+        verify(mockNotesService.update(999, 'Updated content', false, false)).called(1);
       });
 
       test('should handle exception in updateNote', () async {
@@ -307,7 +324,7 @@ void main() {
         when(mockNotesService.update(any, any, any, any))
             .thenThrow(Exception('Update failed'));
 
-        final result = await provider.updateNote(1, 'Updated content');
+        final result = await provider.updateNote(1, 'Updated content', isPrivate: false, isMarkdown: false);
 
         expect(result, isNull);
       });

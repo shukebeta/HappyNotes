@@ -17,6 +17,8 @@ import 'package:get_it/get_it.dart';
 import 'package:happy_notes/services/telegram_settings_service.dart';
 import 'package:happy_notes/services/user_settings_service.dart';
 import 'package:happy_notes/utils/token_utils.dart';
+import 'package:happy_notes/utils/app_logger_interface.dart';
+import 'package:happy_notes/utils/app_logger.dart';
 
 import 'apis/mastodon_application_api.dart';
 import 'apis/mastodon_user_account_api.dart';
@@ -26,11 +28,11 @@ import 'apis/telegram_settings_api.dart';
 final locator = GetIt.instance;
 
 void init() {
+  _registerUtils();
   _registerApis();
   _registerServices();
   _registerProviders();
   _registerControllers();
-  _registerUtils();
 }
 
 void _registerApis() {
@@ -51,6 +53,7 @@ void _registerServices() {
         accountApi: locator(),
         userSettingsService: locator(),
         tokenUtils: locator(),
+        logger: locator(),
       ));
   locator.registerLazySingleton(
       () => UserSettingsService(userSettingsApi: locator()));
@@ -84,5 +87,6 @@ void _registerProviders() {
 }
 
 void _registerUtils() {
+  locator.registerLazySingleton<AppLoggerInterface>(() => AppLogger());
   locator.registerLazySingleton(() => TokenUtils());
 }

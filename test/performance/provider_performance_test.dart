@@ -5,6 +5,7 @@ import 'package:happy_notes/entities/note.dart';
 import 'package:happy_notes/models/notes_result.dart';
 
 import '../providers/notes_provider_test.mocks.dart';
+import '../test_helpers/service_locator.dart';
 
 void main() {
   group('NotesProvider Performance Tests', () {
@@ -12,8 +13,13 @@ void main() {
     late MockNotesService mockNotesService;
 
     setUp(() {
+      setupTestServiceLocator();
       mockNotesService = MockNotesService();
       provider = NotesProvider(mockNotesService);
+    });
+
+    tearDown(() {
+      tearDownTestServiceLocator();
     });
 
     test('should efficiently handle large datasets', () async {
@@ -167,7 +173,7 @@ void main() {
       final stopwatch = Stopwatch()..start();
 
       // Update note - should be fast cache update, not full reload
-      await provider.updateNote(1, 'Updated content');
+      await provider.updateNote(1, 'Updated content', isPrivate: false, isMarkdown: false);
 
       stopwatch.stop();
 

@@ -6,6 +6,7 @@ import 'package:happy_notes/models/notes_result.dart';
 import 'package:happy_notes/exceptions/api_exception.dart';
 
 import 'notes_provider_test.mocks.dart';
+import '../test_helpers/service_locator.dart';
 
 void main() {
   group('NotesProvider Edge Cases & Error Handling', () {
@@ -13,8 +14,13 @@ void main() {
     late MockNotesService mockNotesService;
 
     setUp(() {
+      setupTestServiceLocator();
       mockNotesService = MockNotesService();
       provider = NotesProvider(mockNotesService);
+    });
+
+    tearDown(() {
+      tearDownTestServiceLocator();
     });
 
     group('Page Cache Management', () {
@@ -48,7 +54,7 @@ void main() {
         when(mockNotesService.update(1, 'Updated content', false, false))
             .thenAnswer((_) async => updatedNote); // Returns complete note
 
-        final result = await provider.updateNote(1, 'Updated content');
+        final result = await provider.updateNote(1, 'Updated content', isPrivate: false, isMarkdown: false);
         expect(result, isNotNull);
 
         // Cache should be updated

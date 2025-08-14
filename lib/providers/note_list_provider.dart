@@ -4,6 +4,8 @@ import 'package:happy_notes/models/notes_result.dart';
 import 'package:happy_notes/providers/provider_base.dart';
 import 'package:happy_notes/services/notes_services.dart';
 import 'package:happy_notes/utils/operation_result.dart';
+import 'package:happy_notes/utils/app_logger_interface.dart';
+import 'package:get_it/get_it.dart';
 import '../screens/components/list_grouper.dart';
 
 /// Abstract base class for providers that manage paginated note lists with date grouping
@@ -106,23 +108,18 @@ abstract class NoteListProvider extends AuthAwareProvider {
   Future<void> performDelete(int noteId);
 
   /// Update a note - works regardless of whether note is in local cache
-  Future<Note?> updateNote(int noteId, String content, {bool? isPrivate, bool? isMarkdown}) async {
+  Future<Note?> updateNote(int noteId, String content, {required bool isPrivate, required bool isMarkdown}) async {
+    final logger = GetIt.instance<AppLoggerInterface>();
     final noteIndex = notes.indexWhere((note) => note.id == noteId);
     
+    logger.d('NoteListProvider.updateNote called: noteId=$noteId, noteIndex=$noteIndex, content length=${content.length}');
+    
     try {
-      Note? existingNote;
-      
-      if (noteIndex != -1) {
-        existingNote = notes[noteIndex];
-      } else {
-        existingNote = await notesService.get(noteId);
-      }
-      
       final updatedNote = await notesService.update(
         noteId,
         content,
-        isPrivate ?? existingNote.isPrivate,
-        isMarkdown ?? existingNote.isMarkdown
+        isPrivate,
+        isMarkdown
       );
       
       if (noteIndex != -1) {
@@ -132,6 +129,7 @@ abstract class NoteListProvider extends AuthAwareProvider {
       
       return updatedNote;
     } catch (e) {
+      logger.e('NoteListProvider.updateNote error: $e for noteId=$noteId');
       return null;
     }
   }

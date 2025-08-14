@@ -3,43 +3,68 @@ import 'dart:convert';
 import 'package:logger/logger.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
+import 'package:flutter/foundation.dart';
+import 'app_logger_interface.dart';
 
-class AppLogger {
-  static final Logger _logger = Logger(
-    printer: PrettyPrinter(),
-    output: MultiOutput([
-      ConsoleOutput(),
-      FileOutput(
-        file: File(_logFilePath),
-        overrideExisting: false,
-        encoding: utf8,
-      ),
-    ]),
-  );
+class AppLogger implements AppLoggerInterface {
+  Logger? _logger;
+  String? _logFilePath;
 
-  static late String _logFilePath; // Declare _logFilePath as late
+  AppLogger();
 
-  static void initialize() async {
-    _logFilePath = await _getLogFilePath();
-    i(_logFilePath);
+  @override
+  Future<void> initialize() async {
+    List<LogOutput> outputs = [ConsoleOutput()];
+    
+    // Only add file output for non-web platforms
+    if (!kIsWeb) {
+      _logFilePath = await _getLogFilePath();
+      outputs.add(
+        FileOutput(
+          file: File(_logFilePath!), 
+          overrideExisting: false,
+          encoding: utf8,
+        ),
+      );
+    }
+    
+    _logger = Logger(
+      printer: PrettyPrinter(),
+      output: MultiOutput(outputs),
+    );
+    
+    if (!kIsWeb) {
+      i('Logger initialized at: $_logFilePath');
+    } else {
+      i('Logger initialized for web platform (console only)');
+    }
   }
 
-  static void i(String message) {
-    _logger.i(message);
-    _checkLogFileSize(_logFilePath);
+  @override
+  void i(String message) {
+    _logger?.i(message);
+    if (!kIsWeb && _logFilePath != null) {
+      _checkLogFileSize(_logFilePath!);
+    }
   }
 
-  static void d(String message) {
-    _logger.d(message);
-    _checkLogFileSize(_logFilePath);
+  @override
+  void d(String message) {
+    _logger?.d(message);
+    if (!kIsWeb && _logFilePath != null) {
+      _checkLogFileSize(_logFilePath!);
+    }
   }
 
-  static void e(String message) {
-    _logger.e(message);
-    _checkLogFileSize(_logFilePath);
+  @override
+  void e(String message) {
+    _logger?.e(message);
+    if (!kIsWeb && _logFilePath != null) {
+      _checkLogFileSize(_logFilePath!);
+    }
   }
 
-  static Future<String> _getLogFilePath() async {
+  Future<String> _getLogFilePath() async {
     try {
       final Directory directory = await getApplicationSupportDirectory();
       return '${directory.path}/dio_client.log';
@@ -48,7 +73,7 @@ class AppLogger {
     }
   }
 
-  static void _checkLogFileSize(String logFilePath) {
+  void _checkLogFileSize(String logFilePath) {
     final File logFile = File(logFilePath);
     const int maxFileSize = 10 * 1024 * 1024; // 10 MB
     if (logFile.lengthSync() > maxFileSize) {
@@ -56,7 +81,7 @@ class AppLogger {
     }
   }
 
-  static void _truncateLogFile(File logFile) {
+  void _truncateLogFile(File logFile) {
     final List<String> lines = logFile.readAsLinesSync();
     final int linesToRemove = lines.length ~/ 2; // Remove half of the lines
     final List<String> trimmedLines = lines.sublist(linesToRemove);

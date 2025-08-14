@@ -5,6 +5,8 @@ import '../app_config.dart';
 import '../entities/note.dart';
 import '../exceptions/api_exception.dart';
 import '../models/notes_result.dart';
+import '../utils/app_logger_interface.dart';
+import 'package:get_it/get_it.dart';
 
 class NotesService {
   // fetch all public notes from all users
@@ -106,18 +108,28 @@ class NotesService {
   // update a note and get the updated note
   Future<Note> update(
       int noteId, String content, bool isPrivate, bool isMarkdown) async {
+    final logger = GetIt.instance<AppLoggerInterface>();
+    
+    logger.d('NotesService.update called: noteId=$noteId, content length=${content.length}, isPrivate=$isPrivate, isMarkdown=$isMarkdown');
+    
     var params = {
       'id': noteId,
       'content': content,
       'isPrivate': isPrivate,
       'isMarkdown': isMarkdown,
     };
+    
+    logger.d('NotesService.update calling NotesApi.update with params: $params');
     var apiResult = (await NotesApi.update(params)).data;
+    
     if (!apiResult['successful'] &&
         apiResult['errorCode'] != AppConfig.quietErrorCode) {
+      logger.e('NotesService.update API error: ${apiResult['errorMessage']} for noteId=$noteId');
       throw ApiException(apiResult);
     }
-    return Note.fromJson(apiResult['data']); //complete note object
+    
+    final updatedNote = Note.fromJson(apiResult['data']);
+    return updatedNote; //complete note object
   }
 
   Future<int> delete(int noteId) async {
