@@ -172,7 +172,6 @@ class TrashBinPageState extends State<TrashBinPage> {
                   builder: (context) => NoteDetail(note: note),
                 ),
               );
-              await refreshPage();
             },
             onDoubleTap: (note) async {
               await Navigator.push(
@@ -181,7 +180,6 @@ class TrashBinPageState extends State<TrashBinPage> {
                   builder: (context) => NoteDetail(note: note),
                 ),
               );
-              await refreshPage();
             },
             onDelete: (note) async {
               final messenger = ScaffoldMessenger.of(context);

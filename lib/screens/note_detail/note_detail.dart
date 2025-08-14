@@ -150,7 +150,7 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
       } else {
         // Don't set _isEditing = false to avoid unnecessary re-render before pop
         // The page will be disposed anyway when navigator.pop() is called
-        navigator.pop(true);
+        navigator.pop();
       }
       if (mounted) {
         Util.showInfo(scaffoldMessenger, 'Note successfully updated.');

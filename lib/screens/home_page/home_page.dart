@@ -144,28 +144,20 @@ class HomePageState extends State<HomePage> {
             showDateHeader: true,
             callbacks: ListItemCallbacks<Note>(
               onTap: (note) async {
-                var needRefresh = await Navigator.push(
+                await Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => NoteDetail(note: note),
                       ),
-                    ) ??
-                    false;
-                if (needRefresh) {
-                  refreshPage();
-                }
+                    );
               },
               onDoubleTap: (note) async {
-                var needRefresh = await Navigator.push(
+                await Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => NoteDetail(note: note, enterEditing: note.userId == UserSession().id),
                       ),
-                    ) ??
-                    false;
-                if (needRefresh) {
-                  refreshPage();
-                }
+                    );
               },
               onDelete: (note) async {
                 final result = await notesProvider.deleteNote(note.id);
