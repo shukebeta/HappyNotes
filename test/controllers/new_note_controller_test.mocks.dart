@@ -235,15 +235,10 @@ class MockNotesProvider extends _i1.Mock implements _i5.NotesProvider {
       ) as _i7.Future<bool>);
 
   @override
-  _i7.Future<_i6.Note?> getNote(
-    int? noteId, {
-    bool? includeDeleted = false,
-  }) =>
-      (super.noSuchMethod(
+  _i7.Future<_i6.Note?> getNote(int? noteId) => (super.noSuchMethod(
         Invocation.method(
           #getNote,
           [noteId],
-          {#includeDeleted: includeDeleted},
         ),
         returnValue: _i7.Future<_i6.Note?>.value(),
       ) as _i7.Future<_i6.Note?>);
@@ -328,8 +323,8 @@ class MockNotesProvider extends _i1.Mock implements _i5.NotesProvider {
   _i7.Future<_i6.Note?> updateNote(
     int? noteId,
     String? content, {
-    bool? isPrivate,
-    bool? isMarkdown,
+    required bool? isPrivate,
+    required bool? isMarkdown,
   }) =>
       (super.noSuchMethod(
         Invocation.method(

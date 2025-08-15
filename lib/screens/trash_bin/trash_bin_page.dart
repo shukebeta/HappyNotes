@@ -9,6 +9,7 @@ import '../components/note_list/note_list_callbacks.dart';
 import '../account/user_session.dart';
 import '../components/floating_pagination.dart';
 import '../../providers/trash_provider.dart';
+import '../../utils/util.dart';
 
 class TrashBinPage extends StatefulWidget {
   const TrashBinPage({super.key});
@@ -47,6 +48,16 @@ class TrashBinPageState extends State<TrashBinPage> {
 
   Future<bool> refreshPage() async {
     return await navigateToPage(currentPageNumber);
+  }
+
+  /// Handle the result from NoteDetail editing
+  void _handleEditResult(Note? updatedNote) {
+    if (updatedNote != null) {
+      // User saved changes, update the local cache
+      final trashProvider = context.read<TrashProvider>();
+      trashProvider.updateLocalCache(updatedNote);
+    }
+    // If updatedNote is null, user cancelled - no action needed
   }
 
   @override
@@ -166,20 +177,22 @@ class TrashBinPageState extends State<TrashBinPage> {
           showDateHeader: true,
           callbacks: ListItemCallbacks<Note>(
             onTap: (note) async {
-              await Navigator.push(
+              final updatedNote = await Navigator.push<Note>(
                 context,
                 MaterialPageRoute(
                   builder: (context) => NoteDetail(note: note),
                 ),
               );
+              _handleEditResult(updatedNote);
             },
             onDoubleTap: (note) async {
-              await Navigator.push(
+              final updatedNote = await Navigator.push<Note>(
                 context,
                 MaterialPageRoute(
                   builder: (context) => NoteDetail(note: note),
                 ),
               );
+              _handleEditResult(updatedNote);
             },
             onDelete: (note) async {
               final messenger = ScaffoldMessenger.of(context);

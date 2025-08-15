@@ -381,17 +381,17 @@ void main() {
 
     group('getNote', () {
       test('should get single note successfully', () async {
-        when(mockNotesService.get(1, includeDeleted: false))
+        when(mockNotesService.get(1))
             .thenAnswer((_) async => mockNotes[0]);
 
         final result = await provider.getNote(1);
 
         expect(result, mockNotes[0]);
-        verify(mockNotesService.get(1, includeDeleted: false)).called(1);
+        verify(mockNotesService.get(1)).called(1);
       });
 
       test('should handle exception in getNote', () async {
-        when(mockNotesService.get(1, includeDeleted: false))
+        when(mockNotesService.get(1))
             .thenThrow(Exception('Get failed'));
 
         final result = await provider.getNote(1);

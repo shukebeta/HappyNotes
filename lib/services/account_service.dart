@@ -1,7 +1,6 @@
 import 'package:happy_notes/apis/account_api.dart';
 import 'package:happy_notes/app_config.dart';
 import 'package:happy_notes/services/user_settings_service.dart';
-import 'package:happy_notes/utils/app_logger.dart';
 import 'package:happy_notes/utils/app_logger_interface.dart';
 import 'package:happy_notes/utils/token_utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';

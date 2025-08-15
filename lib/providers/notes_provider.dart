@@ -111,9 +111,9 @@ class NotesProvider extends NoteListProvider {
   }
 
   /// Get a specific note by ID
-  Future<Note?> getNote(int noteId, {bool includeDeleted = false}) async {
+  Future<Note?> getNote(int noteId) async {
     try {
-      return await _notesService.get(noteId, includeDeleted: includeDeleted);
+      return await _notesService.get(noteId);
     } catch (e) {
       return null;
     }

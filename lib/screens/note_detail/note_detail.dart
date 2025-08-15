@@ -4,12 +4,14 @@ import 'package:provider/provider.dart';
 import '../../entities/note.dart';
 import '../../models/note_model.dart';
 import '../../services/dialog_services.dart';
+import '../../services/notes_services.dart';
 import '../account/user_session.dart';
 import '../components/note_view.dart';
 import '../trash_bin/trash_bin_page.dart';
 import '../../providers/notes_provider.dart';
 import '../../utils/util.dart';
 import '../../utils/app_logger_interface.dart';
+import '../../dependency_injection.dart';
 import 'package:get_it/get_it.dart';
 
 class NoteDetail extends StatefulWidget {
@@ -67,11 +69,9 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
     });
 
     final notesProvider = Provider.of<NotesProvider>(context, listen: false);
-    bool includeDeleted = widget.note?.deletedAt != null;
 
     final fetchedNote = await notesProvider.getNote(
       note?.id ?? widget.noteId!,
-      includeDeleted: includeDeleted,
     );
 
     if (fetchedNote != null) {
@@ -98,21 +98,6 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
     setState(() {});
   }
 
-  void _updateNoteContent(NoteModel noteModel) {
-    // Update the note content in the NoteModel
-    note = Note(
-      id: note!.id,
-      userId: note!.userId,
-      content: noteModel.content,
-      isPrivate: noteModel.isPrivate,
-      isLong: note!.isLong,
-      isMarkdown: noteModel.isMarkdown,
-      createdAt: note!.createdAt,
-      deletedAt: note!.deletedAt,
-      user: note!.user,
-      tags: note!.tags,
-    );
-  }
 
   @override
   void dispose() {
@@ -135,41 +120,52 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
       _isSaving = true;
     });
 
-    final notesProvider = Provider.of<NotesProvider>(context, listen: false);
     final navigator = Navigator.of(context);
     final scaffoldMessenger = ScaffoldMessenger.of(context);
+    final notesService = locator<NotesService>();
 
-    final updatedNote = await notesProvider.updateNote(
-      noteId,
-      noteModel.content,
-      isPrivate: noteModel.isPrivate,
-      isMarkdown: noteModel.isMarkdown,
-    );
+    try {
+      logger.d('NoteDetail._saveNote calling NotesService.update for noteId=$noteId');
+      final updatedNote = await notesService.update(
+        noteId,
+        noteModel.content,
+        noteModel.isPrivate,
+        noteModel.isMarkdown,
+      );
 
-    setState(() {
-      _isSaving = false;
-    });
-
-    if (updatedNote != null) {
+      logger.d('NoteDetail._saveNote success: updated note ${updatedNote.id}');
+      
+      // Update local note for UI consistency
+      note = updatedNote;
       widget.onNoteSaved?.call(updatedNote);
 
       if (_editingFromDetailPage) {
-        // Only switch to view mode when editing from detail page
-        _isEditing = false;
-        _updateNoteContent(noteModel);
+        // Stay in view mode when editing from detail page
+        setState(() {
+          _isEditing = false;
+          _isSaving = false;
+        });
+        if (mounted) {
+          Util.showInfo(scaffoldMessenger, 'Note successfully updated.');
+        }
       } else {
-        // Don't set _isEditing = false to avoid unnecessary re-render before pop
-        // The page will be disposed anyway when navigator.pop() is called
-        navigator.pop();
+        // Return updated note to calling page
+        if (mounted) {
+          Util.showInfo(scaffoldMessenger, 'Note successfully updated.');
+        }
+        navigator.pop(updatedNote);
       }
+    } catch (e) {
+      logger.e('NoteDetail._saveNote error: $e for noteId=$noteId');
+      
+      setState(() {
+        _isSaving = false;
+      });
+      
       if (mounted) {
-        Util.showInfo(scaffoldMessenger, 'Note successfully updated.');
+        Util.showError(scaffoldMessenger, 'Failed to update note: ${e.toString()}');
       }
-    } else {
-      logger.e('NoteDetail._saveNote failed: updatedNote is null for noteId=$noteId');
-      if (mounted) {
-        Util.showError(scaffoldMessenger, 'Failed to update note');
-      }
+      // Don't pop on error - let user retry
     }
   }
 
@@ -216,7 +212,8 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
       if (!_isEditing ||
           (_originalNote != null && currentContent == _originalNote!.content) ||
           (await DialogService.showUnsavedChangesDialog(context) ?? false)) {
-        navigator.pop();
+        // Return null when user cancels without saving
+        navigator.pop(null);
         return true;
       }
       return false;

@@ -271,22 +271,16 @@ class MockNotesService extends _i1.Mock implements _i4.NotesService {
       ) as _i5.Future<int>);
 
   @override
-  _i5.Future<_i3.Note> get(
-    int? noteId, {
-    bool? includeDeleted = false,
-  }) =>
-      (super.noSuchMethod(
+  _i5.Future<_i3.Note> get(int? noteId) => (super.noSuchMethod(
         Invocation.method(
           #get,
           [noteId],
-          {#includeDeleted: includeDeleted},
         ),
         returnValue: _i5.Future<_i3.Note>.value(_FakeNote_1(
           this,
           Invocation.method(
             #get,
             [noteId],
-            {#includeDeleted: includeDeleted},
           ),
         )),
       ) as _i5.Future<_i3.Note>);

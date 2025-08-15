@@ -74,7 +74,7 @@ class TrashProvider extends NoteListProvider {
   /// Get a specific note (including deleted ones)
   Future<Note?> getNote(int noteId) async {
     try {
-      return await _notesService.get(noteId, includeDeleted: true);
+      return await _notesService.get(noteId);
     } catch (e) {
       handleServiceError(e, 'get deleted note');
       return null;

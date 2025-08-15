@@ -320,34 +320,34 @@ void main() {
                                  isLong: false, isMarkdown: false, createdAt: 1640995200,
                                  deletedAt: 1641000000, user: null, tags: []);
 
-        when(mockNotesService.get(1, includeDeleted: true))
+        when(mockNotesService.get(1))
             .thenAnswer((_) async => deletedNote);
 
         final result = await trashProvider.getNote(1);
 
-        verify(mockNotesService.get(1, includeDeleted: true)).called(1);
+        verify(mockNotesService.get(1)).called(1);
         expect(result, equals(deletedNote));
         expect(result!.deletedAt, isNotNull); // Should have deletedAt timestamp
       });
 
       test('should handle get note errors gracefully', () async {
-        when(mockNotesService.get(999, includeDeleted: true))
+        when(mockNotesService.get(999))
             .thenThrow(Exception('Note not found'));
 
         final result = await trashProvider.getNote(999);
 
-        verify(mockNotesService.get(999, includeDeleted: true)).called(1);
+        verify(mockNotesService.get(999)).called(1);
         expect(result, isNull);
         // Note: TrashProvider handleServiceError doesn't set error field automatically
       });
 
       test('should handle non-existent notes by throwing exception', () async {
-        when(mockNotesService.get(999, includeDeleted: true))
+        when(mockNotesService.get(999))
             .thenThrow(Exception('Note not found'));
 
         final result = await trashProvider.getNote(999);
 
-        verify(mockNotesService.get(999, includeDeleted: true)).called(1);
+        verify(mockNotesService.get(999)).called(1);
         expect(result, isNull);
         // Note: TrashProvider handleServiceError doesn't set error field automatically
       });

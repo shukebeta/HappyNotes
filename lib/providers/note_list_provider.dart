@@ -107,7 +107,25 @@ abstract class NoteListProvider extends AuthAwareProvider {
   /// Subclasses should implement this to call the appropriate service method
   Future<void> performDelete(int noteId);
 
-  /// Update a note - works regardless of whether note is in local cache
+  /// Update note in local cache - pure client-side operation
+  void updateLocalCache(Note updatedNote) {
+    final logger = GetIt.instance<AppLoggerInterface>();
+    final noteIndex = notes.indexWhere((note) => note.id == updatedNote.id);
+    
+    logger.d('NoteListProvider.updateLocalCache called: noteId=${updatedNote.id}, noteIndex=$noteIndex');
+    
+    if (noteIndex != -1) {
+      notes[noteIndex] = updatedNote;
+      notifyListeners();
+      logger.d('NoteListProvider.updateLocalCache updated cache and notified listeners');
+    } else {
+      logger.d('NoteListProvider.updateLocalCache note not in cache, skipping update');
+    }
+  }
+
+  /// Legacy updateNote method - kept for backward compatibility in tests
+  /// This method is deprecated - use updateLocalCache instead
+  @Deprecated('Use updateLocalCache instead')
   Future<Note?> updateNote(int noteId, String content, {required bool isPrivate, required bool isMarkdown}) async {
     final logger = GetIt.instance<AppLoggerInterface>();
     final noteIndex = notes.indexWhere((note) => note.id == noteId);

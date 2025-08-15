@@ -56,6 +56,16 @@ class DiscoveryState extends State<Discovery> {
     return await navigateToPage(currentPageNumber);
   }
 
+  /// Handle the result from NoteDetail editing
+  void _handleEditResult(Note? updatedNote) {
+    if (updatedNote != null) {
+      // User saved changes, update the local cache
+      final discoveryProvider = context.read<DiscoveryProvider>();
+      discoveryProvider.updateLocalCache(updatedNote);
+    }
+    // If updatedNote is null, user cancelled - no action needed
+  }
+
   @override
   Widget build(BuildContext context) {
     UserSession().isDesktop = MediaQuery.of(context).size.width >= 600;
@@ -160,20 +170,22 @@ class DiscoveryState extends State<Discovery> {
                 showDateHeader: true,
                 callbacks: ListItemCallbacks<Note>(
                   onTap: (note) async {
-                    await Navigator.push(
+                    final updatedNote = await Navigator.push<Note>(
                           context,
                           MaterialPageRoute(
                             builder: (context) => NoteDetail(note: note),
                           ),
                         );
+                    _handleEditResult(updatedNote);
                   },
                   onDoubleTap: (note) async {
-                    await Navigator.push(
+                    final updatedNote = await Navigator.push<Note>(
                           context,
                           MaterialPageRoute(
                             builder: (context) => NoteDetail(note: note, enterEditing: note.userId == UserSession().id),
                           ),
                         );
+                    _handleEditResult(updatedNote);
                   },
                   onDelete: (note) async {
                     final messenger = ScaffoldMessenger.of(context);
