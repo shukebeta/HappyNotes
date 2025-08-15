@@ -51,13 +51,9 @@ class TrashBinPageState extends State<TrashBinPage> {
   }
 
   /// Handle the result from NoteDetail editing
-  void _handleEditResult(Note? updatedNote) {
-    if (updatedNote != null) {
-      // User saved changes, update the local cache
-      final trashProvider = context.read<TrashProvider>();
-      trashProvider.updateLocalCache(updatedNote);
-    }
-    // If updatedNote is null, user cancelled - no action needed
+  void _handleEditResult(bool? saved) {
+    // No action needed - cache updates are handled by NoteUpdateCoordinator
+    // This method is kept for potential future use (e.g., analytics, UI feedback)
   }
 
   @override
@@ -177,22 +173,22 @@ class TrashBinPageState extends State<TrashBinPage> {
           showDateHeader: true,
           callbacks: ListItemCallbacks<Note>(
             onTap: (note) async {
-              final updatedNote = await Navigator.push<Note>(
+              final saved = await Navigator.push<bool>(
                 context,
                 MaterialPageRoute(
                   builder: (context) => NoteDetail(note: note),
                 ),
               );
-              _handleEditResult(updatedNote);
+              _handleEditResult(saved);
             },
             onDoubleTap: (note) async {
-              final updatedNote = await Navigator.push<Note>(
+              final saved = await Navigator.push<bool>(
                 context,
                 MaterialPageRoute(
                   builder: (context) => NoteDetail(note: note),
                 ),
               );
-              _handleEditResult(updatedNote);
+              _handleEditResult(saved);
             },
             onDelete: (note) async {
               final messenger = ScaffoldMessenger.of(context);

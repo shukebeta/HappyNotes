@@ -16,6 +16,7 @@ import 'package:happy_notes/screens/initial_page.dart';
 import 'package:happy_notes/screens/main_menu.dart';
 import 'package:happy_notes/screens/navigation/bottom_navigation.dart';
 import 'package:happy_notes/services/seq_logger.dart';
+import 'package:happy_notes/services/note_update_coordinator.dart';
 import 'package:quick_actions/quick_actions.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/services.dart';
@@ -73,7 +74,7 @@ void main() async {
           lazy: false,
           create: (context) {
             debugPrint('Creating AppStateProvider in main.dart');
-            return AppStateProvider(
+            final appStateProvider = AppStateProvider(
               Provider.of<AuthProvider>(context, listen: false),
               Provider.of<NotesProvider>(context, listen: false),
               Provider.of<SearchProvider>(context, listen: false),
@@ -82,6 +83,16 @@ void main() async {
               Provider.of<TrashProvider>(context, listen: false),
               Provider.of<DiscoveryProvider>(context, listen: false),
             );
+            
+            // Register NoteUpdateCoordinator after AppStateProvider is created
+            di.locator.registerLazySingleton<NoteUpdateCoordinator>(
+              () => NoteUpdateCoordinator(
+                appStateProvider: appStateProvider,
+                logger: di.locator(),
+              ),
+            );
+            
+            return appStateProvider;
           },
         ),
       ],

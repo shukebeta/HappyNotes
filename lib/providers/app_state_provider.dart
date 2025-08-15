@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:happy_notes/entities/note.dart';
 import 'package:happy_notes/providers/auth_provider.dart';
 import 'package:happy_notes/providers/notes_provider.dart';
 import 'package:happy_notes/providers/search_provider.dart';
@@ -159,6 +160,25 @@ class AppStateProvider with ChangeNotifier {
     // Note: Individual providers should handle their own error clearing
     // This is a convenience method for global error management
     notifyListeners();
+  }
+
+  /// Notify all relevant providers that a note has been updated
+  /// 
+  /// This method updates the local cache of all NoteListProvider instances
+  /// that might contain the updated note. Each provider handles existence
+  /// checking internally, making it safe to call on all providers.
+  void notifyNoteUpdated(Note updatedNote) {
+    debugPrint('AppStateProvider: notifyNoteUpdated called for note ${updatedNote.id}');
+    
+    // Update cache in all NoteListProvider instances using null-safe calls
+    // Each provider's updateLocalCache method handles existence checking
+    _notesProvider?.updateLocalCache(updatedNote);
+    _searchProvider?.updateLocalCache(updatedNote);
+    _tagNotesProvider?.updateLocalCache(updatedNote);
+    _trashProvider?.updateLocalCache(updatedNote);
+    _discoveryProvider?.updateLocalCache(updatedNote);
+    
+    debugPrint('AppStateProvider: notifyNoteUpdated completed for note ${updatedNote.id}');
   }
 
   @override

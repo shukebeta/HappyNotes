@@ -11,6 +11,7 @@ import '../trash_bin/trash_bin_page.dart';
 import '../../providers/notes_provider.dart';
 import '../../utils/util.dart';
 import '../../utils/app_logger_interface.dart';
+import '../../services/note_update_coordinator.dart';
 import '../../dependency_injection.dart';
 import 'package:get_it/get_it.dart';
 
@@ -123,6 +124,7 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
     final navigator = Navigator.of(context);
     final scaffoldMessenger = ScaffoldMessenger.of(context);
     final notesService = locator<NotesService>();
+    final coordinator = locator<NoteUpdateCoordinator>();
 
     try {
       logger.d('NoteDetail._saveNote calling NotesService.update for noteId=$noteId');
@@ -139,6 +141,9 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
       note = updatedNote;
       widget.onNoteSaved?.call(updatedNote);
 
+      // Notify all relevant providers about the note update
+      coordinator.notifyNoteUpdated(updatedNote);
+
       if (_editingFromDetailPage) {
         // Stay in view mode when editing from detail page
         setState(() {
@@ -149,11 +154,11 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
           Util.showInfo(scaffoldMessenger, 'Note successfully updated.');
         }
       } else {
-        // Return updated note to calling page
+        // Return to calling page - no need to pass updatedNote since caches are already updated
         if (mounted) {
           Util.showInfo(scaffoldMessenger, 'Note successfully updated.');
         }
-        navigator.pop(updatedNote);
+        navigator.pop(true);
       }
     } catch (e) {
       logger.e('NoteDetail._saveNote error: $e for noteId=$noteId');
