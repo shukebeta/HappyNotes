@@ -46,6 +46,12 @@ class _LoginState extends State<Login> {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,
             children: [
+              Image.asset(
+                'assets/icon/app_icon.png',
+                width: 120,
+                height: 120,
+              ),
+              const SizedBox(height: 32),
               TextFormField(
                 controller: _formModel.emailController,
                 decoration: const InputDecoration(

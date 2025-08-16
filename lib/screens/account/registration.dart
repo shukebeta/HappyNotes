@@ -92,6 +92,12 @@ class _RegistrationState extends State<Registration> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              Image.asset(
+                'assets/icon/app_icon.png',
+                width: 120,
+                height: 120,
+              ),
+              const SizedBox(height: 32),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
                 child: TextFormField(
