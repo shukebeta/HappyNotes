@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:happy_notes/app_config.dart';
 import 'package:happy_notes/providers/notes_provider.dart';
+import 'package:happy_notes/providers/auth_provider.dart';
 import 'package:happy_notes/screens/components/note_list/note_list.dart';
 import 'package:happy_notes/screens/note_detail/note_detail.dart';
 import '../../entities/note.dart';
@@ -24,13 +25,15 @@ class HomePage extends StatefulWidget {
   HomePageState createState() => HomePageState();
 }
 
-class HomePageState extends State<HomePage> {
+class HomePageState extends State<HomePage> with WidgetsBindingObserver {
   late TagCloudController _tagCloudController;
+  bool _wasInBackground = false;
 
   @override
   void initState() {
     super.initState();
     _tagCloudController = locator<TagCloudController>();
+    WidgetsBinding.instance.addObserver(this);
 
     // Initialize provider data after widget is built
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -45,7 +48,35 @@ class HomePageState extends State<HomePage> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+
+    if (state == AppLifecycleState.resumed && _wasInBackground) {
+      _handleAppResumed();
+    }
+
+    _wasInBackground = (state == AppLifecycleState.paused ||
+        state == AppLifecycleState.hidden ||
+        state == AppLifecycleState.inactive);
+  }
+
+  void _handleAppResumed() {
+    if (!mounted) return;
+
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final notesProvider = Provider.of<NotesProvider>(context, listen: false);
+
+    // Auto-reload if logged in but notes list is empty (iOS Safari memory management fix)
+    if (authProvider.isAuthenticated &&
+        notesProvider.notes.isEmpty &&
+        !notesProvider.isLoadingList) {
+      notesProvider.loadPage(1);
+    }
   }
 
   Future<void> navigateToPage(int pageNumber) async {
@@ -106,7 +137,9 @@ class HomePageState extends State<HomePage> {
   IconButton _buildNewNoteButton(BuildContext context) {
     return IconButton(
       icon: Util.writeNoteIcon(),
-      tooltip: AppConfig.privateNoteOnlyIsEnabled ? 'New Private Note' : 'New Public Note',
+      tooltip: AppConfig.privateNoteOnlyIsEnabled
+          ? 'New Private Note'
+          : 'New Public Note',
       onPressed: () async {
         final scaffoldMessenger = ScaffoldMessenger.of(context);
         final provider = Provider.of<NotesProvider>(context, listen: false);
@@ -138,7 +171,35 @@ class HomePageState extends State<HomePage> {
     }
 
     if (notesProvider.notes.isEmpty) {
-      return const Center(child: Text('No notes available. Create a new note to get started.'));
+      return RefreshIndicator(
+        onRefresh: refreshPage,
+        child: ListView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          children: const [
+            SizedBox(height: 200),
+            Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'No notes available. Create a new note to get started.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 16),
+                  ),
+                  SizedBox(height: 12),
+                  Text(
+                    'Pull down to refresh',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
     }
 
     return Column(
@@ -151,41 +212,46 @@ class HomePageState extends State<HomePage> {
             callbacks: ListItemCallbacks<Note>(
               onTap: (note) async {
                 final saved = await Navigator.push<bool>(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => NoteDetail(note: note),
-                      ),
-                    );
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => NoteDetail(note: note),
+                  ),
+                );
                 _handleEditResult(saved);
               },
               onDoubleTap: (note) async {
                 final saved = await Navigator.push<bool>(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => NoteDetail(note: note, enterEditing: note.userId == UserSession().id),
-                      ),
-                    );
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => NoteDetail(
+                        note: note,
+                        enterEditing: note.userId == UserSession().id),
+                  ),
+                );
                 _handleEditResult(saved);
               },
               onDelete: (note) async {
                 final result = await notesProvider.deleteNote(note.id);
                 if (!result.isSuccess && mounted) {
-                  Util.showError(ScaffoldMessenger.of(context), result.errorMessage!);
+                  Util.showError(
+                      ScaffoldMessenger.of(context), result.errorMessage!);
                 }
               },
             ),
             noteCallbacks: NoteListCallbacks(
               onRefresh: refreshPage,
-              onTagTap: (note, tag) => NavigationHelper.onTagTap(context, note, tag),
+              onTagTap: (note, tag) =>
+                  NavigationHelper.onTagTap(context, note, tag),
               onDateHeaderTap: (date) => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => MemoriesOnDay(date: date),
-                      ),
-                    ),
+                context,
+                MaterialPageRoute(
+                  builder: (context) => MemoriesOnDay(date: date),
+                ),
+              ),
             ),
             config: const ListItemConfig(
-              showDate: false, // Don't show individual dates when showDateHeader is true
+              showDate:
+                  false, // Don't show individual dates when showDateHeader is true
               showAuthor: false,
               enableDismiss: true,
             ),
