@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import 'package:get_it/get_it.dart';
+import '../../utils/app_logger_interface.dart';
 
 class GroupedListView<T> extends StatefulWidget {
   final Map<String, List<T>> groupedItems;
@@ -40,8 +42,11 @@ class _GroupedListViewState<T> extends State<GroupedListView<T>> {
 
   @override
   Widget build(BuildContext context) {
+    final logger = GetIt.instance<AppLoggerInterface>();
     final sortedDates = widget.groupedItems.keys.toList()
       ..sort((a, b) => b.compareTo(a)); // Newest first
+
+    logger.d('[GroupedListView] Parameters: canAutoLoadNext=${widget.canAutoLoadNext}, isAutoLoading=${widget.isAutoLoading}, pullUpToLoadEnabled=${widget.pullUpToLoadEnabled}');
 
     return RefreshIndicator(
       onRefresh: widget.onRefresh ?? () async {},
@@ -58,18 +63,29 @@ class _GroupedListViewState<T> extends State<GroupedListView<T>> {
   }
 
   bool _handleScrollNotification(ScrollNotification notification) {
-    if (!widget.canAutoLoadNext || widget.isAutoLoading) return false;
+    final logger = GetIt.instance<AppLoggerInterface>();
+    
+    logger.d('[GroupedListView] ScrollNotification: type=${notification.runtimeType}, canAutoLoadNext=${widget.canAutoLoadNext}, isAutoLoading=${widget.isAutoLoading}, pullUpToLoadEnabled=${widget.pullUpToLoadEnabled}');
+    
+    if (!widget.canAutoLoadNext || widget.isAutoLoading) {
+      logger.d('[GroupedListView] Early return: conditions not met');
+      return false;
+    }
 
-    // Only handle pull-up gestures if enabled
-    if (!widget.pullUpToLoadEnabled) return false;
+    if (!widget.pullUpToLoadEnabled) {
+      logger.d('[GroupedListView] Early return: pullUpToLoadEnabled=false');
+      return false;
+    }
 
     if (notification is ScrollUpdateNotification) {
       final metrics = notification.metrics;
+      logger.d('[GroupedListView] ScrollUpdate: pixels=${metrics.pixels}, maxScrollExtent=${metrics.maxScrollExtent}');
 
-      // Check if at bottom and pulling up
       if (metrics.pixels >= metrics.maxScrollExtent) {
         final overscroll = metrics.pixels - metrics.maxScrollExtent;
+        logger.d('[GroupedListView] At bottom: overscroll=$overscroll');
         if (overscroll > 0) {
+          logger.d('[GroupedListView] Overscroll detected! Setting _isPullingUp=true, _pullUpDistance=$overscroll');
           setState(() {
             _isPullingUp = true;
             _pullUpDistance = overscroll;
@@ -77,6 +93,7 @@ class _GroupedListViewState<T> extends State<GroupedListView<T>> {
         }
       } else {
         if (_isPullingUp) {
+          logger.d('[GroupedListView] Left bottom, resetting pull state');
           setState(() {
             _isPullingUp = false;
             _pullUpDistance = 0.0;
@@ -86,8 +103,9 @@ class _GroupedListViewState<T> extends State<GroupedListView<T>> {
     }
 
     if (notification is ScrollEndNotification) {
+      logger.d('[GroupedListView] ScrollEnd: _isPullingUp=$_isPullingUp, _pullUpDistance=$_pullUpDistance, threshold=$_pullUpThreshold');
       if (_isPullingUp && _pullUpDistance >= _pullUpThreshold) {
-        // Trigger auto-load
+        logger.d('[GroupedListView] Triggering auto-load!');
         widget.onLoadMore?.call();
       }
       setState(() {
