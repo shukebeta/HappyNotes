@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
-import 'package:get_it/get_it.dart';
 
 import '../../../entities/note.dart';
 import '../../../providers/note_list_provider.dart';
-import '../../../utils/app_logger_interface.dart';
+import '../../../services/seq_logger.dart';
 import '../date_header.dart';
 import '../grouped_list_view.dart';
 import 'note_list_item.dart';
@@ -31,19 +30,18 @@ class NoteList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final logger = GetIt.instance<AppLoggerInterface>();
     final provider = Provider.of<NoteListProvider?>(context);
     final isMobile = defaultTargetPlatform == TargetPlatform.android ||
                      defaultTargetPlatform == TargetPlatform.iOS;
     
-    logger.d('[NoteList] Platform detection: defaultTargetPlatform=$defaultTargetPlatform, kIsWeb=$kIsWeb, isMobile=$isMobile');
-    logger.d('[NoteList] Provider: ${provider.runtimeType}, isNull=${provider == null}');
+    SeqLogger.fine('[NoteList] Platform detection: defaultTargetPlatform=$defaultTargetPlatform, kIsWeb=$kIsWeb, isMobile=$isMobile');
+    SeqLogger.fine('[NoteList] Provider: ${provider.runtimeType}, isNull=${provider == null}');
     if (provider != null) {
       final canAutoLoad = provider.canAutoLoadNext();
-      logger.d('[NoteList] Provider details: canAutoLoadNext=$canAutoLoad, isAutoLoading=${provider.isAutoLoading}, currentPage=${provider.currentPage}, totalPages=${provider.totalPages}');
+      SeqLogger.info('[NoteList] Provider details: canAutoLoadNext=$canAutoLoad, isAutoLoading=${provider.isAutoLoading}, currentPage=${provider.currentPage}, totalPages=${provider.totalPages}');
     }
     final pullUpEnabled = isMobile && provider != null;
-    logger.d('[NoteList] Final pullUpToLoadEnabled=$pullUpEnabled');
+    SeqLogger.info('[NoteList] Final pullUpToLoadEnabled=$pullUpEnabled');
 
     return GroupedListView<Note>(
       groupedItems: groupedNotes,
