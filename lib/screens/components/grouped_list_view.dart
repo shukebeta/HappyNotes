@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 
 class GroupedListView<T> extends StatefulWidget {
   final Map<String, List<T>> groupedItems;
@@ -48,6 +49,7 @@ class _GroupedListViewState<T> extends State<GroupedListView<T>> {
         onNotification: _handleScrollNotification,
         child: ListView.builder(
           controller: widget.scrollController,
+          physics: kIsWeb ? const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()) : null,
           itemCount: _calculateItemCount(sortedDates),
           itemBuilder: (context, index) => _buildItem(context, index, sortedDates),
         ),
