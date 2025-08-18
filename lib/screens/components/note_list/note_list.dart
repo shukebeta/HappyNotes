@@ -1,6 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../../entities/note.dart';
+import '../../../providers/note_list_provider.dart';
+import '../../../providers/notes_provider.dart';
+import '../../../providers/trash_provider.dart';
+import '../../../providers/discovery_provider.dart';
+import '../../../providers/search_provider.dart';
+import '../../../providers/tag_notes_provider.dart';
 import '../date_header.dart';
 import '../grouped_list_view.dart';
 import 'note_list_item.dart';
@@ -26,6 +33,32 @@ class NoteList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Try to find any NoteListProvider subclass in the context
+    NoteListProvider? provider;
+
+    // Try each concrete provider type
+    try {
+      provider = Provider.of<NotesProvider>(context, listen: false);
+    } catch (e) {
+      try {
+        provider = Provider.of<TrashProvider>(context, listen: false);
+      } catch (e) {
+        try {
+          provider = Provider.of<DiscoveryProvider>(context, listen: false);
+        } catch (e) {
+          try {
+            provider = Provider.of<SearchProvider>(context, listen: false);
+          } catch (e) {
+            try {
+              provider = Provider.of<TagNotesProvider>(context, listen: false);
+            } catch (e) {
+              // No compatible provider found
+            }
+          }
+        }
+      }
+    }
+
     return GroupedListView<Note>(
       groupedItems: groupedNotes,
       scrollController: scrollController,
@@ -44,6 +77,9 @@ class NoteList extends StatelessWidget {
             : null,
       )
           : null,
+      canAutoLoadNext: provider?.canAutoLoadNext() ?? false,
+      isAutoLoading: provider?.isAutoLoading ?? false,
+      onLoadMore: provider?.autoLoadNext,
     );
   }
 }

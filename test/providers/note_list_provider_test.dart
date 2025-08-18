@@ -25,6 +25,7 @@ class TestNoteListProvider extends NoteListProvider {
   Future<void> performDelete(int noteId) async {
     await mockNotesService.delete(noteId);
   }
+
 }
 
 void main() {
@@ -45,6 +46,20 @@ void main() {
         expect(provider.isLoading, isFalse);
         expect(provider.error, isNull);
         expect(provider.groupedNotes, isEmpty);
+        expect(provider.autoPageEnabled, isTrue);
+        expect(provider.isAutoLoading, isFalse);
+      });
+    });
+
+    group('Auto-pagination', () {
+      test('should initialize with auto-page enabled', () {
+        expect(provider.autoPageEnabled, isTrue);
+        expect(provider.isAutoLoading, isFalse);
+      });
+
+      test('should be able to disable auto-pagination', () {
+        provider.setAutoPageEnabled(false);
+        expect(provider.autoPageEnabled, isFalse);
       });
     });
 

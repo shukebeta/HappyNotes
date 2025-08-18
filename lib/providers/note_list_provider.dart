@@ -39,6 +39,13 @@ abstract class NoteListProvider extends AuthAwareProvider {
   String? _error;
   String? get error => _error;
 
+  // Auto-pagination state
+  bool _autoPageEnabled = true;
+  bool get autoPageEnabled => _autoPageEnabled;
+
+  bool _isAutoLoading = false;
+  bool get isAutoLoading => _isAutoLoading;
+
   // Date grouping - automatically computed from notes
   Map<String, List<Note>> get groupedNotes {
     return ListGrouper.groupByDate(_notes, (note) => note.createdDate);
@@ -76,6 +83,35 @@ abstract class NoteListProvider extends AuthAwareProvider {
     await navigateToPage(_currentPage);
   }
 
+  /// Check if can auto-load next page
+  bool canAutoLoadNext() {
+    return _autoPageEnabled &&
+           !_isLoading &&
+           !_isAutoLoading &&
+           _currentPage < totalPages;
+  }
+
+  /// Auto-load next page (triggered by pull-up gesture)
+  Future<void> autoLoadNext() async {
+    if (!canAutoLoadNext()) return;
+
+    _isAutoLoading = true;
+    notifyListeners();
+
+    try {
+      await navigateToPage(_currentPage + 1);
+    } finally {
+      _isAutoLoading = false;
+      notifyListeners();
+    }
+  }
+
+  /// Enable or disable auto-pagination
+  void setAutoPageEnabled(bool enabled) {
+    _autoPageEnabled = enabled;
+    notifyListeners();
+  }
+
   /// Delete a note with optimistic updates and rollback on failure
   Future<OperationResult<void>> deleteNote(int noteId) async {
     // Store original state for rollback
@@ -111,9 +147,9 @@ abstract class NoteListProvider extends AuthAwareProvider {
   void updateLocalCache(Note updatedNote) {
     final logger = GetIt.instance<AppLoggerInterface>();
     final noteIndex = notes.indexWhere((note) => note.id == updatedNote.id);
-    
+
     logger.d('NoteListProvider.updateLocalCache called: noteId=${updatedNote.id}, noteIndex=$noteIndex');
-    
+
     if (noteIndex != -1) {
       notes[noteIndex] = updatedNote;
       notifyListeners();
@@ -129,9 +165,9 @@ abstract class NoteListProvider extends AuthAwareProvider {
   Future<Note?> updateNote(int noteId, String content, {required bool isPrivate, required bool isMarkdown}) async {
     final logger = GetIt.instance<AppLoggerInterface>();
     final noteIndex = notes.indexWhere((note) => note.id == noteId);
-    
+
     logger.d('NoteListProvider.updateNote called: noteId=$noteId, noteIndex=$noteIndex, content length=${content.length}');
-    
+
     try {
       final updatedNote = await notesService.update(
         noteId,
@@ -139,12 +175,12 @@ abstract class NoteListProvider extends AuthAwareProvider {
         isPrivate,
         isMarkdown
       );
-      
+
       if (noteIndex != -1) {
         notes[noteIndex] = updatedNote;
         notifyListeners();
       }
-      
+
       return updatedNote;
     } catch (e) {
       logger.e('NoteListProvider.updateNote error: $e for noteId=$noteId');
@@ -160,6 +196,7 @@ abstract class NoteListProvider extends AuthAwareProvider {
     _totalNotes = 0;
     _isLoading = false;
     _error = null;
+    _isAutoLoading = false;
     notifyListeners();
   }
 
