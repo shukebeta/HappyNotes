@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 
 class GroupedListView<T> extends StatefulWidget {
   final Map<String, List<T>> groupedItems;
@@ -12,6 +11,7 @@ class GroupedListView<T> extends StatefulWidget {
   final Future<void> Function()? onLoadMore;
   final bool canAutoLoadNext;
   final bool isAutoLoading;
+  final bool pullUpToLoadEnabled;
 
   const GroupedListView({
     super.key,
@@ -25,6 +25,7 @@ class GroupedListView<T> extends StatefulWidget {
     this.onLoadMore,
     this.canAutoLoadNext = false,
     this.isAutoLoading = false,
+    this.pullUpToLoadEnabled = false,
   });
 
   @override
@@ -57,8 +58,8 @@ class _GroupedListViewState<T> extends State<GroupedListView<T>> {
   bool _handleScrollNotification(ScrollNotification notification) {
     if (!widget.canAutoLoadNext || widget.isAutoLoading) return false;
 
-    // Only handle touch gestures on mobile devices
-    if (!_isMobileDevice()) return false;
+    // Only handle pull-up gestures if enabled
+    if (!widget.pullUpToLoadEnabled) return false;
 
     if (notification is ScrollUpdateNotification) {
       final metrics = notification.metrics;
@@ -96,10 +97,6 @@ class _GroupedListViewState<T> extends State<GroupedListView<T>> {
     return false;
   }
 
-  bool _isMobileDevice() {
-    return defaultTargetPlatform == TargetPlatform.android ||
-           defaultTargetPlatform == TargetPlatform.iOS;
-  }
 
   int _calculateItemCount(List<String> sortedDates) {
     int count = 0;
@@ -108,22 +105,22 @@ class _GroupedListViewState<T> extends State<GroupedListView<T>> {
       count += widget.groupedItems[dateKey]!.length; // Items
     }
     if (widget.canLoadMore) count += 1; // Loading indicator
-    if (widget.canAutoLoadNext && _isMobileDevice()) count += 1; // Pull-up indicator (mobile only)
+    if (widget.canAutoLoadNext && widget.pullUpToLoadEnabled) count += 1; // Pull-up indicator
     return count;
   }
 
   Widget _buildItem(BuildContext context, int index, List<String> sortedDates) {
     final baseItemCount = _calculateItemCount(sortedDates) -
-        (widget.canAutoLoadNext && _isMobileDevice() ? 1 : 0) -
+        (widget.canAutoLoadNext && widget.pullUpToLoadEnabled ? 1 : 0) -
         (widget.canLoadMore ? 1 : 0);
 
-    // Auto-load next page indicator (bottom-most) - only on mobile
-    if (widget.canAutoLoadNext && _isMobileDevice() && index == _calculateItemCount(sortedDates) - 1) {
+    // Auto-load next page indicator (bottom-most) - if enabled
+    if (widget.canAutoLoadNext && widget.pullUpToLoadEnabled && index == _calculateItemCount(sortedDates) - 1) {
       return _buildPullUpIndicator();
     }
 
     // Legacy loading indicator
-    if (widget.canLoadMore && index == baseItemCount + (widget.canAutoLoadNext && _isMobileDevice() ? 1 : 0)) {
+    if (widget.canLoadMore && index == baseItemCount + (widget.canAutoLoadNext && widget.pullUpToLoadEnabled ? 1 : 0)) {
       return widget.loadingWidget ?? const Center(child: CircularProgressIndicator());
     }
 
