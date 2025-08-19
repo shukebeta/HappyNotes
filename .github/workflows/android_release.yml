@@ -57,6 +57,7 @@ jobs:
           BUILD_DATE=${{ steps.get_commit.outputs.build_date }}
           VERSION_INFO="$COMMIT_HASH ($BUILD_DATE)"
           sed -i "s/VERSION_PLACEHOLDER/$VERSION_INFO/" .env
+          sed -i "s/SEQ_API_KEY_PLACEHOLDER/${{ secrets.SEQ_API_KEY }}/" .env
           flutter build apk --release
 
       - name: Make Github release

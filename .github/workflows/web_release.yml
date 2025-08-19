@@ -27,11 +27,13 @@ jobs:
 
       - name: Build web
         run: |
+          set -x
           cp .env.production .env
           COMMIT_HASH=${{ steps.get_commit.outputs.commit_hash }}
           BUILD_DATE=${{ steps.get_commit.outputs.build_date }}
           VERSION_INFO="$COMMIT_HASH ($BUILD_DATE)"
           sed -i "s/VERSION_PLACEHOLDER/$VERSION_INFO/" .env
+          sed -i "s/SEQ_API_KEY_PLACEHOLDER/${{ secrets.SEQ_API_KEY }}/" .env
           flutter config --enable-web
           flutter build web --release --base-href "/"
 

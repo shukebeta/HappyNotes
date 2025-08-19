@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../../../entities/note.dart';
 import '../../../providers/note_list_provider.dart';
+import '../../../providers/notes_provider.dart';
 import '../../../services/seq_logger.dart';
 import '../date_header.dart';
 import '../grouped_list_view.dart';
@@ -30,18 +31,26 @@ class NoteList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<NoteListProvider?>(context);
-    final isMobile = defaultTargetPlatform == TargetPlatform.android ||
-                     defaultTargetPlatform == TargetPlatform.iOS;
-    
-    SeqLogger.fine('[NoteList] Platform detection: defaultTargetPlatform=$defaultTargetPlatform, kIsWeb=$kIsWeb, isMobile=$isMobile');
-    SeqLogger.fine('[NoteList] Provider: ${provider.runtimeType}, isNull=${provider == null}');
-    if (provider != null) {
-      final canAutoLoad = provider.canAutoLoadNext();
-      SeqLogger.info('[NoteList] Provider details: canAutoLoadNext=$canAutoLoad, isAutoLoading=${provider.isAutoLoading}, currentPage=${provider.currentPage}, totalPages=${provider.totalPages}');
+    // 尝试获取各种可能的 NoteListProvider 实现
+    NoteListProvider? provider;
+    try {
+      provider = Provider.of<NotesProvider?>(context, listen: false);
+    } catch (e) {
+      // 如果找不到 NotesProvider，尝试其他类型
+      try {
+        provider = Provider.of<NoteListProvider?>(context, listen: false);
+      } catch (e) {
+        provider = null;
+      }
     }
+
+    // Web 环境下，如果是移动平台（iOS/Android）或者支持触摸，都启用拉动功能
+    final isMobile = (defaultTargetPlatform == TargetPlatform.android ||
+                      defaultTargetPlatform == TargetPlatform.iOS) ||
+                     (kIsWeb && MediaQuery.of(context).size.width < 768);
+
     final pullUpEnabled = isMobile && provider != null;
-    SeqLogger.info('[NoteList] Final pullUpToLoadEnabled=$pullUpEnabled');
+
 
     return GroupedListView<Note>(
       groupedItems: groupedNotes,
@@ -65,6 +74,12 @@ class NoteList extends StatelessWidget {
       isAutoLoading: provider?.isAutoLoading ?? false,
       onLoadMore: provider?.autoLoadNext,
       pullUpToLoadEnabled: isMobile && provider != null,
+
+      // Pull-down functionality
+      canAutoLoadPrevious: provider?.canAutoLoadPrevious() ?? false,
+      onLoadPrevious: provider?.autoLoadPrevious,
+      pullDownToLoadEnabled: isMobile && provider != null,
+      currentPage: provider?.currentPage ?? 1,
     );
   }
 }

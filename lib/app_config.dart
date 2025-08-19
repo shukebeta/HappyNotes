@@ -23,6 +23,10 @@ class AppConfig {
     return dotenv.env['SEQ_SERVER_URL'] ?? 'http://seq.shukebeta.eu.org:5341';
   }
 
+  static String get seqApiKey {
+    return dotenv.env['SEQ_API_KEY'] ?? '';
+  }
+
   /// Returns the maximum dimension (width or height) for image processing.
   ///
   /// This value is used to determine the size limit for the longer side of an image.

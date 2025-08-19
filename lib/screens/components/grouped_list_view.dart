@@ -15,6 +15,12 @@ class GroupedListView<T> extends StatefulWidget {
   final bool isAutoLoading;
   final bool pullUpToLoadEnabled;
 
+  // Pull-down functionality
+  final Future<void> Function()? onLoadPrevious;
+  final bool canAutoLoadPrevious;
+  final bool pullDownToLoadEnabled;
+  final int currentPage; // To determine behavior (refresh vs load previous)
+
   const GroupedListView({
     super.key,
     required this.groupedItems,
@@ -28,6 +34,10 @@ class GroupedListView<T> extends StatefulWidget {
     this.canAutoLoadNext = false,
     this.isAutoLoading = false,
     this.pullUpToLoadEnabled = false,
+    this.onLoadPrevious,
+    this.canAutoLoadPrevious = false,
+    this.pullDownToLoadEnabled = false,
+    this.currentPage = 1,
   });
 
   @override
@@ -36,15 +46,24 @@ class GroupedListView<T> extends StatefulWidget {
 
 class _GroupedListViewState<T> extends State<GroupedListView<T>> {
   static const double _pullUpThreshold = 100.0;
+  static const double _pullDownThreshold = 100.0;
+
+  // Pull-up state (existing)
   bool _isPullingUp = false;
   double _pullUpDistance = 0.0;
+  bool _hasTriggeredUp = false; // Prevent duplicate triggers
+
+  // Pull-down state (new)
+  bool _isPullingDown = false;
+  double _pullDownDistance = 0.0;
+  bool _hasTriggeredDown = false; // Prevent duplicate triggers
 
   @override
   Widget build(BuildContext context) {
     final sortedDates = widget.groupedItems.keys.toList()
       ..sort((a, b) => b.compareTo(a)); // Newest first
 
-    SeqLogger.fine('[GroupedListView] Parameters: canAutoLoadNext=${widget.canAutoLoadNext}, isAutoLoading=${widget.isAutoLoading}, pullUpToLoadEnabled=${widget.pullUpToLoadEnabled}');
+    SeqLogger.info('[GroupedListView] Parameters: canAutoLoadNext=${widget.canAutoLoadNext}, isAutoLoading=${widget.isAutoLoading}, pullUpToLoadEnabled=${widget.pullUpToLoadEnabled}');
 
     return RefreshIndicator(
       onRefresh: widget.onRefresh ?? () async {},
@@ -61,15 +80,11 @@ class _GroupedListViewState<T> extends State<GroupedListView<T>> {
   }
 
   bool _handleScrollNotification(ScrollNotification notification) {
-    SeqLogger.fine('[GroupedListView] ScrollNotification: type=${notification.runtimeType}, canAutoLoadNext=${widget.canAutoLoadNext}, isAutoLoading=${widget.isAutoLoading}, pullUpToLoadEnabled=${widget.pullUpToLoadEnabled}');
-    
-    if (!widget.canAutoLoadNext || widget.isAutoLoading) {
-      SeqLogger.fine('[GroupedListView] Early return: conditions not met');
-      return false;
-    }
+    SeqLogger.info('[GroupedListView] ScrollNotification: type=${notification.runtimeType}, canAutoLoadNext=${widget.canAutoLoadNext}, canAutoLoadPrevious=${widget.canAutoLoadPrevious}, isAutoLoading=${widget.isAutoLoading}, pullUpEnabled=${widget.pullUpToLoadEnabled}, pullDownEnabled=${widget.pullDownToLoadEnabled}');
 
-    if (!widget.pullUpToLoadEnabled) {
-      SeqLogger.fine('[GroupedListView] Early return: pullUpToLoadEnabled=false');
+    // Skip if loading or no pull features enabled
+    if (widget.isAutoLoading || (!widget.pullUpToLoadEnabled && !widget.pullDownToLoadEnabled)) {
+      SeqLogger.info('[GroupedListView] Early return: loading or no pull features enabled');
       return false;
     }
 
@@ -77,7 +92,40 @@ class _GroupedListViewState<T> extends State<GroupedListView<T>> {
       final metrics = notification.metrics;
       SeqLogger.fine('[GroupedListView] ScrollUpdate: pixels=${metrics.pixels}, maxScrollExtent=${metrics.maxScrollExtent}');
 
-      if (metrics.pixels >= metrics.maxScrollExtent) {
+      // Handle pull-down (top overscroll)
+      if (widget.pullDownToLoadEnabled && widget.canAutoLoadPrevious && metrics.pixels <= 0) {
+        final overscroll = -metrics.pixels; // Convert to positive value
+        SeqLogger.fine('[GroupedListView] At top: overscroll=$overscroll');
+        if (overscroll > 0) {
+          SeqLogger.info('[GroupedListView] Pull-down overscroll detected! Setting _isPullingDown=true, _pullDownDistance=$overscroll');
+          setState(() {
+            _isPullingDown = true;
+            _pullDownDistance = overscroll;
+          });
+
+          // Trigger action immediately when threshold is reached
+          if (_pullDownDistance >= _pullDownThreshold && !_hasTriggeredDown) {
+            SeqLogger.info('[GroupedListView] Pull-down threshold reached! Triggering action immediately');
+            _hasTriggeredDown = true;
+            _handlePullDownTrigger();
+            setState(() {
+              _isPullingDown = false;
+              _pullDownDistance = 0.0;
+            });
+          }
+        }
+      } else if (_isPullingDown && metrics.pixels > 0) {
+        // Reset pull-down state when leaving top
+        SeqLogger.fine('[GroupedListView] Left top, resetting pull-down state');
+        setState(() {
+          _isPullingDown = false;
+          _pullDownDistance = 0.0;
+          _hasTriggeredDown = false; // Reset trigger flag when leaving top
+        });
+      }
+
+      // Handle pull-up (bottom overscroll) - existing logic
+      if (widget.pullUpToLoadEnabled && widget.canAutoLoadNext && metrics.pixels >= metrics.maxScrollExtent) {
         final overscroll = metrics.pixels - metrics.maxScrollExtent;
         SeqLogger.fine('[GroupedListView] At bottom: overscroll=$overscroll');
         if (overscroll > 0) {
@@ -86,6 +134,17 @@ class _GroupedListViewState<T> extends State<GroupedListView<T>> {
             _isPullingUp = true;
             _pullUpDistance = overscroll;
           });
+
+          // Trigger loading immediately when threshold is reached
+          if (_pullUpDistance >= _pullUpThreshold && !_hasTriggeredUp) {
+            SeqLogger.info('[GroupedListView] Threshold reached! Triggering auto-load immediately');
+            _hasTriggeredUp = true;
+            widget.onLoadMore?.call();
+            setState(() {
+              _isPullingUp = false;
+              _pullUpDistance = 0.0;
+            });
+          }
         }
       } else {
         if (_isPullingUp) {
@@ -93,24 +152,51 @@ class _GroupedListViewState<T> extends State<GroupedListView<T>> {
           setState(() {
             _isPullingUp = false;
             _pullUpDistance = 0.0;
+            _hasTriggeredUp = false; // Reset trigger flag when leaving bottom
           });
         }
       }
     }
 
     if (notification is ScrollEndNotification) {
-      SeqLogger.info('[GroupedListView] ScrollEnd: _isPullingUp=$_isPullingUp, _pullUpDistance=$_pullUpDistance, threshold=$_pullUpThreshold');
-      if (_isPullingUp && _pullUpDistance >= _pullUpThreshold) {
-        SeqLogger.info('[GroupedListView] Triggering auto-load!');
+      SeqLogger.info('[GroupedListView] ScrollEnd: _isPullingUp=$_isPullingUp, _pullUpDistance=$_pullUpDistance, _isPullingDown=$_isPullingDown, _pullDownDistance=$_pullDownDistance');
+
+      // Backup triggers for ScrollEndNotification (in case ScrollUpdate didn't trigger)
+      if (_isPullingUp && _pullUpDistance >= _pullUpThreshold && !_hasTriggeredUp) {
+        SeqLogger.info('[GroupedListView] Backup pull-up trigger from ScrollEnd!');
         widget.onLoadMore?.call();
       }
+
+      if (_isPullingDown && _pullDownDistance >= _pullDownThreshold && !_hasTriggeredDown) {
+        SeqLogger.info('[GroupedListView] Backup pull-down trigger from ScrollEnd!');
+        _handlePullDownTrigger();
+      }
+
       setState(() {
+        // Reset all pull states on scroll end
         _isPullingUp = false;
         _pullUpDistance = 0.0;
+        _hasTriggeredUp = false;
+        _isPullingDown = false;
+        _pullDownDistance = 0.0;
+        _hasTriggeredDown = false;
       });
     }
 
     return false;
+  }
+
+  // Handle pull-down behavior based on current page
+  void _handlePullDownTrigger() {
+    if (widget.currentPage == 1) {
+      // First page: refresh
+      SeqLogger.info('[GroupedListView] First page: triggering refresh');
+      widget.onRefresh?.call();
+    } else {
+      // Other pages: load previous page
+      SeqLogger.info('[GroupedListView] Non-first page: triggering load previous');
+      widget.onLoadPrevious?.call();
+    }
   }
 
 
@@ -122,36 +208,48 @@ class _GroupedListViewState<T> extends State<GroupedListView<T>> {
     }
     if (widget.canLoadMore) count += 1; // Loading indicator
     if (widget.canAutoLoadNext && widget.pullUpToLoadEnabled) count += 1; // Pull-up indicator
+    if (widget.canAutoLoadPrevious && widget.pullDownToLoadEnabled) count += 1; // Pull-down indicator
     return count;
   }
 
   Widget _buildItem(BuildContext context, int index, List<String> sortedDates) {
-    final baseItemCount = _calculateItemCount(sortedDates) -
+    final totalItemCount = _calculateItemCount(sortedDates);
+    final pullDownOffset = widget.canAutoLoadPrevious && widget.pullDownToLoadEnabled ? 1 : 0;
+
+    // Pull-down indicator (top-most) - if enabled
+    if (widget.canAutoLoadPrevious && widget.pullDownToLoadEnabled && index == 0) {
+      return _buildPullDownIndicator();
+    }
+
+    // Adjust index for pull-down indicator offset
+    final adjustedIndex = index - pullDownOffset;
+    final baseItemCount = totalItemCount -
         (widget.canAutoLoadNext && widget.pullUpToLoadEnabled ? 1 : 0) -
-        (widget.canLoadMore ? 1 : 0);
+        (widget.canLoadMore ? 1 : 0) -
+        pullDownOffset;
 
     // Auto-load next page indicator (bottom-most) - if enabled
-    if (widget.canAutoLoadNext && widget.pullUpToLoadEnabled && index == _calculateItemCount(sortedDates) - 1) {
+    if (widget.canAutoLoadNext && widget.pullUpToLoadEnabled && index == totalItemCount - 1) {
       return _buildPullUpIndicator();
     }
 
     // Legacy loading indicator
-    if (widget.canLoadMore && index == baseItemCount + (widget.canAutoLoadNext && widget.pullUpToLoadEnabled ? 1 : 0)) {
+    if (widget.canLoadMore && adjustedIndex == baseItemCount) {
       return widget.loadingWidget ?? const Center(child: CircularProgressIndicator());
     }
 
     int currentIndex = 0;
     for (final dateKey in sortedDates) {
       // Check if this is the header (only if headerBuilder is provided)
-      if (widget.headerBuilder != null && currentIndex == index) {
+      if (widget.headerBuilder != null && currentIndex == adjustedIndex) {
         return widget.headerBuilder!(dateKey, DateTime.parse(dateKey));
       }
       if (widget.headerBuilder != null) currentIndex++;
 
       // Check if this is one of the items for this date
       final items = widget.groupedItems[dateKey]!;
-      if (index < currentIndex + items.length) {
-        final itemIndex = index - currentIndex;
+      if (adjustedIndex < currentIndex + items.length) {
+        final itemIndex = adjustedIndex - currentIndex;
         return widget.itemBuilder(items[itemIndex]);
       }
       currentIndex += items.length;
@@ -206,6 +304,74 @@ class _GroupedListViewState<T> extends State<GroupedListView<T>> {
             ],
           ),
           if (_isPullingUp) ...[
+            const SizedBox(height: 8),
+            LinearProgressIndicator(
+              value: progress,
+              backgroundColor: Colors.grey[300],
+              valueColor: AlwaysStoppedAnimation<Color>(
+                shouldTrigger ? Colors.green : Colors.blue,
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPullDownIndicator() {
+    if (widget.isAutoLoading) {
+      return Container(
+        padding: const EdgeInsets.all(16.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const SizedBox(
+              width: 16,
+              height: 16,
+              child: CircularProgressIndicator(strokeWidth: 2),
+            ),
+            const SizedBox(width: 8),
+            Text(widget.currentPage == 1 ? 'Refreshing...' : 'Loading previous page...'),
+          ],
+        ),
+      );
+    }
+
+    final progress = (_pullDownDistance / _pullDownThreshold).clamp(0.0, 1.0);
+    final shouldTrigger = progress >= 1.0;
+
+    // Different messages based on current page
+    final pullMessage = widget.currentPage == 1
+        ? 'Pull down to refresh'
+        : 'Pull down to load previous page';
+    final releaseMessage = widget.currentPage == 1
+        ? 'Release to refresh'
+        : 'Release to load previous page';
+
+    return Container(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Transform.rotate(
+                angle: shouldTrigger ? 3.14159 : 0, // Flip arrow when ready
+                child: Icon(
+                  Icons.keyboard_arrow_down,
+                  color: shouldTrigger ? Colors.green : Colors.grey,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                shouldTrigger ? releaseMessage : pullMessage,
+                style: TextStyle(
+                  color: shouldTrigger ? Colors.green : Colors.grey,
+                ),
+              ),
+            ],
+          ),
+          if (_isPullingDown) ...[
             const SizedBox(height: 8),
             LinearProgressIndicator(
               value: progress,
