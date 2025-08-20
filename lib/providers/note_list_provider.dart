@@ -86,15 +86,10 @@ abstract class NoteListProvider extends AuthAwareProvider {
 
   /// Check if can auto-load next page
   bool canAutoLoadNext() {
-    final result = _autoPageEnabled &&
-                   !_isLoading &&
-                   !_isAutoLoading &&
-                   _currentPage < totalPages;
-
-    // Always log in production for debugging
-    SeqLogger.info('NoteListProvider.canAutoLoadNext called: result=$result, autoPageEnabled=$_autoPageEnabled, isLoading=$_isLoading, isAutoLoading=$_isAutoLoading, currentPage=$_currentPage, totalPages=$totalPages');
-
-    return result;
+    return _autoPageEnabled &&
+           !_isLoading &&
+           !_isAutoLoading &&
+           _currentPage < totalPages;
   }
 
   /// Auto-load next page (triggered by pull-up gesture)
@@ -137,17 +132,10 @@ abstract class NoteListProvider extends AuthAwareProvider {
 
   /// Check if can auto-load previous page
   bool canAutoLoadPrevious() {
-    final result = _autoPageEnabled &&
-                   !_isLoading &&
-                   !_isAutoLoading &&
-                   _currentPage > 1;
-
-    // Always log for debugging
-    if (!result) {
-      SeqLogger.info('NoteListProvider.canAutoLoadPrevious=false: autoPageEnabled=$_autoPageEnabled, isLoading=$_isLoading, isAutoLoading=$_isAutoLoading, currentPage=$_currentPage');
-    }
-
-    return result;
+    return _autoPageEnabled &&
+           !_isLoading &&
+           !_isAutoLoading &&
+           _currentPage > 1;
   }
 
   /// Enable or disable auto-pagination

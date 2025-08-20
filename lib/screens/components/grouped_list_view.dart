@@ -63,8 +63,6 @@ class _GroupedListViewState<T> extends State<GroupedListView<T>> {
     final sortedDates = widget.groupedItems.keys.toList()
       ..sort((a, b) => b.compareTo(a)); // Newest first
 
-    SeqLogger.info('[GroupedListView] Parameters: canAutoLoadNext=${widget.canAutoLoadNext}, isAutoLoading=${widget.isAutoLoading}, pullUpToLoadEnabled=${widget.pullUpToLoadEnabled}');
-
     return RefreshIndicator(
       onRefresh: widget.onRefresh ?? () async {},
       child: NotificationListener<ScrollNotification>(
@@ -80,11 +78,8 @@ class _GroupedListViewState<T> extends State<GroupedListView<T>> {
   }
 
   bool _handleScrollNotification(ScrollNotification notification) {
-    SeqLogger.info('[GroupedListView] ScrollNotification: type=${notification.runtimeType}, canAutoLoadNext=${widget.canAutoLoadNext}, canAutoLoadPrevious=${widget.canAutoLoadPrevious}, isAutoLoading=${widget.isAutoLoading}, pullUpEnabled=${widget.pullUpToLoadEnabled}, pullDownEnabled=${widget.pullDownToLoadEnabled}');
-
     // Skip if loading or no pull features enabled
     if (widget.isAutoLoading || (!widget.pullUpToLoadEnabled && !widget.pullDownToLoadEnabled)) {
-      SeqLogger.info('[GroupedListView] Early return: loading or no pull features enabled');
       return false;
     }
 
