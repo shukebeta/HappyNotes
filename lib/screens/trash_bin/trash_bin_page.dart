@@ -9,6 +9,7 @@ import '../components/note_list/note_list_callbacks.dart';
 import '../account/user_session.dart';
 import '../components/floating_pagination.dart';
 import '../../providers/trash_provider.dart';
+import '../../providers/note_list_provider.dart';
 import '../../utils/util.dart';
 
 class TrashBinPage extends StatefulWidget {
@@ -168,7 +169,9 @@ class TrashBinPageState extends State<TrashBinPage> {
           );
         }
 
-        return NoteList(
+        return ChangeNotifierProvider<NoteListProvider>.value(
+          value: trashProvider,
+          child: NoteList(
           groupedNotes: trashProvider.groupedNotes,
           showDateHeader: true,
           callbacks: ListItemCallbacks<Note>(
@@ -227,6 +230,7 @@ class TrashBinPageState extends State<TrashBinPage> {
             showRestoreButton: true,
             enableDismiss: false,
           ),
+        ),
         );
       },
     );

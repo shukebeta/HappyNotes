@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:happy_notes/screens/components/note_list/note_list.dart';
 import 'package:happy_notes/screens/components/note_list/note_list_callbacks.dart';
 import 'package:happy_notes/providers/search_provider.dart';
+import 'package:happy_notes/providers/note_list_provider.dart';
 import 'package:happy_notes/screens/components/controllers/tag_cloud_controller.dart';
 import 'package:happy_notes/screens/note_detail/note_detail.dart';
 import 'package:happy_notes/utils/navigation_helper.dart';
@@ -123,10 +124,12 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
     return Column(
       children: [
         Expanded(
-          child: NoteList(
-            groupedNotes: searchProvider.groupedNotes,
-            showDateHeader: true,
-            callbacks: ListItemCallbacks<Note>(
+          child: ChangeNotifierProvider<NoteListProvider>.value(
+            value: searchProvider,
+            child: NoteList(
+              groupedNotes: searchProvider.groupedNotes,
+              showDateHeader: true,
+              callbacks: ListItemCallbacks<Note>(
               onTap: (note) async {
                 final result = await Navigator.push(
                     context,
@@ -167,6 +170,7 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
               enableDismiss: true,
             ),
           ),
+            ),
         ),
         if (searchProvider.totalPages > 1 && UserSession().isDesktop)
           PaginationControls(

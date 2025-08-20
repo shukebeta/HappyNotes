@@ -172,11 +172,11 @@ class AppStateProvider with ChangeNotifier {
     
     // Update cache in all NoteListProvider instances using null-safe calls
     // Each provider's updateLocalCache method handles existence checking
-    _notesProvider?.updateLocalCache(updatedNote);
-    _searchProvider?.updateLocalCache(updatedNote);
-    _tagNotesProvider?.updateLocalCache(updatedNote);
-    _trashProvider?.updateLocalCache(updatedNote);
-    _discoveryProvider?.updateLocalCache(updatedNote);
+    _notesProvider.updateLocalCache(updatedNote);
+    _searchProvider.updateLocalCache(updatedNote);
+    _tagNotesProvider.updateLocalCache(updatedNote);
+    _trashProvider.updateLocalCache(updatedNote);
+    _discoveryProvider.updateLocalCache(updatedNote);
     
     debugPrint('AppStateProvider: notifyNoteUpdated completed for note ${updatedNote.id}');
   }

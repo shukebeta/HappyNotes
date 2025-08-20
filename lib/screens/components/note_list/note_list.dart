@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 
 import '../../../entities/note.dart';
 import '../../../providers/note_list_provider.dart';
-import '../../../services/seq_logger.dart';
 import '../date_header.dart';
 import '../grouped_list_view.dart';
 import 'note_list_item.dart';

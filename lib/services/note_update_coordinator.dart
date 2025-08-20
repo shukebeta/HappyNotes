@@ -1,7 +1,6 @@
 import 'package:happy_notes/entities/note.dart';
 import 'package:happy_notes/providers/app_state_provider.dart';
 import 'package:happy_notes/utils/app_logger_interface.dart';
-import 'package:get_it/get_it.dart';
 
 /// Coordinator service for updating note caches across all relevant providers
 /// 

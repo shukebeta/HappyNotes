@@ -13,7 +13,6 @@ import 'package:happy_notes/services/mastodon_service.dart';
 import 'package:happy_notes/services/mastodon_user_account_service.dart';
 import 'package:happy_notes/services/note_tag_service.dart';
 import 'package:happy_notes/services/notes_services.dart';
-import 'package:happy_notes/services/note_update_coordinator.dart';
 import 'package:get_it/get_it.dart';
 import 'package:happy_notes/services/telegram_settings_service.dart';
 import 'package:happy_notes/services/user_settings_service.dart';
@@ -25,7 +24,6 @@ import 'apis/mastodon_application_api.dart';
 import 'apis/mastodon_user_account_api.dart';
 import 'apis/note_tag_api.dart';
 import 'apis/telegram_settings_api.dart';
-import 'providers/app_state_provider.dart';
 
 final locator = GetIt.instance;
 

@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:happy_notes/app_config.dart';
 import 'package:happy_notes/screens/note_detail/note_detail.dart';
 import 'package:happy_notes/providers/tag_notes_provider.dart';
+import 'package:happy_notes/providers/note_list_provider.dart';
 import 'package:happy_notes/screens/components/controllers/tag_cloud_controller.dart';
 import '../../utils/navigation_helper.dart';
 import '../components/floating_pagination.dart';
@@ -149,7 +150,9 @@ class TagNotesState extends State<TagNotes> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Expanded(
-              child: NoteList(
+              child: ChangeNotifierProvider<NoteListProvider>.value(
+                value: tagProvider,
+                child: NoteList(
                 groupedNotes: tagProvider.groupedNotes,
                 showDateHeader: true,
                 callbacks: ListItemCallbacks<Note>(
@@ -195,6 +198,7 @@ class TagNotesState extends State<TagNotes> {
                   enableDismiss: true,
                 ),
               ),
+                ),
             ),
             if (tagProvider.totalPages > 1 && UserSession().isDesktop)
               PaginationControls(

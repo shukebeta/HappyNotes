@@ -13,6 +13,7 @@ import '../account/user_session.dart';
 import '../new_note/new_note.dart';
 import '../components/tappable_app_bar_title.dart';
 import '../../providers/discovery_provider.dart';
+import '../../providers/note_list_provider.dart';
 import '../components/controllers/tag_cloud_controller.dart';
 
 class Discovery extends StatefulWidget {
@@ -161,7 +162,9 @@ class DiscoveryState extends State<Discovery> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Expanded(
-              child: NoteList(
+              child: ChangeNotifierProvider<NoteListProvider>.value(
+                value: discoveryProvider,
+                child: NoteList(
                 groupedNotes: discoveryProvider.groupedNotes,
                 showDateHeader: true,
                 callbacks: ListItemCallbacks<Note>(
@@ -199,9 +202,10 @@ class DiscoveryState extends State<Discovery> {
                 ),
                 config: const ListItemConfig(
                   showDate: false,
-                  showAuthor: true, // Show author for discovery page
+                  showAuthor: true,
                   showRestoreButton: false,
                   enableDismiss: true,
+                ),
                 ),
               ),
             ),
