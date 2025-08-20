@@ -5,7 +5,6 @@ import 'package:happy_notes/providers/provider_base.dart';
 import 'package:happy_notes/services/notes_services.dart';
 import 'package:happy_notes/utils/operation_result.dart';
 import 'package:happy_notes/utils/app_logger_interface.dart';
-import 'package:happy_notes/services/seq_logger.dart';
 import 'package:get_it/get_it.dart';
 import '../screens/components/list_grouper.dart';
 
@@ -91,17 +90,12 @@ abstract class NoteListProvider extends AuthAwareProvider {
 
   /// Auto-load next page (triggered by pull-up gesture)
   Future<void> autoLoadNext() async {
-    SeqLogger.info('NoteListProvider.autoLoadNext called: canAutoLoadNext=${canAutoLoadNext()}');
-
     if (!canAutoLoadNext()) return;
-
-    SeqLogger.info('NoteListProvider.autoLoadNext starting: currentPage=$_currentPage, totalPages=$totalPages');
     _isAutoLoading = true;
     notifyListeners();
 
     try {
       await navigateToPage(_currentPage + 1);
-      SeqLogger.info('NoteListProvider.autoLoadNext completed: newPage=$_currentPage');
     } finally {
       _isAutoLoading = false;
       notifyListeners();
@@ -110,17 +104,12 @@ abstract class NoteListProvider extends AuthAwareProvider {
 
   /// Auto-load previous page (triggered by pull-down gesture)
   Future<void> autoLoadPrevious() async {
-    SeqLogger.info('NoteListProvider.autoLoadPrevious called: canAutoLoadPrevious=${canAutoLoadPrevious()}');
-
     if (!canAutoLoadPrevious()) return;
-
-    SeqLogger.info('NoteListProvider.autoLoadPrevious starting: currentPage=$_currentPage');
     _isAutoLoading = true;
     notifyListeners();
 
     try {
       await navigateToPage(_currentPage - 1);
-      SeqLogger.info('NoteListProvider.autoLoadPrevious completed: newPage=$_currentPage');
     } finally {
       _isAutoLoading = false;
       notifyListeners();

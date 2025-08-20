@@ -101,7 +101,6 @@ class _GroupedListViewState<T> extends State<GroupedListView<T>> {
 
           // Trigger action immediately when threshold is reached
           if (_pullDownDistance >= _pullDownThreshold && !_hasTriggeredDown) {
-            SeqLogger.info('[GroupedListView] Pull-down threshold reached! Triggering action immediately');
             _hasTriggeredDown = true;
             _handlePullDownTrigger();
             setState(() {
@@ -134,7 +133,6 @@ class _GroupedListViewState<T> extends State<GroupedListView<T>> {
 
           // Trigger loading immediately when threshold is reached
           if (_pullUpDistance >= _pullUpThreshold && !_hasTriggeredUp) {
-            SeqLogger.info('[GroupedListView] Threshold reached! Triggering auto-load immediately');
             _hasTriggeredUp = true;
             widget.onLoadMore?.call();
             setState(() {
@@ -161,12 +159,10 @@ class _GroupedListViewState<T> extends State<GroupedListView<T>> {
 
       // Backup triggers for ScrollEndNotification (in case ScrollUpdate didn't trigger)
       if (_isPullingUp && _pullUpDistance >= _pullUpThreshold && !_hasTriggeredUp) {
-        SeqLogger.info('[GroupedListView] Backup pull-up trigger from ScrollEnd!');
         widget.onLoadMore?.call();
       }
 
       if (_isPullingDown && _pullDownDistance >= _pullDownThreshold && !_hasTriggeredDown) {
-        SeqLogger.info('[GroupedListView] Backup pull-down trigger from ScrollEnd!');
         _handlePullDownTrigger();
       }
 
@@ -188,11 +184,11 @@ class _GroupedListViewState<T> extends State<GroupedListView<T>> {
   void _handlePullDownTrigger() {
     if (widget.currentPage == 1) {
       // First page: refresh
-      SeqLogger.info('[GroupedListView] First page: triggering refresh');
+
       widget.onRefresh?.call();
     } else {
       // Other pages: load previous page
-      SeqLogger.info('[GroupedListView] Non-first page: triggering load previous');
+
       widget.onLoadPrevious?.call();
     }
   }
