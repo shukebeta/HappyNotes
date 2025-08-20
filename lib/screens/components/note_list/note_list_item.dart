@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/gestures.dart';
 import 'package:happy_notes/screens/account/user_session.dart';
 import 'package:happy_notes/screens/components/tag_widget.dart';
 
@@ -28,6 +29,7 @@ class NoteListItem extends StatelessWidget {
       return Dismissible(
         key: Key(note.id.toString()),
         direction: DismissDirection.endToStart,
+        dragStartBehavior: DragStartBehavior.down,
         confirmDismiss: callbacks.confirmDismiss,
         onDismissed: (_) => callbacks.onDelete!(note),
         background: _buildDismissBackground(),
@@ -38,24 +40,23 @@ class NoteListItem extends StatelessWidget {
     return child;
   }
 
+
  Widget _buildContent(BuildContext context) {
    return Stack(
      children: [
-       SelectionArea(
-         child: GestureDetector(
-           onTap: () => callbacks.onTap?.call(note),
-           onDoubleTap: () => callbacks.onDoubleTap?.call(note),
-           child: Container(
-             color: config.backgroundColor,
-             padding: config.padding ?? const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-             child: Column(
-               crossAxisAlignment: CrossAxisAlignment.start,
-               children: [
-                 _buildMetadata(),
-                 _buildNoteContent(),
-                 if ((note.tags?.isNotEmpty == true || note.isLong) && !config.showRestoreButton) _buildFooter(),
-               ],
-             ),
+       GestureDetector(
+         onTap: () => callbacks.onTap?.call(note),
+         onDoubleTap: () => callbacks.onDoubleTap?.call(note),
+         child: Container(
+           color: config.backgroundColor,
+           padding: config.padding ?? const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+           child: Column(
+             crossAxisAlignment: CrossAxisAlignment.start,
+             children: [
+               _buildMetadata(),
+               SelectionArea(child: _buildNoteContent()),
+               if ((note.tags?.isNotEmpty == true || note.isLong) && !config.showRestoreButton) _buildFooter(),
+             ],
            ),
          ),
        ),
