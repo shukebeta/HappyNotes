@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:happy_notes/app_config.dart';
 import 'package:happy_notes/providers/notes_provider.dart';
 import 'package:happy_notes/providers/auth_provider.dart';
+import 'package:happy_notes/providers/note_list_provider.dart';
 import 'package:happy_notes/screens/components/note_list/note_list.dart';
 import 'package:happy_notes/screens/note_detail/note_detail.dart';
 import '../../entities/note.dart';
@@ -120,7 +121,10 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
         builder: (ctx, notesProvider, child) {
           return Stack(
             children: [
-              _buildBody(notesProvider),
+              ChangeNotifierProvider<NoteListProvider>.value(
+                value: notesProvider,
+                child: _buildBody(notesProvider),
+              ),
               if (notesProvider.totalPages > 1 && !UserSession().isDesktop)
                 FloatingPagination(
                   currentPage: notesProvider.currentPage,
