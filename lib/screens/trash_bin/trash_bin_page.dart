@@ -168,6 +168,7 @@ class TrashBinPageState extends State<TrashBinPage> {
           );
         }
 
+
         return ChangeNotifierProvider<NoteListProvider>.value(
           value: trashProvider,
           child: NoteList(

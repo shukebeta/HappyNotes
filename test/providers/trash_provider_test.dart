@@ -425,11 +425,11 @@ void main() {
         final future = trashProvider.purgeDeleted(); // Start purging
         expect(trashProvider.isPurging, isTrue);
 
-        // Clear all data (should reset purging state)
+        // Clear all data (purging state managed separately by purgeDeleted)
         trashProvider.clearNotesCache();
 
         expect(trashProvider.notes, isEmpty);
-        expect(trashProvider.isPurging, isFalse); // Trash-specific clearing
+        expect(trashProvider.isPurging, isTrue); // Purging state unchanged by clearNotesCache
         expect(trashProvider.currentPage, equals(1));
         expect(trashProvider.totalPages, equals(1));
         expect(trashProvider.isLoading, isFalse);

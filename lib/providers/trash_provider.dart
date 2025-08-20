@@ -80,9 +80,4 @@ class TrashProvider extends NoteListProvider {
   }
 
 
-  @override
-  void clearNotesCache() {
-    _isPurging = false;
-    super.clearNotesCache();
-  }
 }

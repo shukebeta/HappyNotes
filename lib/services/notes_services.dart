@@ -155,9 +155,8 @@ class NotesService {
     return _getPagedNotesResult(apiResult);
   }
 
-  Future<int> purgeDeleted() async {
+  Future<void> purgeDeleted() async {
     var apiResult = (await NotesApi.purgeDeleted()).data;
     if (!apiResult['successful']) throw ApiException(apiResult);
-    return apiResult['data'];
   }
 }
