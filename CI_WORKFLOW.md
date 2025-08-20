@@ -116,8 +116,8 @@ flutter test --coverage --reporter expanded
 # Run code analysis
 flutter analyze --fatal-infos --fatal-warnings
 
-# Check code formatting
-dart format --set-exit-if-changed .
+# Check code formatting (120 column width)
+dart format --set-exit-if-changed --page-width=120 .
 
 # Build for Android
 flutter build apk --debug

@@ -20,8 +20,6 @@ class NoteView extends StatefulWidget {
 }
 
 class NoteViewState extends State<NoteView> {
-
-
   @override
   Widget build(BuildContext context) {
     return Consumer<NoteModel>(
@@ -37,16 +35,12 @@ class NoteViewState extends State<NoteView> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         widget.note.isMarkdown
-                            ? MarkdownBodyHere(
-                                data: widget.note.content,
-                                isPrivate: widget.note.isPrivate)
+                            ? MarkdownBodyHere(data: widget.note.content, isPrivate: widget.note.isPrivate)
                             : Text(
                                 widget.note.formattedContent,
                                 style: TextStyle(
                                   fontSize: 16.0,
-                                  color: widget.note.isPrivate
-                                      ? Colors.grey
-                                      : Colors.black,
+                                  color: widget.note.isPrivate ? Colors.grey : Colors.black,
                                 ),
                               ),
                       ],

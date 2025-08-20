@@ -58,7 +58,7 @@ jobs:
         run: flutter analyze --fatal-infos --fatal-warnings
 
       - name: Check code formatting
-        run: dart format --set-exit-if-changed .
+        run: dart format --set-exit-if-changed --page-width=120 .
 
       - name: Run tests with coverage
         run: flutter test --coverage --reporter expanded

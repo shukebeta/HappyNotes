@@ -168,69 +168,68 @@ class TrashBinPageState extends State<TrashBinPage> {
           );
         }
 
-
         return ChangeNotifierProvider<NoteListProvider>.value(
           value: trashProvider,
           child: NoteList(
-          groupedNotes: trashProvider.groupedNotes,
-          showDateHeader: true,
-          callbacks: ListItemCallbacks<Note>(
-            onTap: (note) async {
-              final saved = await Navigator.push<bool>(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => NoteDetail(note: note),
-                ),
-              );
-              _handleEditResult(saved);
-            },
-            onDoubleTap: (note) async {
-              final saved = await Navigator.push<bool>(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => NoteDetail(note: note),
-                ),
-              );
-              _handleEditResult(saved);
-            },
-            onDelete: (note) async {
-              final messenger = ScaffoldMessenger.of(context);
-              final confirmed = await DialogService.showConfirmDialog(
-                context,
-                title: 'Permanently Delete Note?',
-                text: 'This will permanently delete this note. This action cannot be undone.',
-              );
-              if (confirmed == true && mounted) {
-                // For now, we'll just show a message since permanent delete isn't implemented
-                messenger.showSnackBar(
-                  const SnackBar(content: Text('Permanent delete not implemented')),
+            groupedNotes: trashProvider.groupedNotes,
+            showDateHeader: true,
+            callbacks: ListItemCallbacks<Note>(
+              onTap: (note) async {
+                final saved = await Navigator.push<bool>(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => NoteDetail(note: note),
+                  ),
                 );
-              }
-            },
-            onRestore: (note) async {
-              final messenger = ScaffoldMessenger.of(context);
-              final success = await trashProvider.undeleteNote(note.id);
-              if (success && mounted) {
-                messenger.showSnackBar(
-                  const SnackBar(content: Text('Note restored successfully')),
+                _handleEditResult(saved);
+              },
+              onDoubleTap: (note) async {
+                final saved = await Navigator.push<bool>(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => NoteDetail(note: note),
+                  ),
                 );
-              } else if (mounted) {
-                messenger.showSnackBar(
-                  const SnackBar(content: Text('Failed to restore note')),
+                _handleEditResult(saved);
+              },
+              onDelete: (note) async {
+                final messenger = ScaffoldMessenger.of(context);
+                final confirmed = await DialogService.showConfirmDialog(
+                  context,
+                  title: 'Permanently Delete Note?',
+                  text: 'This will permanently delete this note. This action cannot be undone.',
                 );
-              }
-            },
+                if (confirmed == true && mounted) {
+                  // For now, we'll just show a message since permanent delete isn't implemented
+                  messenger.showSnackBar(
+                    const SnackBar(content: Text('Permanent delete not implemented')),
+                  );
+                }
+              },
+              onRestore: (note) async {
+                final messenger = ScaffoldMessenger.of(context);
+                final success = await trashProvider.undeleteNote(note.id);
+                if (success && mounted) {
+                  messenger.showSnackBar(
+                    const SnackBar(content: Text('Note restored successfully')),
+                  );
+                } else if (mounted) {
+                  messenger.showSnackBar(
+                    const SnackBar(content: Text('Failed to restore note')),
+                  );
+                }
+              },
+            ),
+            noteCallbacks: NoteListCallbacks(
+              onRefresh: () async => await refreshPage(),
+            ),
+            config: const ListItemConfig(
+              showDate: false,
+              showAuthor: false,
+              showRestoreButton: true,
+              enableDismiss: false,
+            ),
           ),
-          noteCallbacks: NoteListCallbacks(
-            onRefresh: () async => await refreshPage(),
-          ),
-          config: const ListItemConfig(
-            showDate: false,
-            showAuthor: false,
-            showRestoreButton: true,
-            enableDismiss: false,
-          ),
-        ),
         );
       },
     );

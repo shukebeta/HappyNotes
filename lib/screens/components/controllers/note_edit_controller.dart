@@ -58,8 +58,7 @@ class NoteEditController {
     return result ?? false;
   }
 
-  Future<void> pickAndUploadImage(
-      BuildContext context, NoteModel noteModel) async {
+  Future<void> pickAndUploadImage(BuildContext context, NoteModel noteModel) async {
     final scaffoldMessengerState = ScaffoldMessenger.of(context);
 
     // Show warning dialog first
@@ -90,8 +89,7 @@ class NoteEditController {
     caseSensitive: false,
   );
 
-  Future<void> pasteFromClipboard(
-      BuildContext context, NoteModel noteModel) async {
+  Future<void> pasteFromClipboard(BuildContext context, NoteModel noteModel) async {
     final scaffoldMessengerState = ScaffoldMessenger.of(context);
     try {
       noteModel.setPasting(true);
@@ -100,10 +98,7 @@ class NoteEditController {
           text = text.trim();
           if (text.isEmpty) return;
 
-          final processedText =
-              noteModel.isMarkdown && _urlPattern.hasMatch(text)
-                  ? _processUrl(text)
-                  : text;
+          final processedText = noteModel.isMarkdown && _urlPattern.hasMatch(text) ? _processUrl(text) : text;
 
           final cursorPosition = textController.selection.baseOffset;
           if (cursorPosition >= 0) {

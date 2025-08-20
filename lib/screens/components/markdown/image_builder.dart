@@ -9,8 +9,7 @@ import '../../../utils/util.dart';
 import '../../../app_config.dart';
 
 // Conditional imports for web
-import 'web_image_stub.dart'
-    if (dart.library.html) 'web_image_impl.dart';
+import 'web_image_stub.dart' if (dart.library.html) 'web_image_impl.dart';
 
 class ImageBuilder extends MarkdownElementBuilder {
   final BuildContext parentContext;
@@ -156,9 +155,7 @@ class ImageBuilder extends MarkdownElementBuilder {
       context: parentContext,
       builder: (ctx) => AlertDialog(
         title: const Text(kIsWeb ? 'Open Image' : 'Save Image'),
-        content: const Text(kIsWeb
-          ? 'Open this image in browser?'
-          : 'Save this image to your device gallery?'),
+        content: const Text(kIsWeb ? 'Open this image in browser?' : 'Save this image to your device gallery?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
@@ -182,10 +179,9 @@ class ImageBuilder extends MarkdownElementBuilder {
 
     if (parentContext.mounted) {
       final message = result
-        ? (kIsWeb ? 'Download triggered!' : 'Image saved!')
-        : (kIsWeb ? 'Failed to download image' : 'Failed to save image');
+          ? (kIsWeb ? 'Download triggered!' : 'Image saved!')
+          : (kIsWeb ? 'Failed to download image' : 'Failed to save image');
       Util.showInfo(ScaffoldMessenger.of(parentContext), message);
     }
   }
-
 }

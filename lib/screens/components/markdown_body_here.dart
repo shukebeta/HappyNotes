@@ -11,7 +11,7 @@ class MarkdownBodyHere extends StatefulWidget {
   const MarkdownBodyHere({
     super.key,
     required this.data,
-    this.isPrivate = false,  // Default to non-private
+    this.isPrivate = false, // Default to non-private
   });
 
   @override

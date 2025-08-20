@@ -5,7 +5,6 @@ import 'package:happy_notes/screens/components/common_input_dialog.dart';
 
 void main() {
   group('CommonInputDialog Widget Tests', () {
-
     // [FACT] testWidgets is the main function for widget testing
     // WidgetTester (tester) provides methods to interact with widgets
     testWidgets('should display dialog with correct title and buttons', (WidgetTester tester) async {

@@ -42,17 +42,32 @@ void main() {
     group('Tag state management', () {
       test('should load tag notes and set current tag', () async {
         final taggedNotes = [
-          Note(id: 1, content: 'Flutter note', isPrivate: false, userId: 1,
-               isLong: false, isMarkdown: false, createdAt: 1640995200,
-               deletedAt: null, user: null, tags: ['flutter']),
-          Note(id: 2, content: 'Dart note', isPrivate: false, userId: 1,
-               isLong: false, isMarkdown: false, createdAt: 1640995200,
-               deletedAt: null, user: null, tags: ['flutter']),
+          Note(
+              id: 1,
+              content: 'Flutter note',
+              isPrivate: false,
+              userId: 1,
+              isLong: false,
+              isMarkdown: false,
+              createdAt: 1640995200,
+              deletedAt: null,
+              user: null,
+              tags: ['flutter']),
+          Note(
+              id: 2,
+              content: 'Dart note',
+              isPrivate: false,
+              userId: 1,
+              isLong: false,
+              isMarkdown: false,
+              createdAt: 1640995200,
+              deletedAt: null,
+              user: null,
+              tags: ['flutter']),
         ];
         final result = NotesResult(taggedNotes, 2);
 
-        when(mockNotesService.tagNotes('flutter', 10, 1))
-            .thenAnswer((_) async => result);
+        when(mockNotesService.tagNotes('flutter', 10, 1)).thenAnswer((_) async => result);
 
         await tagNotesProvider.loadTagNotes('flutter', 1);
 
@@ -73,11 +88,18 @@ void main() {
 
       test('should clear tag notes and reset current tag', () async {
         // First load some tag notes
-        when(mockNotesService.tagNotes('flutter', 10, 1))
-            .thenAnswer((_) async => NotesResult([
-              Note(id: 1, content: 'Test note', isPrivate: false, userId: 1,
-                   isLong: false, isMarkdown: false, createdAt: 1640995200,
-                   deletedAt: null, user: null, tags: ['flutter']),
+        when(mockNotesService.tagNotes('flutter', 10, 1)).thenAnswer((_) async => NotesResult([
+              Note(
+                  id: 1,
+                  content: 'Test note',
+                  isPrivate: false,
+                  userId: 1,
+                  isLong: false,
+                  isMarkdown: false,
+                  createdAt: 1640995200,
+                  deletedAt: null,
+                  user: null,
+                  tags: ['flutter']),
             ], 1));
 
         await tagNotesProvider.loadTagNotes('flutter', 1);
@@ -96,11 +118,18 @@ void main() {
 
       test('should handle empty tag input by clearing data', () async {
         // First set up some tag data
-        when(mockNotesService.tagNotes('flutter', 10, 1))
-            .thenAnswer((_) async => NotesResult([
-              Note(id: 1, content: 'Test note', isPrivate: false, userId: 1,
-                   isLong: false, isMarkdown: false, createdAt: 1640995200,
-                   deletedAt: null, user: null, tags: ['flutter']),
+        when(mockNotesService.tagNotes('flutter', 10, 1)).thenAnswer((_) async => NotesResult([
+              Note(
+                  id: 1,
+                  content: 'Test note',
+                  isPrivate: false,
+                  userId: 1,
+                  isLong: false,
+                  isMarkdown: false,
+                  createdAt: 1640995200,
+                  deletedAt: null,
+                  user: null,
+                  tags: ['flutter']),
             ], 1));
 
         await tagNotesProvider.loadTagNotes('flutter', 1);
@@ -118,11 +147,18 @@ void main() {
 
       test('should handle whitespace-only tag input by clearing data', () async {
         // First set up some tag data
-        when(mockNotesService.tagNotes('flutter', 10, 1))
-            .thenAnswer((_) async => NotesResult([
-              Note(id: 1, content: 'Test note', isPrivate: false, userId: 1,
-                   isLong: false, isMarkdown: false, createdAt: 1640995200,
-                   deletedAt: null, user: null, tags: ['flutter']),
+        when(mockNotesService.tagNotes('flutter', 10, 1)).thenAnswer((_) async => NotesResult([
+              Note(
+                  id: 1,
+                  content: 'Test note',
+                  isPrivate: false,
+                  userId: 1,
+                  isLong: false,
+                  isMarkdown: false,
+                  createdAt: 1640995200,
+                  deletedAt: null,
+                  user: null,
+                  tags: ['flutter']),
             ], 1));
 
         await tagNotesProvider.loadTagNotes('flutter', 1);
@@ -140,27 +176,41 @@ void main() {
 
       test('should switch between different tags correctly', () async {
         final flutterNotes = [
-          Note(id: 1, content: 'Flutter note', isPrivate: false, userId: 1,
-               isLong: false, isMarkdown: false, createdAt: 1640995200,
-               deletedAt: null, user: null, tags: ['flutter']),
+          Note(
+              id: 1,
+              content: 'Flutter note',
+              isPrivate: false,
+              userId: 1,
+              isLong: false,
+              isMarkdown: false,
+              createdAt: 1640995200,
+              deletedAt: null,
+              user: null,
+              tags: ['flutter']),
         ];
         final dartNotes = [
-          Note(id: 2, content: 'Dart note', isPrivate: false, userId: 1,
-               isLong: false, isMarkdown: false, createdAt: 1640995200,
-               deletedAt: null, user: null, tags: ['dart']),
+          Note(
+              id: 2,
+              content: 'Dart note',
+              isPrivate: false,
+              userId: 1,
+              isLong: false,
+              isMarkdown: false,
+              createdAt: 1640995200,
+              deletedAt: null,
+              user: null,
+              tags: ['dart']),
         ];
 
         // Load flutter notes first
-        when(mockNotesService.tagNotes('flutter', 10, 1))
-            .thenAnswer((_) async => NotesResult(flutterNotes, 1));
+        when(mockNotesService.tagNotes('flutter', 10, 1)).thenAnswer((_) async => NotesResult(flutterNotes, 1));
         await tagNotesProvider.loadTagNotes('flutter', 1);
 
         expect(tagNotesProvider.currentTag, equals('flutter'));
         expect(tagNotesProvider.notes, equals(flutterNotes));
 
         // Switch to dart notes
-        when(mockNotesService.tagNotes('dart', 10, 1))
-            .thenAnswer((_) async => NotesResult(dartNotes, 1));
+        when(mockNotesService.tagNotes('dart', 10, 1)).thenAnswer((_) async => NotesResult(dartNotes, 1));
         await tagNotesProvider.loadTagNotes('dart', 1);
 
         expect(tagNotesProvider.currentTag, equals('dart'));
@@ -186,13 +236,20 @@ void main() {
 
       test('should call tagNotes service when tag is set', () async {
         final taggedNotes = [
-          Note(id: 1, content: 'Tagged note', isPrivate: false, userId: 1,
-               isLong: false, isMarkdown: false, createdAt: 1640995200,
-               deletedAt: null, user: null, tags: ['test']),
+          Note(
+              id: 1,
+              content: 'Tagged note',
+              isPrivate: false,
+              userId: 1,
+              isLong: false,
+              isMarkdown: false,
+              createdAt: 1640995200,
+              deletedAt: null,
+              user: null,
+              tags: ['test']),
         ];
 
-        when(mockNotesService.tagNotes('test', 10, 1))
-            .thenAnswer((_) async => NotesResult(taggedNotes, 1));
+        when(mockNotesService.tagNotes('test', 10, 1)).thenAnswer((_) async => NotesResult(taggedNotes, 1));
 
         // Set tag first
         await tagNotesProvider.loadTagNotes('test', 1);
@@ -204,14 +261,30 @@ void main() {
 
       test('should handle pagination correctly for tagged notes', () async {
         final firstPageNotes = [
-          Note(id: 1, content: 'Tagged note 1', isPrivate: false, userId: 1,
-               isLong: false, isMarkdown: false, createdAt: 1640995200,
-               deletedAt: null, user: null, tags: ['test']),
+          Note(
+              id: 1,
+              content: 'Tagged note 1',
+              isPrivate: false,
+              userId: 1,
+              isLong: false,
+              isMarkdown: false,
+              createdAt: 1640995200,
+              deletedAt: null,
+              user: null,
+              tags: ['test']),
         ];
         final secondPageNotes = [
-          Note(id: 2, content: 'Tagged note 2', isPrivate: false, userId: 2,
-               isLong: false, isMarkdown: false, createdAt: 1640995200,
-               deletedAt: null, user: null, tags: ['test']),
+          Note(
+              id: 2,
+              content: 'Tagged note 2',
+              isPrivate: false,
+              userId: 2,
+              isLong: false,
+              isMarkdown: false,
+              createdAt: 1640995200,
+              deletedAt: null,
+              user: null,
+              tags: ['test']),
         ];
 
         // Setup first page
@@ -221,8 +294,7 @@ void main() {
         expect(tagNotesProvider.totalPages, equals(3)); // ceil(25/10) = 3
 
         // Setup second page
-        when(mockNotesService.tagNotes('test', 10, 2))
-            .thenAnswer((_) async => NotesResult(secondPageNotes, 25));
+        when(mockNotesService.tagNotes('test', 10, 2)).thenAnswer((_) async => NotesResult(secondPageNotes, 25));
         await tagNotesProvider.loadTagNotes('test', 2);
 
         // Verify pagination calls
@@ -235,8 +307,7 @@ void main() {
       });
 
       test('should handle service errors during tag loading', () async {
-        when(mockNotesService.tagNotes('error-tag', 10, 1))
-            .thenThrow(Exception('Tag service unavailable'));
+        when(mockNotesService.tagNotes('error-tag', 10, 1)).thenThrow(Exception('Tag service unavailable'));
 
         await tagNotesProvider.loadTagNotes('error-tag', 1);
 
@@ -251,28 +322,50 @@ void main() {
     group('Refresh functionality', () {
       test('should refresh tag notes when tag is set', () async {
         final initialNotes = [
-          Note(id: 1, content: 'Old tagged note', isPrivate: false, userId: 1,
-               isLong: false, isMarkdown: false, createdAt: 1640995200,
-               deletedAt: null, user: null, tags: ['refresh-test']),
+          Note(
+              id: 1,
+              content: 'Old tagged note',
+              isPrivate: false,
+              userId: 1,
+              isLong: false,
+              isMarkdown: false,
+              createdAt: 1640995200,
+              deletedAt: null,
+              user: null,
+              tags: ['refresh-test']),
         ];
         final refreshedNotes = [
-          Note(id: 1, content: 'Updated tagged note', isPrivate: false, userId: 1,
-               isLong: false, isMarkdown: false, createdAt: 1640995200,
-               deletedAt: null, user: null, tags: ['refresh-test']),
-          Note(id: 2, content: 'New tagged note', isPrivate: false, userId: 2,
-               isLong: false, isMarkdown: false, createdAt: 1640995200,
-               deletedAt: null, user: null, tags: ['refresh-test']),
+          Note(
+              id: 1,
+              content: 'Updated tagged note',
+              isPrivate: false,
+              userId: 1,
+              isLong: false,
+              isMarkdown: false,
+              createdAt: 1640995200,
+              deletedAt: null,
+              user: null,
+              tags: ['refresh-test']),
+          Note(
+              id: 2,
+              content: 'New tagged note',
+              isPrivate: false,
+              userId: 2,
+              isLong: false,
+              isMarkdown: false,
+              createdAt: 1640995200,
+              deletedAt: null,
+              user: null,
+              tags: ['refresh-test']),
         ];
 
         // Setup initial load
-        when(mockNotesService.tagNotes('refresh-test', 10, 1))
-            .thenAnswer((_) async => NotesResult(initialNotes, 1));
+        when(mockNotesService.tagNotes('refresh-test', 10, 1)).thenAnswer((_) async => NotesResult(initialNotes, 1));
         await tagNotesProvider.loadTagNotes('refresh-test', 1);
         expect(tagNotesProvider.notes.length, equals(1));
 
         // Setup refresh with updated data
-        when(mockNotesService.tagNotes('refresh-test', 10, 1))
-            .thenAnswer((_) async => NotesResult(refreshedNotes, 2));
+        when(mockNotesService.tagNotes('refresh-test', 10, 1)).thenAnswer((_) async => NotesResult(refreshedNotes, 2));
         await tagNotesProvider.refreshTagNotes();
 
         // Verify refresh calls correct service method
@@ -296,23 +389,37 @@ void main() {
     group('Delete functionality', () {
       test('should delete tagged notes using correct service method', () async {
         final testNotes = [
-          Note(id: 1, content: 'Tagged note 1', isPrivate: false, userId: 1,
-               isLong: false, isMarkdown: false, createdAt: 1640995200,
-               deletedAt: null, user: null, tags: ['delete-test']),
-          Note(id: 2, content: 'Tagged note 2', isPrivate: false, userId: 1,
-               isLong: false, isMarkdown: false, createdAt: 1640995200,
-               deletedAt: null, user: null, tags: ['delete-test']),
+          Note(
+              id: 1,
+              content: 'Tagged note 1',
+              isPrivate: false,
+              userId: 1,
+              isLong: false,
+              isMarkdown: false,
+              createdAt: 1640995200,
+              deletedAt: null,
+              user: null,
+              tags: ['delete-test']),
+          Note(
+              id: 2,
+              content: 'Tagged note 2',
+              isPrivate: false,
+              userId: 1,
+              isLong: false,
+              isMarkdown: false,
+              createdAt: 1640995200,
+              deletedAt: null,
+              user: null,
+              tags: ['delete-test']),
         ];
 
         // Setup initial state
-        when(mockNotesService.tagNotes('delete-test', 10, 1))
-            .thenAnswer((_) async => NotesResult(testNotes, 2));
+        when(mockNotesService.tagNotes('delete-test', 10, 1)).thenAnswer((_) async => NotesResult(testNotes, 2));
         await tagNotesProvider.loadTagNotes('delete-test', 1);
         expect(tagNotesProvider.notes.length, equals(2));
 
         // Setup successful delete
-        when(mockNotesService.delete(1))
-            .thenAnswer((_) async => 1);
+        when(mockNotesService.delete(1)).thenAnswer((_) async => 1);
 
         final result = await tagNotesProvider.deleteNote(1);
 
@@ -328,19 +435,25 @@ void main() {
 
       test('should handle delete errors with rollback', () async {
         final testNotes = [
-          Note(id: 1, content: 'Tagged note', isPrivate: false, userId: 1,
-               isLong: false, isMarkdown: false, createdAt: 1640995200,
-               deletedAt: null, user: null, tags: ['delete-error']),
+          Note(
+              id: 1,
+              content: 'Tagged note',
+              isPrivate: false,
+              userId: 1,
+              isLong: false,
+              isMarkdown: false,
+              createdAt: 1640995200,
+              deletedAt: null,
+              user: null,
+              tags: ['delete-error']),
         ];
 
         // Setup initial state
-        when(mockNotesService.tagNotes('delete-error', 10, 1))
-            .thenAnswer((_) async => NotesResult(testNotes, 1));
+        when(mockNotesService.tagNotes('delete-error', 10, 1)).thenAnswer((_) async => NotesResult(testNotes, 1));
         await tagNotesProvider.loadTagNotes('delete-error', 1);
 
         // Setup delete failure
-        when(mockNotesService.delete(1))
-            .thenThrow(Exception('Delete permission denied'));
+        when(mockNotesService.delete(1)).thenThrow(Exception('Delete permission denied'));
 
         final result = await tagNotesProvider.deleteNote(1);
 
@@ -358,14 +471,21 @@ void main() {
     group('State management integration', () {
       test('should clear all data including tag state', () async {
         final testNotes = [
-          Note(id: 1, content: 'Tagged note', isPrivate: false, userId: 1,
-               isLong: false, isMarkdown: false, createdAt: 1640995200,
-               deletedAt: null, user: null, tags: ['clear-test']),
+          Note(
+              id: 1,
+              content: 'Tagged note',
+              isPrivate: false,
+              userId: 1,
+              isLong: false,
+              isMarkdown: false,
+              createdAt: 1640995200,
+              deletedAt: null,
+              user: null,
+              tags: ['clear-test']),
         ];
 
         // Setup some state
-        when(mockNotesService.tagNotes('clear-test', 10, 1))
-            .thenAnswer((_) async => NotesResult(testNotes, 1));
+        when(mockNotesService.tagNotes('clear-test', 10, 1)).thenAnswer((_) async => NotesResult(testNotes, 1));
         await tagNotesProvider.loadTagNotes('clear-test', 1);
         expect(tagNotesProvider.notes.isNotEmpty, isTrue);
         expect(tagNotesProvider.currentTag, equals('clear-test'));

@@ -61,9 +61,8 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
       _handleAppResumed();
     }
 
-    _wasInBackground = (state == AppLifecycleState.paused ||
-        state == AppLifecycleState.hidden ||
-        state == AppLifecycleState.inactive);
+    _wasInBackground =
+        (state == AppLifecycleState.paused || state == AppLifecycleState.hidden || state == AppLifecycleState.inactive);
   }
 
   void _handleAppResumed() {
@@ -73,9 +72,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
     final notesProvider = Provider.of<NotesProvider>(context, listen: false);
 
     // Auto-reload if logged in but notes list is empty (iOS Safari memory management fix)
-    if (authProvider.isAuthenticated &&
-        notesProvider.notes.isEmpty &&
-        !notesProvider.isLoadingList) {
+    if (authProvider.isAuthenticated && notesProvider.notes.isEmpty && !notesProvider.isLoadingList) {
       notesProvider.loadPage(1);
     }
   }
@@ -141,9 +138,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
   IconButton _buildNewNoteButton(BuildContext context) {
     return IconButton(
       icon: Util.writeNoteIcon(),
-      tooltip: AppConfig.privateNoteOnlyIsEnabled
-          ? 'New Private Note'
-          : 'New Public Note',
+      tooltip: AppConfig.privateNoteOnlyIsEnabled ? 'New Private Note' : 'New Public Note',
       onPressed: () async {
         final scaffoldMessenger = ScaffoldMessenger.of(context);
         final provider = Provider.of<NotesProvider>(context, listen: false);
@@ -227,9 +222,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
                 final saved = await Navigator.push<bool>(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => NoteDetail(
-                        note: note,
-                        enterEditing: note.userId == UserSession().id),
+                    builder: (context) => NoteDetail(note: note, enterEditing: note.userId == UserSession().id),
                   ),
                 );
                 _handleEditResult(saved);
@@ -237,15 +230,13 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
               onDelete: (note) async {
                 final result = await notesProvider.deleteNote(note.id);
                 if (!result.isSuccess && mounted) {
-                  Util.showError(
-                      ScaffoldMessenger.of(context), result.errorMessage!);
+                  Util.showError(ScaffoldMessenger.of(context), result.errorMessage!);
                 }
               },
             ),
             noteCallbacks: NoteListCallbacks(
               onRefresh: refreshPage,
-              onTagTap: (note, tag) =>
-                  NavigationHelper.onTagTap(context, note, tag),
+              onTagTap: (note, tag) => NavigationHelper.onTagTap(context, note, tag),
               onDateHeaderTap: (date) => Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -254,8 +245,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
               ),
             ),
             config: const ListItemConfig(
-              showDate:
-                  false, // Don't show individual dates when showDateHeader is true
+              showDate: false, // Don't show individual dates when showDateHeader is true
               showAuthor: false,
               enableDismiss: true,
             ),

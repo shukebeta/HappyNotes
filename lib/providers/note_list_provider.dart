@@ -86,10 +86,7 @@ abstract class NoteListProvider extends AuthAwareProvider {
 
   /// Check if can auto-load next page
   bool canAutoLoadNext() {
-    return _autoPageEnabled &&
-           !_isLoading &&
-           !_isAutoLoading &&
-           _currentPage < totalPages;
+    return _autoPageEnabled && !_isLoading && !_isAutoLoading && _currentPage < totalPages;
   }
 
   /// Auto-load next page (triggered by pull-up gesture)
@@ -132,10 +129,7 @@ abstract class NoteListProvider extends AuthAwareProvider {
 
   /// Check if can auto-load previous page
   bool canAutoLoadPrevious() {
-    return _autoPageEnabled &&
-           !_isLoading &&
-           !_isAutoLoading &&
-           _currentPage > 1;
+    return _autoPageEnabled && !_isLoading && !_isAutoLoading && _currentPage > 1;
   }
 
   /// Enable or disable auto-pagination
@@ -190,7 +184,6 @@ abstract class NoteListProvider extends AuthAwareProvider {
       logger.d('NoteListProvider.updateLocalCache note not in cache, skipping update');
     }
   }
-
 
   @override
   void clearNotesCache() {

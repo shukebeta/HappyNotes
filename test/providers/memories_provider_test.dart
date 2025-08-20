@@ -16,7 +16,7 @@ void main() {
     setUp(() {
       // Initialize SeqLogger for tests
       SeqLogger.initialize(enabled: false);
-      
+
       mockNotesService = MockNotesService();
       memoriesProvider = MemoriesProvider(mockNotesService);
     });
@@ -34,13 +34,26 @@ void main() {
     group('Load memories functionality', () {
       test('should load memories successfully', () async {
         final notes = [
-          Note(id: 1, content: 'Memory 1', isPrivate: false, userId: 1, isLong: false, isMarkdown: false, createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000),
-          Note(id: 2, content: 'Memory 2', isPrivate: false, userId: 1, isLong: false, isMarkdown: false, createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000),
+          Note(
+              id: 1,
+              content: 'Memory 1',
+              isPrivate: false,
+              userId: 1,
+              isLong: false,
+              isMarkdown: false,
+              createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000),
+          Note(
+              id: 2,
+              content: 'Memory 2',
+              isPrivate: false,
+              userId: 1,
+              isLong: false,
+              isMarkdown: false,
+              createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000),
         ];
         final result = NotesResult(notes, 2);
 
-        when(mockNotesService.memories())
-            .thenAnswer((_) async => result);
+        when(mockNotesService.memories()).thenAnswer((_) async => result);
 
         await memoriesProvider.loadMemories();
 
@@ -52,12 +65,18 @@ void main() {
 
       test('should use cached data when not forcing refresh', () async {
         final notes = [
-          Note(id: 1, content: 'Memory 1', isPrivate: false, userId: 1, isLong: false, isMarkdown: false, createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000),
+          Note(
+              id: 1,
+              content: 'Memory 1',
+              isPrivate: false,
+              userId: 1,
+              isLong: false,
+              isMarkdown: false,
+              createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000),
         ];
         final result = NotesResult(notes, 1);
 
-        when(mockNotesService.memories())
-            .thenAnswer((_) async => result);
+        when(mockNotesService.memories()).thenAnswer((_) async => result);
 
         // First load
         await memoriesProvider.loadMemories();
@@ -71,12 +90,18 @@ void main() {
 
       test('should refresh data when forcing refresh', () async {
         final notes = [
-          Note(id: 1, content: 'Memory 1', isPrivate: false, userId: 1, isLong: false, isMarkdown: false, createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000),
+          Note(
+              id: 1,
+              content: 'Memory 1',
+              isPrivate: false,
+              userId: 1,
+              isLong: false,
+              isMarkdown: false,
+              createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000),
         ];
         final result = NotesResult(notes, 1);
 
-        when(mockNotesService.memories())
-            .thenAnswer((_) async => result);
+        when(mockNotesService.memories()).thenAnswer((_) async => result);
 
         // First load
         await memoriesProvider.loadMemories();
@@ -89,8 +114,7 @@ void main() {
       });
 
       test('should handle load errors', () async {
-        when(mockNotesService.memories())
-            .thenThrow(Exception('Load failed'));
+        when(mockNotesService.memories()).thenThrow(Exception('Load failed'));
 
         await memoriesProvider.loadMemories();
 
@@ -104,15 +128,27 @@ void main() {
       test('should delete note successfully', () async {
         // Setup initial memories
         final notes = [
-          Note(id: 1, content: 'Memory 1', isPrivate: false, userId: 1, isLong: false, isMarkdown: false, createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000),
-          Note(id: 2, content: 'Memory 2', isPrivate: false, userId: 1, isLong: false, isMarkdown: false, createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000),
+          Note(
+              id: 1,
+              content: 'Memory 1',
+              isPrivate: false,
+              userId: 1,
+              isLong: false,
+              isMarkdown: false,
+              createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000),
+          Note(
+              id: 2,
+              content: 'Memory 2',
+              isPrivate: false,
+              userId: 1,
+              isLong: false,
+              isMarkdown: false,
+              createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000),
         ];
         final result = NotesResult(notes, 2);
 
-        when(mockNotesService.memories())
-            .thenAnswer((_) async => result);
-        when(mockNotesService.delete(1))
-            .thenAnswer((_) async => 1);
+        when(mockNotesService.memories()).thenAnswer((_) async => result);
+        when(mockNotesService.delete(1)).thenAnswer((_) async => 1);
 
         // Load memories first
         await memoriesProvider.loadMemories();
@@ -126,8 +162,7 @@ void main() {
       });
 
       test('should handle delete errors', () async {
-        when(mockNotesService.delete(any))
-            .thenThrow(Exception('Delete failed'));
+        when(mockNotesService.delete(any)).thenThrow(Exception('Delete failed'));
 
         final deleteResult = await memoriesProvider.deleteNote(1);
 
@@ -139,12 +174,18 @@ void main() {
     group('Cache functionality', () {
       test('should detect fresh cache correctly', () async {
         final notes = [
-          Note(id: 1, content: 'Memory 1', isPrivate: false, userId: 1, isLong: false, isMarkdown: false, createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000),
+          Note(
+              id: 1,
+              content: 'Memory 1',
+              isPrivate: false,
+              userId: 1,
+              isLong: false,
+              isMarkdown: false,
+              createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000),
         ];
         final result = NotesResult(notes, 1);
 
-        when(mockNotesService.memories())
-            .thenAnswer((_) async => result);
+        when(mockNotesService.memories()).thenAnswer((_) async => result);
 
         await memoriesProvider.loadMemories();
 
@@ -154,12 +195,18 @@ void main() {
 
       test('should report cache age correctly', () async {
         final notes = [
-          Note(id: 1, content: 'Memory 1', isPrivate: false, userId: 1, isLong: false, isMarkdown: false, createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000),
+          Note(
+              id: 1,
+              content: 'Memory 1',
+              isPrivate: false,
+              userId: 1,
+              isLong: false,
+              isMarkdown: false,
+              createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000),
         ];
         final result = NotesResult(notes, 1);
 
-        when(mockNotesService.memories())
-            .thenAnswer((_) async => result);
+        when(mockNotesService.memories()).thenAnswer((_) async => result);
 
         await memoriesProvider.loadMemories();
 
@@ -171,12 +218,18 @@ void main() {
     group('Refresh functionality', () {
       test('should refresh memories', () async {
         final notes = [
-          Note(id: 1, content: 'Memory 1', isPrivate: false, userId: 1, isLong: false, isMarkdown: false, createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000),
+          Note(
+              id: 1,
+              content: 'Memory 1',
+              isPrivate: false,
+              userId: 1,
+              isLong: false,
+              isMarkdown: false,
+              createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000),
         ];
         final result = NotesResult(notes, 1);
 
-        when(mockNotesService.memories())
-            .thenAnswer((_) async => result);
+        when(mockNotesService.memories()).thenAnswer((_) async => result);
 
         await memoriesProvider.refreshMemories();
 
@@ -196,12 +249,18 @@ void main() {
 
       test('should load memories on login', () async {
         final notes = [
-          Note(id: 1, content: 'Memory 1', isPrivate: false, userId: 1, isLong: false, isMarkdown: false, createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000),
+          Note(
+              id: 1,
+              content: 'Memory 1',
+              isPrivate: false,
+              userId: 1,
+              isLong: false,
+              isMarkdown: false,
+              createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000),
         ];
         final result = NotesResult(notes, 1);
 
-        when(mockNotesService.memories())
-            .thenAnswer((_) async => result);
+        when(mockNotesService.memories()).thenAnswer((_) async => result);
 
         await memoriesProvider.onAuthStateChanged(true);
 
@@ -221,17 +280,26 @@ void main() {
 
       test('should load memories for specific date successfully', () async {
         final notes = [
-          Note(id: 1, content: 'Date memory 1', isPrivate: false, userId: 1,
-               isLong: false, isMarkdown: false,
-               createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000),
-          Note(id: 2, content: 'Date memory 2', isPrivate: false, userId: 2,
-               isLong: false, isMarkdown: false,
-               createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000),
+          Note(
+              id: 1,
+              content: 'Date memory 1',
+              isPrivate: false,
+              userId: 1,
+              isLong: false,
+              isMarkdown: false,
+              createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000),
+          Note(
+              id: 2,
+              content: 'Date memory 2',
+              isPrivate: false,
+              userId: 2,
+              isLong: false,
+              isMarkdown: false,
+              createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000),
         ];
         final result = NotesResult(notes, 2);
 
-        when(mockNotesService.memoriesOn(testDate))
-            .thenAnswer((_) async => result);
+        when(mockNotesService.memoriesOn(testDate)).thenAnswer((_) async => result);
 
         await memoriesProvider.loadMemoriesForDate(testDate);
 
@@ -243,14 +311,18 @@ void main() {
 
       test('should use cached data when not forcing refresh', () async {
         final notes = [
-          Note(id: 1, content: 'Cached memory', isPrivate: false, userId: 1,
-               isLong: false, isMarkdown: false,
-               createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000),
+          Note(
+              id: 1,
+              content: 'Cached memory',
+              isPrivate: false,
+              userId: 1,
+              isLong: false,
+              isMarkdown: false,
+              createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000),
         ];
         final result = NotesResult(notes, 1);
 
-        when(mockNotesService.memoriesOn(testDate))
-            .thenAnswer((_) async => result);
+        when(mockNotesService.memoriesOn(testDate)).thenAnswer((_) async => result);
 
         // First load
         await memoriesProvider.loadMemoriesForDate(testDate);
@@ -265,14 +337,18 @@ void main() {
 
       test('should refresh data when forcing refresh', () async {
         final notes = [
-          Note(id: 1, content: 'Refreshed memory', isPrivate: false, userId: 1,
-               isLong: false, isMarkdown: false,
-               createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000),
+          Note(
+              id: 1,
+              content: 'Refreshed memory',
+              isPrivate: false,
+              userId: 1,
+              isLong: false,
+              isMarkdown: false,
+              createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000),
         ];
         final result = NotesResult(notes, 1);
 
-        when(mockNotesService.memoriesOn(testDate))
-            .thenAnswer((_) async => result);
+        when(mockNotesService.memoriesOn(testDate)).thenAnswer((_) async => result);
 
         // First load
         await memoriesProvider.loadMemoriesForDate(testDate);
@@ -285,8 +361,7 @@ void main() {
       });
 
       test('should handle load errors for specific dates', () async {
-        when(mockNotesService.memoriesOn(testDate))
-            .thenThrow(Exception('Date load failed'));
+        when(mockNotesService.memoriesOn(testDate)).thenThrow(Exception('Date load failed'));
 
         await memoriesProvider.loadMemoriesForDate(testDate);
 
@@ -297,11 +372,10 @@ void main() {
 
       test('should prevent multiple simultaneous loads for same date', () async {
         // Setup a slow response
-        when(mockNotesService.memoriesOn(testDate))
-            .thenAnswer((_) async {
-              await Future.delayed(const Duration(milliseconds: 100));
-              return NotesResult([], 0);
-            });
+        when(mockNotesService.memoriesOn(testDate)).thenAnswer((_) async {
+          await Future.delayed(const Duration(milliseconds: 100));
+          return NotesResult([], 0);
+        });
 
         // Start first load
         final future1 = memoriesProvider.loadMemoriesForDate(testDate);
@@ -321,10 +395,8 @@ void main() {
         const testDate1 = '20250812';
         const testDate2 = '20250813';
 
-        when(mockNotesService.memoriesOn(testDate1))
-            .thenAnswer((_) async => NotesResult([], 0));
-        when(mockNotesService.memoriesOn(testDate2))
-            .thenAnswer((_) async => NotesResult([], 0));
+        when(mockNotesService.memoriesOn(testDate1)).thenAnswer((_) async => NotesResult([], 0));
+        when(mockNotesService.memoriesOn(testDate2)).thenAnswer((_) async => NotesResult([], 0));
 
         await Future.wait([
           memoriesProvider.loadMemoriesForDate(testDate1),
@@ -336,14 +408,25 @@ void main() {
       });
 
       test('should add memory to specific date cache', () async {
-        final existingNote = Note(id: 1, content: 'Existing', isPrivate: false, userId: 1,
-                                  isLong: false, isMarkdown: false, createdAt: 1640995200);
-        final newNote = Note(id: 2, content: 'New memory', isPrivate: false, userId: 1,
-                            isLong: false, isMarkdown: false, createdAt: 1640995300);
+        final existingNote = Note(
+            id: 1,
+            content: 'Existing',
+            isPrivate: false,
+            userId: 1,
+            isLong: false,
+            isMarkdown: false,
+            createdAt: 1640995200);
+        final newNote = Note(
+            id: 2,
+            content: 'New memory',
+            isPrivate: false,
+            userId: 1,
+            isLong: false,
+            isMarkdown: false,
+            createdAt: 1640995300);
 
         // Setup initial state
-        when(mockNotesService.memoriesOn(testDate))
-            .thenAnswer((_) async => NotesResult([existingNote], 1));
+        when(mockNotesService.memoriesOn(testDate)).thenAnswer((_) async => NotesResult([existingNote], 1));
         await memoriesProvider.loadMemoriesForDate(testDate);
 
         // Add new memory
@@ -357,8 +440,14 @@ void main() {
       });
 
       test('should prevent duplicate memories when adding', () async {
-        final note = Note(id: 1, content: 'Duplicate test', isPrivate: false, userId: 1,
-                          isLong: false, isMarkdown: false, createdAt: 1640995200);
+        final note = Note(
+            id: 1,
+            content: 'Duplicate test',
+            isPrivate: false,
+            userId: 1,
+            isLong: false,
+            isMarkdown: false,
+            createdAt: 1640995200);
 
         // Add the same note twice
         memoriesProvider.addMemoryToDate(testDate, note);
@@ -370,14 +459,25 @@ void main() {
       });
 
       test('should update memory in specific date cache', () async {
-        final originalNote = Note(id: 1, content: 'Original content', isPrivate: false, userId: 1,
-                                  isLong: false, isMarkdown: false, createdAt: 1640995200);
-        final updatedNote = Note(id: 1, content: 'Updated content', isPrivate: false, userId: 1,
-                                 isLong: false, isMarkdown: false, createdAt: 1640995200);
+        final originalNote = Note(
+            id: 1,
+            content: 'Original content',
+            isPrivate: false,
+            userId: 1,
+            isLong: false,
+            isMarkdown: false,
+            createdAt: 1640995200);
+        final updatedNote = Note(
+            id: 1,
+            content: 'Updated content',
+            isPrivate: false,
+            userId: 1,
+            isLong: false,
+            isMarkdown: false,
+            createdAt: 1640995200);
 
         // Setup initial state
-        when(mockNotesService.memoriesOn(testDate))
-            .thenAnswer((_) async => NotesResult([originalNote], 1));
+        when(mockNotesService.memoriesOn(testDate)).thenAnswer((_) async => NotesResult([originalNote], 1));
         await memoriesProvider.loadMemoriesForDate(testDate);
 
         // Update the memory
@@ -389,8 +489,14 @@ void main() {
       });
 
       test('should ignore update for non-existent memory', () async {
-        final updatedNote = Note(id: 999, content: 'Non-existent memory', isPrivate: false, userId: 1,
-                                 isLong: false, isMarkdown: false, createdAt: 1640995200);
+        final updatedNote = Note(
+            id: 999,
+            content: 'Non-existent memory',
+            isPrivate: false,
+            userId: 1,
+            isLong: false,
+            isMarkdown: false,
+            createdAt: 1640995200);
 
         // No initial data loaded
         memoriesProvider.updateMemoryForDate(testDate, updatedNote);
@@ -399,14 +505,25 @@ void main() {
       });
 
       test('should remove memory from specific date cache', () async {
-        final note1 = Note(id: 1, content: 'Memory 1', isPrivate: false, userId: 1,
-                          isLong: false, isMarkdown: false, createdAt: 1640995200);
-        final note2 = Note(id: 2, content: 'Memory 2', isPrivate: false, userId: 1,
-                          isLong: false, isMarkdown: false, createdAt: 1640995300);
+        final note1 = Note(
+            id: 1,
+            content: 'Memory 1',
+            isPrivate: false,
+            userId: 1,
+            isLong: false,
+            isMarkdown: false,
+            createdAt: 1640995200);
+        final note2 = Note(
+            id: 2,
+            content: 'Memory 2',
+            isPrivate: false,
+            userId: 1,
+            isLong: false,
+            isMarkdown: false,
+            createdAt: 1640995300);
 
         // Setup initial state
-        when(mockNotesService.memoriesOn(testDate))
-            .thenAnswer((_) async => NotesResult([note1, note2], 2));
+        when(mockNotesService.memoriesOn(testDate)).thenAnswer((_) async => NotesResult([note1, note2], 2));
         await memoriesProvider.loadMemoriesForDate(testDate);
 
         // Remove one memory
@@ -418,12 +535,17 @@ void main() {
       });
 
       test('should ignore removal for non-existent memory', () async {
-        final note = Note(id: 1, content: 'Memory 1', isPrivate: false, userId: 1,
-                         isLong: false, isMarkdown: false, createdAt: 1640995200);
+        final note = Note(
+            id: 1,
+            content: 'Memory 1',
+            isPrivate: false,
+            userId: 1,
+            isLong: false,
+            isMarkdown: false,
+            createdAt: 1640995200);
 
         // Setup initial state
-        when(mockNotesService.memoriesOn(testDate))
-            .thenAnswer((_) async => NotesResult([note], 1));
+        when(mockNotesService.memoriesOn(testDate)).thenAnswer((_) async => NotesResult([note], 1));
         await memoriesProvider.loadMemoriesForDate(testDate);
 
         // Try to remove non-existent memory
@@ -436,12 +558,17 @@ void main() {
 
       test('should clear all date-specific data on clearNotesCache', () async {
         final notes = [
-          Note(id: 1, content: 'Test memory', isPrivate: false, userId: 1,
-               isLong: false, isMarkdown: false, createdAt: 1640995200),
+          Note(
+              id: 1,
+              content: 'Test memory',
+              isPrivate: false,
+              userId: 1,
+              isLong: false,
+              isMarkdown: false,
+              createdAt: 1640995200),
         ];
 
-        when(mockNotesService.memoriesOn(testDate))
-            .thenAnswer((_) async => NotesResult(notes, 1));
+        when(mockNotesService.memoriesOn(testDate)).thenAnswer((_) async => NotesResult(notes, 1));
         await memoriesProvider.loadMemoriesForDate(testDate);
 
         // Verify data exists
@@ -467,7 +594,7 @@ void main() {
       test('should maintain pagination disabled state even when manually enabled', () {
         memoriesProvider.setAutoPageEnabled(true);
         expect(memoriesProvider.autoPageEnabled, isTrue);
-        
+
         // But canAutoLoad should still return false due to no pagination support
         expect(memoriesProvider.canAutoLoadNext(), isFalse);
         expect(memoriesProvider.canAutoLoadPrevious(), isFalse);
@@ -476,22 +603,27 @@ void main() {
       test('fetchNotes should ignore pagination parameters when syncing', () async {
         const testDate = '20250812';
         final notes = [
-          Note(id: 1, content: 'Test memory', isPrivate: false, userId: 1,
-               isLong: false, isMarkdown: false, createdAt: 1640995200),
+          Note(
+              id: 1,
+              content: 'Test memory',
+              isPrivate: false,
+              userId: 1,
+              isLong: false,
+              isMarkdown: false,
+              createdAt: 1640995200),
         ];
         final result = NotesResult(notes, 1);
-        
-        when(mockNotesService.memoriesOn(testDate))
-            .thenAnswer((_) async => result);
+
+        when(mockNotesService.memoriesOn(testDate)).thenAnswer((_) async => result);
 
         // Set current date and load data
         await memoriesProvider.setCurrentDate(testDate);
         await memoriesProvider.loadMemoriesForDate(testDate);
-        
+
         // Call fetchNotes with different pagination parameters
         final result1 = await memoriesProvider.fetchNotes(10, 1);
         final result2 = await memoriesProvider.fetchNotes(20, 5);
-        
+
         expect(result1.notes, equals(result2.notes));
         // Should have called memoriesOn twice (once for setCurrentDate->refresh, once for loadMemoriesForDate)
         // The direct fetchNotes calls should reuse cached data or call API
@@ -501,43 +633,46 @@ void main() {
       test('fetchNotes should return cached data when syncing', () async {
         const testDate = '20250812';
         final notes = [
-          Note(id: 1, content: 'Cached memory', isPrivate: false, userId: 1,
-               isLong: false, isMarkdown: false, createdAt: 1640995200),
+          Note(
+              id: 1,
+              content: 'Cached memory',
+              isPrivate: false,
+              userId: 1,
+              isLong: false,
+              isMarkdown: false,
+              createdAt: 1640995200),
         ];
-        
-        when(mockNotesService.memoriesOn(testDate))
-            .thenAnswer((_) async => NotesResult(notes, 1));
+
+        when(mockNotesService.memoriesOn(testDate)).thenAnswer((_) async => NotesResult(notes, 1));
 
         // Set current date and load data
         await memoriesProvider.setCurrentDate(testDate);
         await memoriesProvider.loadMemoriesForDate(testDate);
-        
+
         // Trigger sync by setting current date again
         await memoriesProvider.setCurrentDate(testDate);
-        
+
         // fetchNotes should now return cached data without API call
         final result = await memoriesProvider.fetchNotes(10, 1);
-        
+
         expect(result.notes.length, equals(1));
         expect(result.notes.first.content, equals('Cached memory'));
       });
 
       test('performDelete should delegate to existing deleteNote method', () async {
         const noteId = 1;
-        
-        when(mockNotesService.delete(noteId))
-            .thenAnswer((_) async => 1);
+
+        when(mockNotesService.delete(noteId)).thenAnswer((_) async => 1);
 
         await memoriesProvider.performDelete(noteId);
-        
+
         verify(mockNotesService.delete(noteId)).called(1);
       });
 
       test('performDelete should throw exception on failure', () async {
         const noteId = 1;
-        
-        when(mockNotesService.delete(noteId))
-            .thenThrow(Exception('Delete failed'));
+
+        when(mockNotesService.delete(noteId)).thenThrow(Exception('Delete failed'));
 
         expect(
           () => memoriesProvider.performDelete(noteId),
@@ -552,19 +687,24 @@ void main() {
       test('should sync current date notes with base provider state', () async {
         const testDate = '20250812';
         final notes = [
-          Note(id: 1, content: 'Sync test', isPrivate: false, userId: 1,
-               isLong: false, isMarkdown: false, createdAt: 1640995200),
+          Note(
+              id: 1,
+              content: 'Sync test',
+              isPrivate: false,
+              userId: 1,
+              isLong: false,
+              isMarkdown: false,
+              createdAt: 1640995200),
         ];
-        
-        when(mockNotesService.memoriesOn(testDate))
-            .thenAnswer((_) async => NotesResult(notes, 1));
+
+        when(mockNotesService.memoriesOn(testDate)).thenAnswer((_) async => NotesResult(notes, 1));
 
         // Load memories for a specific date
         await memoriesProvider.loadMemoriesForDate(testDate);
-        
+
         // Set as current date - should sync to base provider
         await memoriesProvider.setCurrentDate(testDate);
-        
+
         // The notes property from NoteListProvider should now contain the synced notes
         expect(memoriesProvider.notes.length, equals(1));
         expect(memoriesProvider.notes.first.content, equals('Sync test'));

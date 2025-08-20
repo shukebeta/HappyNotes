@@ -51,9 +51,8 @@ class TagListOverlayState extends State<TagListOverlay> {
   void _fetchTags() async {
     try {
       final tagCloud = await noteTagService.getMyTagCloud();
-      final tags = Map<String, int>.fromEntries(tagCloud
-          .take(_maxTagsToShow)
-          .map((item) => MapEntry(item.tag, item.count)));
+      final tags =
+          Map<String, int>.fromEntries(tagCloud.take(_maxTagsToShow).map((item) => MapEntry(item.tag, item.count)));
       setState(() {
         tagsToShow = tags;
       });

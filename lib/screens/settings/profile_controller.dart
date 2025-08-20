@@ -40,24 +40,24 @@ class ProfileController extends ChangeNotifier {
 
   // Placeholder for changePassword - will need current/new password args
   Future<bool> changePassword(String currentPassword, String newPassword) async {
-     _isLoading = true;
-     _errorMessage = null;
-     notifyListeners();
-     bool success = false;
-     try {
-        await AccountApi.changePassword(currentPassword, newPassword);
-        // Optionally re-fetch user info or assume success
-        // _errorMessage should only be set on failure
-        success = true;
-      } catch (e) {
-        SeqLogger.severe("Error changing password: $e");
-        // Attempt to parse specific error messages from API if possible
-        _errorMessage = "Failed to change password. Please check current password.";
-        success = false;
-     } finally {
-        _isLoading = false;
-        notifyListeners();
-     }
-     return success;
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+    bool success = false;
+    try {
+      await AccountApi.changePassword(currentPassword, newPassword);
+      // Optionally re-fetch user info or assume success
+      // _errorMessage should only be set on failure
+      success = true;
+    } catch (e) {
+      SeqLogger.severe("Error changing password: $e");
+      // Attempt to parse specific error messages from API if possible
+      _errorMessage = "Failed to change password. Please check current password.";
+      success = false;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+    return success;
   }
 }

@@ -39,8 +39,7 @@ class MemoryList extends StatelessWidget {
                 onTap: () => _navigateToMemoriesOnDay(context, date),
                 child: Container(
                   color: const Color(0xFFEBDDFF), // Light purple background
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 8.0, horizontal: 16.0),
+                  padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [

@@ -24,8 +24,7 @@ class NotesApi {
 
   static Future<Response> update(Map<String, dynamic> params) async {
     if (params['id'] == null) {
-      throw ArgumentError(
-          'The "id" parameter is required for the update operation.');
+      throw ArgumentError('The "id" parameter is required for the update operation.');
     }
     return await _dio.put('/api/notev2/${params['id']}', data: params);
   }
@@ -44,8 +43,7 @@ class NotesApi {
     var pager = params['pageSize'] > 0 && params['pageNumber'] > 0
         ? '/${params['pageSize']}/${params['pageNumber']}'
         : '/${AppConfig.pageSize}/1';
-    return await _dio
-        .get('/notes/tag$pager', queryParameters: {'tag': params['tag']});
+    return await _dio.get('/notes/tag$pager', queryParameters: {'tag': params['tag']});
   }
 
   static Future<Response> myLatest(Map<String, dynamic> params) async {
@@ -56,13 +54,11 @@ class NotesApi {
   }
 
   static Future<Response> memories(Map<String, dynamic> params) async {
-    return await _dio
-        .get('/notes/memories?localTimeZone=${params['localTimeZone']}');
+    return await _dio.get('/notes/memories?localTimeZone=${params['localTimeZone']}');
   }
 
   static Future<Response> memoriesOn(Map<String, dynamic> params) async {
-    return await _dio.get(
-        '/notes/memoriesOn?localTimeZone=${params['localTimeZone']}&yyyyMMdd=${params['yyyyMMdd']}');
+    return await _dio.get('/notes/memoriesOn?localTimeZone=${params['localTimeZone']}&yyyyMMdd=${params['yyyyMMdd']}');
   }
 
   static Future<Response> getLinkedNotes(int noteId) async {
@@ -77,8 +73,7 @@ class NotesApi {
     return await _dio.delete('/notes/purgeDeleted');
   }
 
-  static Future<Response> searchNotes(
-      String query, int pageSize, int pageNumber) async {
+  static Future<Response> searchNotes(String query, int pageSize, int pageNumber) async {
     // Ensure pageSize and pageNumber are valid, default if not
     final effectivePageSize = pageSize > 0 ? pageSize : AppConfig.pageSize;
     final effectivePageNumber = pageNumber > 0 ? pageNumber : 1;

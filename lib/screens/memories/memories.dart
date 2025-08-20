@@ -74,9 +74,7 @@ class MemoriesState extends State<Memories> with RouteAware {
   IconButton _buildNewNoteButton(BuildContext context) {
     return IconButton(
       icon: Util.writeNoteIcon(),
-      tooltip: AppConfig.privateNoteOnlyIsEnabled
-          ? 'New Private Note'
-          : 'New Public Note',
+      tooltip: AppConfig.privateNoteOnlyIsEnabled ? 'New Private Note' : 'New Public Note',
       onPressed: () async {
         final navigator = Navigator.of(context);
         await navigator.push(

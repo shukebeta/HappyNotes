@@ -1,17 +1,17 @@
 /// Result data structure returned by NoteDetail when editing is complete
-/// 
+///
 /// This encapsulates all the editing results without coupling NoteDetail
 /// to any specific data persistence logic.
 class NoteEditResult {
   /// The edited content of the note
   final String content;
-  
+
   /// Whether the note should be private
   final bool isPrivate;
-  
+
   /// Whether the note uses markdown formatting
   final bool isMarkdown;
-  
+
   /// Whether the user chose to save the changes (true) or cancel (false)
   final bool isSaved;
 
@@ -57,9 +57,5 @@ class NoteEditResult {
           isSaved == other.isSaved;
 
   @override
-  int get hashCode =>
-      content.hashCode ^
-      isPrivate.hashCode ^
-      isMarkdown.hashCode ^
-      isSaved.hashCode;
+  int get hashCode => content.hashCode ^ isPrivate.hashCode ^ isMarkdown.hashCode ^ isSaved.hashCode;
 }

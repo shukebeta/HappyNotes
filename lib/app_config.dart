@@ -41,12 +41,14 @@ class AppConfig {
   }
 
   static bool get privateNoteOnlyIsEnabled {
-    final privateNoteOnlyIsEnabledStr = UserSession().settings(AppConstants.privateNoteOnlyIsEnabled) ?? dotenv.env['PRIVATE_NOTE_ONLY'];
+    final privateNoteOnlyIsEnabledStr =
+        UserSession().settings(AppConstants.privateNoteOnlyIsEnabled) ?? dotenv.env['PRIVATE_NOTE_ONLY'];
     return privateNoteOnlyIsEnabledStr != null && privateNoteOnlyIsEnabledStr == '1';
   }
 
   static bool get markdownIsEnabled {
-    final markdownIsEnabledStr = UserSession().settings(AppConstants.markdownIsEnabled) ?? dotenv.env['MARKDOWN_IS_ENABLED'];
+    final markdownIsEnabledStr =
+        UserSession().settings(AppConstants.markdownIsEnabled) ?? dotenv.env['MARKDOWN_IS_ENABLED'];
     return markdownIsEnabledStr != null && markdownIsEnabledStr == '1';
   }
 

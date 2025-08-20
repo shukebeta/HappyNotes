@@ -34,7 +34,7 @@ class TrashProvider extends NoteListProvider {
   /// Purge all deleted notes permanently
   Future<bool> purgeDeleted() async {
     bool success = false;
-    
+
     await executeWithErrorHandling<void>(
       operation: () async {
         await _notesService.purgeDeleted();
@@ -45,14 +45,14 @@ class TrashProvider extends NoteListProvider {
       operationName: 'purge deleted notes',
       onSuccess: () => clearNotesCache(),
     );
-    
+
     return success;
   }
 
   /// Undelete a note (restore from trash)
   Future<bool> undeleteNote(int noteId) async {
     bool success = false;
-    
+
     await executeWithErrorHandling<int>(
       operation: () async {
         final restoredId = await _notesService.undelete(noteId);
@@ -67,7 +67,7 @@ class TrashProvider extends NoteListProvider {
         notes.removeWhere((note) => note.id == noteId);
       },
     );
-    
+
     return success;
   }
 
@@ -80,6 +80,4 @@ class TrashProvider extends NoteListProvider {
       return null;
     }
   }
-
-
 }

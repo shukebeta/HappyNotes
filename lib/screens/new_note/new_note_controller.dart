@@ -33,9 +33,7 @@ class NewNoteController {
         noteModel.unfocus();
 
         // Determine the action based on usage context
-        final action = useCallback 
-            ? SaveNoteAction.executeCallback 
-            : SaveNoteAction.popWithNote;
+        final action = useCallback ? SaveNoteAction.executeCallback : SaveNoteAction.popWithNote;
 
         return SaveNoteSuccess(savedNote, action);
       } else {
@@ -48,13 +46,11 @@ class NewNoteController {
     }
   }
 
-
   /// New pop handler method without BuildContext dependency
   /// Returns PopHandlerResult for UI layer to handle
   PopHandlerResult handlePopAsync(NoteModel noteModel, bool didPop) {
     if (!didPop) {
-      if (noteModel.content.isEmpty ||
-          noteModel.content.trim() == noteModel.initialContent.trim()) {
+      if (noteModel.content.isEmpty || noteModel.content.trim() == noteModel.initialContent.trim()) {
         return const PopHandlerAllow();
       } else {
         return PopHandlerShowDialog(noteModel.content, noteModel.initialContent);
@@ -62,5 +58,4 @@ class NewNoteController {
     }
     return const PopHandlerPrevent();
   }
-
 }

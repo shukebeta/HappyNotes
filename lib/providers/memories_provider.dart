@@ -5,8 +5,8 @@ import 'package:happy_notes/providers/note_list_provider.dart';
 
 class MemoriesProvider extends NoteListProvider {
   final NotesService _notesService;
-  
-  // Current date being displayed  
+
+  // Current date being displayed
   String _currentDateString = '';
 
   MemoriesProvider(this._notesService) {
@@ -23,13 +23,13 @@ class MemoriesProvider extends NoteListProvider {
     if (_currentDateString.isEmpty) {
       return NotesResult([], 0);
     }
-    
+
     // If we're syncing, return cached data to avoid API call
     if (_isSyncing) {
       final cachedNotes = memoriesOnDate(_currentDateString);
       return NotesResult(cachedNotes, cachedNotes.length);
     }
-    
+
     return await _notesService.memoriesOn(_currentDateString);
   }
 
@@ -112,7 +112,7 @@ class MemoriesProvider extends NoteListProvider {
     }
   }
 
-  /// Delete a note from memories  
+  /// Delete a note from memories
   Future<bool> _deleteNoteFromMemories(int noteId) async {
     _isLoading = true;
     _error = null;
@@ -181,12 +181,12 @@ class MemoriesProvider extends NoteListProvider {
       final result = await _notesService.memoriesOn(dateString);
       _memoriesByDateCache[dateString] = result.notes;
       _lastLoadTimeByDate[dateString] = DateTime.now();
-      
+
       // Sync with NoteListProvider state when loading current date
       if (_currentDateString == dateString) {
         _syncToBaseProvider(result.notes);
       }
-      
+
       notifyListeners();
     } catch (error) {
       _setErrorForDate(dateString, handleServiceError(error, 'load memories for date'));
@@ -200,8 +200,7 @@ class MemoriesProvider extends NoteListProvider {
     _memoriesByDateCache[dateString] ??= [];
 
     // Check if note already exists (avoid duplicates)
-    final existingIndex = _memoriesByDateCache[dateString]!
-        .indexWhere((note) => note.id == newNote.id);
+    final existingIndex = _memoriesByDateCache[dateString]!.indexWhere((note) => note.id == newNote.id);
 
     if (existingIndex == -1) {
       // Add new note and sort by creation date (newest first)
@@ -260,9 +259,9 @@ class MemoriesProvider extends NoteListProvider {
   /// Check if memories are cached and fresh
   bool get hasFreshCache {
     return _memories.isNotEmpty &&
-           _error == null &&
-           _lastLoadTime != null &&
-           DateTime.now().difference(_lastLoadTime!) < _cacheExpiration;
+        _error == null &&
+        _lastLoadTime != null &&
+        DateTime.now().difference(_lastLoadTime!) < _cacheExpiration;
   }
 
   /// Get cache age in minutes
@@ -293,5 +292,4 @@ class MemoriesProvider extends NoteListProvider {
   }
 
   bool _isSyncing = false;
-
 }

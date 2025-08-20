@@ -10,7 +10,7 @@ Widget createWebImage(String src, VoidCallback? onTap, VoidCallback? onLongPress
   if (isFullScreen) {
     // In fullscreen mode, add zoom functionality
     final viewId = 'image-${src.hashCode}-fullscreen-${DateTime.now().millisecondsSinceEpoch}';
-    
+
     ui_web.platformViewRegistry.registerViewFactory(viewId, (int viewId) {
       final imgElement = html.ImageElement()
         ..src = src
@@ -19,7 +19,7 @@ Widget createWebImage(String src, VoidCallback? onTap, VoidCallback? onLongPress
         ..style.objectFit = 'contain'
         ..style.cursor = 'zoom-in'
         ..style.transition = 'transform 0.2s ease';
-      
+
       // Add zoom and pan functionality with mouse wheel and touch gestures for fullscreen
       double scale = 1.0;
       double lastScale = 1.0;
@@ -29,22 +29,22 @@ Widget createWebImage(String src, VoidCallback? onTap, VoidCallback? onLongPress
       double imageHeight = 0.0;
       double containerWidth = 0.0;
       double containerHeight = 0.0;
-      
+
       void updateTransform() {
         // Apply pan boundaries based on image dimensions and zoom level
         double maxTranslateX = 0.0;
         double maxTranslateY = 0.0;
-        
+
         if (scale > 1.0 && imageWidth > 0 && imageHeight > 0) {
           // Calculate actual displayed image dimensions
           double displayWidth = imageWidth;
           double displayHeight = imageHeight;
-          
+
           // If image is contained, calculate the actual display size
           if (containerWidth > 0 && containerHeight > 0) {
             double imageAspectRatio = imageWidth / imageHeight;
             double containerAspectRatio = containerWidth / containerHeight;
-            
+
             if (imageAspectRatio > containerAspectRatio) {
               // Image is wider - constrained by width
               displayWidth = containerWidth;
@@ -55,79 +55,79 @@ Widget createWebImage(String src, VoidCallback? onTap, VoidCallback? onLongPress
               displayWidth = containerHeight * imageAspectRatio;
             }
           }
-          
+
           // Calculate how much the scaled image extends beyond the container
           double scaledWidth = displayWidth * scale;
           double scaledHeight = displayHeight * scale;
-          
+
           // Much more restrictive - ensure at least 50% of image stays visible
           // This prevents losing the image completely
           double overflowX = math.max(0, scaledWidth - containerWidth);
           double overflowY = math.max(0, scaledHeight - containerHeight);
-          
+
           // Limit pan to only 25% of the overflow, keeping most of image visible
           maxTranslateX = overflowX * 0.25;
           maxTranslateY = overflowY * 0.25;
         }
-        
+
         // Clamp translation to boundaries
         translateX = translateX.clamp(-maxTranslateX, maxTranslateX);
         translateY = translateY.clamp(-maxTranslateY, maxTranslateY);
-        
+
         imgElement.style.transform = 'scale($scale) translate(${translateX}px, ${translateY}px)';
       }
-      
+
       // Mouse wheel zoom
       imgElement.onWheel.listen((event) {
         event.preventDefault();
         scale += event.deltaY > 0 ? -0.1 : 0.1;
         scale = scale.clamp(0.5, 3.0);
-        
+
         // Reset translation when zooming out completely
         if (scale <= 1.0) {
           translateX = 0.0;
           translateY = 0.0;
         }
-        
+
         updateTransform();
         imgElement.style.cursor = scale > 1.0 ? 'grab' : 'zoom-in';
       });
-      
+
       // Get image and container dimensions when image loads
       imgElement.onLoad.listen((event) {
         imageWidth = imgElement.naturalWidth.toDouble();
         imageHeight = imgElement.naturalHeight.toDouble();
-        
+
         // Get container dimensions (approximation for fullscreen)
         containerWidth = html.window.innerWidth?.toDouble() ?? 800.0;
         containerHeight = html.window.innerHeight?.toDouble() ?? 600.0;
       });
-      
+
       // Touch gesture zoom and pan
       Map<int, html.Touch> activeTouches = {};
       double lastTranslateX = 0.0;
       double lastTranslateY = 0.0;
-      
+
       imgElement.onTouchStart.listen((event) {
         event.preventDefault();
         for (var touch in event.changedTouches!) {
           activeTouches[touch.identifier ?? 0] = touch;
         }
       });
-      
+
       imgElement.onTouchMove.listen((event) {
         event.preventDefault();
-        
+
         if (activeTouches.length == 2) {
           // Two-finger pinch zoom
           var touches = activeTouches.values.toList();
           var touch1 = touches[0];
           var touch2 = touches[1];
-          
+
           // Find current touches
           html.Touch? currentTouch1;
           html.Touch? currentTouch2;
-          
+
           for (var touch in event.touches!) {
             if (touch.identifier == touch1.identifier) {
               currentTouch1 = touch;
@@ -135,24 +135,24 @@ Widget createWebImage(String src, VoidCallback? onTap, VoidCallback? onLongPress
               currentTouch2 = touch;
             }
           }
-          
+
           if (currentTouch1 != null && currentTouch2 != null) {
             // Calculate distance between touches
             double currentDistance = _calculateDistance(currentTouch1, currentTouch2);
             double initialDistance = _calculateDistance(touch1, touch2);
-            
+
             if (initialDistance > 0) {
               double gestureScale = currentDistance / initialDistance;
               double newScale = lastScale * gestureScale;
               newScale = newScale.clamp(0.5, 3.0);
               scale = newScale;
-              
+
               // Reset translation when zooming out completely
               if (scale <= 1.0) {
                 translateX = 0.0;
                 translateY = 0.0;
               }
-              
+
               updateTransform();
             }
           }
@@ -160,17 +160,17 @@ Widget createWebImage(String src, VoidCallback? onTap, VoidCallback? onLongPress
           // Single finger pan when zoomed in
           var initialTouch = activeTouches.values.first;
           var currentTouch = event.touches!.first;
-          
+
           double deltaX = currentTouch.page.x.toDouble() - initialTouch.page.x.toDouble();
           double deltaY = currentTouch.page.y.toDouble() - initialTouch.page.y.toDouble();
-          
+
           translateX = lastTranslateX + deltaX;
           translateY = lastTranslateY + deltaY;
-          
+
           updateTransform();
         }
       });
-      
+
       imgElement.onTouchEnd.listen((event) {
         event.preventDefault();
         for (var touch in event.changedTouches!) {
@@ -181,7 +181,7 @@ Widget createWebImage(String src, VoidCallback? onTap, VoidCallback? onLongPress
         lastTranslateY = translateY;
         imgElement.style.cursor = scale > 1.0 ? 'grab' : 'zoom-in';
       });
-      
+
       // Reset zoom and pan on double tap in fullscreen
       imgElement.onDoubleClick.listen((event) {
         scale = 1.0;
@@ -193,7 +193,7 @@ Widget createWebImage(String src, VoidCallback? onTap, VoidCallback? onLongPress
         updateTransform();
         imgElement.style.cursor = 'zoom-in';
       });
-      
+
       return imgElement;
     });
 
@@ -205,7 +205,7 @@ Widget createWebImage(String src, VoidCallback? onTap, VoidCallback? onLongPress
 
   // Normal mode - use Stack with separate fullscreen button
   final viewId = 'image-${src.hashCode}-normal-${DateTime.now().millisecondsSinceEpoch}';
-  
+
   ui_web.platformViewRegistry.registerViewFactory(viewId, (int viewId) {
     // Create a container div to control overflow
     final containerDiv = html.DivElement()
@@ -215,7 +215,7 @@ Widget createWebImage(String src, VoidCallback? onTap, VoidCallback? onLongPress
       ..style.position = 'relative'
       ..style.display = 'flex'
       ..style.alignItems = 'center';
-    
+
     final imgElement = html.ImageElement()
       ..src = src
       ..style.width = '100%'
@@ -233,10 +233,10 @@ Widget createWebImage(String src, VoidCallback? onTap, VoidCallback? onLongPress
         }
         // On iOS web, let the native context menu show and work properly
       });
-    
+
     // Add image to container
     containerDiv.children.add(imgElement);
-    
+
     return containerDiv;
   });
 
@@ -274,4 +274,3 @@ double _calculateDistance(html.Touch touch1, html.Touch touch2) {
   double dy = touch1.page.y.toDouble() - touch2.page.y.toDouble();
   return math.sqrt(dx * dx + dy * dy);
 }
-

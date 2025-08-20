@@ -272,7 +272,6 @@ void main() {
       });
     });
 
-
     group('deleteNote', () {
       test('should delete note successfully', () async {
         provider.notes.addAll(mockNotes);
@@ -324,8 +323,7 @@ void main() {
 
     group('getNote', () {
       test('should get single note successfully', () async {
-        when(mockNotesService.get(1))
-            .thenAnswer((_) async => mockNotes[0]);
+        when(mockNotesService.get(1)).thenAnswer((_) async => mockNotes[0]);
 
         final result = await provider.getNote(1);
 
@@ -334,8 +332,7 @@ void main() {
       });
 
       test('should handle exception in getNote', () async {
-        when(mockNotesService.get(1))
-            .thenThrow(Exception('Get failed'));
+        when(mockNotesService.get(1)).thenThrow(Exception('Get failed'));
 
         final result = await provider.getNote(1);
 

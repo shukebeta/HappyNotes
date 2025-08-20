@@ -32,9 +32,8 @@ class NoteList extends StatelessWidget {
     final provider = Provider.of<NoteListProvider>(context, listen: false);
 
     // Web 环境下，如果是移动平台（iOS/Android）或者支持触摸，都启用拉动功能
-    final isMobile = (defaultTargetPlatform == TargetPlatform.android ||
-                      defaultTargetPlatform == TargetPlatform.iOS) ||
-                     (kIsWeb && MediaQuery.of(context).size.width < 768);
+    final isMobile = (defaultTargetPlatform == TargetPlatform.android || defaultTargetPlatform == TargetPlatform.iOS) ||
+        (kIsWeb && MediaQuery.of(context).size.width < 768);
 
     return GroupedListView<Note>(
       groupedItems: groupedNotes,
@@ -48,11 +47,9 @@ class NoteList extends StatelessWidget {
       ),
       headerBuilder: showDateHeader
           ? (dateKey, date) => DateHeader(
-        date: date,
-        onTap: noteCallbacks.onDateHeaderTap != null
-            ? () => noteCallbacks.onDateHeaderTap!(date)
-            : null,
-      )
+                date: date,
+                onTap: noteCallbacks.onDateHeaderTap != null ? () => noteCallbacks.onDateHeaderTap!(date) : null,
+              )
           : null,
       canAutoLoadNext: provider.canAutoLoadNext(),
       isAutoLoading: provider.isAutoLoading,
@@ -67,7 +64,6 @@ class NoteList extends StatelessWidget {
     );
   }
 }
-
 
 class ListItemConfig {
   final bool showDate;

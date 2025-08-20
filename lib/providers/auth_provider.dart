@@ -117,5 +117,4 @@ class AuthProvider with ChangeNotifier {
 
   /// Get current user email from session
   String? get currentUserEmail => UserSession().email;
-
 }

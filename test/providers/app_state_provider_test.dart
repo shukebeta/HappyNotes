@@ -18,21 +18,21 @@ import '../test_helpers/seq_logger_setup.dart';
 class MockAuthProvider extends Mock implements AuthProvider {
   @override
   bool get isAuthenticated => super.noSuchMethod(
-    Invocation.getter(#isAuthenticated),
-    returnValue: false,
-  );
+        Invocation.getter(#isAuthenticated),
+        returnValue: false,
+      );
 
   @override
   int? get currentUserId => super.noSuchMethod(
-    Invocation.getter(#currentUserId),
-    returnValue: null,
-  );
+        Invocation.getter(#currentUserId),
+        returnValue: null,
+      );
 
   @override
   String? get currentUserEmail => super.noSuchMethod(
-    Invocation.getter(#currentUserEmail),
-    returnValue: null,
-  );
+        Invocation.getter(#currentUserEmail),
+        returnValue: null,
+      );
 }
 
 class MockSearchProvider extends Mock implements SearchProvider {
@@ -41,21 +41,21 @@ class MockSearchProvider extends Mock implements SearchProvider {
 
   @override
   Future<void> onAuthStateChanged(bool isAuthenticated) => super.noSuchMethod(
-    Invocation.method(#onAuthStateChanged, [isAuthenticated]),
-    returnValue: Future.value(),
-  );
+        Invocation.method(#onAuthStateChanged, [isAuthenticated]),
+        returnValue: Future.value(),
+      );
 
   @override
   Future<void> refreshSearch() => super.noSuchMethod(
-    Invocation.method(#refreshSearch, []),
-    returnValue: Future.value(),
-  );
+        Invocation.method(#refreshSearch, []),
+        returnValue: Future.value(),
+      );
 
   @override
   Future<void> searchNotes(String query, int pageNumber) => super.noSuchMethod(
-    Invocation.method(#searchNotes, [query, pageNumber]),
-    returnValue: Future.value(),
-  );
+        Invocation.method(#searchNotes, [query, pageNumber]),
+        returnValue: Future.value(),
+      );
 }
 
 class MockTagNotesProvider extends Mock implements TagNotesProvider {
@@ -64,16 +64,15 @@ class MockTagNotesProvider extends Mock implements TagNotesProvider {
 
   @override
   Future<void> onAuthStateChanged(bool isAuthenticated) => super.noSuchMethod(
-    Invocation.method(#onAuthStateChanged, [isAuthenticated]),
-    returnValue: Future.value(),
-  );
+        Invocation.method(#onAuthStateChanged, [isAuthenticated]),
+        returnValue: Future.value(),
+      );
 
   Future<void> loadTagCloud({bool forceRefresh = false}) => super.noSuchMethod(
-    Invocation.method(#loadTagCloud, [], {#forceRefresh: forceRefresh}),
-    returnValue: Future.value(),
-  );
+        Invocation.method(#loadTagCloud, [], {#forceRefresh: forceRefresh}),
+        returnValue: Future.value(),
+      );
 }
-
 
 class MockMemoriesProvider extends Mock implements MemoriesProvider {
   @override
@@ -81,15 +80,15 @@ class MockMemoriesProvider extends Mock implements MemoriesProvider {
 
   @override
   Future<void> onAuthStateChanged(bool isAuthenticated) => super.noSuchMethod(
-    Invocation.method(#onAuthStateChanged, [isAuthenticated]),
-    returnValue: Future.value(),
-  );
+        Invocation.method(#onAuthStateChanged, [isAuthenticated]),
+        returnValue: Future.value(),
+      );
 
   @override
   Future<void> refreshMemories() => super.noSuchMethod(
-    Invocation.method(#refreshMemories, []),
-    returnValue: Future.value(),
-  );
+        Invocation.method(#refreshMemories, []),
+        returnValue: Future.value(),
+      );
 }
 
 class MockTrashProvider extends Mock implements TrashProvider {
@@ -98,15 +97,15 @@ class MockTrashProvider extends Mock implements TrashProvider {
 
   @override
   Future<void> onAuthStateChanged(bool isAuthenticated) => super.noSuchMethod(
-    Invocation.method(#onAuthStateChanged, [isAuthenticated]),
-    returnValue: Future.value(),
-  );
+        Invocation.method(#onAuthStateChanged, [isAuthenticated]),
+        returnValue: Future.value(),
+      );
 
   @override
   Future<void> refresh() => super.noSuchMethod(
-    Invocation.method(#refresh, []),
-    returnValue: Future.value(),
-  );
+        Invocation.method(#refresh, []),
+        returnValue: Future.value(),
+      );
 }
 
 class MockDiscoveryProvider extends Mock implements DiscoveryProvider {
@@ -115,15 +114,15 @@ class MockDiscoveryProvider extends Mock implements DiscoveryProvider {
 
   @override
   Future<void> onAuthStateChanged(bool isAuthenticated) => super.noSuchMethod(
-    Invocation.method(#onAuthStateChanged, [isAuthenticated]),
-    returnValue: Future.value(),
-  );
+        Invocation.method(#onAuthStateChanged, [isAuthenticated]),
+        returnValue: Future.value(),
+      );
 
   @override
   Future<void> refresh() => super.noSuchMethod(
-    Invocation.method(#refresh, []),
-    returnValue: Future.value(),
-  );
+        Invocation.method(#refresh, []),
+        returnValue: Future.value(),
+      );
 }
 
 void main() {
@@ -232,14 +231,11 @@ void main() {
         when(mockAuthProvider.isAuthenticated).thenReturn(true);
 
         // Mock notes service for refresh - ensure all needed calls are mocked
-        when(mockNotesService.myLatest(any, any))
-            .thenAnswer((_) async => NotesResult([], 0));
+        when(mockNotesService.myLatest(any, any)).thenAnswer((_) async => NotesResult([], 0));
 
         // Explicitly mock all provider refresh methods
-        when(mockSearchProvider.refreshSearch())
-            .thenAnswer((_) async {});
-        when(mockMemoriesProvider.refreshMemories())
-            .thenAnswer((_) async {});
+        when(mockSearchProvider.refreshSearch()).thenAnswer((_) async {});
+        when(mockMemoriesProvider.refreshMemories()).thenAnswer((_) async {});
 
         await appStateProvider.refreshAllData();
 
@@ -266,8 +262,7 @@ void main() {
         expect(appStateProvider.isLoading, isFalse);
 
         // Simulate loading state in notes provider
-        when(mockNotesService.myLatest(10, 1))
-            .thenAnswer((_) async {
+        when(mockNotesService.myLatest(10, 1)).thenAnswer((_) async {
           await Future.delayed(const Duration(milliseconds: 50));
           return NotesResult([], 0);
         });
@@ -281,8 +276,7 @@ void main() {
     group('Error Management', () {
       test('should aggregate errors from providers', () async {
         // Simulate error in notes provider
-        when(mockNotesService.myLatest(10, 1))
-            .thenThrow(Exception('Network error'));
+        when(mockNotesService.myLatest(10, 1)).thenThrow(Exception('Network error'));
 
         await notesProvider.loadPage(1);
 
@@ -320,8 +314,7 @@ void main() {
         when(mockAuthProvider.isAuthenticated).thenReturn(true);
         when(mockAuthProvider.currentUserId).thenReturn(123);
         when(mockAuthProvider.currentUserEmail).thenReturn('test@example.com');
-        when(mockNotesService.myLatest(10, 1))
-            .thenAnswer((_) async => NotesResult([], 0));
+        when(mockNotesService.myLatest(10, 1)).thenAnswer((_) async => NotesResult([], 0));
 
         // Clear data first (simulating logout state)
         notesProvider.clearNotesCache();
@@ -359,11 +352,18 @@ void main() {
       test('should handle auth state changes with data persistence', () async {
         // Login
         when(mockAuthProvider.isAuthenticated).thenReturn(true);
-        when(mockNotesService.myLatest(10, 1))
-            .thenAnswer((_) async => NotesResult([
-              Note(id: 1, userId: 123, content: 'Test note',
-                   isPrivate: false, isMarkdown: false, isLong: false,
-                   createdAt: 1640995200, deletedAt: null, user: null, tags: [])
+        when(mockNotesService.myLatest(10, 1)).thenAnswer((_) async => NotesResult([
+              Note(
+                  id: 1,
+                  userId: 123,
+                  content: 'Test note',
+                  isPrivate: false,
+                  isMarkdown: false,
+                  isLong: false,
+                  createdAt: 1640995200,
+                  deletedAt: null,
+                  user: null,
+                  tags: [])
             ], 1));
 
         await notesProvider.loadPage(1);

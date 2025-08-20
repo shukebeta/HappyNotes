@@ -3,7 +3,6 @@ import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import '../exceptions/custom_exception.dart';
 
 class TokenUtils {
-
   Future<Map<String, dynamic>> decodeToken(String token) async {
     final parts = token.split('.');
     if (parts.length != 3) {

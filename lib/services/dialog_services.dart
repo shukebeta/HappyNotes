@@ -3,8 +3,7 @@ import 'package:flutter/material.dart';
 class DialogService {
   static Future<bool?> showUnsavedChangesDialog(BuildContext context) {
     return showConfirmDialog(context,
-        title: 'Unsaved changes',
-        text: 'You have unsaved changes. Do you really want to leave?');
+        title: 'Unsaved changes', text: 'You have unsaved changes. Do you really want to leave?');
   }
 
   static Future<bool?> showConfirmDialog(

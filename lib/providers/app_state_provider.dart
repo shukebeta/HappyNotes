@@ -65,7 +65,6 @@ class AppStateProvider with ChangeNotifier {
     notifyListeners();
   }
 
-
   /// Notify all auth-aware providers of authentication state changes
   Future<void> _notifyProvidersOfAuthChange(bool isAuthenticated) async {
     final List<Future<void>> futures = [];
@@ -164,13 +163,13 @@ class AppStateProvider with ChangeNotifier {
   }
 
   /// Notify all relevant providers that a note has been updated
-  /// 
+  ///
   /// This method updates the local cache of all NoteListProvider instances
   /// that might contain the updated note. Each provider handles existence
   /// checking internally, making it safe to call on all providers.
   void notifyNoteUpdated(Note updatedNote) {
     SeqLogger.info('AppStateProvider: notifyNoteUpdated called for note ${updatedNote.id}');
-    
+
     // Update cache in all NoteListProvider instances using null-safe calls
     // Each provider's updateLocalCache method handles existence checking
     _notesProvider.updateLocalCache(updatedNote);
@@ -178,7 +177,7 @@ class AppStateProvider with ChangeNotifier {
     _tagNotesProvider.updateLocalCache(updatedNote);
     _trashProvider.updateLocalCache(updatedNote);
     _discoveryProvider.updateLocalCache(updatedNote);
-    
+
     SeqLogger.info('AppStateProvider: notifyNoteUpdated completed for note ${updatedNote.id}');
   }
 

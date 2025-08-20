@@ -23,9 +23,8 @@ class Note {
 
   bool get isDeleted => deletedAt != null;
 
-  String? get deletedDate => deletedAt != null 
-    ? Util.formatUnixTimestampToLocalDate(deletedAt!, 'yyyy-MM-dd HH:mm') 
-    : null;
+  String? get deletedDate =>
+      deletedAt != null ? Util.formatUnixTimestampToLocalDate(deletedAt!, 'yyyy-MM-dd HH:mm') : null;
 
   Note({
     required this.id,

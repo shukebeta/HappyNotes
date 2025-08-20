@@ -10,7 +10,7 @@ class TelegramSyncSettingsController {
   List<TelegramSettings> telegramSettings = [];
 
   TelegramSyncSettingsController({required TelegramSettingsService telegramSettingService})
-      :_telegramSettingService = telegramSettingService;
+      : _telegramSettingService = telegramSettingService;
 
   Future<void> getTelegramSettings(BuildContext context) async {
     final scaffoldContext = ScaffoldMessenger.of(context);
@@ -49,6 +49,4 @@ class TelegramSyncSettingsController {
   Future<bool> deleteTelegramSetting(TelegramSettings setting) async {
     return await _telegramSettingService.delete(setting);
   }
-
-
 }

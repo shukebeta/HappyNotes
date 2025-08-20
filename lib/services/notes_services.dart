@@ -11,26 +11,21 @@ class NotesService {
   /// Validate API response structure and log contract violations
   void _validateApiResponse(dynamic apiResult, String operation) {
     if (apiResult == null) {
-      SeqLogger.severe(
-        'API contract violation: $operation returned null response'
-      );
+      SeqLogger.severe('API contract violation: $operation returned null response');
       throw ApiException({'successful': false, 'message': 'Null API response'});
     }
-    
+
     if (apiResult is! Map) {
-      SeqLogger.severe(
-        'API contract violation: $operation returned non-Map response: ${apiResult.runtimeType}'
-      );
+      SeqLogger.severe('API contract violation: $operation returned non-Map response: ${apiResult.runtimeType}');
       throw ApiException({'successful': false, 'message': 'Invalid API response format'});
     }
-    
+
     if (!apiResult.containsKey('successful')) {
-      SeqLogger.severe(
-        'API contract violation: $operation missing "successful" field'
-      );
+      SeqLogger.severe('API contract violation: $operation missing "successful" field');
       throw ApiException({'successful': false, 'message': 'Malformed API response'});
     }
   }
+
   // fetch all public notes from all users
   Future<NotesResult> latest(int pageSize, int pageNumber) async {
     var params = {'pageSize': pageSize, 'pageNumber': pageNumber};
@@ -53,10 +48,8 @@ class NotesService {
   }
 
 // Search notes by keyword
-  Future<NotesResult> searchNotes(
-      String query, int pageSize, int pageNumber) async {
-    var apiResult =
-        (await NotesApi.searchNotes(query, pageSize, pageNumber)).data;
+  Future<NotesResult> searchNotes(String query, int pageSize, int pageNumber) async {
+    var apiResult = (await NotesApi.searchNotes(query, pageSize, pageNumber)).data;
     // Reuse the existing helper to parse the paged result structure
     return _getPagedNotesResult(apiResult);
   }
@@ -120,34 +113,32 @@ class NotesService {
       'timezoneId': AppConfig.timezone,
     };
     var apiResult = (await NotesApi.post(params)).data;
-    if (!apiResult['successful'] &&
-        apiResult['errorCode'] != AppConfig.quietErrorCode) {
+    if (!apiResult['successful'] && apiResult['errorCode'] != AppConfig.quietErrorCode) {
       throw ApiException(apiResult);
     }
     return Note.fromJson(apiResult['data']); //complete note object
   }
 
   // update a note and get the updated note
-  Future<Note> update(
-      int noteId, String content, bool isPrivate, bool isMarkdown) async {
-    SeqLogger.info('NotesService.update called: noteId=$noteId, content length=${content.length}, isPrivate=$isPrivate, isMarkdown=$isMarkdown');
-    
+  Future<Note> update(int noteId, String content, bool isPrivate, bool isMarkdown) async {
+    SeqLogger.info(
+        'NotesService.update called: noteId=$noteId, content length=${content.length}, isPrivate=$isPrivate, isMarkdown=$isMarkdown');
+
     var params = {
       'id': noteId,
       'content': content,
       'isPrivate': isPrivate,
       'isMarkdown': isMarkdown,
     };
-    
+
     SeqLogger.info('NotesService.update calling NotesApi.update with params: $params');
     var apiResult = (await NotesApi.update(params)).data;
-    
-    if (!apiResult['successful'] &&
-        apiResult['errorCode'] != AppConfig.quietErrorCode) {
+
+    if (!apiResult['successful'] && apiResult['errorCode'] != AppConfig.quietErrorCode) {
       SeqLogger.severe('NotesService.update API error: ${apiResult['errorMessage']} for noteId=$noteId');
       throw ApiException(apiResult);
     }
-    
+
     final updatedNote = Note.fromJson(apiResult['data']);
     return updatedNote; //complete note object
   }
@@ -156,12 +147,10 @@ class NotesService {
     var apiResult = (await NotesApi.delete(noteId)).data;
     _validateApiResponse(apiResult, 'delete');
     if (!apiResult['successful']) throw ApiException(apiResult);
-    
+
     final data = apiResult['data'];
     if (data is! int) {
-      SeqLogger.severe(
-        'delete API returned non-int data: ${data.runtimeType} = $data'
-      );
+      SeqLogger.severe('delete API returned non-int data: ${data.runtimeType} = $data');
       throw ApiException({'successful': false, 'message': 'Invalid note ID returned'});
     }
     return data;
@@ -171,12 +160,10 @@ class NotesService {
     var apiResult = (await NotesApi.undelete(noteId)).data;
     _validateApiResponse(apiResult, 'undelete');
     if (!apiResult['successful']) throw ApiException(apiResult);
-    
+
     final data = apiResult['data'];
     if (data is! int) {
-      SeqLogger.severe(
-        'undelete API returned non-int data: ${data.runtimeType} = $data'
-      );
+      SeqLogger.severe('undelete API returned non-int data: ${data.runtimeType} = $data');
       throw ApiException({'successful': false, 'message': 'Invalid note ID returned'});
     }
     return data;
@@ -196,14 +183,12 @@ class NotesService {
   Future<void> purgeDeleted() async {
     var apiResult = (await NotesApi.purgeDeleted()).data;
     _validateApiResponse(apiResult, 'purgeDeleted');
-    
+
     if (!apiResult['successful']) throw ApiException(apiResult);
-    
+
     // Log unexpected data for debugging (purgeDeleted should return data: null)
     if (apiResult['data'] != null) {
-      SeqLogger.info(
-        'purgeDeleted returned data: ${apiResult['data']} (expected: null)'
-      );
+      SeqLogger.info('purgeDeleted returned data: ${apiResult['data']} (expected: null)');
     }
   }
 }

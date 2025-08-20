@@ -60,7 +60,6 @@ class MainMenuState extends State<MainMenu> {
     );
   }
 
-
   // This method is called by NewNote when save is successful in the MainMenu context
   void _handleSaveSuccessFromNewNoteTab() {
     // Switch to the HomePage and trigger its refresh logic via switchToPage
@@ -78,8 +77,7 @@ class MainMenuState extends State<MainMenu> {
     switch (index) {
       case indexNewNote:
         if (!AppConfig.isIOSWeb) {
-          Future.delayed(const Duration(milliseconds: 150),
-              () => focusNode.requestFocus());
+          Future.delayed(const Duration(milliseconds: 150), () => focusNode.requestFocus());
         }
         break;
       case indexNotes:
@@ -109,9 +107,7 @@ class MainMenuState extends State<MainMenu> {
       canPop: false,
       onPopInvokedWithResult: (bool didPop, Object? result) async {
         if (!didPop) {
-          if (true ==
-              await DialogService.showConfirmDialog(context,
-                  title: 'Yes to quit Happy Notes')) {
+          if (true == await DialogService.showConfirmDialog(context, title: 'Yes to quit Happy Notes')) {
             SystemNavigator.pop();
           }
         }
@@ -122,10 +118,7 @@ class MainMenuState extends State<MainMenu> {
         // ),
         body: Row(
           children: [
-            if (isDesktop)
-              RailNavigation(
-                  selectedIndex: _selectedIndex,
-                  onDestinationSelected: switchToPage),
+            if (isDesktop) RailNavigation(selectedIndex: _selectedIndex, onDestinationSelected: switchToPage),
             Expanded(
               child: _getPage(_selectedIndex),
             ),

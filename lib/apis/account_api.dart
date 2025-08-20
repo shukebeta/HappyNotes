@@ -6,7 +6,7 @@ class AccountApi {
   static final Dio _dio = DioClient.getInstance();
 
   Future<Response> login(Map<String, dynamic> params) async {
-    final  options = Options(
+    final options = Options(
       headers: {'AllowAnonymous': true},
     );
     return await _dio.post('/account/login', data: params, options: options);

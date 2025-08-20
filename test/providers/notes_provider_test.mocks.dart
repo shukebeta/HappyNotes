@@ -175,8 +175,7 @@ class MockNotesService extends _i1.Mock implements _i4.NotesService {
       ) as _i5.Future<_i2.NotesResult>);
 
   @override
-  _i5.Future<_i2.NotesResult> memoriesOn(String? yyyyMMdd) =>
-      (super.noSuchMethod(
+  _i5.Future<_i2.NotesResult> memoriesOn(String? yyyyMMdd) => (super.noSuchMethod(
         Invocation.method(
           #memoriesOn,
           [yyyyMMdd],
@@ -191,8 +190,7 @@ class MockNotesService extends _i1.Mock implements _i4.NotesService {
       ) as _i5.Future<_i2.NotesResult>);
 
   @override
-  _i5.Future<_i2.NotesResult> getLinkedNotes(int? noteId) =>
-      (super.noSuchMethod(
+  _i5.Future<_i2.NotesResult> getLinkedNotes(int? noteId) => (super.noSuchMethod(
         Invocation.method(
           #getLinkedNotes,
           [noteId],

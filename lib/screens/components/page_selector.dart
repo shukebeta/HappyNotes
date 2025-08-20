@@ -27,7 +27,7 @@ class PageSelectorState extends State<PageSelector> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if(!AppConfig.isIOSWeb) {
+      if (!AppConfig.isIOSWeb) {
         FocusScope.of(context).requestFocus(_pageFocusNode);
       }
     });

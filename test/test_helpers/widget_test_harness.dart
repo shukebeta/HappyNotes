@@ -15,6 +15,7 @@ import 'package:dio/dio.dart';
 import 'mock_notes_api.dart';
 import 'mock_dio.dart';
 import 'seq_logger_setup.dart';
+
 void registerTestMocks() {
   final sl = GetIt.instance;
   if (sl.isRegistered<NotesApi>()) {

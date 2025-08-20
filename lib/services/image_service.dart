@@ -11,8 +11,7 @@ import '../apis/file_uploader_api.dart';
 import '../dependency_injection.dart';
 
 // Conditional imports for web download functionality
-import 'web_download_stub.dart'
-    if (dart.library.html) 'web_download_impl.dart';
+import 'web_download_stub.dart' if (dart.library.html) 'web_download_impl.dart';
 
 class ImageService {
   final fileUploaderApi = locator<FileUploaderApi>();
@@ -42,7 +41,6 @@ class ImageService {
       return false;
     }
   }
-
 
   Future<MultipartFile?> compressImageIfNeeded(Uint8List imageBytes, String filename) async {
     if (Util.isImageCompressionSupported()) {
@@ -93,7 +91,7 @@ class ImageService {
         return;
       }
     } catch (e) {
-        SeqLogger.fine('Clipboard text access failed (expected fallback)', e);
+      SeqLogger.fine('Clipboard text access failed (expected fallback)', e);
     }
 
     // If no text found, try image
@@ -114,12 +112,14 @@ class ImageService {
     } catch (e) {
       SeqLogger.severe('Image clipboard access error', e);
       if (e.toString().contains('JSObject') || e.toString().contains('TypeError')) {
-        onError('Clipboard access failed. This might be due to browser restrictions or permissions. Please ensure clipboard access is enabled in your browser settings.');
+        onError(
+            'Clipboard access failed. This might be due to browser restrictions or permissions. Please ensure clipboard access is enabled in your browser settings.');
         return;
       }
     }
 
     // If we get here, neither text nor image was successfully processed
-    onError('No valid content found in clipboard. Check debug logs for more details or ensure clipboard access permissions are granted in your browser.');
+    onError(
+        'No valid content found in clipboard. Check debug logs for more details or ensure clipboard access permissions are granted in your browser.');
   }
 }

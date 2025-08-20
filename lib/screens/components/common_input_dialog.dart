@@ -37,19 +37,19 @@ class CommonInputDialog extends StatefulWidget {
   /// Convenience method to show the dialog and return the result
   /// Returns the entered text if confirmed, null if cancelled or dismissed
   static Future<String?> show(
-      BuildContext context, {
-        required String title,
-        String? hintText,
-        String? initialValue,
-        String confirmButtonText = 'OK',
-        String cancelButtonText = 'Cancel',
-        List<String? Function(String?)> validators = const [],
-        TextInputType keyboardType = TextInputType.text,
-        TextInputAction textInputAction = TextInputAction.done,
-        int? maxLength,
-        bool obscureText = false,
-        Widget? suffixIcon,
-      }) async {
+    BuildContext context, {
+    required String title,
+    String? hintText,
+    String? initialValue,
+    String confirmButtonText = 'OK',
+    String cancelButtonText = 'Cancel',
+    List<String? Function(String?)> validators = const [],
+    TextInputType keyboardType = TextInputType.text,
+    TextInputAction textInputAction = TextInputAction.done,
+    int? maxLength,
+    bool obscureText = false,
+    Widget? suffixIcon,
+  }) async {
     return showDialog<String>(
       context: context,
       builder: (context) => CommonInputDialog(
@@ -158,10 +158,10 @@ class _CommonInputDialogState extends State<CommonInputDialog> {
           onPressed: _isSubmitting ? null : _submitForm,
           child: _isSubmitting
               ? const SizedBox(
-            height: 20,
-            width: 20,
-            child: CircularProgressIndicator(strokeWidth: 2),
-          )
+                  height: 20,
+                  width: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
               : Text(widget.confirmButtonText),
         ),
       ],
@@ -208,8 +208,7 @@ class InputValidators {
   /// Returns null if valid, error message if invalid
   static String? Function(String?) containsLetter([String? message]) {
     return (value) {
-      if (value != null &&
-          !value.trim().contains(RegExp(r'[a-zA-Z\p{L}]', unicode: true))) {
+      if (value != null && !value.trim().contains(RegExp(r'[a-zA-Z\p{L}]', unicode: true))) {
         return message ?? 'Must contain at least one letter.';
       }
       return null; // Valid input
@@ -245,4 +244,3 @@ class InputValidators {
     };
   }
 }
-

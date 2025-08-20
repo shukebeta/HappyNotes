@@ -38,8 +38,7 @@ class NoteEditState extends State<NoteEdit> {
     final imageService = locator<ImageService>();
     final noteTagService = locator<NoteTagService>();
     noteEditController = NoteEditController(imageService: imageService);
-    tagController = TagController(
-        noteTagService: noteTagService, noteEditController: noteEditController);
+    tagController = TagController(noteTagService: noteTagService, noteEditController: noteEditController);
     final noteModel = context.read<NoteModel>();
     prompt = HappyNotesPrompts.getRandom(noteModel.isPrivate);
     noteEditController.initialize(noteModel, widget.note, context);
@@ -77,46 +76,43 @@ class NoteEditState extends State<NoteEdit> {
         },
       },
       child: Listener(
-      onPointerDown: (event) {
-        tagController.dispose(); // Close tag overlay if open
-      },
-      child: TextField(
-        controller: noteEditController.textController,
-        focusNode: noteModel.focusNode,
-        keyboardType: TextInputType.multiline,
-        maxLines: null,
-        expands: true,
-        textAlignVertical: TextAlignVertical.top,
-        decoration: InputDecoration(
-          hintText: prompt,
-          border: OutlineInputBorder(
-            borderSide: BorderSide(
-              color: noteModel.isPrivate ? Colors.blue : Colors.green,
-              width: 2.0,
-            ),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(
-              color:
-                  noteModel.isPrivate ? Colors.blueAccent : Colors.greenAccent,
-              width: 2.0,
-            ),
-          ),
-        ),
-        onChanged: (text) {
-          noteModel.content = text;
-          tagController.handleTextChanged(text,
-              noteEditController.textController.selection, noteModel, context);
+        onPointerDown: (event) {
+          tagController.dispose(); // Close tag overlay if open
         },
-      ),
+        child: TextField(
+          controller: noteEditController.textController,
+          focusNode: noteModel.focusNode,
+          keyboardType: TextInputType.multiline,
+          maxLines: null,
+          expands: true,
+          textAlignVertical: TextAlignVertical.top,
+          decoration: InputDecoration(
+            hintText: prompt,
+            border: OutlineInputBorder(
+              borderSide: BorderSide(
+                color: noteModel.isPrivate ? Colors.blue : Colors.green,
+                width: 2.0,
+              ),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                color: noteModel.isPrivate ? Colors.blueAccent : Colors.greenAccent,
+                width: 2.0,
+              ),
+            ),
+          ),
+          onChanged: (text) {
+            noteModel.content = text;
+            tagController.handleTextChanged(text, noteEditController.textController.selection, noteModel, context);
+          },
+        ),
       ),
     );
   }
 
   Widget _buildActionButtons(BuildContext context, NoteModel noteModel) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final isSmallScreen =
-        screenWidth < 400; // Adjust threshold as needed for iPhone SE size
+    final isSmallScreen = screenWidth < 400; // Adjust threshold as needed for iPhone SE size
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -149,8 +145,7 @@ class NoteEditState extends State<NoteEdit> {
                 context: context,
                 noteModel: noteModel,
                 icon: Icons.add_photo_alternate,
-                onPressed: () =>
-                    noteEditController.pickAndUploadImage(context, noteModel),
+                onPressed: () => noteEditController.pickAndUploadImage(context, noteModel),
                 isLoading: noteModel.isUploading,
                 isSmallScreen: isSmallScreen,
               ),
@@ -159,8 +154,7 @@ class NoteEditState extends State<NoteEdit> {
                 context: context,
                 noteModel: noteModel,
                 icon: Icons.paste,
-                onPressed: () async => await noteEditController
-                    .pasteFromClipboard(context, noteModel),
+                onPressed: () async => await noteEditController.pasteFromClipboard(context, noteModel),
                 isLoading: noteModel.isPasting,
                 isSmallScreen: isSmallScreen,
               ),

@@ -9,8 +9,7 @@ import '../screens/tag_notes/tag_notes.dart';
 import '../screens/search/search_results_page.dart';
 
 class NavigationHelper {
-  static Future<void> onTagTap(
-      BuildContext context, Note note, String tag) async {
+  static Future<void> onTagTap(BuildContext context, Note note, String tag) async {
     await Navigator.push(
       context,
       MaterialPageRoute(
@@ -117,9 +116,8 @@ class NavigationHelper {
     };
 
     // Try yyyy-MMM-dd format
-    final monthNamePattern = RegExp(
-        r'^(\d{4})-(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)-(\d{2})$',
-        caseSensitive: false);
+    final monthNamePattern =
+        RegExp(r'^(\d{4})-(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)-(\d{2})$', caseSensitive: false);
     final monthMatch = monthNamePattern.firstMatch(input);
     if (monthMatch != null) {
       final year = monthMatch.group(1);
@@ -129,8 +127,7 @@ class NavigationHelper {
     }
 
     // Try yyyy-M-d format
-    final numericPattern =
-        RegExp(r'^(\d{4})-(0?[1-9]|1[0-2])-(0?[1-9]|[12]\d|3[01])$');
+    final numericPattern = RegExp(r'^(\d{4})-(0?[1-9]|1[0-2])-(0?[1-9]|[12]\d|3[01])$');
     final numericMatch = numericPattern.firstMatch(input);
     if (numericMatch != null) {
       final year = numericMatch.group(1);
@@ -153,8 +150,7 @@ class NavigationHelper {
             child: TagCloud(
               tagData: tagData,
               onTagTap: (tag) {
-                _navigateToTagNotes(context, tag,
-                    replacePage: replacePage, myNotesOnly: myNotesOnly);
+                _navigateToTagNotes(context, tag, replacePage: replacePage, myNotesOnly: myNotesOnly);
               },
             ),
           ),

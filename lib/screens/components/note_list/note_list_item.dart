@@ -40,58 +40,58 @@ class NoteListItem extends StatelessWidget {
     return child;
   }
 
-
- Widget _buildContent(BuildContext context) {
-   return Stack(
-     children: [
-       GestureDetector(
-         onTap: () => callbacks.onTap?.call(note),
-         onDoubleTap: () => callbacks.onDoubleTap?.call(note),
-         child: Container(
-           color: config.backgroundColor,
-           padding: config.padding ?? const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-           child: Column(
-             crossAxisAlignment: CrossAxisAlignment.start,
-             children: [
-               _buildMetadata(),
-               SelectionArea(child: _buildNoteContent()),
-               if ((note.tags?.isNotEmpty == true || note.isLong) && !config.showRestoreButton) _buildFooter(),
-             ],
-           ),
-         ),
-       ),
-       if (config.showRestoreButton && note.isDeleted)
-         Positioned.fill(
-           child: GestureDetector(
-             onTap: () => callbacks.onRestore?.call(note),
-             child: Center(
-               child: Container(
-                 decoration: BoxDecoration(
-                   color: Colors.blue,
-                   borderRadius: BorderRadius.circular(4),
-                 ),
-                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
-                 child: const Text(
-                   'Restore',
-                   style: TextStyle(
-                     fontSize: 14,
-                     color: Colors.white,
-                     fontWeight: FontWeight.w500,
-                   ),
-                   overflow: TextOverflow.visible,
-                 ),
-               ),
-             ),
-           ),
-         ),
-     ],
-   );
- }
+  Widget _buildContent(BuildContext context) {
+    return Stack(
+      children: [
+        GestureDetector(
+          onTap: () => callbacks.onTap?.call(note),
+          onDoubleTap: () => callbacks.onDoubleTap?.call(note),
+          child: Container(
+            color: config.backgroundColor,
+            padding: config.padding ?? const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildMetadata(),
+                SelectionArea(child: _buildNoteContent()),
+                if ((note.tags?.isNotEmpty == true || note.isLong) && !config.showRestoreButton) _buildFooter(),
+              ],
+            ),
+          ),
+        ),
+        if (config.showRestoreButton && note.isDeleted)
+          Positioned.fill(
+            child: GestureDetector(
+              onTap: () => callbacks.onRestore?.call(note),
+              child: Center(
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.blue,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
+                  child: const Text(
+                    'Restore',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    overflow: TextOverflow.visible,
+                  ),
+                ),
+              ),
+            ),
+          ),
+      ],
+    );
+  }
 
   Widget _buildMetadata() {
     final showDate = config.showDate;
     final showAuthor = config.showAuthor;
-    final author = (note.user == null || !showAuthor || note.userId == UserSession().id) ? '' : '${note.user!.username} ';
+    final author =
+        (note.user == null || !showAuthor || note.userId == UserSession().id) ? '' : '${note.user!.username} ';
     final date = showDate ? '${note.createdDate} ' : '';
 
     return Row(
@@ -132,13 +132,13 @@ class NoteListItem extends StatelessWidget {
       child: note.isMarkdown
           ? MarkdownBodyHere(data: content, isPrivate: note.isPrivate)
           : Text(
-        content,
-        style: TextStyle(
-          fontSize: 16,
-          height: 1.6,
-          color: note.isPrivate ? Colors.black54 : Colors.black87,
-        ),
-      ),
+              content,
+              style: TextStyle(
+                fontSize: 16,
+                height: 1.6,
+                color: note.isPrivate ? Colors.black54 : Colors.black87,
+              ),
+            ),
     );
   }
 
@@ -149,14 +149,16 @@ class NoteListItem extends StatelessWidget {
         if (note.tags?.isNotEmpty ?? false)
           Wrap(
             spacing: 8,
-            children: note.tags!.map((tag) => TagWidget(
-              tag: tag,
-              onTap: onTagTap != null ? () => onTagTap!(note, tag) : null,
-            )).toList(),
+            children: note.tags!
+                .map((tag) => TagWidget(
+                      tag: tag,
+                      onTap: onTagTap != null ? () => onTagTap!(note, tag) : null,
+                    ))
+                .toList(),
           )
-        else const Text(' '), // a placeholder to make sure "View more" will show at the end of the row
-        if (note.isLong)
-          const Text('View more', style: TextStyle(color: Colors.blue)),
+        else
+          const Text(' '), // a placeholder to make sure "View more" will show at the end of the row
+        if (note.isLong) const Text('View more', style: TextStyle(color: Colors.blue)),
       ],
     );
   }

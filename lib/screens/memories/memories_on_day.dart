@@ -158,7 +158,6 @@ class MemoriesOnDayState extends State<MemoriesOnDay> with RouteAware {
     );
   }
 
-
   Widget _buildBody(bool isLoading, List<Note> notes, String? error) {
     if (isLoading) {
       return const Center(child: CircularProgressIndicator());
@@ -220,7 +219,7 @@ class MemoriesOnDayState extends State<MemoriesOnDay> with RouteAware {
 
     // Wrap NoteList with Provider to expose MemoriesProvider as NoteListProvider
     final memoriesProvider = context.read<MemoriesProvider>();
-    
+
     return ChangeNotifierProvider<NoteListProvider>.value(
       value: memoriesProvider,
       child: NoteList(

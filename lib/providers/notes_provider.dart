@@ -58,7 +58,8 @@ class NotesProvider extends NoteListProvider {
   }
 
   /// Add a new note with optimistic updates
-  Future<Note?> addNote(String content, {bool isPrivate = false, bool isMarkdown = false, String publishDateTime = ''}) async {
+  Future<Note?> addNote(String content,
+      {bool isPrivate = false, bool isMarkdown = false, String publishDateTime = ''}) async {
     if (_isLoadingAdd) return null;
 
     _isLoadingAdd = true;
@@ -93,10 +94,6 @@ class NotesProvider extends NoteListProvider {
       notifyListeners();
     }
   }
-
-
-
-
 
   /// Undelete a note
   Future<bool> undeleteNote(int noteId) async {

@@ -54,7 +54,7 @@ class TimezoneHelper {
   // Returns the offset Duration for a given timezone
   static Duration _getTimezoneOffset(String timezone) {
     final timezoneInfo = timezones.firstWhere(
-          (tz) => tz['name'] == timezone,
+      (tz) => tz['name'] == timezone,
       orElse: () => {'offset': '+00:00'},
     );
     final offsetString = timezoneInfo['offset']!;
@@ -62,8 +62,6 @@ class TimezoneHelper {
     final offsetMinutes = int.parse(offsetString.substring(4, 6));
     final offsetDuration = Duration(hours: offsetHours, minutes: offsetMinutes);
 
-    return offsetString.startsWith('-')
-        ? -offsetDuration
-        : offsetDuration;
+    return offsetString.startsWith('-') ? -offsetDuration : offsetDuration;
   }
 }

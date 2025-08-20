@@ -15,36 +15,24 @@ class MockDio implements Dio {
     if (path.contains('/notes/latest')) {
       return {
         'successful': true,
-        'data': {
-          'totalCount': 0,
-          'dataList': []
-        }
+        'data': {'totalCount': 0, 'dataList': []}
       };
     }
     if (path.contains('/notes/myLatest')) {
       return {
         'successful': true,
-        'data': {
-          'totalCount': 0,
-          'dataList': []
-        }
+        'data': {'totalCount': 0, 'dataList': []}
       };
     }
     if (path.contains('/notes/deleted')) {
       return {
         'successful': true,
-        'data': {
-          'totalCount': 0,
-          'dataList': []
-        }
+        'data': {'totalCount': 0, 'dataList': []}
       };
     }
 
     // Default response
-    return {
-      'successful': true,
-      'data': {}
-    };
+    return {'successful': true, 'data': {}};
   }
 
   // Use noSuchMethod for all other Dio methods to avoid signature mismatch
@@ -55,9 +43,7 @@ class MockDio implements Dio {
         invocation.memberName == #put ||
         invocation.memberName == #delete) {
       // Extract path from positional arguments
-      final path = invocation.positionalArguments.isNotEmpty
-          ? invocation.positionalArguments[0].toString()
-          : '/';
+      final path = invocation.positionalArguments.isNotEmpty ? invocation.positionalArguments[0].toString() : '/';
       final method = invocation.memberName.toString().replaceAll('Symbol("', '').replaceAll('")', '');
 
       return Future.value(Response(

@@ -31,7 +31,7 @@ void main() {
     });
 
     group('Dismissible Tests', () {
-      testWidgets('should use Dismissible when dismissible enabled', (tester) async {        
+      testWidgets('should use Dismissible when dismissible enabled', (tester) async {
         final widget = MaterialApp(
           home: Scaffold(
             body: NoteListItem(
@@ -65,7 +65,7 @@ void main() {
         await tester.pumpWidget(widget);
 
         final dismissible = tester.widget<Dismissible>(find.byType(Dismissible));
-        
+
         expect(dismissible.direction, equals(DismissDirection.endToStart));
         expect(dismissible.key, equals(Key(testNote.id.toString())));
         expect(dismissible.dragStartBehavior, equals(DragStartBehavior.down));

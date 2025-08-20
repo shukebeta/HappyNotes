@@ -40,17 +40,32 @@ void main() {
     group('Public notes discovery', () {
       test('should fetch public notes using latest() service method', () async {
         final publicNotes = [
-          Note(id: 1, content: 'Public note 1', isPrivate: false, userId: 1,
-               isLong: false, isMarkdown: false, createdAt: 1640995200,
-               deletedAt: null, user: null, tags: []),
-          Note(id: 2, content: 'Public note 2', isPrivate: false, userId: 2,
-               isLong: false, isMarkdown: false, createdAt: 1640995200,
-               deletedAt: null, user: null, tags: []),
+          Note(
+              id: 1,
+              content: 'Public note 1',
+              isPrivate: false,
+              userId: 1,
+              isLong: false,
+              isMarkdown: false,
+              createdAt: 1640995200,
+              deletedAt: null,
+              user: null,
+              tags: []),
+          Note(
+              id: 2,
+              content: 'Public note 2',
+              isPrivate: false,
+              userId: 2,
+              isLong: false,
+              isMarkdown: false,
+              createdAt: 1640995200,
+              deletedAt: null,
+              user: null,
+              tags: []),
         ];
         final result = NotesResult(publicNotes, 2);
 
-        when(mockNotesService.latest(10, 1))
-            .thenAnswer((_) async => result);
+        when(mockNotesService.latest(10, 1)).thenAnswer((_) async => result);
 
         await discoveryProvider.navigateToPage(1);
 
@@ -67,25 +82,39 @@ void main() {
 
       test('should handle pagination correctly for public notes', () async {
         final firstPageNotes = [
-          Note(id: 1, content: 'Public note 1', isPrivate: false, userId: 1,
-               isLong: false, isMarkdown: false, createdAt: 1640995200,
-               deletedAt: null, user: null, tags: []),
+          Note(
+              id: 1,
+              content: 'Public note 1',
+              isPrivate: false,
+              userId: 1,
+              isLong: false,
+              isMarkdown: false,
+              createdAt: 1640995200,
+              deletedAt: null,
+              user: null,
+              tags: []),
         ];
         final secondPageNotes = [
-          Note(id: 2, content: 'Public note 2', isPrivate: false, userId: 2,
-               isLong: false, isMarkdown: false, createdAt: 1640995200,
-               deletedAt: null, user: null, tags: []),
+          Note(
+              id: 2,
+              content: 'Public note 2',
+              isPrivate: false,
+              userId: 2,
+              isLong: false,
+              isMarkdown: false,
+              createdAt: 1640995200,
+              deletedAt: null,
+              user: null,
+              tags: []),
         ];
 
         // Setup first page
-        when(mockNotesService.latest(10, 1))
-            .thenAnswer((_) async => NotesResult(firstPageNotes, 25)); // Multiple pages
+        when(mockNotesService.latest(10, 1)).thenAnswer((_) async => NotesResult(firstPageNotes, 25)); // Multiple pages
         await discoveryProvider.navigateToPage(1);
         expect(discoveryProvider.totalPages, equals(3)); // ceil(25/10) = 3
 
         // Setup second page
-        when(mockNotesService.latest(10, 2))
-            .thenAnswer((_) async => NotesResult(secondPageNotes, 25));
+        when(mockNotesService.latest(10, 2)).thenAnswer((_) async => NotesResult(secondPageNotes, 25));
         await discoveryProvider.navigateToPage(2);
 
         // Verify pagination calls
@@ -97,8 +126,7 @@ void main() {
       });
 
       test('should handle empty public notes results', () async {
-        when(mockNotesService.latest(10, 1))
-            .thenAnswer((_) async => NotesResult([], 0));
+        when(mockNotesService.latest(10, 1)).thenAnswer((_) async => NotesResult([], 0));
 
         await discoveryProvider.navigateToPage(1);
 
@@ -108,8 +136,7 @@ void main() {
       });
 
       test('should handle service errors during discovery', () async {
-        when(mockNotesService.latest(10, 1))
-            .thenThrow(Exception('Discovery service unavailable'));
+        when(mockNotesService.latest(10, 1)).thenThrow(Exception('Discovery service unavailable'));
 
         await discoveryProvider.navigateToPage(1);
 
@@ -123,23 +150,37 @@ void main() {
     group('Delete functionality', () {
       test('should delete public notes using correct service method', () async {
         final testNotes = [
-          Note(id: 1, content: 'Public note 1', isPrivate: false, userId: 1,
-               isLong: false, isMarkdown: false, createdAt: 1640995200,
-               deletedAt: null, user: null, tags: []),
-          Note(id: 2, content: 'Public note 2', isPrivate: false, userId: 1,
-               isLong: false, isMarkdown: false, createdAt: 1640995200,
-               deletedAt: null, user: null, tags: []),
+          Note(
+              id: 1,
+              content: 'Public note 1',
+              isPrivate: false,
+              userId: 1,
+              isLong: false,
+              isMarkdown: false,
+              createdAt: 1640995200,
+              deletedAt: null,
+              user: null,
+              tags: []),
+          Note(
+              id: 2,
+              content: 'Public note 2',
+              isPrivate: false,
+              userId: 1,
+              isLong: false,
+              isMarkdown: false,
+              createdAt: 1640995200,
+              deletedAt: null,
+              user: null,
+              tags: []),
         ];
 
         // Setup initial state
-        when(mockNotesService.latest(10, 1))
-            .thenAnswer((_) async => NotesResult(testNotes, 2));
+        when(mockNotesService.latest(10, 1)).thenAnswer((_) async => NotesResult(testNotes, 2));
         await discoveryProvider.navigateToPage(1);
         expect(discoveryProvider.notes.length, equals(2));
 
         // Setup successful delete
-        when(mockNotesService.delete(1))
-            .thenAnswer((_) async => 1);
+        when(mockNotesService.delete(1)).thenAnswer((_) async => 1);
 
         final result = await discoveryProvider.deleteNote(1);
 
@@ -154,19 +195,25 @@ void main() {
 
       test('should handle delete errors with rollback', () async {
         final testNotes = [
-          Note(id: 1, content: 'Public note 1', isPrivate: false, userId: 1,
-               isLong: false, isMarkdown: false, createdAt: 1640995200,
-               deletedAt: null, user: null, tags: []),
+          Note(
+              id: 1,
+              content: 'Public note 1',
+              isPrivate: false,
+              userId: 1,
+              isLong: false,
+              isMarkdown: false,
+              createdAt: 1640995200,
+              deletedAt: null,
+              user: null,
+              tags: []),
         ];
 
         // Setup initial state
-        when(mockNotesService.latest(10, 1))
-            .thenAnswer((_) async => NotesResult(testNotes, 1));
+        when(mockNotesService.latest(10, 1)).thenAnswer((_) async => NotesResult(testNotes, 1));
         await discoveryProvider.navigateToPage(1);
 
         // Setup delete failure
-        when(mockNotesService.delete(1))
-            .thenThrow(Exception('Delete permission denied'));
+        when(mockNotesService.delete(1)).thenThrow(Exception('Delete permission denied'));
 
         final result = await discoveryProvider.deleteNote(1);
 
@@ -183,28 +230,50 @@ void main() {
     group('State management', () {
       test('should refresh discovery results', () async {
         final initialNotes = [
-          Note(id: 1, content: 'Old public note', isPrivate: false, userId: 1,
-               isLong: false, isMarkdown: false, createdAt: 1640995200,
-               deletedAt: null, user: null, tags: []),
+          Note(
+              id: 1,
+              content: 'Old public note',
+              isPrivate: false,
+              userId: 1,
+              isLong: false,
+              isMarkdown: false,
+              createdAt: 1640995200,
+              deletedAt: null,
+              user: null,
+              tags: []),
         ];
         final refreshedNotes = [
-          Note(id: 1, content: 'Updated public note', isPrivate: false, userId: 1,
-               isLong: false, isMarkdown: false, createdAt: 1640995200,
-               deletedAt: null, user: null, tags: []),
-          Note(id: 2, content: 'New public note', isPrivate: false, userId: 2,
-               isLong: false, isMarkdown: false, createdAt: 1640995200,
-               deletedAt: null, user: null, tags: []),
+          Note(
+              id: 1,
+              content: 'Updated public note',
+              isPrivate: false,
+              userId: 1,
+              isLong: false,
+              isMarkdown: false,
+              createdAt: 1640995200,
+              deletedAt: null,
+              user: null,
+              tags: []),
+          Note(
+              id: 2,
+              content: 'New public note',
+              isPrivate: false,
+              userId: 2,
+              isLong: false,
+              isMarkdown: false,
+              createdAt: 1640995200,
+              deletedAt: null,
+              user: null,
+              tags: []),
         ];
 
         // Setup initial discovery
-        when(mockNotesService.latest(10, 1))
-            .thenAnswer((_) async => NotesResult(initialNotes, 1));
+        when(mockNotesService.latest(10, 1)).thenAnswer((_) async => NotesResult(initialNotes, 1));
         await discoveryProvider.navigateToPage(1);
         expect(discoveryProvider.notes.length, equals(1));
 
         // Setup refresh with new data
-        when(mockNotesService.latest(10, 1))
-            .thenAnswer((_) async => NotesResult(refreshedNotes, 2));
+        when(mockNotesService.latest(10, 1)).thenAnswer((_) async => NotesResult(refreshedNotes, 2));
         await discoveryProvider.refresh();
 
         // Verify refresh calls correct service method
@@ -215,14 +284,21 @@ void main() {
 
       test('should clear all discovery data', () async {
         final testNotes = [
-          Note(id: 1, content: 'Public note', isPrivate: false, userId: 1,
-               isLong: false, isMarkdown: false, createdAt: 1640995200,
-               deletedAt: null, user: null, tags: []),
+          Note(
+              id: 1,
+              content: 'Public note',
+              isPrivate: false,
+              userId: 1,
+              isLong: false,
+              isMarkdown: false,
+              createdAt: 1640995200,
+              deletedAt: null,
+              user: null,
+              tags: []),
         ];
 
         // Setup some state
-        when(mockNotesService.latest(10, 1))
-            .thenAnswer((_) async => NotesResult(testNotes, 1));
+        when(mockNotesService.latest(10, 1)).thenAnswer((_) async => NotesResult(testNotes, 1));
         await discoveryProvider.navigateToPage(1);
         expect(discoveryProvider.notes.isNotEmpty, isTrue);
 

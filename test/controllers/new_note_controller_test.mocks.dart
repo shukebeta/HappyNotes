@@ -48,8 +48,7 @@ class _FakeNotesResult_1 extends _i1.SmartFake implements _i3.NotesResult {
         );
 }
 
-class _FakeOperationResult_2<T> extends _i1.SmartFake
-    implements _i4.OperationResult<T> {
+class _FakeOperationResult_2<T> extends _i1.SmartFake implements _i4.OperationResult<T> {
   _FakeOperationResult_2(
     Object parent,
     Invocation parentInvocation,
@@ -362,14 +361,12 @@ class MockNotesProvider extends _i1.Mock implements _i5.NotesProvider {
       );
 
   @override
-  _i7.Future<_i4.OperationResult<void>> deleteNote(int? noteId) =>
-      (super.noSuchMethod(
+  _i7.Future<_i4.OperationResult<void>> deleteNote(int? noteId) => (super.noSuchMethod(
         Invocation.method(
           #deleteNote,
           [noteId],
         ),
-        returnValue: _i7.Future<_i4.OperationResult<void>>.value(
-            _FakeOperationResult_2<void>(
+        returnValue: _i7.Future<_i4.OperationResult<void>>.value(_FakeOperationResult_2<void>(
           this,
           Invocation.method(
             #deleteNote,
@@ -408,8 +405,7 @@ class MockNotesProvider extends _i1.Mock implements _i5.NotesProvider {
       ) as _i7.Future<void>);
 
   @override
-  _i7.Future<void> onAuthStateChanged(bool? isAuthenticated) =>
-      (super.noSuchMethod(
+  _i7.Future<void> onAuthStateChanged(bool? isAuthenticated) => (super.noSuchMethod(
         Invocation.method(
           #onAuthStateChanged,
           [isAuthenticated],

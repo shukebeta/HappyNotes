@@ -15,24 +15,24 @@ class AppLogger implements AppLoggerInterface {
   @override
   Future<void> initialize() async {
     List<LogOutput> outputs = [ConsoleOutput()];
-    
+
     // Only add file output for non-web platforms
     if (!kIsWeb) {
       _logFilePath = await _getLogFilePath();
       outputs.add(
         FileOutput(
-          file: File(_logFilePath!), 
+          file: File(_logFilePath!),
           overrideExisting: false,
           encoding: utf8,
         ),
       );
     }
-    
+
     _logger = Logger(
       printer: PrettyPrinter(),
       output: MultiOutput(outputs),
     );
-    
+
     if (!kIsWeb) {
       i('Logger initialized at: $_logFilePath');
     } else {

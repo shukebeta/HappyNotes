@@ -86,35 +86,37 @@ class LinkedNotesState extends State<LinkedNotes> {
             ),
 
             // Linked notes list
-            ...linkedNotes.map((note) => NoteListItem(
-              note: note,
-              callbacks: ListItemCallbacks<Note>(
-                onTap: (note) => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => NoteDetail(note: note),
-                  ),
-                ),
-                onDoubleTap: (note) => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => NoteDetail(
+            ...linkedNotes
+                .map((note) => NoteListItem(
                       note: note,
-                      enterEditing: widget.parentNote.userId == UserSession().id,
-                      onNoteSaved: onNoteSaved, // Pass the optimized callback
-                      fromDetailPage: false, // Not coming from detail page
-                    ),
-                  ),
-                ),
-              ),
-              onTagTap: (note, tag) => NavigationHelper.onTagTap(context, note, tag),
-              config: const ListItemConfig(
-                showDate: true,
-                showAuthor: true, // Show author for linked notes
-                showRestoreButton: false,
-                enableDismiss: false,
-              ),
-            )).toList(),
+                      callbacks: ListItemCallbacks<Note>(
+                        onTap: (note) => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => NoteDetail(note: note),
+                          ),
+                        ),
+                        onDoubleTap: (note) => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => NoteDetail(
+                              note: note,
+                              enterEditing: widget.parentNote.userId == UserSession().id,
+                              onNoteSaved: onNoteSaved, // Pass the optimized callback
+                              fromDetailPage: false, // Not coming from detail page
+                            ),
+                          ),
+                        ),
+                      ),
+                      onTagTap: (note, tag) => NavigationHelper.onTagTap(context, note, tag),
+                      config: const ListItemConfig(
+                        showDate: true,
+                        showAuthor: true, // Show author for linked notes
+                        showRestoreButton: false,
+                        enableDismiss: false,
+                      ),
+                    ))
+                .toList(),
           ]),
         );
       },

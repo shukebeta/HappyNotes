@@ -74,7 +74,6 @@ class SettingsState extends State<Settings> {
     }
   }
 
-
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -96,26 +95,26 @@ class SettingsState extends State<Settings> {
                   ),
                 )
               : IconButton(
-            icon: (_currentUser?.gravatar != null && _currentUser!.gravatar.isNotEmpty)
-                ? CircleAvatar(
-                    radius: 18,
-                    backgroundImage: NetworkImage(_currentUser!.gravatar),
-                    onBackgroundImageError: (_, __) {},
-                    backgroundColor: Colors.grey[300],
-                  )
-                : CircleAvatar(
-                    radius: 18,
-                    backgroundColor: Colors.grey[300],
-                    child: const Icon(Icons.person, size: 18),
-                  ),
-            tooltip: 'Profile',
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const ProfilePage()),
-              );
-            },
-          ),
+                  icon: (_currentUser?.gravatar != null && _currentUser!.gravatar.isNotEmpty)
+                      ? CircleAvatar(
+                          radius: 18,
+                          backgroundImage: NetworkImage(_currentUser!.gravatar),
+                          onBackgroundImageError: (_, __) {},
+                          backgroundColor: Colors.grey[300],
+                        )
+                      : CircleAvatar(
+                          radius: 18,
+                          backgroundColor: Colors.grey[300],
+                          child: const Icon(Icons.person, size: 18),
+                        ),
+                  tooltip: 'Profile',
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const ProfilePage()),
+                    );
+                  },
+                ),
         ],
       ),
       body: Padding(
@@ -134,7 +133,7 @@ class SettingsState extends State<Settings> {
                   });
                 },
                 items: <int>[10, 20, 30, 40, 50, 60].map<DropdownMenuItem<int>>(
-                      (int value) {
+                  (int value) {
                     return DropdownMenuItem<int>(
                       value: value,
                       child: Text(value.toString()),
@@ -169,7 +168,8 @@ class SettingsState extends State<Settings> {
               trailing: Switch(
                 value: markdownIsEnabled,
                 onChanged: (bool newValue) async {
-                  final result = await _settingsController.save(context, AppConstants.markdownIsEnabled, newValue ? "1" : "0");
+                  final result =
+                      await _settingsController.save(context, AppConstants.markdownIsEnabled, newValue ? "1" : "0");
                   if (result) {
                     setState(() {
                       markdownIsEnabled = newValue;

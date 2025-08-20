@@ -12,8 +12,7 @@ class NoteTagService {
     if (!apiResult['successful']) throw ApiException(apiResult);
     return [
       for (var item in apiResult['data'])
-        if (!(item['tag'] as String).startsWith('@'))
-          TagCount(tag: item['tag'] as String, count: item['count'] as int)
+        if (!(item['tag'] as String).startsWith('@')) TagCount(tag: item['tag'] as String, count: item['count'] as int)
     ];
   }
 }

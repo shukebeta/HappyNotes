@@ -21,5 +21,4 @@ class DiscoveryProvider extends NoteListProvider {
   Future<void> performDelete(int noteId) async {
     await _notesService.delete(noteId);
   }
-
 }

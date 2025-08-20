@@ -4,7 +4,8 @@ import '../entities/telegram_settings.dart';
 
 class TelegramSettingsService {
   final TelegramSettingsApi _telegramSettingsApi;
-  TelegramSettingsService({required TelegramSettingsApi telegramSettingsApi}): _telegramSettingsApi = telegramSettingsApi;
+  TelegramSettingsService({required TelegramSettingsApi telegramSettingsApi})
+      : _telegramSettingsApi = telegramSettingsApi;
 
   Future<List<TelegramSettings>> getAll() async {
     List<dynamic> apiResult = (await _telegramSettingsApi.getAll()).data['data'];
@@ -13,19 +14,19 @@ class TelegramSettingsService {
 
   Future<bool> add(TelegramSettings setting) async {
     final apiResult = (await _telegramSettingsApi.add(setting)).data;
-    if(!apiResult['successful']) throw ApiException(apiResult);
+    if (!apiResult['successful']) throw ApiException(apiResult);
     return true;
   }
 
   Future<bool> test(TelegramSettings setting) async {
     final apiResult = (await _telegramSettingsApi.test(setting)).data;
-    if(!apiResult['successful']) throw ApiException(apiResult);
+    if (!apiResult['successful']) throw ApiException(apiResult);
     return true;
   }
 
   Future<bool> delete(TelegramSettings setting) async {
     final apiResult = (await _telegramSettingsApi.delete(setting)).data;
-    if(!apiResult['successful']) throw ApiException(apiResult);
+    if (!apiResult['successful']) throw ApiException(apiResult);
     return true;
   }
 
@@ -37,7 +38,7 @@ class TelegramSettingsService {
 
   Future<bool> activate(TelegramSettings setting) async {
     final apiResult = (await _telegramSettingsApi.activate(setting)).data;
-    if(!apiResult['successful']) throw ApiException(apiResult);
+    if (!apiResult['successful']) throw ApiException(apiResult);
     return true;
   }
 }

@@ -42,17 +42,32 @@ void main() {
     group('Trash data loading', () {
       test('should fetch deleted notes using latestDeleted() service method', () async {
         final deletedNotes = [
-          Note(id: 1, content: 'Deleted note 1', isPrivate: false, userId: 1,
-               isLong: false, isMarkdown: false, createdAt: 1640995200,
-               deletedAt: 1641000000, user: null, tags: []), // Has deletedAt
-          Note(id: 2, content: 'Deleted note 2', isPrivate: false, userId: 2,
-               isLong: false, isMarkdown: false, createdAt: 1640995200,
-               deletedAt: 1641000000, user: null, tags: []), // Has deletedAt
+          Note(
+              id: 1,
+              content: 'Deleted note 1',
+              isPrivate: false,
+              userId: 1,
+              isLong: false,
+              isMarkdown: false,
+              createdAt: 1640995200,
+              deletedAt: 1641000000,
+              user: null,
+              tags: []), // Has deletedAt
+          Note(
+              id: 2,
+              content: 'Deleted note 2',
+              isPrivate: false,
+              userId: 2,
+              isLong: false,
+              isMarkdown: false,
+              createdAt: 1640995200,
+              deletedAt: 1641000000,
+              user: null,
+              tags: []), // Has deletedAt
         ];
         final result = NotesResult(deletedNotes, 2);
 
-        when(mockNotesService.latestDeleted(10, 1))
-            .thenAnswer((_) async => result);
+        when(mockNotesService.latestDeleted(10, 1)).thenAnswer((_) async => result);
 
         await trashProvider.navigateToPage(1);
 
@@ -71,14 +86,30 @@ void main() {
 
       test('should handle pagination correctly for deleted notes', () async {
         final firstPageNotes = [
-          Note(id: 1, content: 'Deleted note 1', isPrivate: false, userId: 1,
-               isLong: false, isMarkdown: false, createdAt: 1640995200,
-               deletedAt: 1641000000, user: null, tags: []),
+          Note(
+              id: 1,
+              content: 'Deleted note 1',
+              isPrivate: false,
+              userId: 1,
+              isLong: false,
+              isMarkdown: false,
+              createdAt: 1640995200,
+              deletedAt: 1641000000,
+              user: null,
+              tags: []),
         ];
         final secondPageNotes = [
-          Note(id: 2, content: 'Deleted note 2', isPrivate: false, userId: 2,
-               isLong: false, isMarkdown: false, createdAt: 1640995200,
-               deletedAt: 1641000000, user: null, tags: []),
+          Note(
+              id: 2,
+              content: 'Deleted note 2',
+              isPrivate: false,
+              userId: 2,
+              isLong: false,
+              isMarkdown: false,
+              createdAt: 1640995200,
+              deletedAt: 1641000000,
+              user: null,
+              tags: []),
         ];
 
         // Setup first page
@@ -88,8 +119,7 @@ void main() {
         expect(trashProvider.totalPages, equals(3)); // ceil(25/10) = 3
 
         // Setup second page
-        when(mockNotesService.latestDeleted(10, 2))
-            .thenAnswer((_) async => NotesResult(secondPageNotes, 25));
+        when(mockNotesService.latestDeleted(10, 2)).thenAnswer((_) async => NotesResult(secondPageNotes, 25));
         await trashProvider.navigateToPage(2);
 
         // Verify pagination calls
@@ -101,8 +131,7 @@ void main() {
       });
 
       test('should handle empty trash results', () async {
-        when(mockNotesService.latestDeleted(10, 1))
-            .thenAnswer((_) async => NotesResult([], 0));
+        when(mockNotesService.latestDeleted(10, 1)).thenAnswer((_) async => NotesResult([], 0));
 
         await trashProvider.navigateToPage(1);
 
@@ -112,8 +141,7 @@ void main() {
       });
 
       test('should handle service errors during trash loading', () async {
-        when(mockNotesService.latestDeleted(10, 1))
-            .thenThrow(Exception('Trash service unavailable'));
+        when(mockNotesService.latestDeleted(10, 1)).thenThrow(Exception('Trash service unavailable'));
 
         await trashProvider.navigateToPage(1);
 
@@ -127,27 +155,40 @@ void main() {
     group('Purge functionality', () {
       test('should purge all deleted notes successfully', () async {
         final deletedNotes = [
-          Note(id: 1, content: 'Deleted note 1', isPrivate: false, userId: 1,
-               isLong: false, isMarkdown: false, createdAt: 1640995200,
-               deletedAt: 1641000000, user: null, tags: []),
-          Note(id: 2, content: 'Deleted note 2', isPrivate: false, userId: 1,
-               isLong: false, isMarkdown: false, createdAt: 1640995200,
-               deletedAt: 1641000000, user: null, tags: []),
+          Note(
+              id: 1,
+              content: 'Deleted note 1',
+              isPrivate: false,
+              userId: 1,
+              isLong: false,
+              isMarkdown: false,
+              createdAt: 1640995200,
+              deletedAt: 1641000000,
+              user: null,
+              tags: []),
+          Note(
+              id: 2,
+              content: 'Deleted note 2',
+              isPrivate: false,
+              userId: 1,
+              isLong: false,
+              isMarkdown: false,
+              createdAt: 1640995200,
+              deletedAt: 1641000000,
+              user: null,
+              tags: []),
         ];
 
         // Setup initial trash state
-        when(mockNotesService.latestDeleted(10, 1))
-            .thenAnswer((_) async => NotesResult(deletedNotes, 2));
+        when(mockNotesService.latestDeleted(10, 1)).thenAnswer((_) async => NotesResult(deletedNotes, 2));
         await trashProvider.navigateToPage(1);
         expect(trashProvider.notes.length, equals(2));
 
         // Setup successful purge
-        when(mockNotesService.purgeDeleted())
-            .thenAnswer((_) async => 1);
+        when(mockNotesService.purgeDeleted()).thenAnswer((_) async => 1);
 
         // Setup empty result after purge
-        when(mockNotesService.latestDeleted(10, 1))
-            .thenAnswer((_) async => NotesResult([], 0));
+        when(mockNotesService.latestDeleted(10, 1)).thenAnswer((_) async => NotesResult([], 0));
 
         // Track isPurging state changes
         var purgingStates = <bool>[];
@@ -173,19 +214,25 @@ void main() {
 
       test('should handle purge errors correctly', () async {
         final deletedNotes = [
-          Note(id: 1, content: 'Deleted note 1', isPrivate: false, userId: 1,
-               isLong: false, isMarkdown: false, createdAt: 1640995200,
-               deletedAt: 1641000000, user: null, tags: []),
+          Note(
+              id: 1,
+              content: 'Deleted note 1',
+              isPrivate: false,
+              userId: 1,
+              isLong: false,
+              isMarkdown: false,
+              createdAt: 1640995200,
+              deletedAt: 1641000000,
+              user: null,
+              tags: []),
         ];
 
         // Setup initial state
-        when(mockNotesService.latestDeleted(10, 1))
-            .thenAnswer((_) async => NotesResult(deletedNotes, 1));
+        when(mockNotesService.latestDeleted(10, 1)).thenAnswer((_) async => NotesResult(deletedNotes, 1));
         await trashProvider.navigateToPage(1);
 
         // Setup purge failure
-        when(mockNotesService.purgeDeleted())
-            .thenThrow(Exception('Purge permission denied'));
+        when(mockNotesService.purgeDeleted()).thenThrow(Exception('Purge permission denied'));
 
         final result = await trashProvider.purgeDeleted();
 
@@ -200,13 +247,11 @@ void main() {
 
       test('should prevent operations while purging', () async {
         // Setup slow purge operation
-        when(mockNotesService.purgeDeleted())
-            .thenAnswer((_) async {
-              await Future.delayed(const Duration(milliseconds: 100));
-              return 1;
-            });
-        when(mockNotesService.latestDeleted(10, 1))
-            .thenAnswer((_) async => NotesResult([], 0));
+        when(mockNotesService.purgeDeleted()).thenAnswer((_) async {
+          await Future.delayed(const Duration(milliseconds: 100));
+          return 1;
+        });
+        when(mockNotesService.latestDeleted(10, 1)).thenAnswer((_) async => NotesResult([], 0));
 
         // Start purge operation
         final future = trashProvider.purgeDeleted();
@@ -224,28 +269,41 @@ void main() {
     group('Undelete functionality', () {
       test('should undelete note successfully and update local state', () async {
         final deletedNotes = [
-          Note(id: 1, content: 'Deleted note 1', isPrivate: false, userId: 1,
-               isLong: false, isMarkdown: false, createdAt: 1640995200,
-               deletedAt: 1641000000, user: null, tags: []),
-          Note(id: 2, content: 'Deleted note 2', isPrivate: false, userId: 1,
-               isLong: false, isMarkdown: false, createdAt: 1640995200,
-               deletedAt: 1641000000, user: null, tags: []),
+          Note(
+              id: 1,
+              content: 'Deleted note 1',
+              isPrivate: false,
+              userId: 1,
+              isLong: false,
+              isMarkdown: false,
+              createdAt: 1640995200,
+              deletedAt: 1641000000,
+              user: null,
+              tags: []),
+          Note(
+              id: 2,
+              content: 'Deleted note 2',
+              isPrivate: false,
+              userId: 1,
+              isLong: false,
+              isMarkdown: false,
+              createdAt: 1640995200,
+              deletedAt: 1641000000,
+              user: null,
+              tags: []),
         ];
 
         // Setup initial state
-        when(mockNotesService.latestDeleted(10, 1))
-            .thenAnswer((_) async => NotesResult(deletedNotes, 2));
+        when(mockNotesService.latestDeleted(10, 1)).thenAnswer((_) async => NotesResult(deletedNotes, 2));
         await trashProvider.navigateToPage(1);
         expect(trashProvider.notes.length, equals(2));
 
         // Setup successful undelete
-        when(mockNotesService.undelete(1))
-            .thenAnswer((_) async => 1);
+        when(mockNotesService.undelete(1)).thenAnswer((_) async => 1);
 
         // Setup refresh result after undelete (only note 2 remains)
         final remainingNotes = [deletedNotes[1]];
-        when(mockNotesService.latestDeleted(10, 1))
-            .thenAnswer((_) async => NotesResult(remainingNotes, 1));
+        when(mockNotesService.latestDeleted(10, 1)).thenAnswer((_) async => NotesResult(remainingNotes, 1));
 
         final result = await trashProvider.undeleteNote(1);
 
@@ -261,19 +319,25 @@ void main() {
 
       test('should handle undelete errors correctly', () async {
         final deletedNotes = [
-          Note(id: 1, content: 'Deleted note 1', isPrivate: false, userId: 1,
-               isLong: false, isMarkdown: false, createdAt: 1640995200,
-               deletedAt: 1641000000, user: null, tags: []),
+          Note(
+              id: 1,
+              content: 'Deleted note 1',
+              isPrivate: false,
+              userId: 1,
+              isLong: false,
+              isMarkdown: false,
+              createdAt: 1640995200,
+              deletedAt: 1641000000,
+              user: null,
+              tags: []),
         ];
 
         // Setup initial state
-        when(mockNotesService.latestDeleted(10, 1))
-            .thenAnswer((_) async => NotesResult(deletedNotes, 1));
+        when(mockNotesService.latestDeleted(10, 1)).thenAnswer((_) async => NotesResult(deletedNotes, 1));
         await trashProvider.navigateToPage(1);
 
         // Setup undelete failure
-        when(mockNotesService.undelete(1))
-            .thenThrow(Exception('Undelete permission denied'));
+        when(mockNotesService.undelete(1)).thenThrow(Exception('Undelete permission denied'));
 
         final result = await trashProvider.undeleteNote(1);
 
@@ -288,19 +352,25 @@ void main() {
 
       test('should handle undelete of non-existent note gracefully', () async {
         final deletedNotes = [
-          Note(id: 1, content: 'Deleted note 1', isPrivate: false, userId: 1,
-               isLong: false, isMarkdown: false, createdAt: 1640995200,
-               deletedAt: 1641000000, user: null, tags: []),
+          Note(
+              id: 1,
+              content: 'Deleted note 1',
+              isPrivate: false,
+              userId: 1,
+              isLong: false,
+              isMarkdown: false,
+              createdAt: 1640995200,
+              deletedAt: 1641000000,
+              user: null,
+              tags: []),
         ];
 
         // Setup initial state
-        when(mockNotesService.latestDeleted(10, 1))
-            .thenAnswer((_) async => NotesResult(deletedNotes, 1));
+        when(mockNotesService.latestDeleted(10, 1)).thenAnswer((_) async => NotesResult(deletedNotes, 1));
         await trashProvider.navigateToPage(1);
 
         // Setup successful undelete (service doesn't care about local existence)
-        when(mockNotesService.undelete(999))
-            .thenAnswer((_) async => 1);
+        when(mockNotesService.undelete(999)).thenAnswer((_) async => 1);
         when(mockNotesService.latestDeleted(10, 1))
             .thenAnswer((_) async => NotesResult(deletedNotes, 1)); // Refresh result
 
@@ -316,12 +386,19 @@ void main() {
 
     group('Get note functionality', () {
       test('should get deleted note successfully', () async {
-        final deletedNote = Note(id: 1, content: 'Deleted note', isPrivate: false, userId: 1,
-                                 isLong: false, isMarkdown: false, createdAt: 1640995200,
-                                 deletedAt: 1641000000, user: null, tags: []);
+        final deletedNote = Note(
+            id: 1,
+            content: 'Deleted note',
+            isPrivate: false,
+            userId: 1,
+            isLong: false,
+            isMarkdown: false,
+            createdAt: 1640995200,
+            deletedAt: 1641000000,
+            user: null,
+            tags: []);
 
-        when(mockNotesService.get(1))
-            .thenAnswer((_) async => deletedNote);
+        when(mockNotesService.get(1)).thenAnswer((_) async => deletedNote);
 
         final result = await trashProvider.getNote(1);
 
@@ -331,8 +408,7 @@ void main() {
       });
 
       test('should handle get note errors gracefully', () async {
-        when(mockNotesService.get(999))
-            .thenThrow(Exception('Note not found'));
+        when(mockNotesService.get(999)).thenThrow(Exception('Note not found'));
 
         final result = await trashProvider.getNote(999);
 
@@ -342,8 +418,7 @@ void main() {
       });
 
       test('should handle non-existent notes by throwing exception', () async {
-        when(mockNotesService.get(999))
-            .thenThrow(Exception('Note not found'));
+        when(mockNotesService.get(999)).thenThrow(Exception('Note not found'));
 
         final result = await trashProvider.getNote(999);
 
@@ -370,28 +445,50 @@ void main() {
     group('State management', () {
       test('should refresh trash results', () async {
         final initialNotes = [
-          Note(id: 1, content: 'Old deleted note', isPrivate: false, userId: 1,
-               isLong: false, isMarkdown: false, createdAt: 1640995200,
-               deletedAt: 1641000000, user: null, tags: []),
+          Note(
+              id: 1,
+              content: 'Old deleted note',
+              isPrivate: false,
+              userId: 1,
+              isLong: false,
+              isMarkdown: false,
+              createdAt: 1640995200,
+              deletedAt: 1641000000,
+              user: null,
+              tags: []),
         ];
         final refreshedNotes = [
-          Note(id: 1, content: 'Updated deleted note', isPrivate: false, userId: 1,
-               isLong: false, isMarkdown: false, createdAt: 1640995200,
-               deletedAt: 1641000000, user: null, tags: []),
-          Note(id: 2, content: 'New deleted note', isPrivate: false, userId: 2,
-               isLong: false, isMarkdown: false, createdAt: 1640995200,
-               deletedAt: 1641000000, user: null, tags: []),
+          Note(
+              id: 1,
+              content: 'Updated deleted note',
+              isPrivate: false,
+              userId: 1,
+              isLong: false,
+              isMarkdown: false,
+              createdAt: 1640995200,
+              deletedAt: 1641000000,
+              user: null,
+              tags: []),
+          Note(
+              id: 2,
+              content: 'New deleted note',
+              isPrivate: false,
+              userId: 2,
+              isLong: false,
+              isMarkdown: false,
+              createdAt: 1640995200,
+              deletedAt: 1641000000,
+              user: null,
+              tags: []),
         ];
 
         // Setup initial load
-        when(mockNotesService.latestDeleted(10, 1))
-            .thenAnswer((_) async => NotesResult(initialNotes, 1));
+        when(mockNotesService.latestDeleted(10, 1)).thenAnswer((_) async => NotesResult(initialNotes, 1));
         await trashProvider.navigateToPage(1);
         expect(trashProvider.notes.length, equals(1));
 
         // Setup refresh with new data
-        when(mockNotesService.latestDeleted(10, 1))
-            .thenAnswer((_) async => NotesResult(refreshedNotes, 2));
+        when(mockNotesService.latestDeleted(10, 1)).thenAnswer((_) async => NotesResult(refreshedNotes, 2));
         await trashProvider.refresh();
 
         // Verify refresh calls correct service method
@@ -402,25 +499,30 @@ void main() {
 
       test('should clear all data including purging state', () async {
         final testNotes = [
-          Note(id: 1, content: 'Deleted note', isPrivate: false, userId: 1,
-               isLong: false, isMarkdown: false, createdAt: 1640995200,
-               deletedAt: 1641000000, user: null, tags: []),
+          Note(
+              id: 1,
+              content: 'Deleted note',
+              isPrivate: false,
+              userId: 1,
+              isLong: false,
+              isMarkdown: false,
+              createdAt: 1640995200,
+              deletedAt: 1641000000,
+              user: null,
+              tags: []),
         ];
 
         // Setup some state
-        when(mockNotesService.latestDeleted(10, 1))
-            .thenAnswer((_) async => NotesResult(testNotes, 1));
+        when(mockNotesService.latestDeleted(10, 1)).thenAnswer((_) async => NotesResult(testNotes, 1));
         await trashProvider.navigateToPage(1);
         expect(trashProvider.notes.isNotEmpty, isTrue);
 
         // Simulate purging state
-        when(mockNotesService.purgeDeleted())
-            .thenAnswer((_) async {
-              await Future.delayed(const Duration(milliseconds: 10));
-              return 1;
-            });
-        when(mockNotesService.latestDeleted(10, 1))
-            .thenAnswer((_) async => NotesResult([], 0));
+        when(mockNotesService.purgeDeleted()).thenAnswer((_) async {
+          await Future.delayed(const Duration(milliseconds: 10));
+          return 1;
+        });
+        when(mockNotesService.latestDeleted(10, 1)).thenAnswer((_) async => NotesResult([], 0));
 
         final future = trashProvider.purgeDeleted(); // Start purging
         expect(trashProvider.isPurging, isTrue);

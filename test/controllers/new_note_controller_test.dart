@@ -68,11 +68,11 @@ void main() {
           createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000,
         );
         mockNote.tags = [];
-        
+
         noteModel.content = 'Test note';
         noteModel.isPrivate = false;
         noteModel.isMarkdown = false;
-        
+
         when(mockNotesProvider.addNote(
           any,
           isPrivate: anyNamed('isPrivate'),
@@ -88,11 +88,11 @@ void main() {
         final success = result as SaveNoteSuccess;
         expect(success.savedNote, equals(mockNote));
         expect(success.action, SaveNoteAction.popWithNote);
-        
+
         // Verify note model is cleared
         expect(noteModel.content, isEmpty);
         expect(noteModel.initialContent, '# '); // NoteModel adds prefix
-        
+
         // Verify service call
         verify(mockNotesProvider.addNote(
           'Test note',
@@ -121,11 +121,11 @@ void main() {
           createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000,
         );
         mockNote.tags = [];
-        
+
         noteModel.content = 'Test note';
         noteModel.isPrivate = true;
         noteModel.isMarkdown = true;
-        
+
         when(mockNotesProvider.addNote(
           any,
           isPrivate: anyNamed('isPrivate'),
@@ -135,7 +135,7 @@ void main() {
 
         // Act
         final result = await controller.saveNoteAsync(
-          noteModel, 
+          noteModel,
           mockNotesProvider,
           useCallback: true,
         );
@@ -150,10 +150,10 @@ void main() {
       test('should return service error when addNote returns null', () async {
         // Arrange
         noteModel.content = 'Test note';
-        when(mockNotesProvider.addNote(any, 
-            isPrivate: anyNamed('isPrivate'),
-            isMarkdown: anyNamed('isMarkdown'),
-            publishDateTime: anyNamed('publishDateTime')))
+        when(mockNotesProvider.addNote(any,
+                isPrivate: anyNamed('isPrivate'),
+                isMarkdown: anyNamed('isMarkdown'),
+                publishDateTime: anyNamed('publishDateTime')))
             .thenAnswer((_) async => null);
         when(mockNotesProvider.addError).thenReturn('Network error');
 
@@ -169,9 +169,9 @@ void main() {
         // Arrange
         noteModel.content = 'Test note';
         when(mockNotesProvider.addNote(any,
-            isPrivate: anyNamed('isPrivate'),
-            isMarkdown: anyNamed('isMarkdown'),
-            publishDateTime: anyNamed('publishDateTime')))
+                isPrivate: anyNamed('isPrivate'),
+                isMarkdown: anyNamed('isMarkdown'),
+                publishDateTime: anyNamed('publishDateTime')))
             .thenThrow(Exception('Database error'));
 
         // Act
@@ -204,10 +204,10 @@ void main() {
       });
 
       test('should return allow when content matches initial content pattern', () {
-        // Arrange  
+        // Arrange
         noteModel.initialContent = 'initial'; // This becomes '#initial '
         noteModel.content = '#initial '; // User hasn't changed the initial content
-        
+
         // Act
         final result = controller.handlePopAsync(noteModel, false);
 

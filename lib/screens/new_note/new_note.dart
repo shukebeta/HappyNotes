@@ -43,9 +43,7 @@ class NewNoteState extends State<NewNote> {
     noteModel.isPrivate = widget.isPrivate;
     noteModel.isMarkdown = AppConfig.markdownIsEnabled;
     noteModel.content = '';
-    noteModel.publishDateTime = widget.date != null
-        ? DateFormat('yyyy-MM-dd').format(widget.date!)
-        : '';
+    noteModel.publishDateTime = widget.date != null ? DateFormat('yyyy-MM-dd').format(widget.date!) : '';
     if (widget.initialTag != null) {
       noteModel.initialContent = widget.initialTag!;
     }
@@ -78,7 +76,7 @@ class NewNoteState extends State<NewNote> {
     }
   }
 
-  /// Handle PopHandlerResult from controller  
+  /// Handle PopHandlerResult from controller
   Future<void> _handlePopResult(
     BuildContext context,
     PopHandlerResult result,
@@ -119,13 +117,13 @@ class NewNoteState extends State<NewNote> {
               final notesProvider = providerContext.read<NotesProvider>();
               final scaffoldMessenger = ScaffoldMessenger.of(context);
               final navigator = Navigator.of(context);
-              
+
               final result = await _newNoteController.saveNoteAsync(
                 noteModel,
                 notesProvider,
                 useCallback: widget.onSaveSuccessInMainMenu != null,
               );
-              
+
               if (mounted) {
                 _handleSaveResultSync(
                   scaffoldMessenger,
@@ -155,9 +153,7 @@ class NewNoteState extends State<NewNote> {
                     return Text(
                       _getNoteTitle(noteModel),
                       style: TextStyle(
-                        color: noteModel.isPrivate
-                            ? Colors.red
-                            : Colors.green, // Change colors accordingly
+                        color: noteModel.isPrivate ? Colors.red : Colors.green, // Change colors accordingly
                       ),
                     );
                   },
@@ -191,9 +187,7 @@ class NewNoteState extends State<NewNote> {
   String _getNoteTitle(NoteModel noteModel) {
     String privacyStatus = noteModel.isPrivate ? 'Private' : 'Public';
     String markdownIndicator = noteModel.isMarkdown ? ' with M↓' : '';
-    String onDate = widget.date != null
-        ? ' on ${DateFormat('dd-MMM-yyyy').format(widget.date!)}'
-        : '';
+    String onDate = widget.date != null ? ' on ${DateFormat('dd-MMM-yyyy').format(widget.date!)}' : '';
 
     return '$privacyStatus note$markdownIndicator$onDate';
   }

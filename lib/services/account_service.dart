@@ -18,9 +18,7 @@ class AccountService {
     required UserSettingsService userSettingsService,
     required TokenUtils tokenUtils,
     required AppLoggerInterface logger,
-  })
-      :
-        _accountApi = accountApi,
+  })  : _accountApi = accountApi,
         _userSettingsService = userSettingsService,
         _tokenUtils = tokenUtils,
         _logger = logger;

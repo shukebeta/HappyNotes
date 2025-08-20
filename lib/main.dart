@@ -83,7 +83,7 @@ void main() async {
               Provider.of<TrashProvider>(context, listen: false),
               Provider.of<DiscoveryProvider>(context, listen: false),
             );
-            
+
             // Register NoteUpdateCoordinator after AppStateProvider is created
             di.locator.registerLazySingleton<NoteUpdateCoordinator>(
               () => NoteUpdateCoordinator(
@@ -91,7 +91,7 @@ void main() async {
                 logger: di.locator(),
               ),
             );
-            
+
             return appStateProvider;
           },
         ),

@@ -99,7 +99,6 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
     setState(() {});
   }
 
-
   @override
   void dispose() {
     UserSession.routeObserver.unsubscribe(this);
@@ -109,9 +108,10 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
   Future<void> _saveNote(NoteModel noteModel) async {
     final logger = GetIt.instance<AppLoggerInterface>();
     final noteId = note?.id ?? widget.noteId!;
-    
-    logger.d('NoteDetail._saveNote called: noteId=$noteId, content length=${noteModel.content.length}, fromDetailPage=$_editingFromDetailPage');
-    
+
+    logger.d(
+        'NoteDetail._saveNote called: noteId=$noteId, content length=${noteModel.content.length}, fromDetailPage=$_editingFromDetailPage');
+
     if (_isSaving) {
       logger.d('NoteDetail._saveNote already saving, returning');
       return;
@@ -136,7 +136,7 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
       );
 
       logger.d('NoteDetail._saveNote success: updated note ${updatedNote.id}');
-      
+
       // Update local note for UI consistency
       note = updatedNote;
       widget.onNoteSaved?.call(updatedNote);
@@ -162,11 +162,11 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
       }
     } catch (e) {
       logger.e('NoteDetail._saveNote error: $e for noteId=$noteId');
-      
+
       setState(() {
         _isSaving = false;
       });
-      
+
       if (mounted) {
         Util.showError(scaffoldMessenger, 'Failed to update note: ${e.toString()}');
       }
@@ -263,9 +263,7 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
                       if (note?.userId == UserSession().id) ...[
                         if (_isEditing)
                           IconButton(
-                            icon: _isSaving
-                                ? const CircularProgressIndicator()
-                                : const Icon(Icons.check),
+                            icon: _isSaving ? const CircularProgressIndicator() : const Icon(Icons.check),
                             onPressed: _saveNoteHandler,
                           )
                         else
@@ -353,11 +351,11 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
                                   ),
                                 Expanded(
                                   child: _isEditing
-                                    ? NoteEdit(
-                                        note: note!,
-                                        onSubmit: _saveNoteHandler,
-                                      )
-                                    : NoteView(note: note!),
+                                      ? NoteEdit(
+                                          note: note!,
+                                          onSubmit: _saveNoteHandler,
+                                        )
+                                      : NoteView(note: note!),
                                 ),
                               ],
                             );

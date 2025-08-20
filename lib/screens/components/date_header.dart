@@ -22,11 +22,12 @@ class DateHeader extends StatelessWidget {
         child: Center(
           child: Text(
             _formatDate(date),
-            style: style ?? const TextStyle(
-              fontWeight: FontWeight.w300,
-              fontSize: 16,
-              color: Colors.blue,
-            ),
+            style: style ??
+                const TextStyle(
+                  fontWeight: FontWeight.w300,
+                  fontSize: 16,
+                  color: Colors.blue,
+                ),
           ),
         ),
       ),

@@ -6,8 +6,7 @@ import '../../../utils/util.dart';
 class TagCloudController {
   final NoteTagService _noteTagService;
 
-  TagCloudController({NoteTagService? noteTagService})
-      : _noteTagService = noteTagService ?? locator<NoteTagService>();
+  TagCloudController({NoteTagService? noteTagService}) : _noteTagService = noteTagService ?? locator<NoteTagService>();
 
   Future<Map<String, int>> loadTagCloud(BuildContext context) async {
     final scaffoldContext = ScaffoldMessenger.of(context);
@@ -16,8 +15,7 @@ class TagCloudController {
       return {for (var item in tagCloud) item.tag: item.count};
     } catch (error) {
       Util.showError(scaffoldContext, error.toString());
-    } finally {
-    }
+    } finally {}
     return {};
   }
 }

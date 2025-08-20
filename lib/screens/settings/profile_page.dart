@@ -51,7 +51,6 @@ class ProfilePage extends StatelessWidget {
                       subtitle: Text(user.email),
                     ),
                     const Divider(),
-
                     ListTile(
                       leading: const Icon(Icons.password),
                       title: const Text('Change Password'),
@@ -63,10 +62,10 @@ class ProfilePage extends StatelessWidget {
                         );
 
                         if (result == true && context.mounted) {
-                           Util.showInfo(
-                             ScaffoldMessenger.of(context),
-                             'Password changed successfully!',
-                           );
+                          Util.showInfo(
+                            ScaffoldMessenger.of(context),
+                            'Password changed successfully!',
+                          );
                         }
                       },
                     ),

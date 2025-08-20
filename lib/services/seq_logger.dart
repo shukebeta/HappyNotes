@@ -96,7 +96,6 @@ class SeqLogger {
         data: payload,
         options: Options(headers: headers),
       );
-
     } catch (e) {
       // Don't let logging errors break the app - only log to console in debug
       if (kDebugMode) {

@@ -106,9 +106,7 @@ class DiscoveryState extends State<Discovery> {
   IconButton _buildNewNoteButton(BuildContext context) {
     return IconButton(
       icon: Util.writeNoteIcon(),
-      tooltip: AppConfig.privateNoteOnlyIsEnabled
-          ? 'New Private Note'
-          : 'New Public Note',
+      tooltip: AppConfig.privateNoteOnlyIsEnabled ? 'New Private Note' : 'New Public Note',
       onPressed: () async {
         final scaffoldMessenger = ScaffoldMessenger.of(context);
         final savedSuccessfully = await Navigator.push(
@@ -165,47 +163,47 @@ class DiscoveryState extends State<Discovery> {
               child: ChangeNotifierProvider<NoteListProvider>.value(
                 value: discoveryProvider,
                 child: NoteList(
-                groupedNotes: discoveryProvider.groupedNotes,
-                showDateHeader: true,
-                callbacks: ListItemCallbacks<Note>(
-                  onTap: (note) async {
-                    final saved = await Navigator.push<bool>(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => NoteDetail(note: note),
-                          ),
-                        );
-                    _handleEditResult(saved);
-                  },
-                  onDoubleTap: (note) async {
-                    final saved = await Navigator.push<bool>(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => NoteDetail(note: note, enterEditing: note.userId == UserSession().id),
-                          ),
-                        );
-                    _handleEditResult(saved);
-                  },
-                  onDelete: (note) async {
-                    final messenger = ScaffoldMessenger.of(context);
-                    final result = await discoveryProvider.deleteNote(note.id);
-                    if (result.isError && mounted) {
-                      messenger.showSnackBar(
-                        SnackBar(content: Text('Delete failed: ${result.errorMessage}')),
+                  groupedNotes: discoveryProvider.groupedNotes,
+                  showDateHeader: true,
+                  callbacks: ListItemCallbacks<Note>(
+                    onTap: (note) async {
+                      final saved = await Navigator.push<bool>(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => NoteDetail(note: note),
+                        ),
                       );
-                    }
-                  },
-                ),
-                noteCallbacks: NoteListCallbacks(
-                  onTagTap: (note, tag) => NavigationHelper.onTagTap(context, note, tag),
-                  onRefresh: () async => await refreshPage(),
-                ),
-                config: const ListItemConfig(
-                  showDate: false,
-                  showAuthor: true,
-                  showRestoreButton: false,
-                  enableDismiss: true,
-                ),
+                      _handleEditResult(saved);
+                    },
+                    onDoubleTap: (note) async {
+                      final saved = await Navigator.push<bool>(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => NoteDetail(note: note, enterEditing: note.userId == UserSession().id),
+                        ),
+                      );
+                      _handleEditResult(saved);
+                    },
+                    onDelete: (note) async {
+                      final messenger = ScaffoldMessenger.of(context);
+                      final result = await discoveryProvider.deleteNote(note.id);
+                      if (result.isError && mounted) {
+                        messenger.showSnackBar(
+                          SnackBar(content: Text('Delete failed: ${result.errorMessage}')),
+                        );
+                      }
+                    },
+                  ),
+                  noteCallbacks: NoteListCallbacks(
+                    onTagTap: (note, tag) => NavigationHelper.onTagTap(context, note, tag),
+                    onRefresh: () async => await refreshPage(),
+                  ),
+                  config: const ListItemConfig(
+                    showDate: false,
+                    showAuthor: true,
+                    showRestoreButton: false,
+                    enableDismiss: true,
+                  ),
                 ),
               ),
             ),

@@ -65,12 +65,13 @@ class AddTelegramSettingState extends State<AddTelegramSetting> {
           contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           errorMaxLines: 2,
         ),
-        validator: validator ?? (value) {
-          if (value == null || value.trim().isEmpty) {
-            return '$label is required';
-          }
-          return null;
-        },
+        validator: validator ??
+            (value) {
+              if (value == null || value.trim().isEmpty) {
+                return '$label is required';
+              }
+              return null;
+            },
       ),
     );
   }
@@ -96,7 +97,8 @@ class AddTelegramSettingState extends State<AddTelegramSetting> {
       }
     } catch (e) {
       if (mounted) {
-        Util.showError(ScaffoldMessenger.of(context), 'Failed to save settings: ${e.toString()}'); // Replaced showSnackBar
+        Util.showError(
+            ScaffoldMessenger.of(context), 'Failed to save settings: ${e.toString()}'); // Replaced showSnackBar
       }
     } finally {
       if (mounted) {
@@ -234,17 +236,17 @@ class AddTelegramSettingState extends State<AddTelegramSetting> {
                   onPressed: _isLoading ? null : _saveSetting,
                   child: _isLoading
                       ? const SizedBox(
-                    height: 20,
-                    width: 20,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                    ),
-                  )
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                          ),
+                        )
                       : const Text(
-                    'Save Settings',
-                    style: TextStyle(fontSize: 16),
-                  ),
+                          'Save Settings',
+                          style: TextStyle(fontSize: 16),
+                        ),
                 ),
               ),
             ],

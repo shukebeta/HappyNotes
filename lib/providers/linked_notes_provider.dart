@@ -90,8 +90,7 @@ class LinkedNotesProvider extends AuthAwareProvider {
     _linkedNotesCache[parentNoteId] ??= [];
 
     // Check if note already exists (avoid duplicates)
-    final existingIndex = _linkedNotesCache[parentNoteId]!
-        .indexWhere((note) => note.id == newNote.id);
+    final existingIndex = _linkedNotesCache[parentNoteId]!.indexWhere((note) => note.id == newNote.id);
 
     if (existingIndex == -1) {
       // Add new note and sort by creation date (newest first)

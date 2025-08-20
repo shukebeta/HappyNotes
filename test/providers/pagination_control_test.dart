@@ -32,19 +32,20 @@ void main() {
 
       test('canAutoLoadNext should return true when conditions are met', () async {
         // Mock multi-page scenario
-        final notes = List.generate(10, (i) => Note(
-          id: i + 1,
-          content: 'Note ${i + 1}',
-          isPrivate: false,
-          userId: 1,
-          isLong: false,
-          isMarkdown: false,
-          createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000,
-        ));
+        final notes = List.generate(
+            10,
+            (i) => Note(
+                  id: i + 1,
+                  content: 'Note ${i + 1}',
+                  isPrivate: false,
+                  userId: 1,
+                  isLong: false,
+                  isMarkdown: false,
+                  createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000,
+                ));
         final result = NotesResult(notes, 25); // 25 total notes, 3 pages
 
-        when(mockNotesService.myLatest(any, any))
-            .thenAnswer((_) async => result);
+        when(mockNotesService.myLatest(any, any)).thenAnswer((_) async => result);
 
         // Load first page and wait for completion
         await notesProvider.navigateToPage(1);
@@ -60,19 +61,20 @@ void main() {
 
       test('canAutoLoadPrevious should return true when on page > 1', () async {
         // Mock multi-page scenario and navigate to page 2
-        final notes = List.generate(10, (i) => Note(
-          id: i + 1,
-          content: 'Note ${i + 1}',
-          isPrivate: false,
-          userId: 1,
-          isLong: false,
-          isMarkdown: false,
-          createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000,
-        ));
+        final notes = List.generate(
+            10,
+            (i) => Note(
+                  id: i + 1,
+                  content: 'Note ${i + 1}',
+                  isPrivate: false,
+                  userId: 1,
+                  isLong: false,
+                  isMarkdown: false,
+                  createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000,
+                ));
         final result = NotesResult(notes, 25);
 
-        when(mockNotesService.myLatest(any, any))
-            .thenAnswer((_) async => result);
+        when(mockNotesService.myLatest(any, any)).thenAnswer((_) async => result);
 
         // First navigate to page 1 to establish total pages
         await notesProvider.navigateToPage(1);
@@ -103,18 +105,19 @@ void main() {
       test('canAutoLoadNext should always return false', () {
         // Even with data that would normally support pagination
         const testDate = '20250812';
-        final notes = List.generate(50, (i) => Note(
-          id: i + 1,
-          content: 'Memory ${i + 1}',
-          isPrivate: false,
-          userId: 1,
-          isLong: false,
-          isMarkdown: false,
-          createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000,
-        ));
+        final notes = List.generate(
+            50,
+            (i) => Note(
+                  id: i + 1,
+                  content: 'Memory ${i + 1}',
+                  isPrivate: false,
+                  userId: 1,
+                  isLong: false,
+                  isMarkdown: false,
+                  createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000,
+                ));
 
-        when(mockNotesService.memoriesOn(testDate))
-            .thenAnswer((_) async => NotesResult(notes, notes.length));
+        when(mockNotesService.memoriesOn(testDate)).thenAnswer((_) async => NotesResult(notes, notes.length));
 
         memoriesProvider.setCurrentDate(testDate);
         memoriesProvider.loadMemoriesForDate(testDate);
@@ -188,11 +191,10 @@ void main() {
         final notesProvider = NotesProvider(mockNotesService);
 
         // Mock a slow loading response
-        when(mockNotesService.myLatest(any, any))
-            .thenAnswer((_) async {
-              await Future.delayed(const Duration(milliseconds: 10));
-              return NotesResult([], 0);
-            });
+        when(mockNotesService.myLatest(any, any)).thenAnswer((_) async {
+          await Future.delayed(const Duration(milliseconds: 10));
+          return NotesResult([], 0);
+        });
 
         // Start loading and check state before completion
         final loadFuture = notesProvider.navigateToPage(1);
@@ -211,22 +213,23 @@ void main() {
       test('should handle pagination state correctly during auto-loading', () async {
         final notesProvider = NotesProvider(mockNotesService);
 
-        final notes = List.generate(10, (i) => Note(
-          id: i + 1,
-          content: 'Note ${i + 1}',
-          isPrivate: false,
-          userId: 1,
-          isLong: false,
-          isMarkdown: false,
-          createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000,
-        ));
+        final notes = List.generate(
+            10,
+            (i) => Note(
+                  id: i + 1,
+                  content: 'Note ${i + 1}',
+                  isPrivate: false,
+                  userId: 1,
+                  isLong: false,
+                  isMarkdown: false,
+                  createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000,
+                ));
         final result = NotesResult(notes, 25);
 
-        when(mockNotesService.myLatest(any, any))
-            .thenAnswer((_) async {
-              await Future.delayed(const Duration(milliseconds: 10));
-              return result;
-            });
+        when(mockNotesService.myLatest(any, any)).thenAnswer((_) async {
+          await Future.delayed(const Duration(milliseconds: 10));
+          return result;
+        });
 
         // Load initial page
         await notesProvider.navigateToPage(1);

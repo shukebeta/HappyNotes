@@ -5,8 +5,12 @@ class OperationResult<T> {
   final T? data;
   final String? errorMessage;
 
-  OperationResult.success(this.data) : success = true, errorMessage = null;
-  OperationResult.error(this.errorMessage) : success = false, data = null;
+  OperationResult.success(this.data)
+      : success = true,
+        errorMessage = null;
+  OperationResult.error(this.errorMessage)
+      : success = false,
+        data = null;
 
   // Convenience getters
   bool get isSuccess => success;
@@ -26,8 +30,6 @@ class OperationResult<T> {
 
   @override
   String toString() {
-    return success
-        ? 'OperationResult.success($data)'
-        : 'OperationResult.error($errorMessage)';
+    return success ? 'OperationResult.success($data)' : 'OperationResult.error($errorMessage)';
   }
 }

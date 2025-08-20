@@ -72,10 +72,11 @@ class MastodonSyncSettingsState extends State<MastodonSyncSettings> {
                             TextSpan(
                               text: setting.syncTypeText,
                               style: const TextStyle(color: Colors.blue, fontSize: 16),
-                              recognizer: TapGestureRecognizer()..onTap = () async {
-                                await _settingsController.nextSyncType(context, setting);
-                                _loadSyncSettings();
-                              },
+                              recognizer: TapGestureRecognizer()
+                                ..onTap = () async {
+                                  await _settingsController.nextSyncType(context, setting);
+                                  _loadSyncSettings();
+                                },
                             ),
                           ],
                         ),

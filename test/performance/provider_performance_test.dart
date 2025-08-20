@@ -24,18 +24,20 @@ void main() {
 
     test('should efficiently handle large datasets', () async {
       // Generate large dataset
-      final largeNotesList = List.generate(1000, (index) => Note(
-        id: index + 1,
-        userId: 123,
-        content: 'Performance test note ${index + 1}',
-        isPrivate: index % 2 == 0,
-        isMarkdown: index % 3 == 0,
-        isLong: index % 4 == 0,
-        createdAt: 1640995200 + index * 60,
-        deletedAt: null,
-        user: null,
-        tags: [],
-      ));
+      final largeNotesList = List.generate(
+          1000,
+          (index) => Note(
+                id: index + 1,
+                userId: 123,
+                content: 'Performance test note ${index + 1}',
+                isPrivate: index % 2 == 0,
+                isMarkdown: index % 3 == 0,
+                isLong: index % 4 == 0,
+                createdAt: 1640995200 + index * 60,
+                deletedAt: null,
+                user: null,
+                tags: [],
+              ));
 
       when(mockNotesService.myLatest(10, 1))
           .thenAnswer((_) async => NotesResult(largeNotesList.take(10).toList(), 1000));
@@ -64,36 +66,39 @@ void main() {
 
     test('should optimize memory usage with pagination', () async {
       const pageSize = 10;
-      final mockNotes = List.generate(pageSize, (index) => Note(
-        id: index + 1,
-        userId: 123,
-        content: 'Memory test note ${index + 1}',
-        isPrivate: false,
-        isMarkdown: false,
-        isLong: false,
-        createdAt: 1640995200 + index * 60,
-        deletedAt: null,
-        user: null,
-        tags: [],
-      ));
+      final mockNotes = List.generate(
+          pageSize,
+          (index) => Note(
+                id: index + 1,
+                userId: 123,
+                content: 'Memory test note ${index + 1}',
+                isPrivate: false,
+                isMarkdown: false,
+                isLong: false,
+                createdAt: 1640995200 + index * 60,
+                deletedAt: null,
+                user: null,
+                tags: [],
+              ));
 
-      when(mockNotesService.myLatest(pageSize, any))
-          .thenAnswer((invocation) async {
+      when(mockNotesService.myLatest(pageSize, any)).thenAnswer((invocation) async {
         final page = invocation.positionalArguments[1] as int;
         final startIndex = (page - 1) * pageSize;
         return NotesResult(
-          mockNotes.map((note) => Note(
-            id: note.id + startIndex,
-            userId: note.userId,
-            content: '${note.content} Page $page',
-            isPrivate: note.isPrivate,
-            isMarkdown: note.isMarkdown,
-            isLong: note.isLong,
-            createdAt: note.createdAt + startIndex * 60,
-            deletedAt: note.deletedAt,
-            user: note.user,
-            tags: note.tags,
-          )).toList(),
+          mockNotes
+              .map((note) => Note(
+                    id: note.id + startIndex,
+                    userId: note.userId,
+                    content: '${note.content} Page $page',
+                    isPrivate: note.isPrivate,
+                    isMarkdown: note.isMarkdown,
+                    isLong: note.isLong,
+                    createdAt: note.createdAt + startIndex * 60,
+                    deletedAt: note.deletedAt,
+                    user: note.user,
+                    tags: note.tags,
+                  ))
+              .toList(),
           1000,
         );
       });
@@ -114,8 +119,7 @@ void main() {
     });
 
     test('should debounce rapid successive calls', () async {
-      when(mockNotesService.myLatest(10, 1))
-          .thenAnswer((_) async {
+      when(mockNotesService.myLatest(10, 1)).thenAnswer((_) async {
         await Future.delayed(const Duration(milliseconds: 10));
         return NotesResult([], 0);
       });
@@ -134,33 +138,34 @@ void main() {
     });
 
     test('should efficiently update cache without full reload', () async {
-      final initialNotes = List.generate(5, (index) => Note(
-        id: index + 1,
-        userId: 123,
-        content: 'Initial note ${index + 1}',
-        isPrivate: false,
-        isMarkdown: false,
-        isLong: false,
-        createdAt: 1640995200 + index * 60,
-        deletedAt: null,
-        user: null,
-        tags: [],
-      ));
+      final initialNotes = List.generate(
+          5,
+          (index) => Note(
+                id: index + 1,
+                userId: 123,
+                content: 'Initial note ${index + 1}',
+                isPrivate: false,
+                isMarkdown: false,
+                isLong: false,
+                createdAt: 1640995200 + index * 60,
+                deletedAt: null,
+                user: null,
+                tags: [],
+              ));
 
-      when(mockNotesService.myLatest(10, 1))
-          .thenAnswer((_) async => NotesResult(initialNotes, 5));
+      when(mockNotesService.myLatest(10, 1)).thenAnswer((_) async => NotesResult(initialNotes, 5));
       final updatedNote = Note(
-            id: initialNotes[0].id,
-            userId: initialNotes[0].userId,
-            content: 'Updated content',
-            isPrivate: initialNotes[0].isPrivate,
-            isLong: initialNotes[0].isLong,
-            isMarkdown: initialNotes[0].isMarkdown,
-            createdAt: initialNotes[0].createdAt,
-            deletedAt: initialNotes[0].deletedAt,
-            user: initialNotes[0].user,
-            tags: initialNotes[0].tags,
-          );
+        id: initialNotes[0].id,
+        userId: initialNotes[0].userId,
+        content: 'Updated content',
+        isPrivate: initialNotes[0].isPrivate,
+        isLong: initialNotes[0].isLong,
+        isMarkdown: initialNotes[0].isMarkdown,
+        createdAt: initialNotes[0].createdAt,
+        deletedAt: initialNotes[0].deletedAt,
+        user: initialNotes[0].user,
+        tags: initialNotes[0].tags,
+      );
       when(mockNotesService.update(1, 'Updated content', false, false))
           .thenAnswer((_) async => updatedNote); // Returns complete note
 
@@ -195,13 +200,10 @@ void main() {
 
       // Should not have triggered any additional API calls
       verifyNever(mockNotesService.update(any, any, any, any));
-
-
     });
 
     test('should handle listener notifications efficiently', () async {
-      when(mockNotesService.myLatest(10, 1))
-          .thenAnswer((_) async => NotesResult([], 0));
+      when(mockNotesService.myLatest(10, 1)).thenAnswer((_) async => NotesResult([], 0));
 
       var listenerCallCount = 0;
       final stopwatch = Stopwatch();
@@ -223,8 +225,7 @@ void main() {
     });
 
     test('should clean up resources properly', () async {
-      when(mockNotesService.myLatest(10, 1))
-          .thenAnswer((_) async => NotesResult([], 0));
+      when(mockNotesService.myLatest(10, 1)).thenAnswer((_) async => NotesResult([], 0));
 
       // Add listeners
       void listener1() {}

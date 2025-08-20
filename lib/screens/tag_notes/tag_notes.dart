@@ -67,16 +67,14 @@ class TagNotesState extends State<TagNotes> {
       appBar: AppBar(
         title: TappableAppBarTitle(
           title: 'Notes with tag: ${widget.tag}',
-          onTap: () =>
-              NavigationHelper.showTagInputDialog(context, replacePage: true),
+          onTap: () => NavigationHelper.showTagInputDialog(context, replacePage: true),
           onLongPress: () async {
             final navigator = Navigator.of(context);
             final tagCloudController = TagCloudController();
             final tagData = await tagCloudController.loadTagCloud(context);
             // Show tag diagram on long press
             if (!mounted) return;
-            NavigationHelper.showTagDiagram(navigator.context, tagData,
-                myNotesOnly: widget.myNotesOnly);
+            NavigationHelper.showTagDiagram(navigator.context, tagData, myNotesOnly: widget.myNotesOnly);
           },
         ),
         actions: [
@@ -153,52 +151,49 @@ class TagNotesState extends State<TagNotes> {
               child: ChangeNotifierProvider<NoteListProvider>.value(
                 value: tagProvider,
                 child: NoteList(
-                groupedNotes: tagProvider.groupedNotes,
-                showDateHeader: true,
-                callbacks: ListItemCallbacks<Note>(
-                  onTap: (note) async {
-                    await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => NoteDetail(note: note),
-                      ),
-                    );
-                    await navigateToPage(currentPageNumber);
-                  },
-                  onDoubleTap: (note) async {
-                    await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => NoteDetail(
-                            note: note,
-                            enterEditing: note.userId == UserSession().id),
-                      ),
-                    );
-                    navigateToPage(currentPageNumber);
-                  },
-                  onDelete: (note) async {
-                    final messenger = ScaffoldMessenger.of(context);
-                    final result = await tagProvider.deleteNote(note.id);
-                    if (result.isError && mounted) {
-                      messenger.showSnackBar(
-                        SnackBar(content: Text('Delete failed: ${result.errorMessage}')),
+                  groupedNotes: tagProvider.groupedNotes,
+                  showDateHeader: true,
+                  callbacks: ListItemCallbacks<Note>(
+                    onTap: (note) async {
+                      await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => NoteDetail(note: note),
+                        ),
                       );
-                    }
-                    await navigateToPage(currentPageNumber);
-                  },
-                ),
-                noteCallbacks: NoteListCallbacks(
-                  onTagTap: (note, tag) =>
-                      NavigationHelper.onTagTap(context, note, tag),
-                  onRefresh: () async => await navigateToPage(currentPageNumber),
-                ),
-                config: const ListItemConfig(
-                  showDate: false,
-                  showRestoreButton: false,
-                  enableDismiss: true,
+                      await navigateToPage(currentPageNumber);
+                    },
+                    onDoubleTap: (note) async {
+                      await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => NoteDetail(note: note, enterEditing: note.userId == UserSession().id),
+                        ),
+                      );
+                      navigateToPage(currentPageNumber);
+                    },
+                    onDelete: (note) async {
+                      final messenger = ScaffoldMessenger.of(context);
+                      final result = await tagProvider.deleteNote(note.id);
+                      if (result.isError && mounted) {
+                        messenger.showSnackBar(
+                          SnackBar(content: Text('Delete failed: ${result.errorMessage}')),
+                        );
+                      }
+                      await navigateToPage(currentPageNumber);
+                    },
+                  ),
+                  noteCallbacks: NoteListCallbacks(
+                    onTagTap: (note, tag) => NavigationHelper.onTagTap(context, note, tag),
+                    onRefresh: () async => await navigateToPage(currentPageNumber),
+                  ),
+                  config: const ListItemConfig(
+                    showDate: false,
+                    showRestoreButton: false,
+                    enableDismiss: true,
+                  ),
                 ),
               ),
-                ),
             ),
             if (tagProvider.totalPages > 1 && UserSession().isDesktop)
               PaginationControls(

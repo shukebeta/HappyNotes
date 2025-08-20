@@ -33,17 +33,32 @@ void main() {
       test('should load linked notes successfully', () async {
         const parentNoteId = 123;
         final linkedNotes = [
-          Note(id: 1, content: 'Linked note 1', isPrivate: false, userId: 1,
-               isLong: false, isMarkdown: false, createdAt: 1640995200,
-               deletedAt: null, user: null, tags: ['@123']),
-          Note(id: 2, content: 'Linked note 2', isPrivate: false, userId: 2,
-               isLong: false, isMarkdown: false, createdAt: 1640995100,
-               deletedAt: null, user: null, tags: ['@123']),
+          Note(
+              id: 1,
+              content: 'Linked note 1',
+              isPrivate: false,
+              userId: 1,
+              isLong: false,
+              isMarkdown: false,
+              createdAt: 1640995200,
+              deletedAt: null,
+              user: null,
+              tags: ['@123']),
+          Note(
+              id: 2,
+              content: 'Linked note 2',
+              isPrivate: false,
+              userId: 2,
+              isLong: false,
+              isMarkdown: false,
+              createdAt: 1640995100,
+              deletedAt: null,
+              user: null,
+              tags: ['@123']),
         ];
         final result = NotesResult(linkedNotes, 2);
 
-        when(mockNotesService.getLinkedNotes(parentNoteId))
-            .thenAnswer((_) async => result);
+        when(mockNotesService.getLinkedNotes(parentNoteId)).thenAnswer((_) async => result);
 
         await linkedNotesProvider.loadLinkedNotes(parentNoteId);
 
@@ -56,8 +71,7 @@ void main() {
       test('should handle service errors during loading', () async {
         const parentNoteId = 123;
 
-        when(mockNotesService.getLinkedNotes(parentNoteId))
-            .thenThrow(Exception('Service unavailable'));
+        when(mockNotesService.getLinkedNotes(parentNoteId)).thenThrow(Exception('Service unavailable'));
 
         await linkedNotesProvider.loadLinkedNotes(parentNoteId);
 
@@ -71,11 +85,10 @@ void main() {
         const parentNoteId = 123;
 
         // Setup a slow response
-        when(mockNotesService.getLinkedNotes(parentNoteId))
-            .thenAnswer((_) async {
-              await Future.delayed(const Duration(milliseconds: 100));
-              return NotesResult([], 0);
-            });
+        when(mockNotesService.getLinkedNotes(parentNoteId)).thenAnswer((_) async {
+          await Future.delayed(const Duration(milliseconds: 100));
+          return NotesResult([], 0);
+        });
 
         // Start first load
         final future1 = linkedNotesProvider.loadLinkedNotes(parentNoteId);
@@ -95,10 +108,8 @@ void main() {
         const parentNoteId1 = 123;
         const parentNoteId2 = 456;
 
-        when(mockNotesService.getLinkedNotes(parentNoteId1))
-            .thenAnswer((_) async => NotesResult([], 0));
-        when(mockNotesService.getLinkedNotes(parentNoteId2))
-            .thenAnswer((_) async => NotesResult([], 0));
+        when(mockNotesService.getLinkedNotes(parentNoteId1)).thenAnswer((_) async => NotesResult([], 0));
+        when(mockNotesService.getLinkedNotes(parentNoteId2)).thenAnswer((_) async => NotesResult([], 0));
 
         await Future.wait([
           linkedNotesProvider.loadLinkedNotes(parentNoteId1),
@@ -114,25 +125,39 @@ void main() {
       test('should refresh linked notes by clearing cache first', () async {
         const parentNoteId = 123;
         final initialNotes = [
-          Note(id: 1, content: 'Initial note', isPrivate: false, userId: 1,
-               isLong: false, isMarkdown: false, createdAt: 1640995200,
-               deletedAt: null, user: null, tags: ['@123']),
+          Note(
+              id: 1,
+              content: 'Initial note',
+              isPrivate: false,
+              userId: 1,
+              isLong: false,
+              isMarkdown: false,
+              createdAt: 1640995200,
+              deletedAt: null,
+              user: null,
+              tags: ['@123']),
         ];
         final refreshedNotes = [
-          Note(id: 2, content: 'Refreshed note', isPrivate: false, userId: 1,
-               isLong: false, isMarkdown: false, createdAt: 1640995200,
-               deletedAt: null, user: null, tags: ['@123']),
+          Note(
+              id: 2,
+              content: 'Refreshed note',
+              isPrivate: false,
+              userId: 1,
+              isLong: false,
+              isMarkdown: false,
+              createdAt: 1640995200,
+              deletedAt: null,
+              user: null,
+              tags: ['@123']),
         ];
 
         // Setup initial load
-        when(mockNotesService.getLinkedNotes(parentNoteId))
-            .thenAnswer((_) async => NotesResult(initialNotes, 1));
+        when(mockNotesService.getLinkedNotes(parentNoteId)).thenAnswer((_) async => NotesResult(initialNotes, 1));
         await linkedNotesProvider.loadLinkedNotes(parentNoteId);
         expect(linkedNotesProvider.getLinkedNotes(parentNoteId), equals(initialNotes));
 
         // Setup refresh with different data
-        when(mockNotesService.getLinkedNotes(parentNoteId))
-            .thenAnswer((_) async => NotesResult(refreshedNotes, 1));
+        when(mockNotesService.getLinkedNotes(parentNoteId)).thenAnswer((_) async => NotesResult(refreshedNotes, 1));
         await linkedNotesProvider.refreshLinkedNotes(parentNoteId);
 
         verify(mockNotesService.getLinkedNotes(parentNoteId)).called(2);
@@ -143,16 +168,31 @@ void main() {
     group('Update functionality', () {
       test('should update linked note when tag is preserved', () async {
         const parentNoteId = 123;
-        final originalNote = Note(id: 1, content: 'Original content', isPrivate: false, userId: 1,
-                                  isLong: false, isMarkdown: false, createdAt: 1640995200,
-                                  deletedAt: null, user: null, tags: ['@123']);
-        final updatedNote = Note(id: 1, content: 'Updated content', isPrivate: false, userId: 1,
-                                 isLong: false, isMarkdown: false, createdAt: 1640995200,
-                                 deletedAt: null, user: null, tags: ['@123']);
+        final originalNote = Note(
+            id: 1,
+            content: 'Original content',
+            isPrivate: false,
+            userId: 1,
+            isLong: false,
+            isMarkdown: false,
+            createdAt: 1640995200,
+            deletedAt: null,
+            user: null,
+            tags: ['@123']);
+        final updatedNote = Note(
+            id: 1,
+            content: 'Updated content',
+            isPrivate: false,
+            userId: 1,
+            isLong: false,
+            isMarkdown: false,
+            createdAt: 1640995200,
+            deletedAt: null,
+            user: null,
+            tags: ['@123']);
 
         // Setup initial state
-        when(mockNotesService.getLinkedNotes(parentNoteId))
-            .thenAnswer((_) async => NotesResult([originalNote], 1));
+        when(mockNotesService.getLinkedNotes(parentNoteId)).thenAnswer((_) async => NotesResult([originalNote], 1));
         await linkedNotesProvider.loadLinkedNotes(parentNoteId);
 
         // Update the note
@@ -165,16 +205,31 @@ void main() {
 
       test('should remove linked note when tag is removed', () async {
         const parentNoteId = 123;
-        final originalNote = Note(id: 1, content: 'Original content', isPrivate: false, userId: 1,
-                                  isLong: false, isMarkdown: false, createdAt: 1640995200,
-                                  deletedAt: null, user: null, tags: ['@123']);
-        final updatedNote = Note(id: 1, content: 'Updated content', isPrivate: false, userId: 1,
-                                 isLong: false, isMarkdown: false, createdAt: 1640995200,
-                                 deletedAt: null, user: null, tags: ['other-tag']);
+        final originalNote = Note(
+            id: 1,
+            content: 'Original content',
+            isPrivate: false,
+            userId: 1,
+            isLong: false,
+            isMarkdown: false,
+            createdAt: 1640995200,
+            deletedAt: null,
+            user: null,
+            tags: ['@123']);
+        final updatedNote = Note(
+            id: 1,
+            content: 'Updated content',
+            isPrivate: false,
+            userId: 1,
+            isLong: false,
+            isMarkdown: false,
+            createdAt: 1640995200,
+            deletedAt: null,
+            user: null,
+            tags: ['other-tag']);
 
         // Setup initial state
-        when(mockNotesService.getLinkedNotes(parentNoteId))
-            .thenAnswer((_) async => NotesResult([originalNote], 1));
+        when(mockNotesService.getLinkedNotes(parentNoteId)).thenAnswer((_) async => NotesResult([originalNote], 1));
         await linkedNotesProvider.loadLinkedNotes(parentNoteId);
 
         // Update the note (without linking tag)
@@ -185,9 +240,17 @@ void main() {
 
       test('should ignore update for non-existent note', () async {
         const parentNoteId = 123;
-        final updatedNote = Note(id: 999, content: 'Non-existent note', isPrivate: false, userId: 1,
-                                 isLong: false, isMarkdown: false, createdAt: 1640995200,
-                                 deletedAt: null, user: null, tags: ['@123']);
+        final updatedNote = Note(
+            id: 999,
+            content: 'Non-existent note',
+            isPrivate: false,
+            userId: 1,
+            isLong: false,
+            isMarkdown: false,
+            createdAt: 1640995200,
+            deletedAt: null,
+            user: null,
+            tags: ['@123']);
 
         // No initial data loaded
         linkedNotesProvider.updateLinkedNote(parentNoteId, updatedNote);
@@ -199,9 +262,17 @@ void main() {
     group('Add functionality', () {
       test('should add new linked note with correct tag', () async {
         const parentNoteId = 123;
-        final newNote = Note(id: 1, content: 'New linked note', isPrivate: false, userId: 1,
-                             isLong: false, isMarkdown: false, createdAt: 1640995200,
-                             deletedAt: null, user: null, tags: ['@123']);
+        final newNote = Note(
+            id: 1,
+            content: 'New linked note',
+            isPrivate: false,
+            userId: 1,
+            isLong: false,
+            isMarkdown: false,
+            createdAt: 1640995200,
+            deletedAt: null,
+            user: null,
+            tags: ['@123']);
 
         linkedNotesProvider.addLinkedNote(parentNoteId, newNote);
 
@@ -212,9 +283,17 @@ void main() {
 
       test('should ignore note without correct linking tag', () async {
         const parentNoteId = 123;
-        final newNote = Note(id: 1, content: 'Unrelated note', isPrivate: false, userId: 1,
-                             isLong: false, isMarkdown: false, createdAt: 1640995200,
-                             deletedAt: null, user: null, tags: ['other-tag']);
+        final newNote = Note(
+            id: 1,
+            content: 'Unrelated note',
+            isPrivate: false,
+            userId: 1,
+            isLong: false,
+            isMarkdown: false,
+            createdAt: 1640995200,
+            deletedAt: null,
+            user: null,
+            tags: ['other-tag']);
 
         linkedNotesProvider.addLinkedNote(parentNoteId, newNote);
 
@@ -223,12 +302,28 @@ void main() {
 
       test('should sort notes by creation date (newest first)', () async {
         const parentNoteId = 123;
-        final olderNote = Note(id: 1, content: 'Older note', isPrivate: false, userId: 1,
-                               isLong: false, isMarkdown: false, createdAt: 1640995100,
-                               deletedAt: null, user: null, tags: ['@123']);
-        final newerNote = Note(id: 2, content: 'Newer note', isPrivate: false, userId: 1,
-                               isLong: false, isMarkdown: false, createdAt: 1640995200,
-                               deletedAt: null, user: null, tags: ['@123']);
+        final olderNote = Note(
+            id: 1,
+            content: 'Older note',
+            isPrivate: false,
+            userId: 1,
+            isLong: false,
+            isMarkdown: false,
+            createdAt: 1640995100,
+            deletedAt: null,
+            user: null,
+            tags: ['@123']);
+        final newerNote = Note(
+            id: 2,
+            content: 'Newer note',
+            isPrivate: false,
+            userId: 1,
+            isLong: false,
+            isMarkdown: false,
+            createdAt: 1640995200,
+            deletedAt: null,
+            user: null,
+            tags: ['@123']);
 
         linkedNotesProvider.addLinkedNote(parentNoteId, olderNote);
         linkedNotesProvider.addLinkedNote(parentNoteId, newerNote);
@@ -241,9 +336,17 @@ void main() {
 
       test('should prevent duplicate notes', () async {
         const parentNoteId = 123;
-        final note = Note(id: 1, content: 'Note', isPrivate: false, userId: 1,
-                          isLong: false, isMarkdown: false, createdAt: 1640995200,
-                          deletedAt: null, user: null, tags: ['@123']);
+        final note = Note(
+            id: 1,
+            content: 'Note',
+            isPrivate: false,
+            userId: 1,
+            isLong: false,
+            isMarkdown: false,
+            createdAt: 1640995200,
+            deletedAt: null,
+            user: null,
+            tags: ['@123']);
 
         linkedNotesProvider.addLinkedNote(parentNoteId, note);
         linkedNotesProvider.addLinkedNote(parentNoteId, note); // Try to add again
@@ -255,16 +358,31 @@ void main() {
     group('Remove functionality', () {
       test('should remove linked note by id', () async {
         const parentNoteId = 123;
-        final note1 = Note(id: 1, content: 'Note 1', isPrivate: false, userId: 1,
-                           isLong: false, isMarkdown: false, createdAt: 1640995200,
-                           deletedAt: null, user: null, tags: ['@123']);
-        final note2 = Note(id: 2, content: 'Note 2', isPrivate: false, userId: 1,
-                           isLong: false, isMarkdown: false, createdAt: 1640995200,
-                           deletedAt: null, user: null, tags: ['@123']);
+        final note1 = Note(
+            id: 1,
+            content: 'Note 1',
+            isPrivate: false,
+            userId: 1,
+            isLong: false,
+            isMarkdown: false,
+            createdAt: 1640995200,
+            deletedAt: null,
+            user: null,
+            tags: ['@123']);
+        final note2 = Note(
+            id: 2,
+            content: 'Note 2',
+            isPrivate: false,
+            userId: 1,
+            isLong: false,
+            isMarkdown: false,
+            createdAt: 1640995200,
+            deletedAt: null,
+            user: null,
+            tags: ['@123']);
 
         // Setup initial state
-        when(mockNotesService.getLinkedNotes(parentNoteId))
-            .thenAnswer((_) async => NotesResult([note1, note2], 2));
+        when(mockNotesService.getLinkedNotes(parentNoteId)).thenAnswer((_) async => NotesResult([note1, note2], 2));
         await linkedNotesProvider.loadLinkedNotes(parentNoteId);
 
         // Remove one note
@@ -290,14 +408,20 @@ void main() {
         const parentNoteId2 = 456;
 
         // Setup data for multiple parent notes
-        when(mockNotesService.getLinkedNotes(parentNoteId1))
-            .thenAnswer((_) async => NotesResult([
-              Note(id: 1, content: 'Note 1', isPrivate: false, userId: 1,
-                   isLong: false, isMarkdown: false, createdAt: 1640995200,
-                   deletedAt: null, user: null, tags: ['@123']),
+        when(mockNotesService.getLinkedNotes(parentNoteId1)).thenAnswer((_) async => NotesResult([
+              Note(
+                  id: 1,
+                  content: 'Note 1',
+                  isPrivate: false,
+                  userId: 1,
+                  isLong: false,
+                  isMarkdown: false,
+                  createdAt: 1640995200,
+                  deletedAt: null,
+                  user: null,
+                  tags: ['@123']),
             ], 1));
-        when(mockNotesService.getLinkedNotes(parentNoteId2))
-            .thenThrow(Exception('Error'));
+        when(mockNotesService.getLinkedNotes(parentNoteId2)).thenThrow(Exception('Error'));
 
         await linkedNotesProvider.loadLinkedNotes(parentNoteId1);
         await linkedNotesProvider.loadLinkedNotes(parentNoteId2);
@@ -321,14 +445,20 @@ void main() {
         const parentNoteId1 = 123;
         const parentNoteId2 = 456;
 
-        when(mockNotesService.getLinkedNotes(parentNoteId1))
-            .thenAnswer((_) async => NotesResult([
-              Note(id: 1, content: 'Note 1', isPrivate: false, userId: 1,
-                   isLong: false, isMarkdown: false, createdAt: 1640995200,
-                   deletedAt: null, user: null, tags: ['@123']),
+        when(mockNotesService.getLinkedNotes(parentNoteId1)).thenAnswer((_) async => NotesResult([
+              Note(
+                  id: 1,
+                  content: 'Note 1',
+                  isPrivate: false,
+                  userId: 1,
+                  isLong: false,
+                  isMarkdown: false,
+                  createdAt: 1640995200,
+                  deletedAt: null,
+                  user: null,
+                  tags: ['@123']),
             ], 1));
-        when(mockNotesService.getLinkedNotes(parentNoteId2))
-            .thenThrow(Exception('Service error'));
+        when(mockNotesService.getLinkedNotes(parentNoteId2)).thenThrow(Exception('Service error'));
 
         await linkedNotesProvider.loadLinkedNotes(parentNoteId1);
         await linkedNotesProvider.loadLinkedNotes(parentNoteId2);

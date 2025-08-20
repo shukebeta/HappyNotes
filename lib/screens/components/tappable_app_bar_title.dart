@@ -22,8 +22,7 @@ class TappableAppBarTitle extends StatelessWidget {
         children: [
           Text(title),
           const SizedBox(width: 8), // Add some spacing
-          const Icon(Icons.touch_app,
-              size: 18, color: Colors.blue), // Use blue color
+          const Icon(Icons.touch_app, size: 18, color: Colors.blue), // Use blue color
         ],
       ),
     );

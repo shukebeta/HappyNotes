@@ -143,9 +143,7 @@ class _RegistrationState extends State<Registration> {
                   builder: (context, authProvider, child) {
                     return Center(
                       child: ElevatedButton(
-                        onPressed: authProvider.isLoading
-                            ? null
-                            : () => _registerUser(context, authProvider),
+                        onPressed: authProvider.isLoading ? null : () => _registerUser(context, authProvider),
                         child: authProvider.isLoading
                             ? const CircularProgressIndicator(color: Colors.white)
                             : const Text('Register'),

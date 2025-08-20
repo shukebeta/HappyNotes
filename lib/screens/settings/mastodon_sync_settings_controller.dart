@@ -10,7 +10,7 @@ class MastodonSyncSettingsController {
   List<MastodonUserAccount> mastodonSettings = [];
 
   MastodonSyncSettingsController({required MastodonUserAccountService mastodonUserAccountService})
-      :_mastodonSettingService = mastodonUserAccountService;
+      : _mastodonSettingService = mastodonUserAccountService;
 
   Future<void> getMastodonSettings(BuildContext context) async {
     final scaffoldContext = ScaffoldMessenger.of(context);
@@ -48,6 +48,4 @@ class MastodonSyncSettingsController {
   Future<bool> deleteMastodonSetting(MastodonUserAccount setting) async {
     return await _mastodonSettingService.delete(setting);
   }
-
-
 }

@@ -15,32 +15,32 @@ class TimezoneDropdownItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DropdownButton<String>(
-        value: value,
-        onChanged: onChanged,
-        isExpanded: true,
-        menuMaxHeight: 300, // Limit dropdown height to prevent overlap
-        focusColor: Colors.transparent, // Remove focus color
-        items: items.map<DropdownMenuItem<String>>((Map<String, String> item) {
-          return DropdownMenuItem<String>(
-            value: item['name'],
-            child: Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    item['name']!,
-                    textAlign: TextAlign.left,
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
-                  ),
+      value: value,
+      onChanged: onChanged,
+      isExpanded: true,
+      menuMaxHeight: 300, // Limit dropdown height to prevent overlap
+      focusColor: Colors.transparent, // Remove focus color
+      items: items.map<DropdownMenuItem<String>>((Map<String, String> item) {
+        return DropdownMenuItem<String>(
+          value: item['name'],
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  item['name']!,
+                  textAlign: TextAlign.left,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
                 ),
-                Text(
-                  item['offset']!,
-                  textAlign: TextAlign.right,
-                ),
-              ],
-            ),
-          );
-        }).toList(),
+              ),
+              Text(
+                item['offset']!,
+                textAlign: TextAlign.right,
+              ),
+            ],
+          ),
+        );
+      }).toList(),
     );
   }
 }

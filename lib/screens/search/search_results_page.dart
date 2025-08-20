@@ -51,15 +51,13 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
       appBar: AppBar(
         title: TappableAppBarTitle(
           title: 'Search: "${widget.query}"',
-          onTap: () =>
-              NavigationHelper.showTagInputDialog(context, replacePage: true),
+          onTap: () => NavigationHelper.showTagInputDialog(context, replacePage: true),
           onLongPress: () async {
             final navigator = Navigator.of(context);
             final tagCloudController = TagCloudController();
             final tagData = await tagCloudController.loadTagCloud(context);
             if (!mounted) return;
-            NavigationHelper.showTagDiagram(navigator.context, tagData,
-                myNotesOnly: true);
+            NavigationHelper.showTagDiagram(navigator.context, tagData, myNotesOnly: true);
           },
         ),
         actions: [
@@ -111,8 +109,7 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
       return Center(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: Text('Error: ${searchProvider.error}',
-              style: const TextStyle(color: Colors.red)),
+          child: Text('Error: ${searchProvider.error}', style: const TextStyle(color: Colors.red)),
         ),
       );
     }
@@ -130,53 +127,46 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
               groupedNotes: searchProvider.groupedNotes,
               showDateHeader: true,
               callbacks: ListItemCallbacks<Note>(
-              onTap: (note) async {
-                final result = await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => NoteDetail(note: note)));
-                if (result == true) {
-                  navigateToPage(currentPageNumber);
-                }
-              },
-              onDoubleTap: (note) async {
-                final result = await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => NoteDetail(
-                            note: note,
-                            enterEditing: note.userId == UserSession().id)));
-                if (result == true) {
-                  navigateToPage(currentPageNumber);
-                }
-              },
-              onDelete: (note) async {
-                final result = await searchProvider.deleteNote(note.id);
-                if (result.isSuccess && mounted) {
-                  Util.showInfo(ScaffoldMessenger.of(context), 'Note deleted successfully.');
-                } else if (result.isError && mounted) {
-                  Util.showError(ScaffoldMessenger.of(context), result.errorMessage!);
-                }
-              },
-            ),
-            noteCallbacks: NoteListCallbacks(
-              onTagTap: (note, tag) =>
-                  NavigationHelper.onTagTap(context, note, tag),
-              onRefresh: () => navigateToPage(currentPageNumber),
-            ),
-            config: const ListItemConfig(
-              showDate: false,
-              showRestoreButton: false,
-              enableDismiss: true,
+                onTap: (note) async {
+                  final result =
+                      await Navigator.push(context, MaterialPageRoute(builder: (context) => NoteDetail(note: note)));
+                  if (result == true) {
+                    navigateToPage(currentPageNumber);
+                  }
+                },
+                onDoubleTap: (note) async {
+                  final result = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => NoteDetail(note: note, enterEditing: note.userId == UserSession().id)));
+                  if (result == true) {
+                    navigateToPage(currentPageNumber);
+                  }
+                },
+                onDelete: (note) async {
+                  final result = await searchProvider.deleteNote(note.id);
+                  if (result.isSuccess && mounted) {
+                    Util.showInfo(ScaffoldMessenger.of(context), 'Note deleted successfully.');
+                  } else if (result.isError && mounted) {
+                    Util.showError(ScaffoldMessenger.of(context), result.errorMessage!);
+                  }
+                },
+              ),
+              noteCallbacks: NoteListCallbacks(
+                onTagTap: (note, tag) => NavigationHelper.onTagTap(context, note, tag),
+                onRefresh: () => navigateToPage(currentPageNumber),
+              ),
+              config: const ListItemConfig(
+                showDate: false,
+                showRestoreButton: false,
+                enableDismiss: true,
+              ),
             ),
           ),
-            ),
         ),
         if (searchProvider.totalPages > 1 && UserSession().isDesktop)
           PaginationControls(
-              currentPage: currentPageNumber,
-              totalPages: searchProvider.totalPages,
-              navigateToPage: navigateToPage),
+              currentPage: currentPageNumber, totalPages: searchProvider.totalPages, navigateToPage: navigateToPage),
       ],
     );
   }

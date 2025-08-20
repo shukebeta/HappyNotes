@@ -6,8 +6,7 @@ import 'package:intl/intl.dart';
 import '../app_config.dart';
 
 class Util {
-  static void showError(
-      ScaffoldMessengerState scaffoldMessengerState, String errorMessage) {
+  static void showError(ScaffoldMessengerState scaffoldMessengerState, String errorMessage) {
     scaffoldMessengerState.showSnackBar(SnackBar(
       content: Text(errorMessage),
       backgroundColor: Colors.orange,
@@ -34,17 +33,14 @@ class Util {
     );
   }
 
-  static void showInfo(
-      ScaffoldMessengerState scaffoldMessengerState, String message) {
+  static void showInfo(ScaffoldMessengerState scaffoldMessengerState, String message) {
     scaffoldMessengerState.showSnackBar(SnackBar(
       content: Text(message),
-      backgroundColor: Colors
-          .blue, // Optional: Set a different background color for info messages
+      backgroundColor: Colors.blue, // Optional: Set a different background color for info messages
     ));
   }
 
-  static void showInfoDialog(
-      BuildContext context, String title, String message) {
+  static void showInfoDialog(BuildContext context, String title, String message) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -64,8 +60,7 @@ class Util {
     );
   }
 
-  static Future<String?> showInputDialog(
-      BuildContext context, String title, String hintText) async {
+  static Future<String?> showInputDialog(BuildContext context, String title, String hintText) async {
     TextEditingController controller = TextEditingController();
     return showDialog<String>(
       context: context,
@@ -114,8 +109,7 @@ class Util {
             onSubmitted: (value) {
               // Mimic the 'Search' button behavior on submission
               if (controller.text.isNotEmpty) {
-                Navigator.of(context)
-                    .pop({'action': 'search', 'text': controller.text});
+                Navigator.of(context).pop({'action': 'search', 'text': controller.text});
               } else {
                 Navigator.of(context).pop(); // Mimic Cancel if empty
               }
@@ -128,8 +122,7 @@ class Util {
               child: TextButton(
                 onPressed: () {
                   if (controller.text.isNotEmpty) {
-                    Navigator.of(context)
-                        .pop({'action': 'search', 'text': controller.text});
+                    Navigator.of(context).pop({'action': 'search', 'text': controller.text});
                   } else {
                     // Optionally show a message that input is needed for search
                     // Or just do nothing / mimic cancel
@@ -145,8 +138,7 @@ class Util {
               child: TextButton(
                 onPressed: () {
                   if (controller.text.isNotEmpty) {
-                    Navigator.of(context)
-                        .pop({'action': 'go', 'text': controller.text});
+                    Navigator.of(context).pop({'action': 'go', 'text': controller.text});
                   } else {
                     // Optionally show a message that input is needed for go
                     // Or just do nothing / mimic cancel
@@ -172,8 +164,7 @@ class Util {
     );
   }
 
-  static String formatUnixTimestampToLocalDate(
-      int unixTimestamp, String strFormat) {
+  static String formatUnixTimestampToLocalDate(int unixTimestamp, String strFormat) {
     // Convert Unix timestamp (seconds since epoch) to TZDateTime
     final dateTime = DateTime.fromMillisecondsSinceEpoch(unixTimestamp * 1000);
 
@@ -225,9 +216,7 @@ class Util {
         Positioned(
           right: 0,
           bottom: 0,
-          child: Icon(
-              AppConfig.privateNoteOnlyIsEnabled ? Icons.lock : Icons.public,
-              size: 12),
+          child: Icon(AppConfig.privateNoteOnlyIsEnabled ? Icons.lock : Icons.public, size: 12),
         ),
       ],
     );

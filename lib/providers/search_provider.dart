@@ -19,7 +19,6 @@ class SearchProvider extends NoteListProvider {
   // Alias for compatibility
   List<Note> get searchResults => notes;
 
-
   @override
   void clearNotesCache() {
     _currentQuery = '';
@@ -42,7 +41,6 @@ class SearchProvider extends NoteListProvider {
     _currentQuery = '';
     clearNotesCache();
   }
-
 
   @override
   Future<OperationResult<void>> deleteNote(int noteId) async {
@@ -69,5 +67,4 @@ class SearchProvider extends NoteListProvider {
   Future<void> performDelete(int noteId) async {
     await _notesService.delete(noteId);
   }
-
 }

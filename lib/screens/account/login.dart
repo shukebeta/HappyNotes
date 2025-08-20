@@ -68,9 +68,7 @@ class _LoginState extends State<Login> {
                   border: const OutlineInputBorder(),
                   labelText: "Password",
                   suffixIcon: IconButton(
-                    icon: Icon(_isPasswordVisible
-                        ? Icons.visibility
-                        : Icons.visibility_off),
+                    icon: Icon(_isPasswordVisible ? Icons.visibility : Icons.visibility_off),
                     onPressed: () {
                       setState(() {
                         _isPasswordVisible = !_isPasswordVisible;
@@ -83,12 +81,8 @@ class _LoginState extends State<Login> {
               ),
               const SizedBox(height: 16),
               ElevatedButton(
-                onPressed: _isSubmitting
-                    ? null
-                    : () => _formModel.submitForm(context),
-                child: _isSubmitting
-                    ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text('Submit'),
+                onPressed: _isSubmitting ? null : () => _formModel.submitForm(context),
+                child: _isSubmitting ? const CircularProgressIndicator(color: Colors.white) : const Text('Submit'),
               ),
               TextButton(
                 onPressed: () {

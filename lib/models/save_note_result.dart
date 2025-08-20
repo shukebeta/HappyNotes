@@ -10,21 +10,21 @@ sealed class SaveNoteResult {
 class SaveNoteSuccess extends SaveNoteResult {
   final Note savedNote;
   final SaveNoteAction action;
-  
+
   const SaveNoteSuccess(this.savedNote, this.action);
 }
 
 /// Save operation failed due to validation error
 class SaveNoteValidationError extends SaveNoteResult {
   final String message;
-  
+
   const SaveNoteValidationError(this.message);
 }
 
-/// Save operation failed due to service error  
+/// Save operation failed due to service error
 class SaveNoteServiceError extends SaveNoteResult {
   final String message;
-  
+
   const SaveNoteServiceError(this.message);
 }
 
@@ -32,7 +32,8 @@ class SaveNoteServiceError extends SaveNoteResult {
 enum SaveNoteAction {
   /// Pop the current screen and return the saved note (for modal usage)
   popWithNote,
-  /// Execute the callback (for main menu usage)  
+
+  /// Execute the callback (for main menu usage)
   executeCallback,
 }
 
@@ -55,6 +56,6 @@ class PopHandlerPrevent extends PopHandlerResult {
 class PopHandlerShowDialog extends PopHandlerResult {
   final String content;
   final String initialContent;
-  
+
   const PopHandlerShowDialog(this.content, this.initialContent);
 }

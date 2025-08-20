@@ -6,9 +6,9 @@ class AuthInterceptor extends Interceptor {
   final accountService = locator<AccountService>();
   @override
   void onRequest(
-      RequestOptions options,
-      RequestInterceptorHandler handler,
-      ) async {
+    RequestOptions options,
+    RequestInterceptorHandler handler,
+  ) async {
     // Check if the request requires authentication
     if (options.headers.containsKey('AllowAnonymous')) {
       return handler.next(options);

@@ -5,7 +5,7 @@ import '../entities/mastodon_application.dart';
 
 class MastodonApplicationApi {
   static final Dio _dio = DioClient.getInstance();
- 
+
   Future<Response> createApplication(String instanceUrl) async {
     // register an application on the instance
     return await _dio.post('$instanceUrl/api/v1/apps', data: {
@@ -15,7 +15,7 @@ class MastodonApplicationApi {
       'website': 'https://happynotes.shukebeta.com'
     });
   }
-  
+
   Future<Response> get(String instanceUrl) async {
     return await _dio.get('/mastodonApplication/get', queryParameters: {'instanceUrl': instanceUrl});
   }

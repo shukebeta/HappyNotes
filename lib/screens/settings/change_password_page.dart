@@ -67,7 +67,8 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
-          child: ListView( // Use ListView for potential scrolling on small screens
+          child: ListView(
+            // Use ListView for potential scrolling on small screens
             children: [
               TextFormField(
                 controller: _currentPasswordController,
@@ -91,7 +92,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                   }
                   // Add more complex password rules if needed
                   if (value.length < 6) {
-                     return 'Password must be at least 6 characters';
+                    return 'Password must be at least 6 characters';
                   }
                   return null;
                 },

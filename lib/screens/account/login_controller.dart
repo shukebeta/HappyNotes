@@ -28,6 +28,7 @@ class LoginController {
     }
     return null;
   }
+
   // Function to make API call
   Future<void> submitForm(BuildContext context) async {
     if (_isSubmitting) return;
@@ -52,7 +53,6 @@ class LoginController {
           final errorMessage = authProvider.error ?? 'Login failed';
           Util.showError(scaffoldContext, errorMessage);
         }
-
       } catch (e) {
         Util.showError(scaffoldContext, 'An unexpected error occurred: ${e.toString()}');
       } finally {

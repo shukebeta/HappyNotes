@@ -6,7 +6,7 @@ class MastodonUserAccountApi {
   static final Dio _dio = DioClient.getInstance();
 
   Future<Response> setState(String state) async {
-    final  options = Options(
+    final options = Options(
       headers: {'X-State': state},
     );
     // we don't have a separate api file for mastodon auth

@@ -117,8 +117,7 @@ void main() {
       authProvider = AuthProvider();
       await Future.delayed(Duration.zero); // Let initAuth complete
 
-      when(mockAccountService.login('user', 'wrong_pass'))
-          .thenThrow(Exception('Invalid credentials'));
+      when(mockAccountService.login('user', 'wrong_pass')).thenThrow(Exception('Invalid credentials'));
 
       final result = await authProvider.login('user', 'wrong_pass');
 
@@ -135,8 +134,7 @@ void main() {
       authProvider = AuthProvider();
       await Future.delayed(Duration.zero); // Let initAuth complete
 
-      when(mockAccountService.register('user', 'email@test.com', 'pass'))
-          .thenAnswer((_) async => {});
+      when(mockAccountService.register('user', 'email@test.com', 'pass')).thenAnswer((_) async => {});
       when(mockAccountService.getToken()).thenAnswer((_) async => 'reg_token');
 
       final result = await authProvider.register('user', 'email@test.com', 'pass');
@@ -154,8 +152,7 @@ void main() {
       authProvider = AuthProvider();
       await Future.delayed(Duration.zero); // Let initAuth complete
 
-      when(mockAccountService.register('user', 'invalid_email', 'pass'))
-          .thenThrow(Exception('Invalid email'));
+      when(mockAccountService.register('user', 'invalid_email', 'pass')).thenThrow(Exception('Invalid email'));
 
       final result = await authProvider.register('user', 'invalid_email', 'pass');
 

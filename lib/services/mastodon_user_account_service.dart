@@ -4,7 +4,8 @@ import '../entities/mastodon_user_account.dart';
 
 class MastodonUserAccountService {
   final MastodonUserAccountApi _mastodonUserAccountApi;
-  MastodonUserAccountService({required MastodonUserAccountApi mastodonUserAccountApi}): _mastodonUserAccountApi = mastodonUserAccountApi;
+  MastodonUserAccountService({required MastodonUserAccountApi mastodonUserAccountApi})
+      : _mastodonUserAccountApi = mastodonUserAccountApi;
 
   Future<List<MastodonUserAccount>> getAll() async {
     List<dynamic> apiResult = (await _mastodonUserAccountApi.getAll()).data['data'];
@@ -13,18 +14,18 @@ class MastodonUserAccountService {
 
   Future<bool> add(MastodonUserAccount setting) async {
     final apiResult = (await _mastodonUserAccountApi.add(setting)).data;
-    if(!apiResult['successful']) throw ApiException(apiResult);
+    if (!apiResult['successful']) throw ApiException(apiResult);
     return true;
   }
 
   Future<void> nextSyncType(MastodonUserAccount setting) async {
     final apiResult = (await _mastodonUserAccountApi.nextSyncType(setting)).data;
-    if(!apiResult['successful']) throw ApiException(apiResult);
+    if (!apiResult['successful']) throw ApiException(apiResult);
   }
 
   Future<bool> delete(MastodonUserAccount setting) async {
     final apiResult = (await _mastodonUserAccountApi.delete(setting)).data;
-    if(!apiResult['successful']) throw ApiException(apiResult);
+    if (!apiResult['successful']) throw ApiException(apiResult);
     return true;
   }
 
@@ -36,7 +37,7 @@ class MastodonUserAccountService {
 
   Future<bool> activate(MastodonUserAccount setting) async {
     final apiResult = (await _mastodonUserAccountApi.activate(setting)).data;
-    if(!apiResult['successful']) throw ApiException(apiResult);
+    if (!apiResult['successful']) throw ApiException(apiResult);
     return true;
   }
 

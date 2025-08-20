@@ -46,8 +46,7 @@ void main() {
       notesProvider = NotesProvider(mockNotesService);
 
       // Setup default mock responses
-      when(mockNotesService.myLatest(any, any))
-          .thenAnswer((_) async => NotesResult(mockNotes, 2));
+      when(mockNotesService.myLatest(any, any)).thenAnswer((_) async => NotesResult(mockNotes, 2));
     });
 
     tearDown(() {
@@ -94,14 +93,11 @@ void main() {
       // Mock update operation
     });
 
-
     test('provider should handle pagination correctly', () async {
       // Setup mock for multiple pages with pageSize=10 (default from AppConfig)
       // totalNotes=20 means totalPages=2, which is mathematically correct
-      when(mockNotesService.myLatest(10, 1))
-          .thenAnswer((_) async => NotesResult([mockNotes[0]], 20));
-      when(mockNotesService.myLatest(10, 2))
-          .thenAnswer((_) async => NotesResult([mockNotes[1]], 20));
+      when(mockNotesService.myLatest(10, 1)).thenAnswer((_) async => NotesResult([mockNotes[0]], 20));
+      when(mockNotesService.myLatest(10, 2)).thenAnswer((_) async => NotesResult([mockNotes[1]], 20));
 
       // Load page 1
       await notesProvider.loadPage(1);
@@ -109,7 +105,7 @@ void main() {
       expect(notesProvider.notes.length, 1);
       verify(mockNotesService.myLatest(10, 1)).called(1);
 
-      // Load page 2 
+      // Load page 2
       await notesProvider.loadPage(2);
       expect(notesProvider.currentPage, 2);
       expect(notesProvider.notes.length, 1);
@@ -118,8 +114,7 @@ void main() {
 
     test('provider should handle loading states correctly', () async {
       // Setup delayed mock response
-      when(mockNotesService.myLatest(any, any))
-          .thenAnswer((_) async {
+      when(mockNotesService.myLatest(any, any)).thenAnswer((_) async {
         await Future.delayed(const Duration(milliseconds: 10));
         return NotesResult(mockNotes, 2);
       });
@@ -136,8 +131,7 @@ void main() {
 
     test('provider should handle error states correctly', () async {
       // Setup mock to throw error
-      when(mockNotesService.myLatest(any, any))
-          .thenThrow(Exception('Network error'));
+      when(mockNotesService.myLatest(any, any)).thenThrow(Exception('Network error'));
 
       await notesProvider.loadPage(1);
 

@@ -25,7 +25,6 @@ class TagNotesProvider extends NoteListProvider {
     super.clearNotesCache();
   }
 
-
   /// Load notes for a specific tag with pagination
   Future<void> loadTagNotes(String tag, int pageNumber) async {
     if (tag.trim().isEmpty) {
@@ -55,8 +54,7 @@ class TagNotesProvider extends NoteListProvider {
     }
   }
 
-
-@override
+  @override
   Future<NotesResult> fetchNotes(int pageSize, int pageNumber) async {
     if (_currentTag.isEmpty) {
       // Return empty result if no tag selected
@@ -69,5 +67,4 @@ class TagNotesProvider extends NoteListProvider {
   Future<void> performDelete(int noteId) async {
     await _notesService.delete(noteId);
   }
-
 }

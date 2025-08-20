@@ -6,6 +6,6 @@ class NoteTagApi {
   static final Dio _dio = DioClient.getInstance();
 
   Future<Response> getMyTagCloud() async {
-    return await _dio.get('/tag/myTagCloud',  queryParameters: {'limit': 85});
+    return await _dio.get('/tag/myTagCloud', queryParameters: {'limit': 85});
   }
 }

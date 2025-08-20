@@ -48,9 +48,7 @@ class TagCloud extends StatelessWidget {
       // If all counts are the same, return the middle font size
       return (minFontSize + maxFontSize) / 2;
     }
-    return minFontSize +
-        ((count - minCount) / (maxCount - minCount)) *
-            (maxFontSize - minFontSize);
+    return minFontSize + ((count - minCount) / (maxCount - minCount)) * (maxFontSize - minFontSize);
   }
 
   Color _generateRandomColor() {
@@ -62,8 +60,7 @@ class TagCloud extends StatelessWidget {
       g = random.nextInt(181);
       b = random.nextInt(181);
       brightness = 0.299 * r + 0.587 * g + 0.114 * b;
-    } while (brightness >
-        128); // Ensure brightness is low for contrast with white background
+    } while (brightness > 128); // Ensure brightness is low for contrast with white background
     return Color.fromARGB(255, r, g, b);
   }
 }

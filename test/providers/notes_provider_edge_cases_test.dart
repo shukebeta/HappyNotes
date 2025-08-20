@@ -27,17 +27,23 @@ void main() {
       test('should maintain cache consistency across operations', () async {
         // Setup initial data
         final notes = [
-          Note(id: 1, userId: 123, content: 'Note 1', isPrivate: false,
-               isMarkdown: false, isLong: false, createdAt: 1640995200,
-               deletedAt: null, user: null, tags: []),
+          Note(
+              id: 1,
+              userId: 123,
+              content: 'Note 1',
+              isPrivate: false,
+              isMarkdown: false,
+              isLong: false,
+              createdAt: 1640995200,
+              deletedAt: null,
+              user: null,
+              tags: []),
         ];
 
-        when(mockNotesService.myLatest(10, 1))
-            .thenAnswer((_) async => NotesResult(notes, 1));
+        when(mockNotesService.myLatest(10, 1)).thenAnswer((_) async => NotesResult(notes, 1));
 
         await provider.loadPage(1);
         expect(provider.notes.length, 1);
-
 
         // Test updateLocalCache edge cases
         final updatedNote = Note(
@@ -78,16 +84,31 @@ void main() {
 
       test('should handle cache invalidation on delete', () async {
         final notes = [
-          Note(id: 1, userId: 123, content: 'Note to delete', isPrivate: false,
-               isMarkdown: false, isLong: false, createdAt: 1640995200,
-               deletedAt: null, user: null, tags: []),
-          Note(id: 2, userId: 123, content: 'Note to keep', isPrivate: false,
-               isMarkdown: false, isLong: false, createdAt: 1640995200,
-               deletedAt: null, user: null, tags: []),
+          Note(
+              id: 1,
+              userId: 123,
+              content: 'Note to delete',
+              isPrivate: false,
+              isMarkdown: false,
+              isLong: false,
+              createdAt: 1640995200,
+              deletedAt: null,
+              user: null,
+              tags: []),
+          Note(
+              id: 2,
+              userId: 123,
+              content: 'Note to keep',
+              isPrivate: false,
+              isMarkdown: false,
+              isLong: false,
+              createdAt: 1640995200,
+              deletedAt: null,
+              user: null,
+              tags: []),
         ];
 
-        when(mockNotesService.myLatest(10, 1))
-            .thenAnswer((_) async => NotesResult(notes, 2));
+        when(mockNotesService.myLatest(10, 1)).thenAnswer((_) async => NotesResult(notes, 2));
         when(mockNotesService.delete(1)).thenAnswer((_) async => 1);
 
         await provider.loadPage(1);
@@ -104,8 +125,7 @@ void main() {
 
     group('Concurrent Operations', () {
       test('should handle rapid successive page loads gracefully', () async {
-        when(mockNotesService.myLatest(10, 1))
-            .thenAnswer((_) async {
+        when(mockNotesService.myLatest(10, 1)).thenAnswer((_) async {
           await Future.delayed(const Duration(milliseconds: 50));
           return NotesResult([], 0);
         });
@@ -120,15 +140,19 @@ void main() {
       });
 
       test('should handle concurrent add and load operations', () async {
-        when(mockNotesService.myLatest(10, 1))
-            .thenAnswer((_) async => NotesResult([], 0));
+        when(mockNotesService.myLatest(10, 1)).thenAnswer((_) async => NotesResult([], 0));
         final newNote = Note(
-              id: 1, userId: 123, content: 'New note',
-              isPrivate: false, isMarkdown: false, isLong: false,
-              createdAt: 1640995200, deletedAt: null, user: null, tags: []
-            );
-        when(mockNotesService.post(any))
-            .thenAnswer((_) async => newNote); // Returns new note
+            id: 1,
+            userId: 123,
+            content: 'New note',
+            isPrivate: false,
+            isMarkdown: false,
+            isLong: false,
+            createdAt: 1640995200,
+            deletedAt: null,
+            user: null,
+            tags: []);
+        when(mockNotesService.post(any)).thenAnswer((_) async => newNote); // Returns new note
 
         // Start both operations simultaneously
         final loadFuture = provider.loadPage(1);
@@ -145,11 +169,18 @@ void main() {
       test('should limit cache size to prevent memory leaks', () async {
         // Load many pages to test cache limits
         for (int page = 1; page <= 15; page++) {
-          when(mockNotesService.myLatest(10, page))
-              .thenAnswer((_) async => NotesResult([
-                Note(id: page, userId: 123, content: 'Page $page note',
-                     isPrivate: false, isMarkdown: false, isLong: false,
-                     createdAt: 1640995200, deletedAt: null, user: null, tags: [])
+          when(mockNotesService.myLatest(10, page)).thenAnswer((_) async => NotesResult([
+                Note(
+                    id: page,
+                    userId: 123,
+                    content: 'Page $page note',
+                    isPrivate: false,
+                    isMarkdown: false,
+                    isLong: false,
+                    createdAt: 1640995200,
+                    deletedAt: null,
+                    user: null,
+                    tags: [])
               ], 150));
 
           await provider.loadPage(page);
@@ -164,8 +195,7 @@ void main() {
 
     group('Network Error Recovery', () {
       test('should handle failed operations and set error state', () async {
-        when(mockNotesService.myLatest(10, 1))
-            .thenThrow(Exception('Network timeout'));
+        when(mockNotesService.myLatest(10, 1)).thenThrow(Exception('Network timeout'));
 
         await provider.loadPage(1);
 
@@ -176,8 +206,7 @@ void main() {
       });
 
       test('should handle partial network failures gracefully', () async {
-        when(mockNotesService.myLatest(10, 1))
-            .thenThrow(ApiException({'message': 'Server temporarily unavailable'}));
+        when(mockNotesService.myLatest(10, 1)).thenThrow(ApiException({'message': 'Server temporarily unavailable'}));
 
         await provider.loadPage(1);
 
@@ -191,8 +220,7 @@ void main() {
     group('Data Validation', () {
       test('should handle malformed response data', () async {
         // Simulate malformed data from API
-        when(mockNotesService.myLatest(10, 1))
-            .thenAnswer((_) async => NotesResult([], -1)); // Invalid total
+        when(mockNotesService.myLatest(10, 1)).thenAnswer((_) async => NotesResult([], -1)); // Invalid total
 
         await provider.loadPage(1);
 
@@ -215,8 +243,7 @@ void main() {
           tags: [],
         );
 
-        when(mockNotesService.myLatest(10, 1))
-            .thenAnswer((_) async => NotesResult([invalidNote], 1));
+        when(mockNotesService.myLatest(10, 1)).thenAnswer((_) async => NotesResult([invalidNote], 1));
 
         await provider.loadPage(1);
 
@@ -228,8 +255,7 @@ void main() {
 
     group('State Consistency', () {
       test('should maintain consistent state during rapid UI updates', () async {
-        when(mockNotesService.myLatest(10, 1))
-            .thenAnswer((_) async => NotesResult([], 0));
+        when(mockNotesService.myLatest(10, 1)).thenAnswer((_) async => NotesResult([], 0));
 
         var notificationCount = 0;
         provider.addListener(() {

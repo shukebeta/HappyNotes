@@ -60,8 +60,7 @@ class _GroupedListViewState<T> extends State<GroupedListView<T>> {
 
   @override
   Widget build(BuildContext context) {
-    final sortedDates = widget.groupedItems.keys.toList()
-      ..sort((a, b) => b.compareTo(a)); // Newest first
+    final sortedDates = widget.groupedItems.keys.toList()..sort((a, b) => b.compareTo(a)); // Newest first
 
     return RefreshIndicator(
       onRefresh: widget.onRefresh ?? () async {},
@@ -85,14 +84,16 @@ class _GroupedListViewState<T> extends State<GroupedListView<T>> {
 
     if (notification is ScrollUpdateNotification) {
       final metrics = notification.metrics;
-      SeqLogger.fine('[GroupedListView] ScrollUpdate: pixels=${metrics.pixels}, maxScrollExtent=${metrics.maxScrollExtent}');
+      SeqLogger.fine(
+          '[GroupedListView] ScrollUpdate: pixels=${metrics.pixels}, maxScrollExtent=${metrics.maxScrollExtent}');
 
       // Handle pull-down (top overscroll)
       if (widget.pullDownToLoadEnabled && widget.canAutoLoadPrevious && metrics.pixels <= 0) {
         final overscroll = -metrics.pixels; // Convert to positive value
         SeqLogger.fine('[GroupedListView] At top: overscroll=$overscroll');
         if (overscroll > 0) {
-          SeqLogger.info('[GroupedListView] Pull-down overscroll detected! Setting _isPullingDown=true, _pullDownDistance=$overscroll');
+          SeqLogger.info(
+              '[GroupedListView] Pull-down overscroll detected! Setting _isPullingDown=true, _pullDownDistance=$overscroll');
           setState(() {
             _isPullingDown = true;
             _pullDownDistance = overscroll;
@@ -124,7 +125,8 @@ class _GroupedListViewState<T> extends State<GroupedListView<T>> {
         final overscroll = metrics.pixels - metrics.maxScrollExtent;
         SeqLogger.fine('[GroupedListView] At bottom: overscroll=$overscroll');
         if (overscroll > 0) {
-          SeqLogger.info('[GroupedListView] Overscroll detected! Setting _isPullingUp=true, _pullUpDistance=$overscroll');
+          SeqLogger.info(
+              '[GroupedListView] Overscroll detected! Setting _isPullingUp=true, _pullUpDistance=$overscroll');
           setState(() {
             _isPullingUp = true;
             _pullUpDistance = overscroll;
@@ -154,7 +156,8 @@ class _GroupedListViewState<T> extends State<GroupedListView<T>> {
     }
 
     if (notification is ScrollEndNotification) {
-      SeqLogger.info('[GroupedListView] ScrollEnd: _isPullingUp=$_isPullingUp, _pullUpDistance=$_pullUpDistance, _isPullingDown=$_isPullingDown, _pullDownDistance=$_pullDownDistance');
+      SeqLogger.info(
+          '[GroupedListView] ScrollEnd: _isPullingUp=$_isPullingUp, _pullUpDistance=$_pullUpDistance, _isPullingDown=$_isPullingDown, _pullDownDistance=$_pullDownDistance');
 
       // Backup triggers for ScrollEndNotification (in case ScrollUpdate didn't trigger)
       if (_isPullingUp && _pullUpDistance >= _pullUpThreshold && !_hasTriggeredUp) {
@@ -193,7 +196,6 @@ class _GroupedListViewState<T> extends State<GroupedListView<T>> {
       widget.onLoadPrevious?.call();
     }
   }
-
 
   int _calculateItemCount(List<String> sortedDates) {
     int count = 0;
@@ -336,12 +338,8 @@ class _GroupedListViewState<T> extends State<GroupedListView<T>> {
     final shouldTrigger = progress >= 1.0;
 
     // Different messages based on current page
-    final pullMessage = widget.currentPage == 1
-        ? 'Pull down to refresh'
-        : 'Pull down to load previous page';
-    final releaseMessage = widget.currentPage == 1
-        ? 'Release to refresh'
-        : 'Release to load previous page';
+    final pullMessage = widget.currentPage == 1 ? 'Pull down to refresh' : 'Pull down to load previous page';
+    final releaseMessage = widget.currentPage == 1 ? 'Release to refresh' : 'Release to load previous page';
 
     return Container(
       padding: const EdgeInsets.all(16.0),
