@@ -10,7 +10,6 @@ import '../account/user_session.dart';
 import '../components/floating_pagination.dart';
 import '../../providers/trash_provider.dart';
 import '../../providers/note_list_provider.dart';
-import '../../utils/util.dart';
 
 class TrashBinPage extends StatefulWidget {
   const TrashBinPage({super.key});

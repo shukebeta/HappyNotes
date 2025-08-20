@@ -272,63 +272,6 @@ void main() {
       });
     });
 
-    group('updateNote', () {
-      test('should update note successfully', () async {
-        final existingNote = mockNotes[0];
-        provider.notes.addAll([existingNote]);
-
-        final updatedNote = Note(
-              id: existingNote.id,
-              userId: existingNote.userId,
-              content: 'Updated content',
-              isPrivate: existingNote.isPrivate,
-              isLong: existingNote.isLong,
-              isMarkdown: existingNote.isMarkdown,
-              createdAt: existingNote.createdAt,
-              deletedAt: existingNote.deletedAt,
-              user: existingNote.user,
-              tags: existingNote.tags,
-            );
-        when(mockNotesService.update(1, 'Updated content', false, false))
-            .thenAnswer((_) async => updatedNote);
-
-        final result = await provider.updateNote(1, 'Updated content', isPrivate: false, isMarkdown: false);
-
-        expect(result, isNotNull);
-        expect(provider.notes.first.content, 'Updated content');
-        verify(mockNotesService.update(1, 'Updated content', false, false)).called(1);
-      });
-
-      test('should return null when service fails to find and update note', () async {
-        // Arrange: Simulate the API returning an error for a non-existent note.
-        final apiError = {
-          'successful': false,
-          'errorCode': 404,
-          'errorMessage': 'Note with ID 999 not found.'
-        };
-        when(mockNotesService.update(999, 'Updated content', false, false))
-            .thenThrow(ApiException(apiError));
-
-        // Act
-        final result = await provider.updateNote(999, 'Updated content', isPrivate: false, isMarkdown: false);
-
-        // Assert
-        expect(result, isNull);
-        verify(mockNotesService.update(999, 'Updated content', false, false)).called(1);
-      });
-
-      test('should handle exception in updateNote', () async {
-        final existingNote = mockNotes[0];
-        provider.notes.addAll([existingNote]);
-
-        when(mockNotesService.update(any, any, any, any))
-            .thenThrow(Exception('Update failed'));
-
-        final result = await provider.updateNote(1, 'Updated content', isPrivate: false, isMarkdown: false);
-
-        expect(result, isNull);
-      });
-    });
 
     group('deleteNote', () {
       test('should delete note successfully', () async {

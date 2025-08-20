@@ -203,35 +203,6 @@ abstract class NoteListProvider extends AuthAwareProvider {
     }
   }
 
-  /// Legacy updateNote method - kept for backward compatibility in tests
-  /// This method is deprecated - use updateLocalCache instead
-  @Deprecated('Use updateLocalCache instead')
-  Future<Note?> updateNote(int noteId, String content, {required bool isPrivate, required bool isMarkdown}) async {
-    final logger = GetIt.instance<AppLoggerInterface>();
-    final noteIndex = notes.indexWhere((note) => note.id == noteId);
-
-    logger.d('NoteListProvider.updateNote called: noteId=$noteId, noteIndex=$noteIndex, content length=${content.length}');
-
-    try {
-      final updatedNote = await notesService.update(
-        noteId,
-        content,
-        isPrivate,
-        isMarkdown
-      );
-
-      if (noteIndex != -1) {
-        notes[noteIndex] = updatedNote;
-        notifyListeners();
-      }
-
-      return updatedNote;
-    } catch (e) {
-      logger.e('NoteListProvider.updateNote error: $e for noteId=$noteId');
-      return null;
-    }
-  }
-
 
   @override
   void clearAllData() {

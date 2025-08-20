@@ -72,27 +72,28 @@ void main() {
       await notesProvider.loadPage(1);
       expect(notesProvider.notes.length, 2);
 
-      // Mock update operation
+      // Test updateLocalCache - pure cache operation
       final updatedNote = Note(
-            id: mockNotes[0].id,
-            userId: mockNotes[0].userId,
-            content: 'Updated content',
-            isPrivate: mockNotes[0].isPrivate,
-            isLong: mockNotes[0].isLong,
-            isMarkdown: mockNotes[0].isMarkdown,
-            createdAt: mockNotes[0].createdAt,
-            deletedAt: mockNotes[0].deletedAt,
-            user: mockNotes[0].user,
-            tags: mockNotes[0].tags,
-          );
-      when(mockNotesService.update(1, 'Updated content', false, false))
-          .thenAnswer((_) async => updatedNote);
+        id: mockNotes[0].id,
+        userId: mockNotes[0].userId,
+        content: 'Updated content via cache',
+        isPrivate: mockNotes[0].isPrivate,
+        isLong: mockNotes[0].isLong,
+        isMarkdown: mockNotes[0].isMarkdown,
+        createdAt: mockNotes[0].createdAt,
+        deletedAt: mockNotes[0].deletedAt,
+        user: mockNotes[0].user,
+        tags: mockNotes[0].tags,
+      );
 
-      // Update note
-      final result = await notesProvider.updateNote(1, 'Updated content', isPrivate: false, isMarkdown: false);
-      expect(result, isNotNull);
-      expect(notesProvider.notes.first.content, 'Updated content');
+      // updateLocalCache should update cache without API call
+      notesProvider.updateLocalCache(updatedNote);
+      expect(notesProvider.notes.first.content, 'Updated content via cache');
+      expect(notesProvider.notes.length, 2); // Should maintain list size
+
+      // Mock update operation
     });
+
 
     test('provider should handle pagination correctly', () async {
       // Setup mock for multiple pages with pageSize=10 (default from AppConfig)

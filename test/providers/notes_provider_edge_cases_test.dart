@@ -38,27 +38,42 @@ void main() {
         await provider.loadPage(1);
         expect(provider.notes.length, 1);
 
-        // Modify note - cache should update
+
+        // Test updateLocalCache edge cases
         final updatedNote = Note(
-              id: notes[0].id,
-              userId: notes[0].userId,
-              content: 'Updated content',
-              isPrivate: notes[0].isPrivate,
-              isLong: notes[0].isLong,
-              isMarkdown: notes[0].isMarkdown,
-              createdAt: notes[0].createdAt,
-              deletedAt: notes[0].deletedAt,
-              user: notes[0].user,
-              tags: notes[0].tags,
-            );
-        when(mockNotesService.update(1, 'Updated content', false, false))
-            .thenAnswer((_) async => updatedNote); // Returns complete note
+          id: notes[0].id,
+          userId: notes[0].userId,
+          content: 'Updated via cache',
+          isPrivate: notes[0].isPrivate,
+          isLong: notes[0].isLong,
+          isMarkdown: notes[0].isMarkdown,
+          createdAt: notes[0].createdAt,
+          deletedAt: notes[0].deletedAt,
+          user: notes[0].user,
+          tags: notes[0].tags,
+        );
 
-        final result = await provider.updateNote(1, 'Updated content', isPrivate: false, isMarkdown: false);
-        expect(result, isNotNull);
+        // updateLocalCache should update existing note
+        provider.updateLocalCache(updatedNote);
+        expect(provider.notes.first.content, 'Updated via cache');
 
-        // Cache should be updated
-        expect(provider.notes.first.content, 'Updated content');
+        // updateLocalCache with non-existent note should be ignored
+        final nonExistentNote = Note(
+          id: 999, // Non-existent ID
+          userId: 123,
+          content: 'Should be ignored',
+          isPrivate: false,
+          isLong: false,
+          isMarkdown: false,
+          createdAt: 1640995200,
+          deletedAt: null,
+          user: null,
+          tags: [],
+        );
+        provider.updateLocalCache(nonExistentNote);
+        expect(provider.notes.length, 1); // Should not add new note
+        expect(provider.notes.first.id, notes[0].id); // Original note should remain
+        // Modify note - cache should update
       });
 
       test('should handle cache invalidation on delete', () async {

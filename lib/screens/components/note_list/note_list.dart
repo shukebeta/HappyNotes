@@ -35,7 +35,6 @@ class NoteList extends StatelessWidget {
     final isMobile = (defaultTargetPlatform == TargetPlatform.android ||
                       defaultTargetPlatform == TargetPlatform.iOS) ||
                      (kIsWeb && MediaQuery.of(context).size.width < 768);
-    final pullUpEnabled = isMobile;
 
     return GroupedListView<Note>(
       groupedItems: groupedNotes,
