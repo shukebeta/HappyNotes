@@ -1,0 +1,185 @@
+name: CI - Tests
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master, develop ]
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: Run Flutter Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'oracle'
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          flutter-version: '3.32.x'
+          cache: true
+
+      - name: Cache Flutter dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pub-cache
+            ${{ runner.workspace }}/.pub-cache
+          key: flutter-${{ runner.os }}-${{ hashFiles('**/pubspec.lock') }}
+          restore-keys: |
+            flutter-${{ runner.os }}-
+
+      - name: Create environment file
+        run: |
+          cp .env.example .env || echo "No .env.example found, creating basic .env"
+          if [ ! -f .env ]; then
+            echo "# Test environment" > .env
+            echo "API_BASE_URL=https://api.test.example.com" >> .env
+            echo "SEQ_API_KEY=test-key" >> .env
+          fi
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Verify Flutter installation
+        run: flutter doctor -v
+
+      - name: Analyze code
+        run: flutter analyze --fatal-infos --fatal-warnings
+
+      - name: Check code formatting
+        run: dart format --set-exit-if-changed .
+
+      - name: Run tests with coverage
+        run: flutter test --coverage --reporter expanded
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: test-results
+          path: test/
+          retention-days: 30
+
+      - name: Upload coverage reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage/
+          retention-days: 30
+
+      - name: Generate coverage report summary
+        if: always()
+        run: |
+          if [ -f coverage/lcov.info ]; then
+            echo "## Test Coverage Report" >> $GITHUB_STEP_SUMMARY
+            echo "Coverage data has been generated and uploaded as an artifact." >> $GITHUB_STEP_SUMMARY
+            echo "### Coverage Files Generated:" >> $GITHUB_STEP_SUMMARY
+            echo "- lcov.info: Line coverage data" >> $GITHUB_STEP_SUMMARY
+            echo "- HTML report available in coverage/ directory" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "## Test Coverage" >> $GITHUB_STEP_SUMMARY
+            echo "No coverage data was generated." >> $GITHUB_STEP_SUMMARY
+          fi
+
+  build-test:
+    name: Build Test (Android)
+    runs-on: ubuntu-latest
+    needs: test
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'oracle'
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          flutter-version: '3.32.x'
+          cache: true
+
+      - name: Create environment file
+        run: |
+          cp .env.example .env || echo "# Test build environment" > .env
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build Android APK (debug)
+        run: flutter build apk --debug
+
+      - name: Build Android App Bundle (debug)
+        run: flutter build appbundle --debug
+
+  integration-test:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'oracle'
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          flutter-version: '3.32.x'
+          cache: true
+
+      - name: Create environment file
+        run: |
+          cp .env.example .env || echo "# Integration test environment" > .env
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Run integration tests
+        run: |
+          if [ -d "integration_test" ]; then
+            flutter test integration_test/
+          else
+            echo "No integration tests found, skipping..."
+          fi
+
+  summary:
+    name: Test Summary
+    runs-on: ubuntu-latest
+    needs: [test, build-test]
+    if: always()
+    
+    steps:
+      - name: Test Summary
+        run: |
+          echo "## CI Test Results" >> $GITHUB_STEP_SUMMARY
+          echo "- **Unit Tests**: ${{ needs.test.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Build Test**: ${{ needs.build-test.result }}" >> $GITHUB_STEP_SUMMARY
+          
+          if [ "${{ needs.test.result }}" = "success" ] && [ "${{ needs.build-test.result }}" = "success" ]; then
+            echo "✅ All tests passed successfully!" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ Some tests failed. Please check the job details above." >> $GITHUB_STEP_SUMMARY
+          fi
