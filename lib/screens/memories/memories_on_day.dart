@@ -6,6 +6,7 @@ import '../components/controllers/tag_cloud_controller.dart';
 import '../../providers/memories_provider.dart';
 import '../../providers/note_list_provider.dart';
 import '../../utils/navigation_helper.dart';
+import '../../utils/util.dart';
 import '../account/user_session.dart';
 import '../../entities/note.dart';
 import '../new_note/new_note.dart';
@@ -249,11 +250,11 @@ class MemoriesOnDayState extends State<MemoriesOnDay> with RouteAware {
             // The callback will handle cache updates automatically
           },
           onDelete: (note) async {
-            // Delete note through memories provider - it doesn't implement delete
-            // So we'll show a message for now
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Delete not available on memories page')),
-            );
+            final provider = context.read<MemoriesProvider>();
+            final result = await provider.deleteNote(note.id);
+            if (!result.isSuccess && mounted) {
+              Util.showError(ScaffoldMessenger.of(context), result.errorMessage!);
+            }
           },
         ),
         noteCallbacks: NoteListCallbacks(
@@ -268,7 +269,7 @@ class MemoriesOnDayState extends State<MemoriesOnDay> with RouteAware {
           showDate: false,
           showAuthor: false,
           showRestoreButton: false,
-          enableDismiss: false,
+          enableDismiss: true,
         ),
       ),
     );
