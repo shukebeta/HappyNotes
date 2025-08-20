@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:happy_notes/services/seq_logger.dart';
 import 'package:happy_notes/entities/note.dart';
 import 'package:happy_notes/providers/auth_provider.dart';
 import 'package:happy_notes/providers/notes_provider.dart';
@@ -33,7 +34,7 @@ class AppStateProvider with ChangeNotifier {
     this._trashProvider,
     this._discoveryProvider,
   ) {
-    debugPrint('AppStateProvider: Constructor called - setting up listeners');
+    SeqLogger.info('AppStateProvider: Constructor called - setting up listeners');
     _initializeProvider();
   }
 
@@ -49,7 +50,7 @@ class AppStateProvider with ChangeNotifier {
   /// Coordinates state across all providers when auth changes
   void _onAuthStateChanged() async {
     final isAuthenticated = _authProvider.isAuthenticated;
-    debugPrint('AppStateProvider: Auth state changed - isAuthenticated: $isAuthenticated');
+    SeqLogger.info('AppStateProvider: Auth state changed - isAuthenticated: $isAuthenticated');
 
     // Always clear data first to prevent stale data
     await _clearAllProviderData();
@@ -120,7 +121,7 @@ class AppStateProvider with ChangeNotifier {
       notifyListeners();
     } catch (e) {
       if (kDebugMode) {
-        debugPrint('Error refreshing app data: $e');
+        SeqLogger.info('Error refreshing app data: $e');
       }
     }
   }
@@ -168,7 +169,7 @@ class AppStateProvider with ChangeNotifier {
   /// that might contain the updated note. Each provider handles existence
   /// checking internally, making it safe to call on all providers.
   void notifyNoteUpdated(Note updatedNote) {
-    debugPrint('AppStateProvider: notifyNoteUpdated called for note ${updatedNote.id}');
+    SeqLogger.info('AppStateProvider: notifyNoteUpdated called for note ${updatedNote.id}');
     
     // Update cache in all NoteListProvider instances using null-safe calls
     // Each provider's updateLocalCache method handles existence checking
@@ -178,7 +179,7 @@ class AppStateProvider with ChangeNotifier {
     _trashProvider.updateLocalCache(updatedNote);
     _discoveryProvider.updateLocalCache(updatedNote);
     
-    debugPrint('AppStateProvider: notifyNoteUpdated completed for note ${updatedNote.id}');
+    SeqLogger.info('AppStateProvider: notifyNoteUpdated completed for note ${updatedNote.id}');
   }
 
   @override

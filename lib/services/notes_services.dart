@@ -5,10 +5,32 @@ import '../app_config.dart';
 import '../entities/note.dart';
 import '../exceptions/api_exception.dart';
 import '../models/notes_result.dart';
-import '../utils/app_logger_interface.dart';
-import 'package:get_it/get_it.dart';
+import 'seq_logger.dart';
 
 class NotesService {
+  /// Validate API response structure and log contract violations
+  void _validateApiResponse(dynamic apiResult, String operation) {
+    if (apiResult == null) {
+      SeqLogger.severe(
+        'API contract violation: $operation returned null response'
+      );
+      throw ApiException({'successful': false, 'message': 'Null API response'});
+    }
+    
+    if (apiResult is! Map) {
+      SeqLogger.severe(
+        'API contract violation: $operation returned non-Map response: ${apiResult.runtimeType}'
+      );
+      throw ApiException({'successful': false, 'message': 'Invalid API response format'});
+    }
+    
+    if (!apiResult.containsKey('successful')) {
+      SeqLogger.severe(
+        'API contract violation: $operation missing "successful" field'
+      );
+      throw ApiException({'successful': false, 'message': 'Malformed API response'});
+    }
+  }
   // fetch all public notes from all users
   Future<NotesResult> latest(int pageSize, int pageNumber) async {
     var params = {'pageSize': pageSize, 'pageNumber': pageNumber};
@@ -108,9 +130,7 @@ class NotesService {
   // update a note and get the updated note
   Future<Note> update(
       int noteId, String content, bool isPrivate, bool isMarkdown) async {
-    final logger = GetIt.instance<AppLoggerInterface>();
-    
-    logger.d('NotesService.update called: noteId=$noteId, content length=${content.length}, isPrivate=$isPrivate, isMarkdown=$isMarkdown');
+    SeqLogger.info('NotesService.update called: noteId=$noteId, content length=${content.length}, isPrivate=$isPrivate, isMarkdown=$isMarkdown');
     
     var params = {
       'id': noteId,
@@ -119,12 +139,12 @@ class NotesService {
       'isMarkdown': isMarkdown,
     };
     
-    logger.d('NotesService.update calling NotesApi.update with params: $params');
+    SeqLogger.info('NotesService.update calling NotesApi.update with params: $params');
     var apiResult = (await NotesApi.update(params)).data;
     
     if (!apiResult['successful'] &&
         apiResult['errorCode'] != AppConfig.quietErrorCode) {
-      logger.e('NotesService.update API error: ${apiResult['errorMessage']} for noteId=$noteId');
+      SeqLogger.severe('NotesService.update API error: ${apiResult['errorMessage']} for noteId=$noteId');
       throw ApiException(apiResult);
     }
     
@@ -134,14 +154,32 @@ class NotesService {
 
   Future<int> delete(int noteId) async {
     var apiResult = (await NotesApi.delete(noteId)).data;
+    _validateApiResponse(apiResult, 'delete');
     if (!apiResult['successful']) throw ApiException(apiResult);
-    return apiResult['data']; //note id
+    
+    final data = apiResult['data'];
+    if (data is! int) {
+      SeqLogger.severe(
+        'delete API returned non-int data: ${data.runtimeType} = $data'
+      );
+      throw ApiException({'successful': false, 'message': 'Invalid note ID returned'});
+    }
+    return data;
   }
 
   Future<int> undelete(int noteId) async {
     var apiResult = (await NotesApi.undelete(noteId)).data;
+    _validateApiResponse(apiResult, 'undelete');
     if (!apiResult['successful']) throw ApiException(apiResult);
-    return apiResult['data']; //note id
+    
+    final data = apiResult['data'];
+    if (data is! int) {
+      SeqLogger.severe(
+        'undelete API returned non-int data: ${data.runtimeType} = $data'
+      );
+      throw ApiException({'successful': false, 'message': 'Invalid note ID returned'});
+    }
+    return data;
   }
 
   Future<Note> get(int noteId) async {
@@ -157,6 +195,15 @@ class NotesService {
 
   Future<void> purgeDeleted() async {
     var apiResult = (await NotesApi.purgeDeleted()).data;
+    _validateApiResponse(apiResult, 'purgeDeleted');
+    
     if (!apiResult['successful']) throw ApiException(apiResult);
+    
+    // Log unexpected data for debugging (purgeDeleted should return data: null)
+    if (apiResult['data'] != null) {
+      SeqLogger.info(
+        'purgeDeleted returned data: ${apiResult['data']} (expected: null)'
+      );
+    }
   }
 }

@@ -13,7 +13,8 @@
 ## Code Style Guidelines
 - **Naming**: Classes=PascalCase, variables/methods=camelCase, files=snake_case, private members=_prefixed
 - **Imports**: Flutter packages first, project imports next, relative imports last
-- **Error Handling**: Use try-catch for API calls, custom exceptions (ApiException), and Util.showError()
+- **Error Handling**: Use standardized provider error handling via executeWithErrorHandling(), custom exceptions (ApiException), and Util.showError()
+- **Logging**: Use SeqLogger only - SeqLogger.info() for general logs, SeqLogger.severe() for errors. NO debugPrint, NO AppLoggerInterface
 - **Architecture**: Follow MVC pattern - controllers separate from UI components
 - **State Management**: Provider pattern with dependency injection via get_it
 - **Types**: Always specify types for parameters, return values, and variables

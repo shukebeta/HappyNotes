@@ -1,5 +1,5 @@
-import 'package:flutter/foundation.dart';
 import 'package:happy_notes/entities/note.dart';
+import 'package:happy_notes/services/seq_logger.dart';
 import 'package:happy_notes/models/note_model.dart';
 import 'package:happy_notes/models/notes_result.dart';
 import 'package:happy_notes/services/notes_services.dart';
@@ -135,17 +135,17 @@ class NotesProvider extends NoteListProvider {
 
   @override
   void clearNotesCache() {
-    debugPrint('NotesProvider: Clearing all data');
+    SeqLogger.info('NotesProvider: Clearing all data');
     _isLoadingAdd = false;
     _addError = null;
     super.clearNotesCache();
-    debugPrint('NotesProvider: Data cleared');
+    SeqLogger.info('NotesProvider: Data cleared');
   }
 
   /// Load initial data when user logs in
   @override
   Future<void> onLogin() async {
-    debugPrint('NotesProvider: Loading initial data after login');
+    SeqLogger.info('NotesProvider: Loading initial data after login');
     await loadInitialData();
   }
 }

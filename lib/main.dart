@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:happy_notes/services/seq_logger.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 import 'package:happy_notes/dependency_injection.dart' as di;
@@ -15,7 +16,6 @@ import 'package:happy_notes/screens/account/user_session.dart';
 import 'package:happy_notes/screens/initial_page.dart';
 import 'package:happy_notes/screens/main_menu.dart';
 import 'package:happy_notes/screens/navigation/bottom_navigation.dart';
-import 'package:happy_notes/services/seq_logger.dart';
 import 'package:happy_notes/services/note_update_coordinator.dart';
 import 'package:quick_actions/quick_actions.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
@@ -73,7 +73,7 @@ void main() async {
         ChangeNotifierProvider<AppStateProvider>(
           lazy: false,
           create: (context) {
-            debugPrint('Creating AppStateProvider in main.dart');
+            SeqLogger.info('Creating AppStateProvider in main.dart');
             final appStateProvider = AppStateProvider(
               Provider.of<AuthProvider>(context, listen: false),
               Provider.of<NotesProvider>(context, listen: false),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:happy_notes/services/seq_logger.dart';
 import 'package:provider/provider.dart';
 import 'package:happy_notes/screens/settings/mastodon_sync_settings.dart';
 import 'package:happy_notes/screens/settings/settings_controller.dart';
@@ -64,7 +65,7 @@ class SettingsState extends State<Settings> {
         });
       }
     } catch (e) {
-      debugPrint("Error fetching user info for avatar: $e");
+      SeqLogger.severe("Error fetching user info for avatar: $e");
       if (mounted) {
         setState(() {
           _isLoadingAvatar = false;

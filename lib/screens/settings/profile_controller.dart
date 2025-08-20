@@ -1,4 +1,5 @@
-import 'package:flutter/foundation.dart'; // Import ChangeNotifier
+import 'package:flutter/foundation.dart';
+import 'package:happy_notes/services/seq_logger.dart'; // Import ChangeNotifier
 import 'package:happy_notes/apis/account_api.dart';
 import 'package:happy_notes/entities/user.dart';
 
@@ -29,7 +30,7 @@ class ProfileController extends ChangeNotifier {
       _currentUser = user;
     } catch (e) {
       // Improve error handling - maybe log the error or show a user-friendly message
-      debugPrint("Error fetching user info: $e"); // Use debugPrint
+      SeqLogger.severe("Error fetching user info: $e"); // Use debugPrint
       _errorMessage = "Failed to load profile information.";
     } finally {
       _isLoading = false;
@@ -49,7 +50,7 @@ class ProfileController extends ChangeNotifier {
         // _errorMessage should only be set on failure
         success = true;
       } catch (e) {
-        debugPrint("Error changing password: $e");
+        SeqLogger.severe("Error changing password: $e");
         // Attempt to parse specific error messages from API if possible
         _errorMessage = "Failed to change password. Please check current password.";
         success = false;

@@ -33,40 +33,42 @@ class TrashProvider extends NoteListProvider {
 
   /// Purge all deleted notes permanently
   Future<bool> purgeDeleted() async {
-    _isPurging = true;
-    notifyListeners();
-
-    try {
-      await _notesService.purgeDeleted();
-
-      // Clear all data immediately for instant UI update
-      clearNotesCache();
-      
-      return true;
-    } catch (e) {
-      // Handle error using base class method
-      handleServiceError(e, 'purge deleted notes');
-      return false;
-    } finally {
-      _isPurging = false;
-      notifyListeners();
-    }
+    bool success = false;
+    
+    await executeWithErrorHandling<void>(
+      operation: () async {
+        await _notesService.purgeDeleted();
+        success = true;
+      },
+      setLoading: (loading) => _isPurging = loading,
+      setError: (error) => {}, // Error handling done by base class
+      operationName: 'purge deleted notes',
+      onSuccess: () => clearNotesCache(),
+    );
+    
+    return success;
   }
 
   /// Undelete a note (restore from trash)
   Future<bool> undeleteNote(int noteId) async {
-    try {
-      await _notesService.undelete(noteId);
-
-      // Remove the note from local cache immediately
-      notes.removeWhere((note) => note.id == noteId);
-      notifyListeners();
-
-      return true;
-    } catch (e) {
-      handleServiceError(e, 'undelete note');
-      return false;
-    }
+    bool success = false;
+    
+    await executeWithErrorHandling<int>(
+      operation: () async {
+        final restoredId = await _notesService.undelete(noteId);
+        success = true;
+        return restoredId;
+      },
+      setLoading: (loading) => {}, // Skip loading state for undelete
+      setError: (error) => {}, // Error handling done by base class
+      operationName: 'undelete note',
+      onSuccess: () {
+        // Remove the note from local cache immediately
+        notes.removeWhere((note) => note.id == noteId);
+      },
+    );
+    
+    return success;
   }
 
   /// Get a specific note (including deleted ones)
