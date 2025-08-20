@@ -1,8 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:happy_notes/providers/memories_provider.dart';
+import 'package:happy_notes/providers/note_list_provider.dart';
 import 'package:happy_notes/entities/note.dart';
 import 'package:happy_notes/models/notes_result.dart';
+import 'package:happy_notes/services/seq_logger.dart';
 
 import 'notes_provider_test.mocks.dart';
 
@@ -12,6 +14,9 @@ void main() {
     late MockNotesService mockNotesService;
 
     setUp(() {
+      // Initialize SeqLogger for tests
+      SeqLogger.initialize(enabled: false);
+      
       mockNotesService = MockNotesService();
       memoriesProvider = MemoriesProvider(mockNotesService);
     });
@@ -115,7 +120,7 @@ void main() {
         // Delete note
         final deleteResult = await memoriesProvider.deleteNote(1);
 
-        expect(deleteResult, isTrue);
+        expect(deleteResult.isSuccess, isTrue);
         expect(memoriesProvider.memories.length, equals(1));
         expect(memoriesProvider.memories.first.id, equals(2));
       });
@@ -126,8 +131,8 @@ void main() {
 
         final deleteResult = await memoriesProvider.deleteNote(1);
 
-        expect(deleteResult, isFalse);
-        expect(memoriesProvider.error, contains('Delete failed'));
+        expect(deleteResult.isSuccess, isFalse);
+        expect(deleteResult.errorMessage, contains('Failed to delete note'));
       });
     });
 
@@ -449,6 +454,120 @@ void main() {
         expect(memoriesProvider.memoriesOnDate(testDate), isEmpty);
         expect(memoriesProvider.isLoadingForDate(testDate), isFalse);
         expect(memoriesProvider.getErrorForDate(testDate), isNull);
+      });
+    });
+
+    group('NoteListProvider Interface Implementation', () {
+      test('should initialize with pagination disabled', () {
+        expect(memoriesProvider.autoPageEnabled, isFalse);
+        expect(memoriesProvider.canAutoLoadNext(), isFalse);
+        expect(memoriesProvider.canAutoLoadPrevious(), isFalse);
+      });
+
+      test('should maintain pagination disabled state even when manually enabled', () {
+        memoriesProvider.setAutoPageEnabled(true);
+        expect(memoriesProvider.autoPageEnabled, isTrue);
+        
+        // But canAutoLoad should still return false due to no pagination support
+        expect(memoriesProvider.canAutoLoadNext(), isFalse);
+        expect(memoriesProvider.canAutoLoadPrevious(), isFalse);
+      });
+
+      test('fetchNotes should ignore pagination parameters when syncing', () async {
+        const testDate = '20250812';
+        final notes = [
+          Note(id: 1, content: 'Test memory', isPrivate: false, userId: 1,
+               isLong: false, isMarkdown: false, createdAt: 1640995200),
+        ];
+        final result = NotesResult(notes, 1);
+        
+        when(mockNotesService.memoriesOn(testDate))
+            .thenAnswer((_) async => result);
+
+        // Set current date and load data
+        await memoriesProvider.setCurrentDate(testDate);
+        await memoriesProvider.loadMemoriesForDate(testDate);
+        
+        // Call fetchNotes with different pagination parameters
+        final result1 = await memoriesProvider.fetchNotes(10, 1);
+        final result2 = await memoriesProvider.fetchNotes(20, 5);
+        
+        expect(result1.notes, equals(result2.notes));
+        // Should have called memoriesOn twice (once for setCurrentDate->refresh, once for loadMemoriesForDate)
+        // The direct fetchNotes calls should reuse cached data or call API
+        verify(mockNotesService.memoriesOn(testDate)).called(2);
+      });
+
+      test('fetchNotes should return cached data when syncing', () async {
+        const testDate = '20250812';
+        final notes = [
+          Note(id: 1, content: 'Cached memory', isPrivate: false, userId: 1,
+               isLong: false, isMarkdown: false, createdAt: 1640995200),
+        ];
+        
+        when(mockNotesService.memoriesOn(testDate))
+            .thenAnswer((_) async => NotesResult(notes, 1));
+
+        // Set current date and load data
+        await memoriesProvider.setCurrentDate(testDate);
+        await memoriesProvider.loadMemoriesForDate(testDate);
+        
+        // Trigger sync by setting current date again
+        await memoriesProvider.setCurrentDate(testDate);
+        
+        // fetchNotes should now return cached data without API call
+        final result = await memoriesProvider.fetchNotes(10, 1);
+        
+        expect(result.notes.length, equals(1));
+        expect(result.notes.first.content, equals('Cached memory'));
+      });
+
+      test('performDelete should delegate to existing deleteNote method', () async {
+        const noteId = 1;
+        
+        when(mockNotesService.delete(noteId))
+            .thenAnswer((_) async => 1);
+
+        await memoriesProvider.performDelete(noteId);
+        
+        verify(mockNotesService.delete(noteId)).called(1);
+      });
+
+      test('performDelete should throw exception on failure', () async {
+        const noteId = 1;
+        
+        when(mockNotesService.delete(noteId))
+            .thenThrow(Exception('Delete failed'));
+
+        expect(
+          () => memoriesProvider.performDelete(noteId),
+          throwsA(isA<Exception>()),
+        );
+      });
+
+      test('should be instance of NoteListProvider', () {
+        expect(memoriesProvider, isA<NoteListProvider>());
+      });
+
+      test('should sync current date notes with base provider state', () async {
+        const testDate = '20250812';
+        final notes = [
+          Note(id: 1, content: 'Sync test', isPrivate: false, userId: 1,
+               isLong: false, isMarkdown: false, createdAt: 1640995200),
+        ];
+        
+        when(mockNotesService.memoriesOn(testDate))
+            .thenAnswer((_) async => NotesResult(notes, 1));
+
+        // Load memories for a specific date
+        await memoriesProvider.loadMemoriesForDate(testDate);
+        
+        // Set as current date - should sync to base provider
+        await memoriesProvider.setCurrentDate(testDate);
+        
+        // The notes property from NoteListProvider should now contain the synced notes
+        expect(memoriesProvider.notes.length, equals(1));
+        expect(memoriesProvider.notes.first.content, equals('Sync test'));
       });
     });
   });

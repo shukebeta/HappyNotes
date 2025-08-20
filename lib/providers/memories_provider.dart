@@ -1,21 +1,57 @@
 import 'package:happy_notes/entities/note.dart';
 import 'package:happy_notes/models/notes_result.dart';
 import 'package:happy_notes/services/notes_services.dart';
-import 'package:happy_notes/providers/provider_base.dart';
+import 'package:happy_notes/providers/note_list_provider.dart';
 
-class MemoriesProvider extends AuthAwareProvider {
+class MemoriesProvider extends NoteListProvider {
   final NotesService _notesService;
+  
+  // Current date being displayed  
+  String _currentDateString = '';
 
-  MemoriesProvider(this._notesService);
+  MemoriesProvider(this._notesService) {
+    setAutoPageEnabled(false); // Disable pagination for memories
+  }
+
+  @override
+  NotesService get notesService => _notesService;
+
+  /// Implement abstract method from NoteListProvider
+  /// Note: Ignores pagination parameters since memoriesOn API doesn't support paging
+  @override
+  Future<NotesResult> fetchNotes(int pageSize, int pageNumber) async {
+    if (_currentDateString.isEmpty) {
+      return NotesResult([], 0);
+    }
+    
+    // If we're syncing, return cached data to avoid API call
+    if (_isSyncing) {
+      final cachedNotes = memoriesOnDate(_currentDateString);
+      return NotesResult(cachedNotes, cachedNotes.length);
+    }
+    
+    return await _notesService.memoriesOn(_currentDateString);
+  }
+
+  /// Implement abstract method from NoteListProvider
+  @override
+  Future<void> performDelete(int noteId) async {
+    final success = await _deleteNoteFromMemories(noteId);
+    if (!success) {
+      throw Exception('Failed to delete note $noteId');
+    }
+  }
 
   // Memories state
   List<Note> _memories = [];
   List<Note> get memories => _memories;
 
   bool _isLoading = false;
+  @override
   bool get isLoading => _isLoading;
 
   String? _error;
+  @override
   String? get error => _error;
 
   // Cache timestamp to know when to refresh
@@ -76,8 +112,8 @@ class MemoriesProvider extends AuthAwareProvider {
     }
   }
 
-  /// Delete a note from memories
-  Future<bool> deleteNote(int noteId) async {
+  /// Delete a note from memories  
+  Future<bool> _deleteNoteFromMemories(int noteId) async {
     _isLoading = true;
     _error = null;
     notifyListeners();
@@ -145,6 +181,12 @@ class MemoriesProvider extends AuthAwareProvider {
       final result = await _notesService.memoriesOn(dateString);
       _memoriesByDateCache[dateString] = result.notes;
       _lastLoadTimeByDate[dateString] = DateTime.now();
+      
+      // Sync with NoteListProvider state when loading current date
+      if (_currentDateString == dateString) {
+        _syncToBaseProvider(result.notes);
+      }
+      
       notifyListeners();
     } catch (error) {
       _setErrorForDate(dateString, handleServiceError(error, 'load memories for date'));
@@ -228,5 +270,28 @@ class MemoriesProvider extends AuthAwareProvider {
     if (_lastLoadTime == null) return -1;
     return DateTime.now().difference(_lastLoadTime!).inMinutes;
   }
+
+  /// Set current date and sync with NoteListProvider state
+  Future<void> setCurrentDate(String dateString) async {
+    _currentDateString = dateString;
+    final cachedNotes = memoriesOnDate(dateString);
+    await _syncToBaseProvider(cachedNotes);
+  }
+
+  /// Sync notes to NoteListProvider base state
+  Future<void> _syncToBaseProvider(List<Note> notes) async {
+    // Simulate the state updates that navigateToPage does, but with cached data
+    // We can't call navigateToPage directly as it would trigger an API call
+    // Access protected members through reflection or direct field access isn't possible
+    // Instead, we'll override the fetchNotes to return cached data when syncing
+    _isSyncing = true;
+    try {
+      await refresh(); // This will call fetchNotes, which will return cached data
+    } finally {
+      _isSyncing = false;
+    }
+  }
+
+  bool _isSyncing = false;
 
 }

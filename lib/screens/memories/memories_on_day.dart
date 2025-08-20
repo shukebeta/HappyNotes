@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 
 import '../components/controllers/tag_cloud_controller.dart';
 import '../../providers/memories_provider.dart';
+import '../../providers/note_list_provider.dart';
 import '../../utils/navigation_helper.dart';
 import '../account/user_session.dart';
 import '../../entities/note.dart';
@@ -43,10 +44,11 @@ class MemoriesOnDayState extends State<MemoriesOnDay> with RouteAware {
     // Auto-load memories for the date when widget initializes
     if (!_hasInitialized) {
       _hasInitialized = true;
-      WidgetsBinding.instance.addPostFrameCallback((_) {
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
         final provider = context.read<MemoriesProvider>();
         final dateString = DateFormat('yyyyMMdd').format(widget.date);
-        provider.loadMemoriesForDate(dateString);
+        await provider.setCurrentDate(dateString);
+        await provider.loadMemoriesForDate(dateString);
       });
     }
   }
@@ -93,7 +95,7 @@ class MemoriesOnDayState extends State<MemoriesOnDay> with RouteAware {
     return Scaffold(
       appBar: AppBar(
         title: TappableAppBarTitle(
-          title: 'Memories: ${DateFormat('MMM dd, yyyy').format(widget.date)}',
+          title: 'Memories',
           onTap: () => NavigationHelper.showTagInputDialog(context),
           onLongPress: () async {
             final navigator = Navigator.of(context);
@@ -215,53 +217,59 @@ class MemoriesOnDayState extends State<MemoriesOnDay> with RouteAware {
       groupedNotes[dateKey]!.add(note);
     }
 
-    return NoteList(
-      groupedNotes: groupedNotes,
-      showDateHeader: true,
-      callbacks: ListItemCallbacks<Note>(
-        onTap: (note) async {
-          await Navigator.push<bool>(
-            context,
-            MaterialPageRoute(
-              builder: (context) => NoteDetail(note: note),
-            ),
-          );
-          // No need to reload - NoteDetail in view mode doesn't change data
-        },
-        onDoubleTap: (note) async {
-          await Navigator.push<bool>(
-            context,
-            MaterialPageRoute(
-              builder: (context) => NoteDetail(
-                note: note,
-                enterEditing: note.userId == UserSession().id,
-                onNoteSaved: _onNoteUpdated,
+    // Wrap NoteList with Provider to expose MemoriesProvider as NoteListProvider
+    final memoriesProvider = context.read<MemoriesProvider>();
+    
+    return ChangeNotifierProvider<NoteListProvider>.value(
+      value: memoriesProvider,
+      child: NoteList(
+        groupedNotes: groupedNotes,
+        showDateHeader: true,
+        callbacks: ListItemCallbacks<Note>(
+          onTap: (note) async {
+            await Navigator.push<bool>(
+              context,
+              MaterialPageRoute(
+                builder: (context) => NoteDetail(note: note),
               ),
-            ),
-          );
-          // The callback will handle cache updates automatically
-        },
-        onDelete: (note) async {
-          // Delete note through memories provider - it doesn't implement delete
-          // So we'll show a message for now
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Delete not available on memories page')),
-          );
-        },
-      ),
-      noteCallbacks: NoteListCallbacks(
-        onTagTap: (note, tag) => NavigationHelper.onTagTap(context, note, tag),
-        onRefresh: () async {
-          final provider = context.read<MemoriesProvider>();
-          final dateString = DateFormat('yyyyMMdd').format(widget.date);
-          await provider.loadMemoriesForDate(dateString, forceRefresh: true);
-        },
-      ),
-      config: const ListItemConfig(
-        showDate: false,
-        showAuthor: false,
-        showRestoreButton: false,
-        enableDismiss: false,
+            );
+            // No need to reload - NoteDetail in view mode doesn't change data
+          },
+          onDoubleTap: (note) async {
+            await Navigator.push<bool>(
+              context,
+              MaterialPageRoute(
+                builder: (context) => NoteDetail(
+                  note: note,
+                  enterEditing: note.userId == UserSession().id,
+                  onNoteSaved: _onNoteUpdated,
+                ),
+              ),
+            );
+            // The callback will handle cache updates automatically
+          },
+          onDelete: (note) async {
+            // Delete note through memories provider - it doesn't implement delete
+            // So we'll show a message for now
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Delete not available on memories page')),
+            );
+          },
+        ),
+        noteCallbacks: NoteListCallbacks(
+          onTagTap: (note, tag) => NavigationHelper.onTagTap(context, note, tag),
+          onRefresh: () async {
+            final provider = context.read<MemoriesProvider>();
+            final dateString = DateFormat('yyyyMMdd').format(widget.date);
+            await provider.loadMemoriesForDate(dateString, forceRefresh: true);
+          },
+        ),
+        config: const ListItemConfig(
+          showDate: false,
+          showAuthor: false,
+          showRestoreButton: false,
+          enableDismiss: false,
+        ),
       ),
     );
   }
