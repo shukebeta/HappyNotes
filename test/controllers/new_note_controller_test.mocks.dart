@@ -113,6 +113,18 @@ class MockNotesProvider extends _i1.Mock implements _i5.NotesProvider {
       ) as bool);
 
   @override
+  bool get autoPageEnabled => (super.noSuchMethod(
+        Invocation.getter(#autoPageEnabled),
+        returnValue: false,
+      ) as bool);
+
+  @override
+  bool get isAutoLoading => (super.noSuchMethod(
+        Invocation.getter(#isAutoLoading),
+        returnValue: false,
+      ) as bool);
+
+  @override
   Map<String, List<_i6.Note>> get groupedNotes => (super.noSuchMethod(
         Invocation.getter(#groupedNotes),
         returnValue: <String, List<_i6.Note>>{},
@@ -303,6 +315,53 @@ class MockNotesProvider extends _i1.Mock implements _i5.NotesProvider {
       ) as _i7.Future<void>);
 
   @override
+  bool canAutoLoadNext() => (super.noSuchMethod(
+        Invocation.method(
+          #canAutoLoadNext,
+          [],
+        ),
+        returnValue: false,
+      ) as bool);
+
+  @override
+  _i7.Future<void> autoLoadNext() => (super.noSuchMethod(
+        Invocation.method(
+          #autoLoadNext,
+          [],
+        ),
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
+
+  @override
+  _i7.Future<void> autoLoadPrevious() => (super.noSuchMethod(
+        Invocation.method(
+          #autoLoadPrevious,
+          [],
+        ),
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
+
+  @override
+  bool canAutoLoadPrevious() => (super.noSuchMethod(
+        Invocation.method(
+          #canAutoLoadPrevious,
+          [],
+        ),
+        returnValue: false,
+      ) as bool);
+
+  @override
+  void setAutoPageEnabled(bool? enabled) => super.noSuchMethod(
+        Invocation.method(
+          #setAutoPageEnabled,
+          [enabled],
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
   _i7.Future<_i4.OperationResult<void>> deleteNote(int? noteId) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -320,26 +379,13 @@ class MockNotesProvider extends _i1.Mock implements _i5.NotesProvider {
       ) as _i7.Future<_i4.OperationResult<void>>);
 
   @override
-  _i7.Future<_i6.Note?> updateNote(
-    int? noteId,
-    String? content, {
-    required bool? isPrivate,
-    required bool? isMarkdown,
-  }) =>
-      (super.noSuchMethod(
+  void updateLocalCache(_i6.Note? updatedNote) => super.noSuchMethod(
         Invocation.method(
-          #updateNote,
-          [
-            noteId,
-            content,
-          ],
-          {
-            #isPrivate: isPrivate,
-            #isMarkdown: isMarkdown,
-          },
+          #updateLocalCache,
+          [updatedNote],
         ),
-        returnValue: _i7.Future<_i6.Note?>.value(),
-      ) as _i7.Future<_i6.Note?>);
+        returnValueForMissingStub: null,
+      );
 
   @override
   _i7.Future<void> loadInitialData() => (super.noSuchMethod(
