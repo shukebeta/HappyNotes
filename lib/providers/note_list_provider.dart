@@ -205,7 +205,7 @@ abstract class NoteListProvider extends AuthAwareProvider {
 
 
   @override
-  void clearAllData() {
+  void clearNotesCache() {
     _notes.clear();
     _currentPage = 1;
     _totalNotes = 0;

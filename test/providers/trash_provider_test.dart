@@ -159,7 +159,7 @@ void main() {
 
         // Verify purge operation
         verify(mockNotesService.purgeDeleted()).called(1);
-        verify(mockNotesService.latestDeleted(10, 1)).called(2); // Initial + refresh
+        verify(mockNotesService.latestDeleted(10, 1)).called(1); // Initial load only, no refresh
 
         expect(result, isTrue);
         expect(trashProvider.isPurging, isFalse); // Should end as false
@@ -251,7 +251,7 @@ void main() {
 
         // Verify undelete operation
         verify(mockNotesService.undelete(1)).called(1);
-        verify(mockNotesService.latestDeleted(10, 1)).called(2); // Initial + refresh
+        verify(mockNotesService.latestDeleted(10, 1)).called(1); // Initial load only, no refresh
 
         expect(result, isTrue);
         expect(trashProvider.notes.length, equals(1));
@@ -426,7 +426,7 @@ void main() {
         expect(trashProvider.isPurging, isTrue);
 
         // Clear all data (should reset purging state)
-        trashProvider.clearAllData();
+        trashProvider.clearNotesCache();
 
         expect(trashProvider.notes, isEmpty);
         expect(trashProvider.isPurging, isFalse); // Trash-specific clearing
@@ -446,7 +446,7 @@ void main() {
         expect(trashProvider.isAuthStateInitialized, isFalse);
 
         // Should have inherited methods available
-        expect(() => trashProvider.clearAllData(), returnsNormally);
+        expect(() => trashProvider.clearNotesCache(), returnsNormally);
       });
     });
   });

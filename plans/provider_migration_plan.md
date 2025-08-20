@@ -47,7 +47,7 @@ This plan migrates happy_notes from individual controllers to a centralized Prov
    - Add `refreshNotes()` method for pull-to-refresh
    - Implement CRUD operations with optimistic updates
    - Use `executeWithErrorHandling` for all operations
-   - Auto-load data on `onLogin()`, clear on `clearAllData()`
+   - Auto-load data on `onLogin()`, clear on `clearNotesCache()`
    - Group notes by date like VocabularyProvider groups words
 
 2. **Data Structure Pattern** (following VocabularyProvider):

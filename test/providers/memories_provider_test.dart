@@ -186,8 +186,8 @@ void main() {
     });
 
     group('Auth aware functionality', () {
-      test('should clear all data on clearAllData', () {
-        memoriesProvider.clearAllData();
+      test('should clear all data on clearNotesCache', () {
+        memoriesProvider.clearNotesCache();
 
         expect(memoriesProvider.memories, isEmpty);
         expect(memoriesProvider.isLoading, isFalse);
@@ -434,7 +434,7 @@ void main() {
         expect(cachedNotes.first.id, equals(1));
       });
 
-      test('should clear all date-specific data on clearAllData', () async {
+      test('should clear all date-specific data on clearNotesCache', () async {
         final notes = [
           Note(id: 1, content: 'Test memory', isPrivate: false, userId: 1,
                isLong: false, isMarkdown: false, createdAt: 1640995200),
@@ -448,7 +448,7 @@ void main() {
         expect(memoriesProvider.memoriesOnDate(testDate), isNotEmpty);
 
         // Clear all data
-        memoriesProvider.clearAllData();
+        memoriesProvider.clearNotesCache();
 
         // Verify date-specific data is cleared
         expect(memoriesProvider.memoriesOnDate(testDate), isEmpty);

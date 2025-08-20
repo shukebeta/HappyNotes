@@ -325,7 +325,7 @@ void main() {
         expect(provider.currentPage, equals(2));
 
         // Clear all data
-        provider.clearAllData();
+        provider.clearNotesCache();
 
         expect(provider.notes, isEmpty);
         expect(provider.currentPage, equals(1));
@@ -361,8 +361,8 @@ void main() {
         // Test that the provider extends AuthAwareProvider
         expect(provider.isAuthStateInitialized, isFalse);
 
-        // clearAllData should be callable (inherited method)
-        expect(() => provider.clearAllData(), returnsNormally);
+        // clearNotesCache should be callable (inherited method)
+        expect(() => provider.clearNotesCache(), returnsNormally);
       });
     });
   });

@@ -371,7 +371,7 @@ void main() {
         expect(tagNotesProvider.currentTag, equals('clear-test'));
 
         // Clear all data (inherited from NoteListProvider, extended for tag)
-        tagNotesProvider.clearAllData();
+        tagNotesProvider.clearNotesCache();
 
         expect(tagNotesProvider.notes, isEmpty);
         expect(tagNotesProvider.currentTag, isEmpty); // Tag-specific clearing
@@ -389,7 +389,7 @@ void main() {
         expect(tagNotesProvider.isAuthStateInitialized, isFalse);
 
         // Should have inherited methods available
-        expect(() => tagNotesProvider.clearAllData(), returnsNormally);
+        expect(() => tagNotesProvider.clearNotesCache(), returnsNormally);
       });
     });
   });

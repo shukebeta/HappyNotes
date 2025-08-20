@@ -25,7 +25,7 @@ void main() {
 
       test('should extend AuthAwareProvider', () {
         expect(linkedNotesProvider.isAuthStateInitialized, isFalse);
-        expect(() => linkedNotesProvider.clearAllData(), returnsNormally);
+        expect(() => linkedNotesProvider.clearNotesCache(), returnsNormally);
       });
     });
 
@@ -307,7 +307,7 @@ void main() {
         expect(linkedNotesProvider.getError(parentNoteId2), isNotNull);
 
         // Clear all data
-        linkedNotesProvider.clearAllData();
+        linkedNotesProvider.clearNotesCache();
 
         expect(linkedNotesProvider.getLinkedNotes(parentNoteId1), isEmpty);
         expect(linkedNotesProvider.getLinkedNotes(parentNoteId2), isEmpty);

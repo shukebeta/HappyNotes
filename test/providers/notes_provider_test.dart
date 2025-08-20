@@ -400,7 +400,7 @@ void main() {
         expect(provider.notes.isNotEmpty, true);
 
         // Clear data
-        provider.clearAllData();
+        provider.clearNotesCache();
 
         expect(provider.notes, isEmpty);
         expect(provider.groupedNotes, isEmpty);
@@ -421,7 +421,7 @@ void main() {
 
         // Test logout
         await provider.onAuthStateChanged(false);
-        provider.clearAllData(); // Ensure notes are cleared after logout
+        provider.clearNotesCache(); // Ensure notes are cleared after logout
         // Notes should always be empty after logout/auth state change
         expect(provider.notes, isEmpty);
         expect(provider.isAuthStateInitialized, false);

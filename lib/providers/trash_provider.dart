@@ -39,9 +39,9 @@ class TrashProvider extends NoteListProvider {
     try {
       await _notesService.purgeDeleted();
 
-      // Refresh the list after purge
-      await refresh();
-
+      // Clear all data immediately for instant UI update
+      clearNotesCache();
+      
       return true;
     } catch (e) {
       // Handle error using base class method
@@ -60,9 +60,7 @@ class TrashProvider extends NoteListProvider {
 
       // Remove the note from local cache immediately
       notes.removeWhere((note) => note.id == noteId);
-
-      // Refresh to get updated totals
-      await refresh();
+      notifyListeners();
 
       return true;
     } catch (e) {
@@ -83,8 +81,8 @@ class TrashProvider extends NoteListProvider {
 
 
   @override
-  void clearAllData() {
+  void clearNotesCache() {
     _isPurging = false;
-    super.clearAllData();
+    super.clearNotesCache();
   }
 }

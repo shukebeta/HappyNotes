@@ -134,11 +134,11 @@ class NotesProvider extends NoteListProvider {
   }
 
   @override
-  void clearAllData() {
+  void clearNotesCache() {
     debugPrint('NotesProvider: Clearing all data');
     _isLoadingAdd = false;
     _addError = null;
-    super.clearAllData();
+    super.clearNotesCache();
     debugPrint('NotesProvider: Data cleared');
   }
 

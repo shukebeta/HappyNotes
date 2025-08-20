@@ -29,7 +29,7 @@ abstract class AuthAwareProvider with ChangeNotifier {
       // This ensures clean state for each user session
       _isAuthStateInitialized = true;
 
-      // Note: clearAllData() is already called by AppStateProvider
+      // Note: clearNotesCache() is already called by AppStateProvider
       // We don't call it again here to avoid double clearing
 
       // Add a small delay to ensure UI updates with cleared state
@@ -47,7 +47,7 @@ abstract class AuthAwareProvider with ChangeNotifier {
 
   /// Clear all cached data
   /// All auth-aware providers must implement this method
-  void clearAllData();
+  void clearNotesCache();
 
   /// Reset the auth state initialization flag
   /// Used for testing purposes

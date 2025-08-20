@@ -23,12 +23,12 @@ class MockAuthAwareProvider extends AuthAwareProvider {
   @override
   Future<void> onLogout() async {
     callLog.add('onLogout');
-    await super.onLogout(); // This calls clearAllData()
+    await super.onLogout(); // This calls clearNotesCache()
   }
 
   @override
-  void clearAllData() {
-    callLog.add('clearAllData');
+  void clearNotesCache() {
+    callLog.add('clearNotesCache');
     _data = [];
     _isLoading = false;
     _error = null;
@@ -95,13 +95,13 @@ void main() {
       provider.callLog.clear();
 
       // Simulate AppStateProvider's logout flow: clear data first, then notify auth change
-      provider.clearAllData();
+      provider.clearNotesCache();
       await provider.onAuthStateChanged(false);
 
       expect(provider.isAuthStateInitialized, false);
-      expect(provider.callLog, contains('clearAllData'));
+      expect(provider.callLog, contains('clearNotesCache'));
       expect(provider.callLog, contains('onLogout'));
-      // Data should always be empty after clearAllData() call
+      // Data should always be empty after clearNotesCache() call
       expect(provider.data, isEmpty);
     });
 

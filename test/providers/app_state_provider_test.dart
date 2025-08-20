@@ -36,7 +36,7 @@ class MockAuthProvider extends Mock implements AuthProvider {
 
 class MockSearchProvider extends Mock implements SearchProvider {
   @override
-  void clearAllData() => super.noSuchMethod(Invocation.method(#clearAllData, []));
+  void clearNotesCache() => super.noSuchMethod(Invocation.method(#clearNotesCache, []));
 
   @override
   Future<void> onAuthStateChanged(bool isAuthenticated) => super.noSuchMethod(
@@ -59,7 +59,7 @@ class MockSearchProvider extends Mock implements SearchProvider {
 
 class MockTagNotesProvider extends Mock implements TagNotesProvider {
   @override
-  void clearAllData() => super.noSuchMethod(Invocation.method(#clearAllData, []));
+  void clearNotesCache() => super.noSuchMethod(Invocation.method(#clearNotesCache, []));
 
   @override
   Future<void> onAuthStateChanged(bool isAuthenticated) => super.noSuchMethod(
@@ -76,7 +76,7 @@ class MockTagNotesProvider extends Mock implements TagNotesProvider {
 
 class MockMemoriesProvider extends Mock implements MemoriesProvider {
   @override
-  void clearAllData() => super.noSuchMethod(Invocation.method(#clearAllData, []));
+  void clearNotesCache() => super.noSuchMethod(Invocation.method(#clearNotesCache, []));
 
   @override
   Future<void> onAuthStateChanged(bool isAuthenticated) => super.noSuchMethod(
@@ -93,7 +93,7 @@ class MockMemoriesProvider extends Mock implements MemoriesProvider {
 
 class MockTrashProvider extends Mock implements TrashProvider {
   @override
-  void clearAllData() => super.noSuchMethod(Invocation.method(#clearAllData, []));
+  void clearNotesCache() => super.noSuchMethod(Invocation.method(#clearNotesCache, []));
 
   @override
   Future<void> onAuthStateChanged(bool isAuthenticated) => super.noSuchMethod(
@@ -110,7 +110,7 @@ class MockTrashProvider extends Mock implements TrashProvider {
 
 class MockDiscoveryProvider extends Mock implements DiscoveryProvider {
   @override
-  void clearAllData() => super.noSuchMethod(Invocation.method(#clearAllData, []));
+  void clearNotesCache() => super.noSuchMethod(Invocation.method(#clearNotesCache, []));
 
   @override
   Future<void> onAuthStateChanged(bool isAuthenticated) => super.noSuchMethod(
@@ -216,7 +216,7 @@ void main() {
         notesProvider.addListener(() => notesProviderNotifications++);
 
         // Clear all data should be called on logout
-        notesProvider.clearAllData();
+        notesProvider.clearNotesCache();
 
         expect(notesProvider.notes, isEmpty);
         expect(notesProvider.groupedNotes, isEmpty);
@@ -320,7 +320,7 @@ void main() {
             .thenAnswer((_) async => NotesResult([], 0));
 
         // Clear data first (simulating logout state)
-        notesProvider.clearAllData();
+        notesProvider.clearNotesCache();
 
         // Load data (simulating login)
         await notesProvider.onLogin();
@@ -344,7 +344,7 @@ void main() {
         when(mockAuthProvider.currentUserEmail).thenReturn(null);
 
         // Clear data
-        notesProvider.clearAllData();
+        notesProvider.clearNotesCache();
 
         expect(appStateProvider.isAuthenticated, isFalse);
         expect(appStateProvider.currentUser, isNull);
@@ -367,7 +367,7 @@ void main() {
 
         // Logout should clear data
         when(mockAuthProvider.isAuthenticated).thenReturn(false);
-        notesProvider.clearAllData();
+        notesProvider.clearNotesCache();
 
         expect(notesProvider.notes, isEmpty);
         expect(notesProvider.groupedNotes, isEmpty);

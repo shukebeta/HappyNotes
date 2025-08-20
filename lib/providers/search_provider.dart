@@ -21,9 +21,9 @@ class SearchProvider extends NoteListProvider {
 
 
   @override
-  void clearAllData() {
+  void clearNotesCache() {
     _currentQuery = '';
-    super.clearAllData();
+    super.clearNotesCache();
   }
 
   /// Search for notes with pagination
@@ -40,7 +40,7 @@ class SearchProvider extends NoteListProvider {
   /// Clear search results
   void clearSearchResults() {
     _currentQuery = '';
-    clearAllData();
+    clearNotesCache();
   }
 
 

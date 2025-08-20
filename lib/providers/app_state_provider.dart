@@ -100,7 +100,7 @@ class AppStateProvider with ChangeNotifier {
     ];
 
     for (final provider in providers) {
-      provider.clearAllData();
+      provider.clearNotesCache();
     }
   }
 

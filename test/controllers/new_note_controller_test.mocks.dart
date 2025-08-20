@@ -276,9 +276,9 @@ class MockNotesProvider extends _i1.Mock implements _i5.NotesProvider {
       ) as _i7.Future<void>);
 
   @override
-  void clearAllData() => super.noSuchMethod(
+  void clearNotesCache() => super.noSuchMethod(
         Invocation.method(
-          #clearAllData,
+          #clearNotesCache,
           [],
         ),
         returnValueForMissingStub: null,

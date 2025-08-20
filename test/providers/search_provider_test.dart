@@ -107,8 +107,8 @@ void main() {
     });
 
     group('Auth aware functionality', () {
-      test('should clear all data on clearAllData', () {
-        searchProvider.clearAllData();
+      test('should clear all data on clearNotesCache', () {
+        searchProvider.clearNotesCache();
 
         expect(searchProvider.searchResults, isEmpty);
         expect(searchProvider.isLoading, isFalse);
@@ -121,8 +121,8 @@ void main() {
         await searchProvider.searchNotes('test', 1);
         expect(searchProvider.currentQuery, equals('test'));
 
-        // clearAllData should clear search state (this is called by AppStateProvider during auth changes)
-        searchProvider.clearAllData();
+        // clearNotesCache should clear search state (this is called by AppStateProvider during auth changes)
+        searchProvider.clearNotesCache();
         expect(searchProvider.currentQuery, isEmpty);
 
         // onLogin should not change state (SearchProvider doesn't load data automatically)

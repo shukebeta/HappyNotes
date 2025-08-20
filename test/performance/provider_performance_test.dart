@@ -243,7 +243,7 @@ void main() {
       provider.removeListener(listener3);
 
       // Clear all data
-      provider.clearAllData();
+      provider.clearNotesCache();
 
       // Provider should be in clean state
       expect(provider.notes, isEmpty);

@@ -71,7 +71,7 @@ class MemoriesProvider extends NoteListProvider {
   final Map<String, DateTime> _lastLoadTimeByDate = {};
 
   @override
-  void clearAllData() {
+  void clearNotesCache() {
     _memories.clear();
     _isLoading = false;
     _error = null;

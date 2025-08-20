@@ -20,9 +20,9 @@ class TagNotesProvider extends NoteListProvider {
   List<Note> get tagNotes => notes;
 
   @override
-  void clearAllData() {
+  void clearNotesCache() {
     _currentTag = '';
-    super.clearAllData();
+    super.clearNotesCache();
   }
 
 
@@ -40,7 +40,7 @@ class TagNotesProvider extends NoteListProvider {
   /// Clear tag notes data
   void clearTagNotes() {
     _currentTag = '';
-    super.clearAllData();
+    super.clearNotesCache();
   }
 
   @override

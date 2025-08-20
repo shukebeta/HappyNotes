@@ -227,7 +227,7 @@ void main() {
         expect(discoveryProvider.notes.isNotEmpty, isTrue);
 
         // Clear all data (inherited from NoteListProvider)
-        discoveryProvider.clearAllData();
+        discoveryProvider.clearNotesCache();
 
         expect(discoveryProvider.notes, isEmpty);
         expect(discoveryProvider.currentPage, equals(1));
@@ -244,7 +244,7 @@ void main() {
         expect(discoveryProvider.isAuthStateInitialized, isFalse);
 
         // Should have inherited methods available
-        expect(() => discoveryProvider.clearAllData(), returnsNormally);
+        expect(() => discoveryProvider.clearNotesCache(), returnsNormally);
       });
     });
   });

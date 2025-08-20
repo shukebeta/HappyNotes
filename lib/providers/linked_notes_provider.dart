@@ -131,7 +131,7 @@ class LinkedNotesProvider extends AuthAwareProvider {
   }
 
   @override
-  void clearAllData() {
+  void clearNotesCache() {
     _linkedNotesCache.clear();
     _loadingStates.clear();
     _errorStates.clear();
