@@ -13,6 +13,7 @@ import 'package:happy_notes/models/notes_result.dart';
 
 // Import existing mocks
 import 'notes_provider_test.mocks.dart';
+import '../test_helpers/seq_logger_setup.dart';
 
 class MockAuthProvider extends Mock implements AuthProvider {
   @override
@@ -138,6 +139,9 @@ void main() {
     late MockDiscoveryProvider mockDiscoveryProvider;
 
     setUp(() {
+      // Initialize SeqLogger for tests
+      setupSeqLoggerForTesting();
+
       mockAuthProvider = MockAuthProvider();
       mockNotesService = MockNotesService();
       mockSearchProvider = MockSearchProvider();

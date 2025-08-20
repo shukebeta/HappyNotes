@@ -15,7 +15,7 @@ void main() {
     setUp(() {
       // Initialize SeqLogger for tests
       SeqLogger.initialize(enabled: false);
-      
+
       mockNotesService = MockNotesService();
     });
 
@@ -74,7 +74,10 @@ void main() {
         when(mockNotesService.myLatest(any, any))
             .thenAnswer((_) async => result);
 
-        // Navigate to page 2 and wait for completion
+        // First navigate to page 1 to establish total pages
+        await notesProvider.navigateToPage(1);
+
+        // Then navigate to page 2 and wait for completion
         await notesProvider.navigateToPage(2);
 
         expect(notesProvider.canAutoLoadPrevious(), isTrue);
@@ -125,7 +128,7 @@ void main() {
 
       test('should maintain pagination disabled even when manually enabled', () {
         memoriesProvider.setAutoPageEnabled(true);
-        
+
         // autoPageEnabled property might be true, but auto-load methods should still return false
         expect(memoriesProvider.autoPageEnabled, isTrue);
         expect(memoriesProvider.canAutoLoadNext(), isFalse);
@@ -183,7 +186,7 @@ void main() {
     group('Edge Cases', () {
       test('should handle pagination state correctly when loading', () async {
         final notesProvider = NotesProvider(mockNotesService);
-        
+
         // Mock a slow loading response
         when(mockNotesService.myLatest(any, any))
             .thenAnswer((_) async {
@@ -193,21 +196,21 @@ void main() {
 
         // Start loading and check state before completion
         final loadFuture = notesProvider.navigateToPage(1);
-        
+
         // Give it a moment to start loading
         await Future.delayed(const Duration(milliseconds: 1));
-        
+
         expect(notesProvider.isLoading, isTrue);
         expect(notesProvider.canAutoLoadNext(), isFalse);
         expect(notesProvider.canAutoLoadPrevious(), isFalse);
-        
+
         // Wait for completion
         await loadFuture;
       });
 
       test('should handle pagination state correctly during auto-loading', () async {
         final notesProvider = NotesProvider(mockNotesService);
-        
+
         final notes = List.generate(10, (i) => Note(
           id: i + 1,
           content: 'Note ${i + 1}',
@@ -227,15 +230,15 @@ void main() {
 
         // Load initial page
         await notesProvider.navigateToPage(1);
-        
+
         // Start auto-loading and check state immediately
         final autoLoadFuture = notesProvider.autoLoadNext();
-        
+
         // The auto-loading should be active immediately
         expect(notesProvider.isAutoLoading, isTrue);
         expect(notesProvider.canAutoLoadNext(), isFalse);
         expect(notesProvider.canAutoLoadPrevious(), isFalse);
-        
+
         // Wait for completion
         await autoLoadFuture;
       });
