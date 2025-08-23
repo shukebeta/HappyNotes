@@ -21,3 +21,9 @@
 - **Documentation**: Document all non-trivial methods and parameters
 - **Formatting**: Use standard Dart formatter with flutter_lints package rules
 - **Testing**: Group related tests, use descriptive test names, mock external dependencies
+- **File Editing**: Use eed (Enhanced Ed) for all file modifications - NEVER use Edit/MultiEdit tools
+
+## Tool Usage Policy
+- **BANNED TOOLS**: Edit and MultiEdit tools are prohibited due to instability
+- **REQUIRED TOOL**: Use eed for all file modifications
+- **Fallback**: Use sed, awk, or other command-line tools when eed is unavailable

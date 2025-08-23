@@ -27,6 +27,7 @@ class HomePage extends StatefulWidget {
 }
 
 class HomePageState extends State<HomePage> with WidgetsBindingObserver {
+  late ScrollController _scrollController;
   late TagCloudController _tagCloudController;
   bool _wasInBackground = false;
 
@@ -34,6 +35,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     _tagCloudController = locator<TagCloudController>();
+    _scrollController = ScrollController();
     WidgetsBinding.instance.addObserver(this);
 
     // Initialize provider data after widget is built
@@ -49,6 +51,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
   @override
   void dispose() {
+    _scrollController.dispose();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
@@ -156,6 +159,15 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
           if (provider.currentPage == 1) {
             // Note was already added optimistically to page 1, no need to refresh
             // The provider handled the optimistic update
+            
+            // Auto-scroll to top if not already at top
+            if (_scrollController.hasClients && _scrollController.offset > 0) {
+              _scrollController.animateTo(
+                0,
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeInOut,
+              );
+            }
           } else {
             Util.showInfo(scaffoldMessenger, 'Note saved successfully.');
           }
@@ -207,6 +219,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
         Expanded(
           child: NoteList(
             groupedNotes: notesProvider.groupedNotes,
+            scrollController: _scrollController,
             showDateHeader: true,
             callbacks: ListItemCallbacks<Note>(
               onTap: (note) async {
