@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 import 'package:happy_notes/services/seq_logger.dart';
 import 'package:provider/provider.dart';
 import 'package:happy_notes/screens/settings/mastodon_sync_settings.dart';
@@ -226,6 +227,13 @@ class SettingsState extends State<Settings> {
                 );
               },
             ),
+            ListTile(
+              leading: const Icon(Icons.contact_support),
+              title: const Text('Contact Us'),
+              subtitle: const Text('Get help and support'),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => _showContactDialog(context),
+            ),
             const SizedBox(height: 32),
             Center(
               child: Text(
@@ -249,5 +257,97 @@ class SettingsState extends State<Settings> {
         ),
       ),
     );
+  }
+
+  void _showContactDialog(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              'Contact Us',
+              style: Theme.of(context).textTheme.headlineSmall,
+            ),
+            const SizedBox(height: 20),
+            ListTile(
+              leading: const Icon(Icons.code),
+              title: const Text('GitHub Repository'),
+              subtitle: const Text('Source code and issue tracking'),
+              onTap: () => _launchGitHub(context),
+            ),
+            ListTile(
+              leading: const Icon(Icons.telegram),
+              title: const Text('Telegram Support'),
+              subtitle: const Text('Join our support group'),
+              onTap: () => _launchTelegram(context),
+            ),
+            ListTile(
+              leading: const Icon(Icons.email),
+              title: const Text('Email Support'),
+              subtitle: const Text('weizhong2004@gmail.com'),
+              onTap: () => _launchEmail(context),
+            ),
+            const SizedBox(height: 20),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _launchGitHub(BuildContext context) async {
+    const url = 'https://github.com/weizhong2004/happy-notes';
+    try {
+      await launchUrlString(url, mode: LaunchMode.externalApplication);
+      if (context.mounted) Navigator.pop(context);
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Could not launch GitHub: $e')),
+        );
+      }
+    }
+  }
+
+  Future<void> _launchTelegram(BuildContext context) async {
+    const url = 'https://t.me/happynotes_support';
+    try {
+      await launchUrlString(url, mode: LaunchMode.externalApplication);
+      if (context.mounted) Navigator.pop(context);
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Could not launch Telegram: $e')),
+        );
+      }
+    }
+  }
+
+  Future<void> _launchEmail(BuildContext context) async {
+    const url = 'mailto:weizhong2004@gmail.com?subject=Happy%20Notes%20Support';
+    try {
+      await launchUrlString(url);
+      if (context.mounted) Navigator.pop(context);
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Could not launch email client: $e')),
+        );
+      }
+    }
   }
 }
