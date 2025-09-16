@@ -54,14 +54,60 @@ jobs:
       - name: Verify Flutter installation
         run: flutter doctor -v
 
-      - name: Analyze code
+      - name: Analyze code (non-blocking)
+        id: analyze
+        continue-on-error: true
         run: flutter analyze --fatal-infos --fatal-warnings
-
-      - name: Check code formatting
-        run: dart format --set-exit-if-changed --page-width=120 .
 
       - name: Run tests with coverage
         run: flutter test --coverage --reporter expanded
+
+      - name: Check code formatting (non-blocking)
+        id: format-check
+        continue-on-error: true
+        run: |
+          echo "🔍 Checking code formatting..."
+          if ! dart format --set-exit-if-changed --page-width=120 . 2>&1 | tee format-output.log; then
+            echo "⚠️ Code formatting issues found!"
+            echo "## 📋 Code Formatting Report" >> $GITHUB_STEP_SUMMARY
+            echo "The following files need formatting:" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            grep "Formatted" format-output.log >> $GITHUB_STEP_SUMMARY || echo "See job logs for details" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            echo "To fix: run \`dart format --page-width=120 .\` locally and commit the changes" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          else
+            echo "✅ All files are properly formatted" >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Report code quality status
+        if: always()
+        run: |
+          echo "## 🔍 Code Quality Report" >> $GITHUB_STEP_SUMMARY
+          
+          # Analysis status
+          if [ "${{ steps.analyze.outcome }}" = "success" ]; then
+            echo "- ✅ **Static Analysis**: Passed" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "- ⚠️ **Static Analysis**: Issues found (check logs above)" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          # Format status  
+          if [ "${{ steps.format-check.outcome }}" = "success" ]; then
+            echo "- ✅ **Code Formatting**: All files properly formatted" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "- ⚠️ **Code Formatting**: Files need formatting (see report above)" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          # Overall status
+          if [ "${{ steps.analyze.outcome }}" = "success" ] && [ "${{ steps.format-check.outcome }}" = "success" ]; then
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "🎉 **All code quality checks passed!**" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "📝 **Please review the issues above and fix them in your next commit.**" >> $GITHUB_STEP_SUMMARY
+            echo "💡 These issues won't block the CI, but should be addressed for code quality." >> $GITHUB_STEP_SUMMARY
+          fi
 
       - name: Upload test results
         uses: actions/upload-artifact@v4

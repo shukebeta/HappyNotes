@@ -25,7 +25,6 @@ class SearchResultsPage extends StatefulWidget {
 }
 
 class _SearchResultsPageState extends State<SearchResultsPage> {
-
   @override
   void initState() {
     super.initState();
@@ -169,7 +168,9 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
         ),
         if (searchProvider.totalPages > 1 && UserSession().isDesktop)
           PaginationControls(
-              currentPage: searchProvider.currentPage, totalPages: searchProvider.totalPages, navigateToPage: navigateToPage),
+              currentPage: searchProvider.currentPage,
+              totalPages: searchProvider.totalPages,
+              navigateToPage: navigateToPage),
       ],
     );
   }

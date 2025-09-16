@@ -63,13 +63,13 @@ class NewNoteController {
   bool _isContentOnlyInitialContent(NoteModel noteModel) {
     final currentContent = noteModel.content.trim();
     final initialContent = noteModel.initialContent.trim();
-    
+
     // If initial content is empty, no auto-added content
     if (initialContent.isEmpty) return false;
-    
+
     // Check if current content exactly matches initial content
     // or if current content is just the initial content without extra formatting
-    return currentContent == initialContent || 
-           currentContent.replaceAll(RegExp(r'\s+'), ' ') == initialContent.replaceAll(RegExp(r'\s+'), ' ');
+    return currentContent == initialContent ||
+        currentContent.replaceAll(RegExp(r'\s+'), ' ') == initialContent.replaceAll(RegExp(r'\s+'), ' ');
   }
 }

@@ -159,7 +159,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
           if (provider.currentPage == 1) {
             // Note was already added optimistically to page 1, no need to refresh
             // The provider handled the optimistic update
-            
+
             // Auto-scroll to top if not already at top
             if (_scrollController.hasClients && _scrollController.offset > 0) {
               _scrollController.animateTo(

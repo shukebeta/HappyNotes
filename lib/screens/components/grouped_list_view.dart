@@ -143,7 +143,6 @@ class _GroupedListViewState<T> extends State<GroupedListView<T>> {
     }
 
     if (notification is ScrollEndNotification) {
-
       // Backup triggers for ScrollEndNotification (in case ScrollUpdate didn't trigger)
       if (_isPullingUp && _pullUpDistance >= _pullUpThreshold && !_hasTriggeredUp) {
         widget.onLoadMore?.call();
