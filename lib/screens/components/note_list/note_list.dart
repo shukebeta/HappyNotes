@@ -31,9 +31,9 @@ class NoteList extends StatelessWidget {
   Widget build(BuildContext context) {
     final provider = Provider.of<NoteListProvider>(context, listen: false);
 
-    // Web 环境下，如果是移动平台（iOS/Android）或者支持触摸，都启用拉动功能
+    // Enable pull gestures for mobile platforms or web environments with touch capability
     final isMobile = (defaultTargetPlatform == TargetPlatform.android || defaultTargetPlatform == TargetPlatform.iOS) ||
-        (kIsWeb && MediaQuery.of(context).size.width < 768);
+        kIsWeb; // Simplified web check - assume web users have touch capability
 
     return GroupedListView<Note>(
       groupedItems: groupedNotes,
