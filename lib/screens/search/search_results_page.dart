@@ -25,13 +25,12 @@ class SearchResultsPage extends StatefulWidget {
 }
 
 class _SearchResultsPageState extends State<SearchResultsPage> {
-  int currentPageNumber = 1;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      navigateToPage(currentPageNumber);
+      navigateToPage(1); // Start with page 1
     });
   }
 
@@ -39,7 +38,6 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
     final searchProvider = context.read<SearchProvider>();
     if (pageNumber >= 1 && pageNumber <= searchProvider.totalPages) {
       await searchProvider.searchNotes(widget.query, pageNumber);
-      currentPageNumber = pageNumber;
       return true;
     }
     return false;
@@ -89,7 +87,7 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
               _buildBody(searchProvider),
               if (searchProvider.totalPages > 1 && !UserSession().isDesktop)
                 FloatingPagination(
-                  currentPage: currentPageNumber,
+                  currentPage: searchProvider.currentPage,
                   totalPages: searchProvider.totalPages,
                   navigateToPage: navigateToPage,
                 ),
@@ -130,8 +128,9 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
                 onTap: (note) async {
                   final result =
                       await Navigator.push(context, MaterialPageRoute(builder: (context) => NoteDetail(note: note)));
-                  if (result == true) {
-                    navigateToPage(currentPageNumber);
+                  if (result == true && mounted) {
+                    final searchProvider = context.read<SearchProvider>();
+                    navigateToPage(searchProvider.currentPage);
                   }
                 },
                 onDoubleTap: (note) async {
@@ -139,8 +138,9 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
                       context,
                       MaterialPageRoute(
                           builder: (context) => NoteDetail(note: note, enterEditing: note.userId == UserSession().id)));
-                  if (result == true) {
-                    navigateToPage(currentPageNumber);
+                  if (result == true && mounted) {
+                    final searchProvider = context.read<SearchProvider>();
+                    navigateToPage(searchProvider.currentPage);
                   }
                 },
                 onDelete: (note) async {
@@ -154,7 +154,10 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
               ),
               noteCallbacks: NoteListCallbacks(
                 onTagTap: (note, tag) => NavigationHelper.onTagTap(context, note, tag),
-                onRefresh: () => navigateToPage(currentPageNumber),
+                onRefresh: () {
+                  final searchProvider = context.read<SearchProvider>();
+                  return navigateToPage(searchProvider.currentPage);
+                },
               ),
               config: const ListItemConfig(
                 showDate: false,
@@ -166,7 +169,7 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
         ),
         if (searchProvider.totalPages > 1 && UserSession().isDesktop)
           PaginationControls(
-              currentPage: currentPageNumber, totalPages: searchProvider.totalPages, navigateToPage: navigateToPage),
+              currentPage: searchProvider.currentPage, totalPages: searchProvider.totalPages, navigateToPage: navigateToPage),
       ],
     );
   }
