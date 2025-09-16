@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
-import '../../services/seq_logger.dart';
 
 class GroupedListView<T> extends StatefulWidget {
   final Map<String, List<T>> groupedItems;
@@ -84,16 +83,11 @@ class _GroupedListViewState<T> extends State<GroupedListView<T>> {
 
     if (notification is ScrollUpdateNotification) {
       final metrics = notification.metrics;
-      SeqLogger.fine(
-          '[GroupedListView] ScrollUpdate: pixels=${metrics.pixels}, maxScrollExtent=${metrics.maxScrollExtent}');
 
       // Handle pull-down (top overscroll)
       if (widget.pullDownToLoadEnabled && widget.canAutoLoadPrevious && metrics.pixels <= 0) {
         final overscroll = -metrics.pixels; // Convert to positive value
-        SeqLogger.fine('[GroupedListView] At top: overscroll=$overscroll');
         if (overscroll > 0) {
-          SeqLogger.info(
-              '[GroupedListView] Pull-down overscroll detected! Setting _isPullingDown=true, _pullDownDistance=$overscroll');
           setState(() {
             _isPullingDown = true;
             _pullDownDistance = overscroll;
@@ -111,7 +105,6 @@ class _GroupedListViewState<T> extends State<GroupedListView<T>> {
         }
       } else if (_isPullingDown && metrics.pixels > 0) {
         // Reset pull-down state when leaving top
-        SeqLogger.fine('[GroupedListView] Left top, resetting pull-down state');
         setState(() {
           _isPullingDown = false;
           _pullDownDistance = 0.0;
@@ -122,10 +115,7 @@ class _GroupedListViewState<T> extends State<GroupedListView<T>> {
       // Handle pull-up (bottom overscroll) - existing logic
       if (widget.pullUpToLoadEnabled && widget.canAutoLoadNext && metrics.pixels >= metrics.maxScrollExtent) {
         final overscroll = metrics.pixels - metrics.maxScrollExtent;
-        SeqLogger.fine('[GroupedListView] At bottom: overscroll=$overscroll');
         if (overscroll > 0) {
-          SeqLogger.info(
-              '[GroupedListView] Overscroll detected! Setting _isPullingUp=true, _pullUpDistance=$overscroll');
           setState(() {
             _isPullingUp = true;
             _pullUpDistance = overscroll;
@@ -143,7 +133,6 @@ class _GroupedListViewState<T> extends State<GroupedListView<T>> {
         }
       } else {
         if (_isPullingUp) {
-          SeqLogger.fine('[GroupedListView] Left bottom, resetting pull state');
           setState(() {
             _isPullingUp = false;
             _pullUpDistance = 0.0;
@@ -154,8 +143,6 @@ class _GroupedListViewState<T> extends State<GroupedListView<T>> {
     }
 
     if (notification is ScrollEndNotification) {
-      SeqLogger.info(
-          '[GroupedListView] ScrollEnd: _isPullingUp=$_isPullingUp, _pullUpDistance=$_pullUpDistance, _isPullingDown=$_isPullingDown, _pullDownDistance=$_pullDownDistance');
 
       // Backup triggers for ScrollEndNotification (in case ScrollUpdate didn't trigger)
       if (_isPullingUp && _pullUpDistance >= _pullUpThreshold && !_hasTriggeredUp) {
