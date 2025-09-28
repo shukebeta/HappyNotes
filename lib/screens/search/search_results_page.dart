@@ -6,6 +6,8 @@ import 'package:happy_notes/providers/search_provider.dart';
 import 'package:happy_notes/providers/note_list_provider.dart';
 import 'package:happy_notes/screens/components/controllers/tag_cloud_controller.dart';
 import 'package:happy_notes/screens/note_detail/note_detail.dart';
+import 'package:happy_notes/screens/tag_notes/tag_notes.dart';
+import 'package:happy_notes/screens/memories/memories_on_day.dart';
 import 'package:happy_notes/utils/navigation_helper.dart';
 import 'package:happy_notes/screens/account/user_session.dart';
 import 'package:happy_notes/screens/new_note/new_note.dart';
@@ -58,6 +60,20 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
           },
         ),
         actions: [
+          // Show "View as Tag" button if query is a valid tag format
+          if (NavigationHelper.isValidTagFormat(widget.query))
+            IconButton(
+              icon: const Icon(Icons.label),
+              tooltip: 'View as Tag',
+              onPressed: () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => TagNotes(tag: widget.query, myNotesOnly: true),
+                  ),
+                );
+              },
+            ),
           IconButton(
             icon: Util.writeNoteIcon(),
             tooltip: 'New Public Note',
@@ -157,6 +173,12 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
                   final searchProvider = context.read<SearchProvider>();
                   return navigateToPage(searchProvider.currentPage);
                 },
+                onDateHeaderTap: (date) => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => MemoriesOnDay(date: date),
+                  ),
+                ),
               ),
               config: const ListItemConfig(
                 showDate: false,

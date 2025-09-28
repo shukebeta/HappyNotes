@@ -39,27 +39,9 @@ class NavigationHelper {
 
     if (inputText.isEmpty) return; // Don't proceed if text is empty
 
-    if (action == 'search') {
-      if (replacePage) {
-        navigator.pushReplacement(
-          MaterialPageRoute(
-            builder: (context) => SearchResultsPage(query: inputText),
-          ),
-        );
-      } else {
-        navigator.push(
-          MaterialPageRoute(
-            builder: (context) => SearchResultsPage(query: inputText),
-          ),
-        );
-      }
-    } else if (action == 'go') {
-      // Apply existing logic for tag/date/ID
-      var processedInput = _cleanTag(inputText);
-      if (processedInput.isEmpty) return;
-
-      // First try to parse any date format
-      final dateString = _normalizeDateString(processedInput);
+    if (action == 'go') {
+      // Simplified logic: try date first, then search
+      final dateString = _normalizeDateString(inputText);
       if (dateString != null) {
         try {
           final date = DateTime.parse(dateString);
@@ -74,24 +56,21 @@ class NavigationHelper {
           }
           return;
         } catch (e) {
-          // If date parsing fails, continue with tag/ID processing
+          // If date parsing fails, continue to search
         }
       }
-      // else (not a date or date parsing failed) - process as tag or ID
+      
+      // Not a date - perform search
       if (replacePage) {
         navigator.pushReplacement(
           MaterialPageRoute(
-            builder: (context) => processedInput.startsWith('@')
-                ? NoteDetail(noteId: int.parse(processedInput.substring(1)))
-                : TagNotes(tag: processedInput, myNotesOnly: true),
+            builder: (context) => SearchResultsPage(query: inputText),
           ),
         );
       } else {
         navigator.push(
           MaterialPageRoute(
-            builder: (context) => processedInput.startsWith('@')
-                ? NoteDetail(noteId: int.parse(processedInput.substring(1)))
-                : TagNotes(tag: processedInput, myNotesOnly: true),
+            builder: (context) => SearchResultsPage(query: inputText),
           ),
         );
       }
@@ -186,14 +165,9 @@ class NavigationHelper {
     }
   }
 
-  static String _cleanTag(String tag) {
-    if (int.tryParse(tag) != null) {
-      tag = '@$tag';
-    } else {
-      if (tag.startsWith('#')) {
-        tag = tag.replaceAll('#', '');
-      }
-    }
-    return tag.trim();
+
+  static bool isValidTagFormat(String text) {
+    // Only require no spaces and non-empty after trim
+    return !text.contains(' ') && text.trim().isNotEmpty;
   }
 }

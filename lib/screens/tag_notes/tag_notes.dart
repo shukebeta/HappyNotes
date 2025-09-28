@@ -6,6 +6,7 @@ import 'package:happy_notes/providers/tag_notes_provider.dart';
 import 'package:happy_notes/providers/note_list_provider.dart';
 import 'package:happy_notes/screens/components/controllers/tag_cloud_controller.dart';
 import '../../utils/navigation_helper.dart';
+import 'package:happy_notes/screens/search/search_results_page.dart';
 import '../components/floating_pagination.dart';
 import '../components/note_list/note_list.dart';
 import '../components/note_list/note_list_callbacks.dart';
@@ -78,6 +79,18 @@ class TagNotesState extends State<TagNotes> {
           },
         ),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.search),
+            tooltip: 'Search Text',
+            onPressed: () {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => SearchResultsPage(query: widget.tag),
+                ),
+              );
+            },
+          ),
           _buildNewNoteButton(context),
         ],
       ),

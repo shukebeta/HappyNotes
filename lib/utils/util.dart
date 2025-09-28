@@ -107,9 +107,9 @@ class Util {
             autofocus: !AppConfig.isIOSWeb,
             decoration: InputDecoration(hintText: hintText),
             onSubmitted: (value) {
-              // Mimic the 'Search' button behavior on submission
+              // Submit as 'go' action on Enter
               if (controller.text.isNotEmpty) {
-                Navigator.of(context).pop({'action': 'search', 'text': controller.text});
+                Navigator.of(context).pop({'action': 'go', 'text': controller.text});
               } else {
                 Navigator.of(context).pop(); // Mimic Cancel if empty
               }
@@ -117,24 +117,8 @@ class Util {
           ),
           actions: <Widget>[
             Tooltip(
-              // Add Tooltip for Search
-              message: 'Search note content for keywords',
-              child: TextButton(
-                onPressed: () {
-                  if (controller.text.isNotEmpty) {
-                    Navigator.of(context).pop({'action': 'search', 'text': controller.text});
-                  } else {
-                    // Optionally show a message that input is needed for search
-                    // Or just do nothing / mimic cancel
-                    Navigator.of(context).pop();
-                  }
-                },
-                child: const Text('Search'),
-              ),
-            ),
-            Tooltip(
               // Add Tooltip for Go
-              message: 'Navigate to tag, date, or note ID',
+              message: 'Navigate to date or search text',
               child: TextButton(
                 onPressed: () {
                   if (controller.text.isNotEmpty) {

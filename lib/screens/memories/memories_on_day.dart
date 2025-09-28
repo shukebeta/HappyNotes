@@ -6,6 +6,7 @@ import '../components/controllers/tag_cloud_controller.dart';
 import '../../providers/memories_provider.dart';
 import '../../providers/note_list_provider.dart';
 import '../../utils/navigation_helper.dart';
+import '../search/search_results_page.dart';
 import '../../utils/util.dart';
 import '../account/user_session.dart';
 import '../../entities/note.dart';
@@ -107,6 +108,19 @@ class MemoriesOnDayState extends State<MemoriesOnDay> with RouteAware {
           },
         ),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.search),
+            tooltip: 'Search Date',
+            onPressed: () {
+              final dateString = DateFormat('yyyy-MM-dd').format(widget.date);
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => SearchResultsPage(query: dateString),
+                ),
+              );
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.chevron_left),
             onPressed: _goToPreviousDay,
