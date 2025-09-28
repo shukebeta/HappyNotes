@@ -156,7 +156,7 @@ class MemoriesOnDayState extends State<MemoriesOnDay> with RouteAware {
                   final newNote = await Navigator.push<Note>(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => NewNote(isPrivate: false, date: widget.date),
+                      builder: (context) => NewNote(isPrivate: true, date: widget.date),
                     ),
                   );
                   if (newNote != null) {
@@ -208,7 +208,7 @@ class MemoriesOnDayState extends State<MemoriesOnDay> with RouteAware {
                 final newNote = await Navigator.push<Note>(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => NewNote(isPrivate: false, date: widget.date),
+                    builder: (context) => NewNote(isPrivate: true, date: widget.date),
                   ),
                 );
                 if (newNote != null) {
