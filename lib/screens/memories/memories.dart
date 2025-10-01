@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../app_config.dart';
-import '../../utils/util.dart';
-import '../account/user_session.dart';
 import '../components/memory_list.dart';
-import '../new_note/new_note.dart';
+import '../account/user_session.dart';
 import '../../utils/navigation_helper.dart';
 import '../../providers/memories_provider.dart';
 import '../components/controllers/tag_cloud_controller.dart';
@@ -65,28 +62,11 @@ class MemoriesState extends State<Memories> with RouteAware {
             NavigationHelper.showTagDiagram(navigator.context, tagData);
           },
         ),
-        actions: [_buildNewNoteButton(context)],
       ),
       body: _buildBody(),
     );
   }
 
-  IconButton _buildNewNoteButton(BuildContext context) {
-    return IconButton(
-      icon: Util.writeNoteIcon(),
-      tooltip: AppConfig.privateNoteOnlyIsEnabled ? 'New Private Note' : 'New Public Note',
-      onPressed: () async {
-        final navigator = Navigator.of(context);
-        await navigator.push(
-          MaterialPageRoute(
-            builder: (context) => NewNote(
-              isPrivate: AppConfig.privateNoteOnlyIsEnabled,
-            ),
-          ),
-        );
-      },
-    );
-  }
 
   Widget _buildBody() {
     return Consumer<MemoriesProvider>(

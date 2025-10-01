@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../entities/note.dart';
 import '../../models/note_model.dart';
 import '../../providers/linked_notes_provider.dart';
+import 'create_note_fab.dart';
 import '../new_note/new_note.dart';
 import 'linked_notes.dart';
 import 'markdown_body_here.dart';
@@ -56,31 +57,23 @@ class NoteViewState extends State<NoteView> {
               ],
             ),
 
-            // Add Note Button
-            Positioned(
-              right: 0,
-              bottom: 16,
-              child: Opacity(
-                opacity: 0.5,
-                child: FloatingActionButton(
-                  onPressed: () async {
-                    final navigator = Navigator.of(context);
-                    final linkedNotesProvider = context.read<LinkedNotesProvider>();
-                    final newNote = await navigator.push(
-                      MaterialPageRoute(
-                        builder: (context) => NewNote(
-                          isPrivate: widget.note.isPrivate,
-                          initialTag: '@${widget.note.id}',
-                        ),
-                      ),
-                    );
-                    if (newNote != null && mounted) {
-                      linkedNotesProvider.addLinkedNote(widget.note.id, newNote);
-                    }
-                  },
-                  child: const Icon(Icons.add),
-                ),
-              ),
+            CreateNoteFAB(
+              isPrivate: widget.note.isPrivate,
+              onPressed: () async {
+                final navigator = Navigator.of(context);
+                final linkedNotesProvider = context.read<LinkedNotesProvider>();
+                final newNote = await navigator.push(
+                  MaterialPageRoute(
+                    builder: (context) => NewNote(
+                      isPrivate: widget.note.isPrivate,
+                      initialTag: '@${widget.note.id}',
+                    ),
+                  ),
+                );
+                if (newNote != null && mounted) {
+                  linkedNotesProvider.addLinkedNote(widget.note.id, newNote);
+                }
+              },
             ),
           ],
         );

@@ -14,6 +14,7 @@ import '../new_note/new_note.dart';
 import '../note_detail/note_detail.dart';
 import '../components/tappable_app_bar_title.dart';
 import '../components/note_list/note_list.dart';
+import '../components/create_note_fab.dart';
 import '../components/note_list/note_list_callbacks.dart';
 
 class MemoriesOnDay extends StatefulWidget {
@@ -145,27 +146,19 @@ class MemoriesOnDayState extends State<MemoriesOnDay> with RouteAware {
               return _buildBody(isLoading, notes, error);
             },
           ),
-          // Add Note Button
-          Positioned(
-            right: 0,
-            bottom: 16,
-            child: Opacity(
-              opacity: 0.5,
-              child: FloatingActionButton(
-                onPressed: () async {
-                  final newNote = await Navigator.push<Note>(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => NewNote(isPrivate: true, date: widget.date),
-                    ),
-                  );
-                  if (newNote != null) {
-                    _onNoteSaved(newNote);
-                  }
-                },
-                child: const Icon(Icons.add),
-              ),
-            ),
+          CreateNoteFAB(
+            isPrivate: true,
+            onPressed: () async {
+              final newNote = await Navigator.push<Note>(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => NewNote(isPrivate: true, date: widget.date),
+                ),
+              );
+              if (newNote != null) {
+                _onNoteSaved(newNote);
+              }
+            },
           ),
         ],
       ),

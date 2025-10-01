@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:happy_notes/app_config.dart';
 import 'package:happy_notes/screens/components/note_list/note_list.dart';
 import 'package:happy_notes/screens/note_detail/note_detail.dart';
 import '../../entities/note.dart';
 import '../../utils/navigation_helper.dart';
-import '../../utils/util.dart';
 import '../components/floating_pagination.dart';
 import '../components/note_list/note_list_callbacks.dart';
 import '../components/pagination_controls.dart';
 import '../account/user_session.dart';
-import '../new_note/new_note.dart';
 import '../components/tappable_app_bar_title.dart';
 import '../../providers/discovery_provider.dart';
 import '../../providers/note_list_provider.dart';
@@ -79,9 +76,6 @@ class DiscoveryState extends State<Discovery> {
             NavigationHelper.showTagDiagram(navigator.context, tagData);
           },
         ),
-        actions: [
-          _buildNewNoteButton(context),
-        ],
       ),
       body: Stack(
         children: [
@@ -103,32 +97,6 @@ class DiscoveryState extends State<Discovery> {
     );
   }
 
-  IconButton _buildNewNoteButton(BuildContext context) {
-    return IconButton(
-      icon: Util.writeNoteIcon(),
-      tooltip: AppConfig.privateNoteOnlyIsEnabled ? 'New Private Note' : 'New Public Note',
-      onPressed: () async {
-        final scaffoldMessenger = ScaffoldMessenger.of(context);
-        final savedSuccessfully = await Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => NewNote(
-              isPrivate: AppConfig.privateNoteOnlyIsEnabled,
-            ),
-          ),
-        );
-        if (!mounted) return;
-        if (savedSuccessfully ?? false) {
-          // Only refresh if on the first page, otherwise let the snackbar handle it (existing logic)
-          if (currentPageNumber == 1) {
-            await refreshPage();
-          } else {
-            Util.showInfo(scaffoldMessenger, 'Note saved successfully.'); // Replaced showSnackBar
-          }
-        }
-      },
-    );
-  }
 
   Widget _buildBody() {
     return Consumer<DiscoveryProvider>(

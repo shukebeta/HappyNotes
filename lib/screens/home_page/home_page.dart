@@ -17,6 +17,7 @@ import '../../dependency_injection.dart';
 import '../account/user_session.dart';
 import '../new_note/new_note.dart';
 import '../components/controllers/tag_cloud_controller.dart';
+import '../components/create_note_fab.dart';
 import '../components/tappable_app_bar_title.dart';
 
 class HomePage extends StatefulWidget {
@@ -113,68 +114,62 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
             NavigationHelper.showTagDiagram(navigator.context, tagData);
           },
         ),
-        actions: [
-          _buildNewNoteButton(context),
+      ),
+      body: Stack(
+        children: [
+          Consumer<NotesProvider>(
+            builder: (ctx, notesProvider, child) {
+              return Stack(
+                children: [
+                  ChangeNotifierProvider<NoteListProvider>.value(
+                    value: notesProvider,
+                    child: _buildBody(notesProvider),
+                  ),
+                  if (notesProvider.totalPages > 1 && !UserSession().isDesktop)
+                    FloatingPagination(
+                      currentPage: notesProvider.currentPage,
+                      totalPages: notesProvider.totalPages,
+                      navigateToPage: (pageNumber) => navigateToPage(pageNumber),
+                    ),
+                ],
+              );
+            },
+          ),
+          CreateNoteFAB(
+            isPrivate: AppConfig.privateNoteOnlyIsEnabled,
+            onPressed: () async {
+              final scaffoldMessenger = ScaffoldMessenger.of(context);
+              final provider = Provider.of<NotesProvider>(context, listen: false);
+              final Note? savedNote = await Navigator.push<Note>(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => NewNote(
+                    isPrivate: AppConfig.privateNoteOnlyIsEnabled,
+                  ),
+                ),
+              );
+              if (!mounted) return;
+              if (savedNote != null) {
+                if (provider.currentPage == 1) {
+                  if (_scrollController.hasClients && _scrollController.offset > 0) {
+                    _scrollController.animateTo(
+                      0,
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeInOut,
+                    );
+                  }
+                } else {
+                  Util.showInfo(scaffoldMessenger, 'Note saved successfully.');
+                }
+              }
+            },
+          ),
         ],
       ),
-      body: Consumer<NotesProvider>(
-        builder: (ctx, notesProvider, child) {
-          return Stack(
-            children: [
-              ChangeNotifierProvider<NoteListProvider>.value(
-                value: notesProvider,
-                child: _buildBody(notesProvider),
-              ),
-              if (notesProvider.totalPages > 1 && !UserSession().isDesktop)
-                FloatingPagination(
-                  currentPage: notesProvider.currentPage,
-                  totalPages: notesProvider.totalPages,
-                  navigateToPage: (pageNumber) => navigateToPage(pageNumber),
-                ),
-            ],
-          );
-        },
-      ),
     );
   }
 
-  IconButton _buildNewNoteButton(BuildContext context) {
-    return IconButton(
-      icon: Util.writeNoteIcon(),
-      tooltip: AppConfig.privateNoteOnlyIsEnabled ? 'New Private Note' : 'New Public Note',
-      onPressed: () async {
-        final scaffoldMessenger = ScaffoldMessenger.of(context);
-        final provider = Provider.of<NotesProvider>(context, listen: false);
-        final Note? savedNote = await Navigator.push<Note>(
-          context,
-          MaterialPageRoute(
-            builder: (context) => NewNote(
-              isPrivate: AppConfig.privateNoteOnlyIsEnabled,
-            ),
-          ),
-        );
-        if (!mounted) return;
-        if (savedNote != null) {
-          // Smart update: Only refresh if on page 1, otherwise show message
-          if (provider.currentPage == 1) {
-            // Note was already added optimistically to page 1, no need to refresh
-            // The provider handled the optimistic update
 
-            // Auto-scroll to top if not already at top
-            if (_scrollController.hasClients && _scrollController.offset > 0) {
-              _scrollController.animateTo(
-                0,
-                duration: const Duration(milliseconds: 300),
-                curve: Curves.easeInOut,
-              );
-            }
-          } else {
-            Util.showInfo(scaffoldMessenger, 'Note saved successfully.');
-          }
-        }
-      },
-    );
-  }
 
   Widget _buildBody(NotesProvider notesProvider) {
     if (notesProvider.isLoadingList) {
