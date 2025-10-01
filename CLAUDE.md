@@ -23,12 +23,46 @@
 - **Testing**: Group related tests, use descriptive test names, mock external dependencies
 - **File Editing**: Use eed (Enhanced Ed) for all file modifications - NEVER use Edit/MultiEdit tools
 
-## Tool Usage Policy
-- **BANNED TOOLS**: Edit and MultiEdit tools are prohibited due to instability
-- **REQUIRED TOOL**: Use eed for all file modifications
-- **Fallback**: Use sed, awk, or other command-line tools when eed is unavailable
+## Tool Usage Policy - Critical Understanding
+
+### Why Edit/MultiEdit are BANNED
+Edit and MultiEdit waste massive amounts of tokens and time due to fundamental design flaws for AI workflows:
+
+**Problem 1: Forced Read Tax**
+- Edit requires you to Read entire files before modification, even when Grep already told you the exact line
+- Example: Change one line in a 500-line file = Read 500 lines + Edit = thousands of wasted tokens
+- eed: Direct modification without reading = minimal tokens
+
+**Problem 2: The Try-Fail-Retry Loop**
+- Edit fails on multiple matches → you retry with MultiEdit → wasted round trip
+- This happens on almost every file with common patterns
+- eed: Express intent clearly with patterns (s/old/new/ or s/old/new/g) - works first try
+
+**Real Cost Comparison** (modifying 5 files):
+- Edit path: 5 Reads (10k tokens) + 2-3 failures + 7-10 tool calls = ~12 interactions
+- eed path: 5 eed commands (500 tokens) + 0 failures = 5 interactions
+- **20x efficiency gain with eed**
+
+### REQUIRED TOOL: eed (Enhanced Ed)
+Use eed for ALL file modifications. Fallback to sed/awk only if eed unavailable.
 
 ## Enhanced Ed (eed) Usage Guidelines
+
+### Why eed Exists - The Real Story
+eed is not "just another editor" - it's a safety wrapper around ed that fixes the sharp edges:
+
+**What eed Does for You Automatically**:
+1. **Smart operation ordering**: Converts `1a ... 5a ... 6a` to `6a→5a→1a` to prevent line number drift
+2. **Auto-completion**: Adds missing `w` and `q` commands so you never lose changes
+3. **Atomic commits**: Every edit is committed immediately with clear history
+4. **Safe rollback**: `eed --undo` when things go wrong
+
+**Raw ed problems eed solves**:
+- Line numbers shift after insertions/deletions → eed reorders operations
+- Forgot to save → eed auto-saves
+- Made a mistake → eed provides undo
+- Need to track changes → eed commits everything
+
 
 ### Why Use eed
 - **Atomic commits**: Every edit is automatically committed, making it safe to experiment
