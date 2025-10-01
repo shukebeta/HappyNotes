@@ -36,24 +36,31 @@ This means that even if a note is private, the photos in it are public. This eli
 - In the note list, tags for each note are listed. Clicking on any tag will show all notes marked with that tag. Don't see the tag you want to view on the current page? Tap the My Notes title, enter the text of that tag, and you'll go straight to that tag's dedicated page. Convenient, right?!
 - Long press the My Notes title, and you'll see a Tag cloud. You can click on any Tag in this cloud to view all notes marked with that Tag.
 
-### 5. Supports uploading or pasting images
+
+### 5. Supports jumping to notes by ID
+
+- In any note list, you can long press on the metadata row (the blue line with date, time and note ID) to open a dialog for jumping to a specific note by its ID.
+- Simply enter the note ID number and press "Go" to navigate directly to that note.
+- This feature provides quick access to specific notes when you know their ID, useful for referencing notes from external links or bookmarks.
+
+### 6. Supports uploading or pasting images
 
 - Currently, you need to enable Markdown support in the note editing interface to upload images. Just tap the Markdown switch below the edit box to turn this feature on/off. You can also turn Markdown support on/off in Settings -> Markdown.
 
-### 6. Supports syncing notes to Telegram channels
+### 7. Supports syncing notes to Telegram channels
 
 You can choose to sync all notes, or only public notes, or only private notes, or only notes with specific Tags to a Telegram channel. I don't recommend syncing your private notes to a public Telegram channel. However, if you insist on doing so, HappyNotes won't stop you. I usually create a private channel to sync all my notes, which serves as a backup.
 
-### 7. Supports syncing specified notes to Mastodon
+### 8. Supports syncing specified notes to Mastodon
 
 You can choose to sync all notes, or only public notes, or only notes with the Mastodon tag to a Mastodon instance. Private notes will be published as private toots. Notes longer than 500 characters will be published as long images.
 
 - If you change a public note to private or vice versa, the originally synced toot will be deleted and reposted. Therefore, the Mastodon timeline may not be consistent with your note timeline.
 - Since Mastodon doesn't support Markdown, the first four images in Markdown notes will be synced to the media server of the Mastodon instance. To some extent, this Mastodon instance serves as a backup for your note images.
 
-### 8. Supports "Discovering" others' public notes (This feature is currently only available on Web, maybe later it will be opened to native Apps)
+### 9. Supports "Discovering" others' public notes (This feature is currently only available on Web, maybe later it will be opened to native Apps)
 
-### 9. Other tips
+### 10. Other tips
 - **Edit Notes**: Double-tap a note to make changes.
 - **Tags**: Create tags by adding `#example_tag` in your notes.
 - **Note Details**: Tap creation time or `View more` for details.

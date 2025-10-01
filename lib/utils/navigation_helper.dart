@@ -166,6 +166,37 @@ class NavigationHelper {
   }
 
 
+
+  static Future<void> showJumpToNoteDialog(BuildContext context) async {
+    final navigator = Navigator.of(context);
+    final result = await Util.showKeywordOrTagDialog(
+      context,
+      'Jump to Note', // Focused title
+      'Enter note ID', // ID-specific hint
+    );
+
+    // Handle null or cancel
+    if (result == null || result['action'] == 'cancel') {
+      return;
+    }
+
+    final action = result['action'];
+    final inputText = result['text'] ?? '';
+
+    if (inputText.isEmpty) return;
+
+    if (action == 'go') {
+      // Try to parse as note ID
+      final noteId = int.tryParse(inputText);
+      if (noteId != null) {
+        navigator.push(
+          MaterialPageRoute(
+            builder: (context) => NoteDetail(noteId: noteId),
+          ),
+        );
+      }
+    }
+  }
   static bool isValidTagFormat(String text) {
     // Only require no spaces and non-empty after trim
     return !text.contains(' ') && text.trim().isNotEmpty;

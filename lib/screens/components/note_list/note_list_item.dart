@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'package:happy_notes/screens/account/user_session.dart';
 import 'package:happy_notes/screens/components/tag_widget.dart';
+import 'package:happy_notes/utils/navigation_helper.dart';
 
 import '../../../entities/note.dart';
 import '../markdown_body_here.dart';
@@ -52,7 +53,7 @@ class NoteListItem extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildMetadata(),
+                _buildMetadata(context),
                 SelectionArea(child: _buildNoteContent()),
                 if ((note.tags?.isNotEmpty == true || note.isLong) && !config.showRestoreButton) _buildFooter(),
               ],
@@ -87,40 +88,51 @@ class NoteListItem extends StatelessWidget {
     );
   }
 
-  Widget _buildMetadata() {
+  Widget _buildMetadata(BuildContext context) {
     final showDate = config.showDate;
     final showAuthor = config.showAuthor;
     final author =
         (note.user == null || !showAuthor || note.userId == UserSession().id) ? '' : '${note.user!.username} ';
     final date = showDate ? '${note.createdDate} ' : '';
 
-    return Row(
-      children: [
-        Text(
-          '- $date${note.createdTime} $author - ',
-          style: const TextStyle(
-            fontWeight: FontWeight.w300,
-            color: Colors.blue,
-            fontSize: 13,
+    return Semantics(
+      button: true,
+      hint: 'Tap to view note details, long press to jump to note by ID',
+      child: GestureDetector(
+        onTap: () => callbacks.onTap?.call(note),
+        onLongPress: () => _showJumpToNoteDialog(context),
+        child: Container(
+          color: Colors.transparent,
+          child: Row(
+            children: [
+              Text(
+                '- $date${note.createdTime} $author - ',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w300,
+                  color: Colors.blue,
+                  fontSize: 13,
+                ),
+              ),
+              if (note.isPrivate) ...[
+                Icon(Icons.lock, color: Colors.grey.shade300, size: 14),
+                const SizedBox(width: 4),
+              ],
+              Expanded(
+                child: Divider(color: Colors.grey.shade300, thickness: 1),
+              ),
+              Text(
+                ' ${note.id} ',
+                style: TextStyle(
+                  fontWeight: FontWeight.w100,
+                  color: Colors.blue.shade300,
+                  fontSize: 13,
+                ),
+              ),
+              const Icon(Icons.open_in_new, color: Colors.blue, size: 14),
+            ],
           ),
         ),
-        if (note.isPrivate) ...[
-          Icon(Icons.lock, color: Colors.grey.shade300, size: 14),
-          const SizedBox(width: 4),
-        ],
-        Expanded(
-          child: Divider(color: Colors.grey.shade300, thickness: 1),
-        ),
-        Text(
-          ' ${note.id} ',
-          style: TextStyle(
-            fontWeight: FontWeight.w100,
-            color: Colors.blue.shade300,
-            fontSize: 13,
-          ),
-        ),
-        const Icon(Icons.open_in_new, color: Colors.blue, size: 14),
-      ],
+      ),
     );
   }
 
@@ -170,5 +182,9 @@ class NoteListItem extends StatelessWidget {
       color: Colors.red,
       child: const Icon(Icons.delete, color: Colors.white),
     );
+  }
+
+  void _showJumpToNoteDialog(BuildContext context) {
+    NavigationHelper.showJumpToNoteDialog(context);
   }
 }

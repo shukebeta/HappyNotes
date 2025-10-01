@@ -95,21 +95,38 @@ class NotesService {
   }
 
   // post a note and get the created note
+
+  /// Format publishDateTime based on input format
+  String _formatPublishDateTime(String publishDateTime) {
+    try {
+      // Check if it's already a full timestamp (contains time)
+      if (publishDateTime.contains(' ')) {
+        // Already in "yyyy-MM-dd HH:mm:ss" format, use as-is
+        return publishDateTime;
+      } else {
+        // Date-only format, add current time
+        var now = DateTime.now();
+        return DateFormat('yyyy-MM-dd HH:mm:ss').format(
+          DateTime.parse(publishDateTime).add(Duration(
+            hours: now.hour,
+            minutes: now.minute,
+            seconds: now.second,
+          )),
+        );
+      }
+    } catch (e) {
+      // If parsing fails, return empty string
+      return '';
+    }
+  }
   Future<Note> post(NoteModel noteModel) async {
-    var now = DateTime.now();
     var params = {
       'content': noteModel.content,
       'isPrivate': noteModel.isPrivate,
       'isMarkdown': noteModel.isMarkdown,
       'publishDateTime': noteModel.publishDateTime.isEmpty
           ? ''
-          : DateFormat('yyyy-MM-dd HH:mm:ss').format(
-              DateTime.parse(noteModel.publishDateTime).add(Duration(
-                hours: now.hour,
-                minutes: now.minute,
-                seconds: now.second,
-              )),
-            ),
+          : _formatPublishDateTime(noteModel.publishDateTime),
       'timezoneId': AppConfig.timezone,
     };
     var apiResult = (await NotesApi.post(params)).data;

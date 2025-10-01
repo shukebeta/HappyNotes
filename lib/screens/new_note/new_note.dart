@@ -10,6 +10,7 @@ import '../../providers/notes_provider.dart';
 import '../../services/dialog_services.dart';
 import '../../utils/util.dart';
 import '../components/note_edit.dart';
+import '../components/hour_picker_dialog.dart';
 
 class NewNote extends StatefulWidget {
   final bool isPrivate;
@@ -118,6 +119,29 @@ class NewNoteState extends State<NewNote> {
               final scaffoldMessenger = ScaffoldMessenger.of(context);
               final navigator = Navigator.of(context);
 
+
+              // Check if we need hour selection for non-today dates
+              if (widget.date != null && !DateUtils.isSameDay(widget.date!, DateTime.now())) {
+                final selectedHour = await HourPickerDialog.show(context, widget.date!);
+                if (selectedHour == null) {
+                  // User cancelled, stop saving
+                  isSaving = false;
+                  setState(() {});
+                  return;
+                }
+                
+                // Update noteModel with complete timestamp
+                final now = DateTime.now();
+                final selectedDateTime = DateTime(
+                  widget.date!.year,
+                  widget.date!.month,
+                  widget.date!.day,
+                  selectedHour,
+                  now.minute,
+                  now.second,
+                );
+                noteModel.publishDateTime = DateFormat('yyyy-MM-dd HH:mm:ss').format(selectedDateTime);
+              }
               final result = await _newNoteController.saveNoteAsync(
                 noteModel,
                 notesProvider,
