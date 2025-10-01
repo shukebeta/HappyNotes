@@ -84,3 +84,62 @@ eed is not "just another editor" - it's a safety wrapper around ed that fixes th
 ```bash
 eed -m 'what you are doing' /path/to/file <<'EOF'
 # ed commands here
+w
+q
+EOF
+```
+
+**Most common operations**:
+```bash
+# 1. Simple substitution (first occurrence)
+/pattern/s/old/new/
+
+# 2. Global substitution (all occurrences)
+s/old/new/g
+
+# 3. Substitute in specific pattern context
+/function_name/s/old/new/
+
+# 4. Delete lines matching pattern
+/pattern_to_delete/d
+
+# 5. Append after matching line
+/pattern/a
+new line content here
+.
+
+# 6. Change (replace) matching line
+/pattern/c
+replacement line
+.
+```
+
+**When grep finds what you need**:
+```bash
+# grep tells you: "lib/foo.dart:42: some old code"
+# Don't Read the file! Just:
+eed -m 'fix the thing' lib/foo.dart <<'EOF'
+/old code/s/old/new/
+w
+q
+EOF
+```
+
+### Practical eed Tips
+
+**Pattern-based editing** (avoid line number dependency):
+- `/function_name/,/^}/d` - Delete entire function
+- `/import.*flutter/a` - Add after import section
+- `s/old_pattern/new_pattern/g` - Global replace
+
+**Common scenarios**:
+- Single-line fix: Use `/pattern/s/old/new/`
+- Multiple files: Run parallel eed commands (no Read needed!)
+- Uncertain change: Make the edit, test, `eed --undo` if wrong
+
+**Error recovery**:
+- Wrong edit → `eed --undo` immediately
+- Complex edit → Break into multiple simple eed commands
+- Preview first → Read the file ONLY if you need to understand context
+
+**Key insight**: With eed, you express *intent* (what to change and where), not *exact text* (like Edit requires). This makes it robust and efficient
