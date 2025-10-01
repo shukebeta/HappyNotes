@@ -26,7 +26,7 @@ class NavigationHelper {
     final result = await Util.showKeywordOrTagDialog(
       context,
       'Find Notes', // Updated title
-      'Enter keyword, tag, date, or ID', // Updated hint
+      'Enter keyword or date', // Updated hint
     );
 
     // Handle null or cancel
