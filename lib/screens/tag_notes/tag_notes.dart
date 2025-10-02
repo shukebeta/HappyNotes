@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:happy_notes/app_config.dart';
 import 'package:happy_notes/screens/note_detail/note_detail.dart';
 import 'package:happy_notes/providers/tag_notes_provider.dart';
 import 'package:happy_notes/providers/note_list_provider.dart';
@@ -15,6 +14,9 @@ import '../account/user_session.dart';
 import '../new_note/new_note.dart';
 import '../components/tappable_app_bar_title.dart';
 import '../../entities/note.dart';
+import 'package:happy_notes/app_config.dart';
+import 'package:happy_notes/screens/components/create_note_fab.dart';
+import 'package:happy_notes/utils/util.dart';
 
 class TagNotes extends StatefulWidget {
   final String tag;
@@ -91,7 +93,6 @@ class TagNotesState extends State<TagNotes> {
               );
             },
           ),
-          _buildNewNoteButton(context),
         ],
       ),
       body: Consumer<TagNotesProvider>(
@@ -105,6 +106,35 @@ class TagNotesState extends State<TagNotes> {
                   totalPages: tagProvider.totalPages,
                   navigateToPage: navigateToPage,
                 ),
+              CreateNoteFAB(
+                isPrivate: AppConfig.privateNoteOnlyIsEnabled,
+                onPressed: () async {
+                  final scaffoldMessenger = ScaffoldMessenger.of(context);
+                  final tagProvider = context.read<TagNotesProvider>();
+                  final Note? savedNote = await Navigator.push<Note>(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => NewNote(
+                        isPrivate: AppConfig.privateNoteOnlyIsEnabled,
+                        initialTag: widget.tag,
+                      ),
+                    ),
+                  );
+
+                  if (savedNote != null && mounted) {
+                    // Check if saved note contains the current tag
+                    final noteContainsTag = savedNote.tags?.contains(widget.tag) ?? false;
+
+                    if (noteContainsTag && currentPageNumber == 1) {
+                      // Optimistically insert the note at the top
+                      tagProvider.insertNoteIfOnFirstPage(savedNote);
+                    } else {
+                      // Show success message
+                      Util.showInfo(scaffoldMessenger, 'Note saved successfully.');
+                    }
+                  }
+                },
+              ),
             ],
           );
         },
@@ -112,22 +142,6 @@ class TagNotesState extends State<TagNotes> {
     );
   }
 
-  IconButton _buildNewNoteButton(BuildContext context) {
-    return IconButton(
-      icon: const Icon(Icons.edit),
-      onPressed: () async {
-        await Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => NewNote(
-              isPrivate: AppConfig.privateNoteOnlyIsEnabled,
-              initialTag: widget.tag,
-            ),
-          ),
-        );
-      },
-    );
-  }
 
   Widget _buildBody() {
     return Consumer<TagNotesProvider>(

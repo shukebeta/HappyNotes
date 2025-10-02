@@ -16,6 +16,8 @@ import 'package:happy_notes/screens/components/floating_pagination.dart';
 import 'package:happy_notes/screens/components/pagination_controls.dart';
 import 'package:happy_notes/screens/components/tappable_app_bar_title.dart';
 import 'package:happy_notes/entities/note.dart';
+import 'package:happy_notes/app_config.dart';
+import 'package:happy_notes/screens/components/create_note_fab.dart';
 
 class SearchResultsPage extends StatefulWidget {
   final String query;
@@ -74,25 +76,6 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
                 );
               },
             ),
-          IconButton(
-            icon: Util.writeNoteIcon(),
-            tooltip: 'New Public Note',
-            onPressed: () async {
-              final scaffoldMessenger = ScaffoldMessenger.of(context);
-              final bool? savedSuccessfully = await Navigator.push<bool>(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const NewNote(
-                    isPrivate: false,
-                  ),
-                ),
-              );
-              if (savedSuccessfully ?? false) {
-                if (!mounted) return;
-                Util.showInfo(scaffoldMessenger, 'Note saved successfully.');
-              }
-            },
-          ),
         ],
       ),
       body: Consumer<SearchProvider>(
@@ -106,6 +89,22 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
                   totalPages: searchProvider.totalPages,
                   navigateToPage: navigateToPage,
                 ),
+              CreateNoteFAB(
+                isPrivate: AppConfig.privateNoteOnlyIsEnabled,
+                onPressed: () async {
+                  final scaffoldMessenger = ScaffoldMessenger.of(context);
+                  final bool? savedSuccessfully = await Navigator.push<bool>(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => NewNote(isPrivate: AppConfig.privateNoteOnlyIsEnabled),
+                    ),
+                  );
+                  if (savedSuccessfully ?? false) {
+                    if (!mounted) return;
+                    Util.showInfo(scaffoldMessenger, 'Note saved successfully.');
+                  }
+                },
+              ),
             ],
           );
         },

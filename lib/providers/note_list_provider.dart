@@ -10,14 +10,6 @@ import '../screens/components/list_grouper.dart';
 
 /// Abstract base class for providers that manage paginated note lists with date grouping
 abstract class NoteListProvider extends AuthAwareProvider {
-  NoteListProvider() {
-    try {
-      _pageSize = AppConfig.pageSize;
-    } catch (e) {
-      _pageSize = 10; // Default for tests
-    }
-  }
-
   // Note list state
   List<Note> _notes = [];
   List<Note> get notes => _notes;
@@ -27,7 +19,9 @@ abstract class NoteListProvider extends AuthAwareProvider {
   int get currentPage => _currentPage;
 
   int _totalNotes = 0;
-  late final int _pageSize;
+
+  // Read pageSize dynamically from AppConfig so setting changes take effect
+  int get _pageSize => AppConfig.pageSize;
 
   // Computed properties
   int get totalPages => _totalNotes <= 0 ? 1 : (_totalNotes / _pageSize).ceil();

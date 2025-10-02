@@ -63,6 +63,14 @@ class TagNotesProvider extends NoteListProvider {
     return await _notesService.tagNotes(_currentTag, pageSize, pageNumber);
   }
 
+  /// This is used for optimistic UI updates when creating a note with the current tag
+  void insertNoteIfOnFirstPage(Note note) {
+    if (currentPage == 1) {
+      notes.insert(0, note);
+      notifyListeners();
+    }
+  }
+
   @override
   Future<void> performDelete(int noteId) async {
     await _notesService.delete(noteId);
