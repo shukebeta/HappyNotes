@@ -1,0 +1,39 @@
+#!/bin/bash
+# Switch environment configuration
+# Usage: bin/switch-env [development|staging|production]
+
+set -e
+
+PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$PROJECT_ROOT"
+
+ENV="${1:-development}"
+
+if [[ ! "$ENV" =~ ^(development|staging|production)$ ]]; then
+    echo "Error: Invalid environment. Must be one of: development, staging, production"
+    echo "Usage: bin/switch-env [development|staging|production]"
+    exit 1
+fi
+
+ENV_FILE=".env.$ENV"
+
+if [[ ! -f "$ENV_FILE" ]]; then
+    echo "Error: $ENV_FILE not found"
+    exit 1
+fi
+
+if [[ -z "$SEQ_API_KEY" ]]; then
+    echo "Warning: SEQ_API_KEY environment variable not set"
+    echo "The placeholder will remain in .env file"
+fi
+
+# Copy the environment file
+cp "$ENV_FILE" .env
+
+# Replace SEQ_API_KEY_PLACEHOLDER with actual key if available
+if [[ -n "$SEQ_API_KEY" ]]; then
+    sed -i "s/SEQ_API_KEY_PLACEHOLDER/$SEQ_API_KEY/" .env
+    echo "✓ Switched to $ENV environment (with SEQ_API_KEY replaced)"
+else
+    echo "✓ Switched to $ENV environment (SEQ_API_KEY placeholder not replaced)"
+fi

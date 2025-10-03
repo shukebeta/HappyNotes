@@ -32,7 +32,10 @@ void main() async {
   di.init();
 
   // Load environment variables
-  await dotenv.load(fileName: '.env');
+  await dotenv.load(
+    fileName: '.env',
+    mergeWith: kIsWeb ? {} : Platform.environment,
+  );
 
   // Initialize logging
   SeqLogger.initialize();

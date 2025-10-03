@@ -65,6 +65,14 @@ class DiscoveryState extends State<Discovery> {
     UserSession().isDesktop = MediaQuery.of(context).size.width >= 600;
     return Scaffold(
       appBar: AppBar(
+        actions: [
+          if (UserSession().isDesktop)
+            IconButton(
+              icon: const Icon(Icons.refresh),
+              onPressed: refreshPage,
+              tooltip: 'Refresh',
+            ),
+        ],
         title: TappableAppBarTitle(
           title: 'Discover Notes',
           onTap: () => NavigationHelper.showTagInputDialog(context),

@@ -104,6 +104,14 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
     UserSession().isDesktop = MediaQuery.of(context).size.width >= 600;
     return Scaffold(
       appBar: AppBar(
+        actions: [
+          if (UserSession().isDesktop)
+            IconButton(
+              icon: const Icon(Icons.refresh),
+              onPressed: refreshPage,
+              tooltip: 'Refresh',
+            ),
+        ],
         title: TappableAppBarTitle(
           title: 'My Notes',
           onTap: () => NavigationHelper.showTagInputDialog(context),
