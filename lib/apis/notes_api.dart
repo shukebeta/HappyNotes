@@ -30,13 +30,10 @@ class NotesApi {
   }
 
   static Future<Response> latest(Map<String, dynamic> params) async {
-    final options = Options(
-      headers: {'AllowAnonymous': true},
-    );
     var pager = params['pageSize'] > 0 && params['pageNumber'] > 0
         ? '/${params['pageSize']}/${params['pageNumber']}'
         : '/${AppConfig.pageSize}/1';
-    return await _dio.get('/notes/latest$pager', options: options);
+    return await _dio.get('/notes/latest$pager');
   }
 
   static Future<Response> tagNotes(Map<String, dynamic> params) async {
