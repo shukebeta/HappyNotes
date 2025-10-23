@@ -14,7 +14,6 @@ import '../new_note/new_note.dart';
 import '../note_detail/note_detail.dart';
 import '../components/tappable_app_bar_title.dart';
 import '../components/note_list/note_list.dart';
-import '../components/create_note_fab.dart';
 import '../components/note_list/note_list_callbacks.dart';
 
 class MemoriesOnDay extends StatefulWidget {
@@ -134,31 +133,64 @@ class MemoriesOnDayState extends State<MemoriesOnDay> with RouteAware {
           ),
         ],
       ),
-      body: Stack(
+      body: Column(
         children: [
-          Consumer<MemoriesProvider>(
-            builder: (context, provider, child) {
-              final dateString = DateFormat('yyyyMMdd').format(widget.date);
-              final isLoading = provider.isLoadingForDate(dateString);
-              final notes = provider.memoriesOnDate(dateString);
-              final error = provider.getErrorForDate(dateString);
-
-              return _buildBody(isLoading, notes, error);
-            },
-          ),
-          CreateNoteFAB(
-            isPrivate: true,
-            onPressed: () async {
-              final newNote = await Navigator.push<Note>(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => NewNote(isPrivate: true, date: widget.date),
+          // Fixed date header with Add Memory button
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8), // Reduced vertical padding
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surface,
+              // Removed bottom border to avoid visual duplication with meta line dividers
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    DateFormat('MMMM dd, yyyy').format(widget.date),
+                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ),
-              );
-              if (newNote != null) {
-                _onNoteSaved(newNote);
-              }
-            },
+                ElevatedButton.icon(
+                  onPressed: () async {
+                    final newNote = await Navigator.push<Note>(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => NewNote(isPrivate: true, date: widget.date),
+                      ),
+                    );
+                    if (newNote != null) {
+                      _onNoteSaved(newNote);
+                    }
+                  },
+                  icon: const Icon(Icons.schedule, size: 18),
+                  label: const Text('Add Memory'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.indigo[100],
+                    foregroundColor: Colors.indigo[800],
+                    elevation: 2,
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          // Scrollable content area
+          Expanded(
+            child: Consumer<MemoriesProvider>(
+              builder: (context, provider, child) {
+                final dateString = DateFormat('yyyyMMdd').format(widget.date);
+                final isLoading = provider.isLoadingForDate(dateString);
+                final notes = provider.memoriesOnDate(dateString);
+                final error = provider.getErrorForDate(dateString);
+
+                return _buildBody(isLoading, notes, error);
+              },
+            ),
           ),
         ],
       ),
@@ -194,22 +226,25 @@ class MemoriesOnDayState extends State<MemoriesOnDay> with RouteAware {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('No memories on ${DateFormat('MMM dd, yyyy').format(widget.date)}'),
+            Icon(
+              Icons.event_note_outlined,
+              size: 64,
+              color: Colors.grey[400],
+            ),
             const SizedBox(height: 16),
-            ElevatedButton.icon(
-              onPressed: () async {
-                final newNote = await Navigator.push<Note>(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => NewNote(isPrivate: true, date: widget.date),
-                  ),
-                );
-                if (newNote != null) {
-                  _onNoteSaved(newNote);
-                }
-              },
-              icon: const Icon(Icons.add),
-              label: const Text('Create First Memory'),
+            Text(
+              'No memories on this day',
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                color: Colors.grey[600],
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Tap "Add Memory" above to create your first memory',
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: Colors.grey[500],
+              ),
+              textAlign: TextAlign.center,
             ),
           ],
         ),
@@ -231,7 +266,7 @@ class MemoriesOnDayState extends State<MemoriesOnDay> with RouteAware {
       value: memoriesProvider,
       child: NoteList(
         groupedNotes: groupedNotes,
-        showDateHeader: true,
+        showDateHeader: false, // Remove duplicate date header since we have fixed header above
         callbacks: ListItemCallbacks<Note>(
           onTap: (note) async {
             await Navigator.push<bool>(
