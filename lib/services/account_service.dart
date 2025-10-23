@@ -50,9 +50,18 @@ class AccountService {
   }
 
   Future<dynamic> _refreshToken() async {
-    var apiResponse = (await _accountApi.refreshToken()).data;
-    if (apiResponse['successful']) {
-      _storeToken(apiResponse['data']['token']);
+    try {
+      var apiResponse = (await _accountApi.refreshToken()).data;
+      if (apiResponse['successful']) {
+        await _storeToken(apiResponse['data']['token']);
+        _logger.i('Token refreshed successfully');
+      } else {
+        _logger.e('Token refresh failed: ${apiResponse['message'] ?? 'Unknown error'}');
+        throw ApiException(apiResponse);
+      }
+    } catch (e) {
+      _logger.e('Token refresh error: ${e.toString()}');
+      rethrow;
     }
   }
 
@@ -89,14 +98,20 @@ class AccountService {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString(_tokenKey);
     if (token != null && token != '') {
-      var remainingTime = await _tokenUtils.getTokenRemainingTime(token);
-      if (remainingTime.inDays <= 30) {
-        try {
-          //we deliberately don't use await here to avoid blocking the getToken operation
-          _refreshToken();
-        } catch (e) {
-          // eat the exception
+      try {
+        var remainingTime = await _tokenUtils.getTokenRemainingTime(token);
+        if (remainingTime.inDays <= 30) {
+          try {
+            // Add timeout to refresh token operation
+            await _refreshToken().timeout(const Duration(seconds: 15));
+          } catch (e) {
+            _logger.e('Token refresh failed or timed out: ${e.toString()}');
+            // Continue with existing token if refresh fails
+          }
         }
+      } catch (e) {
+        _logger.e('Error checking token expiration: ${e.toString()}');
+        // Continue with existing token if expiration check fails
       }
     }
     return token;
@@ -110,6 +125,26 @@ class AccountService {
           return (await _tokenUtils.getTokenRemainingTime(token)).inSeconds >= 1;
         } catch (e) {
           _logger.e(e.toString());
+          return false;
+        }
+      }
+    }
+    return false;
+  }
+
+  /// Local token validation that doesn't require network calls
+  /// Used as fallback when network validation times out
+  Future<bool> isValidTokenLocally() async {
+    if (await _isSameEnv()) {
+      final token = await getToken();
+      if (token != null && token != '') {
+        try {
+          // Only check token structure and expiration locally
+          final remainingTime = await _tokenUtils.getTokenRemainingTime(token);
+          // Give more buffer time for local validation (5 minutes instead of 1 second)
+          return remainingTime.inMinutes >= 5;
+        } catch (e) {
+          _logger.e('Local token validation error: ${e.toString()}');
           return false;
         }
       }

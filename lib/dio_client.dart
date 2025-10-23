@@ -19,8 +19,9 @@ class DioClient {
 
       _dio = Dio(); // Create Dio instance if not already created
       _dio!.options.baseUrl = AppConfig.apiBaseUrl;
-      _dio!.options.connectTimeout = const Duration(seconds: 20);
-      _dio!.options.receiveTimeout = const Duration(seconds: 25);
+      // Increase timeouts for better web performance and token validation
+      _dio!.options.connectTimeout = const Duration(seconds: 30);
+      _dio!.options.receiveTimeout = const Duration(seconds: 35);
       // _dio!.options.sendTimeout = const Duration(seconds: 20);
 
       _dio!.interceptors.add(LogInterceptor(requestBody: true, responseBody: true)); // Add logging interceptor
