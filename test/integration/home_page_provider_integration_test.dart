@@ -4,9 +4,12 @@ import 'package:happy_notes/providers/notes_provider.dart';
 import 'package:happy_notes/entities/note.dart';
 import 'package:happy_notes/models/notes_result.dart';
 
-// Import the mocks
+// Import the generated mocks and test helpers
 import '../providers/notes_provider_test.mocks.dart';
 import '../test_helpers/service_locator.dart';
+import 'package:happy_notes/screens/account/user_session.dart';
+import 'package:happy_notes/entities/user_settings.dart';
+import 'package:happy_notes/app_constants.dart';
 
 void main() {
   group('Provider-Consumer Integration Tests', () {
@@ -42,10 +45,16 @@ void main() {
 
     setUp(() {
       setupTestServiceLocator();
+      // Ensure AppConfig.pageSize won't access dotenv during tests by
+      // providing a user setting for pageSize (avoids NotInitializedError)
+      // Provide an explicit pageSize string to avoid touching dotenv in AppConfig
+      UserSession().userSettings = [
+        UserSettings(id: 1, userId: 123, settingName: AppConstants.pageSize, settingValue: '20')
+      ];
       mockNotesService = MockNotesService();
       notesProvider = NotesProvider(mockNotesService);
 
-      // Setup default mock responses
+      // Default mock response for myLatest
       when(mockNotesService.myLatest(any, any)).thenAnswer((_) async => NotesResult(mockNotes, 2));
     });
 
@@ -57,10 +66,10 @@ void main() {
       var notificationCount = 0;
       notesProvider.addListener(() => notificationCount++);
 
-      await notesProvider.loadPage(1);
+    await notesProvider.loadPage(1);
 
       // Verify integration between provider and service
-      verify(mockNotesService.myLatest(10, 1)).called(1);
+      verify(mockNotesService.myLatest(20, 1)).called(1);
       expect(notesProvider.notes.length, 2);
       expect(notesProvider.currentPage, 1);
       expect(notificationCount, greaterThan(0));
@@ -94,22 +103,23 @@ void main() {
     });
 
     test('provider should handle pagination correctly', () async {
-      // Setup mock for multiple pages with pageSize=10 (default from AppConfig)
-      // totalNotes=20 means totalPages=2, which is mathematically correct
-      when(mockNotesService.myLatest(10, 1)).thenAnswer((_) async => NotesResult([mockNotes[0]], 20));
-      when(mockNotesService.myLatest(10, 2)).thenAnswer((_) async => NotesResult([mockNotes[1]], 20));
+      // Setup mock for multiple pages with pageSize=20 (default from AppConfig)
+      // totalNotes=20 means totalPages=1, which is mathematically correct
+  // Use totalNotes=40 so pageSize=20 produces 2 pages
+  when(mockNotesService.myLatest(20, 1)).thenAnswer((_) async => NotesResult([mockNotes[0]], 40));
+  when(mockNotesService.myLatest(20, 2)).thenAnswer((_) async => NotesResult([mockNotes[1]], 40));
 
       // Load page 1
       await notesProvider.loadPage(1);
       expect(notesProvider.currentPage, 1);
       expect(notesProvider.notes.length, 1);
-      verify(mockNotesService.myLatest(10, 1)).called(1);
+      verify(mockNotesService.myLatest(20, 1)).called(1);
 
       // Load page 2
       await notesProvider.loadPage(2);
       expect(notesProvider.currentPage, 2);
       expect(notesProvider.notes.length, 1);
-      verify(mockNotesService.myLatest(10, 2)).called(1);
+      verify(mockNotesService.myLatest(20, 2)).called(1);
     });
 
     test('provider should handle loading states correctly', () async {
@@ -121,6 +131,7 @@ void main() {
 
       // Start loading
       final loadFuture = notesProvider.loadPage(1);
+      await Future.microtask(() {});
       expect(notesProvider.isLoadingList, isTrue);
 
       // Wait for completion

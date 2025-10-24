@@ -7,24 +7,36 @@ import 'app_constants.dart';
 class AppConfig {
   AppConfig._();
 
+  // Safe accessor for dotenv environment map.
+  // If flutter_dotenv wasn't initialized (tests or other contexts), access
+  // to `dotenv.env` throws NotInitializedError. Return an empty map instead
+  // so callers can gracefully fall back to defaults.
+  static Map<String, String> get _env {
+    try {
+      return dotenv.env;
+    } catch (e) {
+      return const <String, String>{};
+    }
+  }
+
   static String get apiBaseUrl {
-    return dotenv.env['API_BASE_URL'] ?? 'https://staging-happynotes-api.dev.shukebeta.com';
+    return _env['API_BASE_URL'] ?? 'https://staging-happynotes-api.dev.shukebeta.com';
   }
 
   static String get imgBaseUrl {
-    return dotenv.env['IMG_BASE_URL'] ?? 'https://staging-happynotes-img.dev.shukebeta.com';
+    return _env['IMG_BASE_URL'] ?? 'https://staging-happynotes-img.dev.shukebeta.com';
   }
 
   static String get uploaderBaseUrl {
-    return dotenv.env['UPLOADER_BASE_URL'] ?? 'https://staging-happynotes-img-uploader.dev.shukebeta.com';
+    return _env['UPLOADER_BASE_URL'] ?? 'https://staging-happynotes-img-uploader.dev.shukebeta.com';
   }
 
   static String get seqServerUrl {
-    return dotenv.env['SEQ_SERVER_URL'] ?? 'http://seq.shukebeta.eu.org:5341';
+    return _env['SEQ_SERVER_URL'] ?? 'http://seq.shukebeta.eu.org:5341';
   }
 
   static String get seqApiKey {
-    return dotenv.env['SEQ_API_KEY'] ?? '';
+    return _env['SEQ_API_KEY'] ?? '';
   }
 
   /// Returns the maximum dimension (width or height) for image processing.
@@ -32,23 +44,28 @@ class AppConfig {
   /// This value is used to determine the size limit for the longer side of an image.
   /// It's retrieved from the environment variable 'IMG_MAX_DIMENSION' or defaults to 1600.
   static int get imageMaxDimension {
-    return int.parse(dotenv.env['IMG_MAX_DIMENSION'] ?? '1600');
+    return int.parse(_env['IMG_MAX_DIMENSION'] ?? '1600');
   }
 
   static int get pageSize {
-    final pageSizeStr = UserSession().settings(AppConstants.pageSize) ?? dotenv.env['PAGE_SIZE'];
-    return pageSizeStr == null ? 20 : int.parse(pageSizeStr);
+    final pageSizeStr = UserSession().settings(AppConstants.pageSize) ?? _env['PAGE_SIZE'];
+    if (pageSizeStr == null) return 10;
+    try {
+      return int.parse(pageSizeStr);
+    } catch (e) {
+      return 10;
+    }
   }
 
   static bool get privateNoteOnlyIsEnabled {
     final privateNoteOnlyIsEnabledStr =
-        UserSession().settings(AppConstants.privateNoteOnlyIsEnabled) ?? dotenv.env['PRIVATE_NOTE_ONLY'];
+        UserSession().settings(AppConstants.privateNoteOnlyIsEnabled) ?? _env['PRIVATE_NOTE_ONLY'];
     return privateNoteOnlyIsEnabledStr != null && privateNoteOnlyIsEnabledStr == '1';
   }
 
   static bool get markdownIsEnabled {
     final markdownIsEnabledStr =
-        UserSession().settings(AppConstants.markdownIsEnabled) ?? dotenv.env['MARKDOWN_IS_ENABLED'];
+        UserSession().settings(AppConstants.markdownIsEnabled) ?? _env['MARKDOWN_IS_ENABLED'];
     return markdownIsEnabledStr != null && markdownIsEnabledStr == '1';
   }
 
@@ -70,11 +87,11 @@ class AppConfig {
   }
 
   static String get version {
-    return dotenv.env['VERSION'] ?? 'version-place-holder';
+    return _env['VERSION'] ?? 'version-place-holder';
   }
 
   static bool get debugging {
-    return dotenv.env['DEBUGGING'] == '1';
+    return _env['DEBUGGING'] == '1';
   }
 
   // Map to store property access functions
