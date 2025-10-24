@@ -4,8 +4,7 @@ import 'package:happy_notes/models/notes_result.dart';
 import 'package:happy_notes/providers/provider_base.dart';
 import 'package:happy_notes/services/notes_services.dart';
 import 'package:happy_notes/utils/operation_result.dart';
-import 'package:happy_notes/utils/app_logger_interface.dart';
-import 'package:get_it/get_it.dart';
+import 'package:happy_notes/services/seq_logger.dart';
 import '../screens/components/list_grouper.dart';
 
 /// Abstract base class for providers that manage paginated note lists with date grouping
@@ -154,17 +153,17 @@ abstract class NoteListProvider extends AuthAwareProvider {
 
   /// Update note in local cache - pure client-side operation
   void updateLocalCache(Note updatedNote) {
-    final logger = GetIt.instance<AppLoggerInterface>();
+    // Logger calls replaced with SeqLogger
     final noteIndex = notes.indexWhere((note) => note.id == updatedNote.id);
 
-    logger.d('NoteListProvider.updateLocalCache called: noteId=${updatedNote.id}, noteIndex=$noteIndex');
+    SeqLogger.info('NoteListProvider.updateLocalCache called: noteId=${updatedNote.id}, noteIndex=$noteIndex');
 
     if (noteIndex != -1) {
       notes[noteIndex] = updatedNote;
       notifyListeners();
-      logger.d('NoteListProvider.updateLocalCache updated cache and notified listeners');
+      SeqLogger.info('NoteListProvider.updateLocalCache updated cache and notified listeners');
     } else {
-      logger.d('NoteListProvider.updateLocalCache note not in cache, skipping update');
+      SeqLogger.info('NoteListProvider.updateLocalCache note not in cache, skipping update');
     }
   }
 

@@ -17,8 +17,6 @@ import 'package:get_it/get_it.dart';
 import 'package:happy_notes/services/telegram_settings_service.dart';
 import 'package:happy_notes/services/user_settings_service.dart';
 import 'package:happy_notes/utils/token_utils.dart';
-import 'package:happy_notes/utils/app_logger_interface.dart';
-import 'package:happy_notes/utils/app_logger.dart';
 
 import 'apis/mastodon_application_api.dart';
 import 'apis/mastodon_user_account_api.dart';
@@ -53,7 +51,6 @@ void _registerServices() {
         accountApi: locator(),
         userSettingsService: locator(),
         tokenUtils: locator(),
-        logger: locator(),
       ));
   locator.registerLazySingleton(() => UserSettingsService(userSettingsApi: locator()));
   locator.registerLazySingleton(() => TelegramSettingsService(telegramSettingsApi: locator()));
@@ -83,6 +80,5 @@ void _registerProviders() {
 }
 
 void _registerUtils() {
-  locator.registerLazySingleton<AppLoggerInterface>(() => AppLogger());
   locator.registerLazySingleton(() => TokenUtils());
 }

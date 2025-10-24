@@ -1,27 +1,24 @@
 import 'package:happy_notes/apis/account_api.dart';
 import 'package:happy_notes/app_config.dart';
 import 'package:happy_notes/services/user_settings_service.dart';
-import 'package:happy_notes/utils/app_logger_interface.dart';
 import 'package:happy_notes/utils/token_utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../exceptions/api_exception.dart';
 import '../screens/account/user_session.dart';
+import '../services/seq_logger.dart';
 
 class AccountService {
   final AccountApi _accountApi;
   final UserSettingsService _userSettingsService;
   final TokenUtils _tokenUtils;
-  final AppLoggerInterface _logger;
 
   AccountService({
     required AccountApi accountApi,
     required UserSettingsService userSettingsService,
     required TokenUtils tokenUtils,
-    required AppLoggerInterface logger,
   })  : _accountApi = accountApi,
         _userSettingsService = userSettingsService,
-        _tokenUtils = tokenUtils,
-        _logger = logger;
+        _tokenUtils = tokenUtils;
 
   Future<dynamic> login(String username, String password) async {
     var params = {'username': username, 'password': password};
@@ -54,13 +51,13 @@ class AccountService {
       var apiResponse = (await _accountApi.refreshToken()).data;
       if (apiResponse['successful']) {
         await _storeToken(apiResponse['data']['token']);
-        _logger.i('Token refreshed successfully');
+        SeqLogger.info('Token refreshed successfully');
       } else {
-        _logger.e('Token refresh failed: ${apiResponse['message'] ?? 'Unknown error'}');
+        SeqLogger.severe('Token refresh failed: ${apiResponse['message'] ?? 'Unknown error'}');
         throw ApiException(apiResponse);
       }
     } catch (e) {
-      _logger.e('Token refresh error: ${e.toString()}');
+      SeqLogger.severe('Token refresh error: ${e.toString()}');
       rethrow;
     }
   }
@@ -95,59 +92,75 @@ class AccountService {
   }
 
   Future<String?> getToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString(_tokenKey);
-    if (token != null && token != '') {
-      try {
-        var remainingTime = await _tokenUtils.getTokenRemainingTime(token);
-        if (remainingTime.inDays <= 30) {
-          try {
-            // Add timeout to refresh token operation
-            await _refreshToken().timeout(const Duration(seconds: 15));
-          } catch (e) {
-            _logger.e('Token refresh failed or timed out: ${e.toString()}');
-            // Continue with existing token if refresh fails
+    SeqLogger.info('AccountService.getToken: Getting token from SharedPreferences...');
+
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString(_tokenKey);
+      SeqLogger.info('AccountService.getToken: Token exists in storage: ${token != null && token.isNotEmpty}');
+
+      if (token != null && token != '') {
+        try {
+          var remainingTime = await _tokenUtils.getTokenRemainingTime(token);
+          SeqLogger.info('AccountService.getToken: Token remaining time: ${remainingTime.inDays} days, ${remainingTime.inHours} hours');
+
+          if (remainingTime.inDays <= 30) {
+            SeqLogger.info('AccountService.getToken: Token needs refresh (${remainingTime.inDays} days remaining) - starting fire-and-forget refresh');
+            // Fire-and-forget refresh for all platforms - cleaner and faster
+            _refreshTokenFireAndForget();
+          } else {
+            SeqLogger.info('AccountService.getToken: Token is fresh, no refresh needed');
           }
+        } catch (e) {
+          SeqLogger.severe('AccountService.getToken: Error checking token expiration: ${e.toString()}');
+          // Continue with existing token if expiration check fails
         }
-      } catch (e) {
-        _logger.e('Error checking token expiration: ${e.toString()}');
-        // Continue with existing token if expiration check fails
       }
+      return token;
+    } catch (e) {
+      SeqLogger.severe('AccountService.getToken: Critical error accessing SharedPreferences: $e');
+      return null;
     }
-    return token;
+  }
+
+  /// Fire-and-forget token refresh for all platforms
+  /// This method starts token refresh in background without blocking the caller
+  void _refreshTokenFireAndForget() {
+    // Use unawaited to explicitly indicate this is fire-and-forget
+    // ignore: unawaited_futures
+    _refreshToken().timeout(const Duration(seconds: 30)).then(
+      (value) {
+        SeqLogger.info('AccountService: Fire-and-forget token refresh completed successfully');
+      },
+    ).catchError((error) {
+      SeqLogger.severe('AccountService: Fire-and-forget token refresh failed: $error');
+      // Error is logged but doesn't affect the current operation
+    });
   }
 
   Future<bool> isValidToken() async {
+    SeqLogger.info('AccountService.isValidToken: Starting network token validation...');
     if (await _isSameEnv()) {
-      final token = await getToken();
-      if (token != null && token != '') {
-        try {
-          return (await _tokenUtils.getTokenRemainingTime(token)).inSeconds >= 1;
-        } catch (e) {
-          _logger.e(e.toString());
-          return false;
-        }
-      }
-    }
-    return false;
-  }
+      // Get token directly without triggering refresh to avoid race conditions
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString(_tokenKey);
+      SeqLogger.info('AccountService.isValidToken: Retrieved token directly from storage: ${token != null && token.isNotEmpty}');
 
-  /// Local token validation that doesn't require network calls
-  /// Used as fallback when network validation times out
-  Future<bool> isValidTokenLocally() async {
-    if (await _isSameEnv()) {
-      final token = await getToken();
       if (token != null && token != '') {
         try {
-          // Only check token structure and expiration locally
           final remainingTime = await _tokenUtils.getTokenRemainingTime(token);
-          // Give more buffer time for local validation (5 minutes instead of 1 second)
-          return remainingTime.inMinutes >= 5;
+          final isValid = remainingTime.inSeconds >= 1;
+          SeqLogger.info('AccountService.isValidToken: Token remaining: ${remainingTime.inSeconds}s, valid: $isValid');
+          return isValid;
         } catch (e) {
-          _logger.e('Local token validation error: ${e.toString()}');
+          SeqLogger.severe('AccountService.isValidToken: Token validation error: ${e.toString()}');
           return false;
         }
+      } else {
+        SeqLogger.info('AccountService.isValidToken: No token available');
       }
+    } else {
+      SeqLogger.info('AccountService.isValidToken: Environment changed, token invalid');
     }
     return false;
   }

@@ -91,7 +91,6 @@ void main() async {
             di.locator.registerLazySingleton<NoteUpdateCoordinator>(
               () => NoteUpdateCoordinator(
                 appStateProvider: appStateProvider,
-                logger: di.locator(),
               ),
             );
 

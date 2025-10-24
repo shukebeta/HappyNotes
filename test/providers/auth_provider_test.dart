@@ -7,6 +7,7 @@ import 'package:happy_notes/screens/account/user_session.dart';
 import 'package:get_it/get_it.dart';
 
 import 'auth_provider_test.mocks.dart';
+import '../test_helpers/seq_logger_setup.dart';
 
 @GenerateMocks([AccountService])
 void main() {
@@ -15,6 +16,9 @@ void main() {
     late MockAccountService mockAccountService;
 
     setUp(() {
+      // Initialize SeqLogger for testing
+      setupSeqLoggerForTesting();
+      
       mockAccountService = MockAccountService();
 
       // Reset GetIt and register fresh mock

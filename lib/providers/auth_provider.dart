@@ -25,53 +25,58 @@ class AuthProvider with ChangeNotifier {
   Future<void> initAuth() async {
     if (_isInitialized) return; // Prevent multiple initializations
 
+    SeqLogger.info( 'AuthProvider.initAuth: Starting authentication initialization');
     _isLoading = true;
     notifyListeners();
 
     try {
+      SeqLogger.info( 'AuthProvider.initAuth: Getting stored token...');
       final storedToken = await _accountService.getToken();
+      SeqLogger.info( 'AuthProvider.initAuth: Stored token exists: ${storedToken != null && storedToken.isNotEmpty}');
 
       if (storedToken != null && storedToken.isNotEmpty) {
         // Validate token with timeout and fallback
         bool isValid = false;
-        
+
         try {
           // Add timeout to token validation to prevent hanging
+          SeqLogger.info( 'AuthProvider.initAuth: Starting network token validation...');
           isValid = await _accountService.isValidToken()
-              .timeout(const Duration(seconds: 10));
+              .timeout(const Duration(seconds: 30));
+          SeqLogger.info( 'AuthProvider.initAuth: Network token validation result: $isValid');
         } catch (e) {
-          // If validation times out or fails, try local validation first
-          SeqLogger.info('Token validation timeout/error, falling back to local validation: $e');
-          try {
-            isValid = await _accountService.isValidTokenLocally();
-          } catch (localError) {
-            SeqLogger.severe('Local token validation failed: $localError');
-            isValid = false;
-          }
+          SeqLogger.info( 'AuthProvider.initAuth: Network validation failed: $e');
+          rethrow;
         }
 
         if (isValid) {
+          SeqLogger.info( 'AuthProvider.initAuth: Token is valid, setting up session...');
           _token = storedToken;
           // Ensure session is populated - do this in background if it times out
           try {
             await _accountService.setUserSession(token: _token)
                 .timeout(const Duration(seconds: 8));
+            SeqLogger.info( 'AuthProvider.initAuth: Session setup completed successfully');
           } catch (sessionError) {
-            SeqLogger.info('Session setup timeout, continuing with stored token: $sessionError');
+            SeqLogger.info( 'AuthProvider.initAuth: Session setup timeout, continuing with stored token: $sessionError');
             // Continue anyway - user can still use the app
           }
         } else {
+          SeqLogger.info( 'AuthProvider.initAuth: Token is invalid, clearing session...');
           _token = null; // Token is invalid or expired
           await _accountService.logout(); // Clear any stale session data
         }
+      } else {
+        SeqLogger.info( 'AuthProvider.initAuth: No stored token found');
       }
     } catch (e) {
-      SeqLogger.severe('Failed to initialize authentication: $e');
+      SeqLogger.severe( 'AuthProvider.initAuth: Failed to initialize authentication: $e');
       _error = 'Failed to initialize authentication: ${e.toString()}';
       _token = null;
     } finally {
       _isLoading = false;
       _isInitialized = true;
+      SeqLogger.info( 'AuthProvider.initAuth: Authentication initialization completed. isAuthenticated: ${_token != null}');
       notifyListeners();
     }
   }

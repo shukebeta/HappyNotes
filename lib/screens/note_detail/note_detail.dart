@@ -10,10 +10,9 @@ import '../components/note_view.dart';
 import '../trash_bin/trash_bin_page.dart';
 import '../../providers/notes_provider.dart';
 import '../../utils/util.dart';
-import '../../utils/app_logger_interface.dart';
+import '../../services/seq_logger.dart';
 import '../../services/note_update_coordinator.dart';
 import '../../dependency_injection.dart';
-import 'package:get_it/get_it.dart';
 
 class NoteDetail extends StatefulWidget {
   final Note? note;
@@ -106,14 +105,14 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
   }
 
   Future<void> _saveNote(NoteModel noteModel) async {
-    final logger = GetIt.instance<AppLoggerInterface>();
+    // Logger calls replaced with SeqLogger
     final noteId = note?.id ?? widget.noteId!;
 
-    logger.d(
+    SeqLogger.info(
         'NoteDetail._saveNote called: noteId=$noteId, content length=${noteModel.content.length}, fromDetailPage=$_editingFromDetailPage');
 
     if (_isSaving) {
-      logger.d('NoteDetail._saveNote already saving, returning');
+      SeqLogger.info('NoteDetail._saveNote already saving, returning');
       return;
     }
 
@@ -127,7 +126,7 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
     final coordinator = locator<NoteUpdateCoordinator>();
 
     try {
-      logger.d('NoteDetail._saveNote calling NotesService.update for noteId=$noteId');
+      SeqLogger.info('NoteDetail._saveNote calling NotesService.update for noteId=$noteId');
       final updatedNote = await notesService.update(
         noteId,
         noteModel.content,
@@ -135,7 +134,7 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
         noteModel.isMarkdown,
       );
 
-      logger.d('NoteDetail._saveNote success: updated note ${updatedNote.id}');
+      SeqLogger.info('NoteDetail._saveNote success: updated note ${updatedNote.id}');
 
       // Update local note for UI consistency
       note = updatedNote;
@@ -161,7 +160,7 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
         navigator.pop(true);
       }
     } catch (e) {
-      logger.e('NoteDetail._saveNote error: $e for noteId=$noteId');
+      SeqLogger.severe('NoteDetail._saveNote error: $e for noteId=$noteId');
 
       setState(() {
         _isSaving = false;
