@@ -71,7 +71,7 @@ class ImageService {
       Response response = await fileUploaderApi.upload(imageFile);
       if (response.statusCode == 200 && response.data['errorCode'] == 0) {
         var img = response.data['data'];
-        var text = '![image](${AppConfig.imgBaseUrl}/640${img['path']}${img['md5']}${img['fileExt']})';
+        var text = '![image](${AppConfig.imgBaseUrl}/${AppConfig.defaultDisplayImageWidth}${img['path']}${img['md5']}${img['fileExt']})';
         onSuccess(text);
       } else {
         onError('Failed to upload image ${imageFile.filename}: ${response.data['msg']} (${response.statusCode})');
