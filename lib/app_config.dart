@@ -72,13 +72,13 @@ class AppConfig {
   }
 
   static String get seqServerUrl {
-    final override = _overrides[AppConstants.apiBaseUrl];
+    final override = _overrides[AppConstants.seqApiUrl];
     if (override != null) return override;
     return _env['SEQ_SERVER_URL'] ?? 'http://seq.shukebeta.eu.org:5341';
   }
 
   static String get seqApiKey {
-    final override = _overrides[AppConstants.apiBaseUrl];
+    final override = _overrides[AppConstants.seqApiKey];
     if (override != null) return override;
     return _env['SEQ_API_KEY'] ?? '';
   }

@@ -13,4 +13,6 @@ class AppConstants {
   static const String version = 'version';
   static const String debugging = 'debugging';
   static const String imageMaxDimension = 'imageMaxDimension';
+  static const String seqApiKey = 'seqApiKey';
+  static const String seqApiUrl = 'seqApiUrl';
 }

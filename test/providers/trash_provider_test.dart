@@ -5,6 +5,7 @@ import 'package:happy_notes/entities/note.dart';
 import 'package:happy_notes/models/notes_result.dart';
 
 import 'notes_provider_test.mocks.dart';
+import '../test_helpers/service_locator.dart';
 
 void main() {
   group('TrashProvider Tests', () {
@@ -12,8 +13,15 @@ void main() {
     late MockNotesService mockNotesService;
 
     setUp(() {
+      // Ensure test-wide service locator and AppConfig overrides are applied
+      // (pageSize override etc.)
+      setupTestServiceLocator();
       mockNotesService = MockNotesService();
       trashProvider = TrashProvider(mockNotesService);
+    });
+
+    tearDown(() {
+      tearDownTestServiceLocator();
     });
 
     group('Initialization', () {
