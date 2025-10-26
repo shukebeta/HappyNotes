@@ -61,12 +61,12 @@ class NoteViewState extends State<NoteView> {
               right: 16,
               bottom: 16,
               child: Opacity(
-                opacity: 0.75,
+                opacity: 0.85,
                 child: SharedFab(
                   icon: Icons.edit_outlined,
                   isPrivate: widget.note.isPrivate,
                   busy: false,
-                  mini: true,
+                  mini: false,
                   onPressed: () async {
                     final navigator = Navigator.of(context);
                     final linkedNotesProvider = context.read<LinkedNotesProvider>();

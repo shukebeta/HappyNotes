@@ -190,17 +190,20 @@ class NewNoteState extends State<NewNote> {
                   onSubmit: _floatingActionButtonOnPressed,
                 ),
               ),
-              floatingActionButton: Consumer<NoteModel>(
-                builder: (context, nm, child) {
-                  return SharedFab(
-                    icon: isSaving ? Icons.hourglass_top : Icons.save,
-                    isPrivate: nm.isPrivate,
-                    busy: isSaving,
-                    mini: true,
-                    onPressed: _floatingActionButtonOnPressed,
-                    heroTag: 'new_note_save_fab',
-                  );
-                },
+              floatingActionButton: Opacity(
+                opacity: 0.85,
+                child: Consumer<NoteModel>(
+                  builder: (context, nm, child) {
+                    return SharedFab(
+                      icon: isSaving ? Icons.hourglass_top : Icons.save,
+                      isPrivate: nm.isPrivate,
+                      busy: isSaving,
+                      mini: true,
+                      onPressed: _floatingActionButtonOnPressed,
+                      heroTag: 'new_note_save_fab',
+                    );
+                  },
+                ),
               ),
             ),
           );
