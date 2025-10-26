@@ -97,7 +97,7 @@ class MemoriesOnDayState extends State<MemoriesOnDay> with RouteAware {
     return Scaffold(
       appBar: AppBar(
         title: TappableAppBarTitle(
-          title: 'Memories',
+          title: DateFormat('yyyy-MM-dd').format(widget.date),
           onTap: () => NavigationHelper.showTagInputDialog(context),
           onLongPress: () async {
             final navigator = Navigator.of(context);
@@ -146,7 +146,7 @@ class MemoriesOnDayState extends State<MemoriesOnDay> with RouteAware {
               children: [
                 Expanded(
                   child: Text(
-                    DateFormat('MMMM dd, yyyy').format(widget.date),
+                    DateFormat('EEEE').format(widget.date),
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.w600,
                     ),
