@@ -17,7 +17,7 @@ import '../../dependency_injection.dart';
 import '../account/user_session.dart';
 import '../new_note/new_note.dart';
 import '../components/controllers/tag_cloud_controller.dart';
-import '../components/create_note_fab.dart';
+import 'package:happy_notes/screens/components/shared_fab.dart';
 import '../components/tappable_app_bar_title.dart';
 
 class HomePage extends StatefulWidget {
@@ -143,8 +143,11 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
               );
             },
           ),
-          CreateNoteFAB(
+          SharedFab(
+            icon: Icons.edit_outlined,
             isPrivate: AppConfig.privateNoteOnlyIsEnabled,
+            busy: false,
+            mini: false,
             onPressed: () async {
               final scaffoldMessenger = ScaffoldMessenger.of(context);
               final provider = Provider.of<NotesProvider>(context, listen: false);

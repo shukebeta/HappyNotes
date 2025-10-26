@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import '../../entities/note.dart';
 import '../../models/note_model.dart';
 import '../../providers/linked_notes_provider.dart';
-import 'create_note_fab.dart';
+import 'package:happy_notes/screens/components/shared_fab.dart';
 import '../new_note/new_note.dart';
 import 'linked_notes.dart';
 import 'markdown_body_here.dart';
@@ -57,8 +57,11 @@ class NoteViewState extends State<NoteView> {
               ],
             ),
 
-            CreateNoteFAB(
+            SharedFab(
+              icon: Icons.edit_outlined,
               isPrivate: widget.note.isPrivate,
+              busy: false,
+              mini: true,
               onPressed: () async {
                 final navigator = Navigator.of(context);
                 final linkedNotesProvider = context.read<LinkedNotesProvider>();

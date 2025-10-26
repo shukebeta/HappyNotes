@@ -15,7 +15,7 @@ import '../new_note/new_note.dart';
 import '../components/tappable_app_bar_title.dart';
 import '../../entities/note.dart';
 import 'package:happy_notes/app_config.dart';
-import 'package:happy_notes/screens/components/create_note_fab.dart';
+import 'package:happy_notes/screens/components/shared_fab.dart';
 import 'package:happy_notes/utils/util.dart';
 
 class TagNotes extends StatefulWidget {
@@ -106,8 +106,11 @@ class TagNotesState extends State<TagNotes> {
                   totalPages: tagProvider.totalPages,
                   navigateToPage: navigateToPage,
                 ),
-              CreateNoteFAB(
+              SharedFab(
+                icon: Icons.edit_outlined,
                 isPrivate: AppConfig.privateNoteOnlyIsEnabled,
+                busy: false,
+                mini: false,
                 onPressed: () async {
                   final scaffoldMessenger = ScaffoldMessenger.of(context);
                   final tagProvider = context.read<TagNotesProvider>();

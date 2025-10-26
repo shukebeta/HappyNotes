@@ -10,6 +10,7 @@ import '../../providers/notes_provider.dart';
 import '../../services/dialog_services.dart';
 import '../../utils/util.dart';
 import '../components/note_edit.dart';
+import 'package:happy_notes/screens/components/shared_fab.dart';
 import '../components/hour_picker_dialog.dart';
 
 class NewNote extends StatefulWidget {
@@ -189,19 +190,17 @@ class NewNoteState extends State<NewNote> {
                   onSubmit: _floatingActionButtonOnPressed,
                 ),
               ),
-              floatingActionButton: FloatingActionButton(
-                mini: true,
-                onPressed: _floatingActionButtonOnPressed,
-                child: isSaving
-                    ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(
-                          color: Colors.white,
-                          strokeWidth: 2.0,
-                        ),
-                      )
-                    : const Icon(Icons.save),
+              floatingActionButton: Builder(
+                builder: (context) {
+                  return SharedFab(
+                    icon: isSaving ? Icons.hourglass_top : Icons.save,
+                    isPrivate: noteModel.isPrivate,
+                    busy: isSaving,
+                    mini: true,
+                    onPressed: _floatingActionButtonOnPressed,
+                    heroTag: 'new_note_save_fab',
+                  );
+                },
               ),
             ),
           );
