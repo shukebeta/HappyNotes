@@ -116,6 +116,7 @@ class TagNotesState extends State<TagNotes> {
                     isPrivate: AppConfig.privateNoteOnlyIsEnabled,
                     busy: false,
                     mini: false,
+                    heroTag: 'fab_tag',
                     onPressed: () async {
                       final scaffoldMessenger = ScaffoldMessenger.of(context);
                       final tagProvider = context.read<TagNotesProvider>();

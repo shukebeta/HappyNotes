@@ -31,7 +31,7 @@ class CreateNoteFAB extends StatelessWidget {
           busy: false,
           mini: false,
           onPressed: onPressed,
-          heroTag: 'create_note_fab',
+          heroTag: 'fab_home',
         ),
       ),
     );

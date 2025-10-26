@@ -99,6 +99,7 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
                     isPrivate: AppConfig.privateNoteOnlyIsEnabled,
                     busy: false,
                     mini: false,
+                    heroTag: 'fab_search',
                     onPressed: () async {
                       final scaffoldMessenger = ScaffoldMessenger.of(context);
                       final bool? savedSuccessfully = await Navigator.push<bool>(
