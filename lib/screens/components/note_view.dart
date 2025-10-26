@@ -57,26 +57,33 @@ class NoteViewState extends State<NoteView> {
               ],
             ),
 
-            SharedFab(
-              icon: Icons.edit_outlined,
-              isPrivate: widget.note.isPrivate,
-              busy: false,
-              mini: true,
-              onPressed: () async {
-                final navigator = Navigator.of(context);
-                final linkedNotesProvider = context.read<LinkedNotesProvider>();
-                final newNote = await navigator.push(
-                  MaterialPageRoute(
-                    builder: (context) => NewNote(
-                      isPrivate: widget.note.isPrivate,
-                      initialTag: '@${widget.note.id}',
-                    ),
-                  ),
-                );
-                if (newNote != null && mounted) {
-                  linkedNotesProvider.addLinkedNote(widget.note.id, newNote);
-                }
-              },
+            Positioned(
+              right: 16,
+              bottom: 16,
+              child: Opacity(
+                opacity: 0.75,
+                child: SharedFab(
+                  icon: Icons.edit_outlined,
+                  isPrivate: widget.note.isPrivate,
+                  busy: false,
+                  mini: true,
+                  onPressed: () async {
+                    final navigator = Navigator.of(context);
+                    final linkedNotesProvider = context.read<LinkedNotesProvider>();
+                    final newNote = await navigator.push(
+                      MaterialPageRoute(
+                        builder: (context) => NewNote(
+                          isPrivate: widget.note.isPrivate,
+                          initialTag: '@${widget.note.id}',
+                        ),
+                      ),
+                    );
+                    if (newNote != null && mounted) {
+                      linkedNotesProvider.addLinkedNote(widget.note.id, newNote);
+                    }
+                  },
+                ),
+              ),
             ),
           ],
         );

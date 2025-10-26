@@ -89,24 +89,31 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
                   totalPages: searchProvider.totalPages,
                   navigateToPage: navigateToPage,
                 ),
-              SharedFab(
-                icon: Icons.edit_outlined,
-                isPrivate: AppConfig.privateNoteOnlyIsEnabled,
-                busy: false,
-                mini: false,
-                onPressed: () async {
-                  final scaffoldMessenger = ScaffoldMessenger.of(context);
-                  final bool? savedSuccessfully = await Navigator.push<bool>(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => NewNote(isPrivate: AppConfig.privateNoteOnlyIsEnabled),
-                    ),
-                  );
-                  if (savedSuccessfully ?? false) {
-                    if (!mounted) return;
-                    Util.showInfo(scaffoldMessenger, 'Note saved successfully.');
-                  }
-                },
+              Positioned(
+                right: 16,
+                bottom: 16,
+                child: Opacity(
+                  opacity: 0.85,
+                  child: SharedFab(
+                    icon: Icons.edit_outlined,
+                    isPrivate: AppConfig.privateNoteOnlyIsEnabled,
+                    busy: false,
+                    mini: false,
+                    onPressed: () async {
+                      final scaffoldMessenger = ScaffoldMessenger.of(context);
+                      final bool? savedSuccessfully = await Navigator.push<bool>(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => NewNote(isPrivate: AppConfig.privateNoteOnlyIsEnabled),
+                        ),
+                      );
+                      if (savedSuccessfully ?? false) {
+                        if (!mounted) return;
+                        Util.showInfo(scaffoldMessenger, 'Note saved successfully.');
+                      }
+                    },
+                  ),
+                ),
               ),
             ],
           );

@@ -62,19 +62,22 @@ class SharedFab extends StatelessWidget {
           Positioned(
             right: 6,
             bottom: 6,
-            child: Container(
-              width: badgeSize,
-              height: badgeSize,
-              decoration: BoxDecoration(
-                color: theme.colorScheme.surface,
-                shape: BoxShape.circle,
-                border: Border.all(color: privacyBorderColor, width: 1.0),
-              ),
-              child: Center(
-                child: Icon(
-                  isPrivate ? Icons.lock : Icons.public,
-                  size: 10,
-                  color: privacyBorderColor,
+            child: IgnorePointer(
+              ignoring: true, // let taps pass through to the FAB underneath
+              child: Container(
+                width: badgeSize,
+                height: badgeSize,
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.surface,
+                  shape: BoxShape.circle,
+                  border: Border.all(color: privacyBorderColor, width: 1.0),
+                ),
+                child: Center(
+                  child: Icon(
+                    isPrivate ? Icons.lock : Icons.public,
+                    size: 10,
+                    color: privacyBorderColor,
+                  ),
                 ),
               ),
             ),

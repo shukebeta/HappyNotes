@@ -143,37 +143,44 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
               );
             },
           ),
-          SharedFab(
-            icon: Icons.edit_outlined,
-            isPrivate: AppConfig.privateNoteOnlyIsEnabled,
-            busy: false,
-            mini: false,
-            onPressed: () async {
-              final scaffoldMessenger = ScaffoldMessenger.of(context);
-              final provider = Provider.of<NotesProvider>(context, listen: false);
-              final Note? savedNote = await Navigator.push<Note>(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => NewNote(
-                    isPrivate: AppConfig.privateNoteOnlyIsEnabled,
-                  ),
-                ),
-              );
-              if (!mounted) return;
-              if (savedNote != null) {
-                if (provider.currentPage == 1) {
-                  if (_scrollController.hasClients && _scrollController.offset > 0) {
-                    _scrollController.animateTo(
-                      0,
-                      duration: const Duration(milliseconds: 300),
-                      curve: Curves.easeInOut,
-                    );
+          Positioned(
+            right: 16,
+            bottom: 16,
+            child: Opacity(
+              opacity: 0.85,
+              child: SharedFab(
+                icon: Icons.edit_outlined,
+                isPrivate: AppConfig.privateNoteOnlyIsEnabled,
+                busy: false,
+                mini: false,
+                onPressed: () async {
+                  final scaffoldMessenger = ScaffoldMessenger.of(context);
+                  final provider = Provider.of<NotesProvider>(context, listen: false);
+                  final Note? savedNote = await Navigator.push<Note>(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => NewNote(
+                        isPrivate: AppConfig.privateNoteOnlyIsEnabled,
+                      ),
+                    ),
+                  );
+                  if (!mounted) return;
+                  if (savedNote != null) {
+                    if (provider.currentPage == 1) {
+                      if (_scrollController.hasClients && _scrollController.offset > 0) {
+                        _scrollController.animateTo(
+                          0,
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.easeInOut,
+                        );
+                      }
+                    } else {
+                      Util.showInfo(scaffoldMessenger, 'Note saved successfully.');
+                    }
                   }
-                } else {
-                  Util.showInfo(scaffoldMessenger, 'Note saved successfully.');
-                }
-              }
-            },
+                },
+              ),
+            ),
           ),
         ],
       ),

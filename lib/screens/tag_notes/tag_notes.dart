@@ -106,37 +106,44 @@ class TagNotesState extends State<TagNotes> {
                   totalPages: tagProvider.totalPages,
                   navigateToPage: navigateToPage,
                 ),
-              SharedFab(
-                icon: Icons.edit_outlined,
-                isPrivate: AppConfig.privateNoteOnlyIsEnabled,
-                busy: false,
-                mini: false,
-                onPressed: () async {
-                  final scaffoldMessenger = ScaffoldMessenger.of(context);
-                  final tagProvider = context.read<TagNotesProvider>();
-                  final Note? savedNote = await Navigator.push<Note>(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => NewNote(
-                        isPrivate: AppConfig.privateNoteOnlyIsEnabled,
-                        initialTag: widget.tag,
-                      ),
-                    ),
-                  );
+              Positioned(
+                right: 16,
+                bottom: 16,
+                child: Opacity(
+                  opacity: 0.85,
+                  child: SharedFab(
+                    icon: Icons.edit_outlined,
+                    isPrivate: AppConfig.privateNoteOnlyIsEnabled,
+                    busy: false,
+                    mini: false,
+                    onPressed: () async {
+                      final scaffoldMessenger = ScaffoldMessenger.of(context);
+                      final tagProvider = context.read<TagNotesProvider>();
+                      final Note? savedNote = await Navigator.push<Note>(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => NewNote(
+                            isPrivate: AppConfig.privateNoteOnlyIsEnabled,
+                            initialTag: widget.tag,
+                          ),
+                        ),
+                      );
 
-                  if (savedNote != null && mounted) {
-                    // Check if saved note contains the current tag
-                    final noteContainsTag = savedNote.tags?.contains(widget.tag) ?? false;
+                      if (savedNote != null && mounted) {
+                        // Check if saved note contains the current tag
+                        final noteContainsTag = savedNote.tags?.contains(widget.tag) ?? false;
 
-                    if (noteContainsTag && currentPageNumber == 1) {
-                      // Optimistically insert the note at the top
-                      tagProvider.insertNoteIfOnFirstPage(savedNote);
-                    } else {
-                      // Show success message
-                      Util.showInfo(scaffoldMessenger, 'Note saved successfully.');
-                    }
-                  }
-                },
+                        if (noteContainsTag && currentPageNumber == 1) {
+                          // Optimistically insert the note at the top
+                          tagProvider.insertNoteIfOnFirstPage(savedNote);
+                        } else {
+                          // Show success message
+                          Util.showInfo(scaffoldMessenger, 'Note saved successfully.');
+                        }
+                      }
+                    },
+                  ),
+                ),
               ),
             ],
           );
