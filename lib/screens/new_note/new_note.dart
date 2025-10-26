@@ -190,11 +190,11 @@ class NewNoteState extends State<NewNote> {
                   onSubmit: _floatingActionButtonOnPressed,
                 ),
               ),
-              floatingActionButton: Builder(
-                builder: (context) {
+              floatingActionButton: Consumer<NoteModel>(
+                builder: (context, nm, child) {
                   return SharedFab(
                     icon: isSaving ? Icons.hourglass_top : Icons.save,
-                    isPrivate: noteModel.isPrivate,
+                    isPrivate: nm.isPrivate,
                     busy: isSaving,
                     mini: true,
                     onPressed: _floatingActionButtonOnPressed,
