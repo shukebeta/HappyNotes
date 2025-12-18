@@ -21,9 +21,7 @@ class NoteUpdateCoordinator {
   /// internally, so it's safe to call this for all providers.
   void notifyNoteUpdated(Note updatedNote) {
     try {
-      SeqLogger.info('NoteUpdateCoordinator.notifyNoteUpdated called: noteId=${updatedNote.id}');
       _appStateProvider.notifyNoteUpdated(updatedNote);
-      SeqLogger.info('NoteUpdateCoordinator.notifyNoteUpdated completed successfully');
     } catch (e) {
       SeqLogger.severe('NoteUpdateCoordinator.notifyNoteUpdated error: $e');
       rethrow;
