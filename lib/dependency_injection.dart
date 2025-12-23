@@ -12,6 +12,7 @@ import 'package:happy_notes/services/mastodon_application_service.dart';
 import 'package:happy_notes/services/mastodon_service.dart';
 import 'package:happy_notes/services/mastodon_user_account_service.dart';
 import 'package:happy_notes/services/note_tag_service.dart';
+import 'package:happy_notes/services/draft_service.dart';
 import 'package:happy_notes/services/notes_services.dart';
 import 'package:get_it/get_it.dart';
 import 'package:happy_notes/services/telegram_settings_service.dart';
@@ -46,6 +47,7 @@ void _registerApis() {
 void _registerServices() {
   locator.registerLazySingleton(() => NoteTagService(noteTagApi: locator()));
   locator.registerLazySingleton(() => NotesService());
+  locator.registerLazySingleton(() => DraftService());
   locator.registerLazySingleton(() => ImageService());
   locator.registerLazySingleton(() => AccountService(
         accountApi: locator(),

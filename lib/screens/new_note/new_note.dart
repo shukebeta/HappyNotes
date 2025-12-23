@@ -8,6 +8,7 @@ import '../../models/note_model.dart';
 import '../../models/save_note_result.dart';
 import '../../providers/notes_provider.dart';
 import '../../services/dialog_services.dart';
+import '../../services/draft_service.dart';
 import '../../utils/util.dart';
 import '../components/note_edit.dart';
 import 'package:happy_notes/screens/components/shared_fab.dart';
@@ -23,9 +24,8 @@ class NewNote extends StatefulWidget {
     Key? key,
     required this.isPrivate,
     this.initialTag,
-    // this.onNoteSaved, // Removed
     this.date,
-    this.onSaveSuccessInMainMenu, // Add to constructor
+    this.onSaveSuccessInMainMenu,
   }) : super(key: key);
 
   @override
@@ -34,8 +34,10 @@ class NewNote extends StatefulWidget {
 
 class NewNoteState extends State<NewNote> {
   final _newNoteController = locator<NewNoteController>();
+  final _draftService = locator<DraftService>();
   late NoteModel noteModel;
   bool isSaving = false;
+  bool _draftLoaded = false;
   VoidCallback? _floatingActionButtonOnPressed;
 
   @override
@@ -49,6 +51,52 @@ class NewNoteState extends State<NewNote> {
     if (widget.initialTag != null) {
       noteModel.initialContent = widget.initialTag!;
     }
+    _loadDraft();
+    noteModel.addListener(_onNoteModelChanged);
+    _draftService.addListener(_onDraftCleared);
+  }
+
+  @override
+  void dispose() {
+    noteModel.removeListener(_onNoteModelChanged);
+    _draftService.removeListener(_onDraftCleared);
+    super.dispose();
+  }
+
+  void _onDraftCleared() {
+    if (mounted) {
+      setState(() {
+        noteModel.content = '';
+        noteModel.isPrivate = widget.isPrivate;
+        noteModel.isMarkdown = AppConfig.markdownIsEnabled;
+      });
+    }
+  }
+
+  void _onNoteModelChanged() {
+    if (_draftLoaded) {
+      _draftService.saveDraft(
+        content: noteModel.content,
+        isPrivate: noteModel.isPrivate,
+        isMarkdown: noteModel.isMarkdown,
+      );
+    }
+  }
+
+  Future<void> _loadDraft() async {
+    if (widget.initialTag != null) {
+      _draftLoaded = true;
+      return;
+    }
+    final draft = await _draftService.loadDraft();
+    if (draft != null && mounted) {
+      setState(() {
+        noteModel.content = draft.content;
+        noteModel.isPrivate = draft.isPrivate;
+        noteModel.isMarkdown = draft.isMarkdown;
+      });
+    }
+    _draftLoaded = true;
   }
 
   /// Handle SaveNoteResult from controller
@@ -60,6 +108,7 @@ class NewNoteState extends State<NewNote> {
   ) {
     switch (result) {
       case SaveNoteSuccess success:
+        _draftService.clearDraft();
         switch (success.action) {
           case SaveNoteAction.executeCallback:
             onSaveSuccessInMainMenu?.call();
@@ -78,7 +127,6 @@ class NewNoteState extends State<NewNote> {
     }
   }
 
-  /// Handle PopHandlerResult from controller
   Future<void> _handlePopResult(
     BuildContext context,
     PopHandlerResult result,
@@ -86,6 +134,7 @@ class NewNoteState extends State<NewNote> {
   ) async {
     switch (result) {
       case PopHandlerAllow():
+        _draftService.clearDraft();
         noteModel.initialContent = '';
         FocusScope.of(context).unfocus();
         Navigator.of(context).pop();
@@ -93,13 +142,13 @@ class NewNoteState extends State<NewNote> {
       case PopHandlerShowDialog():
         final shouldPop = await DialogService.showUnsavedChangesDialog(context) ?? false;
         if (shouldPop && context.mounted) {
+          _draftService.clearDraft();
           noteModel.initialContent = '';
           FocusScope.of(context).unfocus();
           Navigator.of(context).pop();
         }
         break;
       case PopHandlerPrevent():
-        // Do nothing - pop is already prevented
         break;
     }
   }
