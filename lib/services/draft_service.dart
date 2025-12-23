@@ -38,10 +38,6 @@ class DraftService extends ChangeNotifier {
     required bool isPrivate,
     required bool isMarkdown,
   }) async {
-    if (content.trim().isEmpty) {
-      await clearDraft();
-      return;
-    }
     final prefs = await SharedPreferences.getInstance();
     final draft = Draft(
       content: content,

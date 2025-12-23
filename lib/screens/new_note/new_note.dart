@@ -89,14 +89,32 @@ class NewNoteState extends State<NewNote> {
       return;
     }
     final draft = await _draftService.loadDraft();
-    if (draft != null && mounted) {
+    if (draft != null && draft.content.trim().isNotEmpty && mounted) {
       setState(() {
         noteModel.content = draft.content;
         noteModel.isPrivate = draft.isPrivate;
         noteModel.isMarkdown = draft.isMarkdown;
       });
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          Util.showInfo(
+            ScaffoldMessenger.of(context),
+            'Draft restored from ${_formatRelativeTime(draft.savedAt)}',
+          );
+        }
+      });
     }
     _draftLoaded = true;
+  }
+
+  String _formatRelativeTime(DateTime savedAt) {
+    final now = DateTime.now();
+    final diff = now.difference(savedAt);
+    if (diff.inSeconds < 60) return 'just now';
+    if (diff.inMinutes < 60) return '${diff.inMinutes} min ago';
+    if (diff.inHours < 24) return '${diff.inHours} hours ago';
+    if (diff.inDays == 1) return 'yesterday';
+    return '${diff.inDays} days ago';
   }
 
   /// Handle SaveNoteResult from controller
