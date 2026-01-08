@@ -187,9 +187,7 @@ class NewNoteState extends State<NewNote> {
               final scaffoldMessenger = ScaffoldMessenger.of(context);
               final navigator = Navigator.of(context);
 
-
-              // Check if we need hour selection for non-today dates
-              if (widget.date != null && !DateUtils.isSameDay(widget.date!, DateTime.now())) {
+              if (widget.date != null) {
                 final selectedHour = await HourPickerDialog.show(context, widget.date!);
                 if (selectedHour == null) {
                   // User cancelled, stop saving
@@ -197,7 +195,7 @@ class NewNoteState extends State<NewNote> {
                   setState(() {});
                   return;
                 }
-                
+
                 // Update noteModel with complete timestamp
                 final now = DateTime.now();
                 final selectedDateTime = DateTime(
