@@ -84,7 +84,6 @@ class MemoriesState extends State<Memories> with RouteAware {
                 heroTag: 'fab_memories',
                 onPressed: () async {
                   final scaffoldMessenger = ScaffoldMessenger.of(context);
-                  final memoriesProvider = context.read<MemoriesProvider>();
                   final Note? savedNote = await Navigator.push<Note>(
                     context,
                     MaterialPageRoute(
@@ -95,8 +94,6 @@ class MemoriesState extends State<Memories> with RouteAware {
                   );
                   if (!mounted) return;
                   if (savedNote != null) {
-                    await memoriesProvider.refreshMemories();
-                    if (!mounted) return;
                     Util.showInfo(scaffoldMessenger, 'Note saved successfully.');
                   }
                 },
