@@ -5,7 +5,6 @@ import 'package:provider/provider.dart';
 import 'package:happy_notes/screens/settings/mastodon_sync_settings.dart';
 import 'package:happy_notes/screens/settings/settings_controller.dart';
 import 'package:happy_notes/screens/settings/telegram_sync_settings.dart';
-import 'package:happy_notes/screens/settings/fanfou_sync_settings.dart';
 import 'package:happy_notes/screens/settings/profile_page.dart';
 import 'package:happy_notes/entities/user.dart';
 import 'package:happy_notes/apis/account_api.dart';
@@ -213,16 +212,6 @@ class SettingsState extends State<Settings> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const MastodonSyncSettings()),
-                );
-              },
-            ),
-            ListTile(
-              title: const Text('Notes Sync - Fanfou'),
-              subtitle: const Text('Configure synchronization settings for Fanfou.'),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const FanfouSyncSettings()),
                 );
               },
             ),
