@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../app_config.dart';
+import '../../entities/note.dart';
+import '../../utils/util.dart';
+import '../components/shared_fab.dart';
+import '../new_note/new_note.dart';
 import '../components/memory_list.dart';
 import '../account/user_session.dart';
 import '../../utils/navigation_helper.dart';
@@ -63,7 +68,43 @@ class MemoriesState extends State<Memories> with RouteAware {
           },
         ),
       ),
-      body: _buildBody(),
+      body: Stack(
+        children: [
+          _buildBody(),
+          Positioned(
+            right: 16,
+            bottom: 16,
+            child: Opacity(
+              opacity: 0.85,
+              child: SharedFab(
+                icon: Icons.edit_outlined,
+                isPrivate: AppConfig.privateNoteOnlyIsEnabled,
+                busy: false,
+                mini: false,
+                heroTag: 'fab_memories',
+                onPressed: () async {
+                  final scaffoldMessenger = ScaffoldMessenger.of(context);
+                  final memoriesProvider = context.read<MemoriesProvider>();
+                  final Note? savedNote = await Navigator.push<Note>(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => NewNote(
+                        isPrivate: AppConfig.privateNoteOnlyIsEnabled,
+                      ),
+                    ),
+                  );
+                  if (!mounted) return;
+                  if (savedNote != null) {
+                    await memoriesProvider.refreshMemories();
+                    if (!mounted) return;
+                    Util.showInfo(scaffoldMessenger, 'Note saved successfully.');
+                  }
+                },
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
