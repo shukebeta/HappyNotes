@@ -78,7 +78,13 @@ class NotesProvider extends NoteListProvider {
 
       // Optimistically add note to the beginning if on page 1
       if (currentPage == 1) {
-        notes.insert(0, createdNote);
+        final noteToList = createdNote.content.length > 1024
+            ? createdNote.copyWith(
+                content: createdNote.content.substring(0, 1024),
+                isLong: true,
+              )
+            : createdNote;
+        notes.insert(0, noteToList);
         notifyListeners();
       }
 
