@@ -38,6 +38,32 @@ class Note {
     this.user,
     this.tags,
   });
+  /// Create a copy of this note with optionally modified fields
+  Note copyWith({
+    int? id,
+    int? userId,
+    String? content,
+    bool? isPrivate,
+    bool? isLong,
+    bool? isMarkdown,
+    int? createdAt,
+    int? deletedAt,
+    User? user,
+    List<String>? tags,
+  }) {
+    return Note(
+      id: id ?? this.id,
+      userId: userId ?? this.userId,
+      content: content ?? this.content,
+      isPrivate: isPrivate ?? this.isPrivate,
+      isLong: isLong ?? this.isLong,
+      isMarkdown: isMarkdown ?? this.isMarkdown,
+      createdAt: createdAt ?? this.createdAt,
+      deletedAt: deletedAt ?? this.deletedAt,
+      user: user ?? this.user,
+      tags: tags ?? this.tags,
+    );
+  }
 
   factory Note.fromJson(Map<String, dynamic> json) {
     return Note(
