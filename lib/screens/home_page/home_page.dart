@@ -17,7 +17,7 @@ import '../../dependency_injection.dart';
 import '../account/user_session.dart';
 import '../new_note/new_note.dart';
 import '../components/controllers/tag_cloud_controller.dart';
-import 'package:happy_notes/screens/components/shared_fab.dart';
+import 'package:happy_notes/screens/components/create_note_fab.dart';
 import '../components/tappable_app_bar_title.dart';
 
 class HomePage extends StatefulWidget {
@@ -65,8 +65,9 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
       _handleAppResumed();
     }
 
-    _wasInBackground =
-        (state == AppLifecycleState.paused || state == AppLifecycleState.hidden || state == AppLifecycleState.inactive);
+    _wasInBackground = (state == AppLifecycleState.paused ||
+        state == AppLifecycleState.hidden ||
+        state == AppLifecycleState.inactive);
   }
 
   void _handleAppResumed() {
@@ -76,7 +77,9 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
     final notesProvider = Provider.of<NotesProvider>(context, listen: false);
 
     // Auto-reload if logged in but notes list is empty (iOS Safari memory management fix)
-    if (authProvider.isAuthenticated && notesProvider.notes.isEmpty && !notesProvider.isLoadingList) {
+    if (authProvider.isAuthenticated &&
+        notesProvider.notes.isEmpty &&
+        !notesProvider.isLoadingList) {
       notesProvider.loadPage(1);
     }
   }
@@ -137,57 +140,48 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
                     FloatingPagination(
                       currentPage: notesProvider.currentPage,
                       totalPages: notesProvider.totalPages,
-                      navigateToPage: (pageNumber) => navigateToPage(pageNumber),
+                      navigateToPage: (pageNumber) =>
+                          navigateToPage(pageNumber),
                     ),
                 ],
               );
             },
           ),
-          Positioned(
-            right: 16,
-            bottom: 16,
-            child: Opacity(
-              opacity: 0.85,
-              child: SharedFab(
-                icon: Icons.edit_outlined,
+        ],
+      ),
+      floatingActionButton: CreateNoteFAB(
+        isPrivate: AppConfig.privateNoteOnlyIsEnabled,
+        heroTag: 'fab_home',
+        onPressed: () async {
+          final scaffoldMessenger = ScaffoldMessenger.of(context);
+          final provider = Provider.of<NotesProvider>(context, listen: false);
+          final Note? savedNote = await Navigator.push<Note>(
+            context,
+            MaterialPageRoute(
+              builder: (context) => NewNote(
                 isPrivate: AppConfig.privateNoteOnlyIsEnabled,
-                busy: false,
-                mini: false,
-                onPressed: () async {
-                  final scaffoldMessenger = ScaffoldMessenger.of(context);
-                  final provider = Provider.of<NotesProvider>(context, listen: false);
-                  final Note? savedNote = await Navigator.push<Note>(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => NewNote(
-                        isPrivate: AppConfig.privateNoteOnlyIsEnabled,
-                      ),
-                    ),
-                  );
-                  if (!mounted) return;
-                  if (savedNote != null) {
-                    if (provider.currentPage == 1) {
-                      if (_scrollController.hasClients && _scrollController.offset > 0) {
-                        _scrollController.animateTo(
-                          0,
-                          duration: const Duration(milliseconds: 300),
-                          curve: Curves.easeInOut,
-                        );
-                      }
-                    } else {
-                      Util.showInfo(scaffoldMessenger, 'Note saved successfully.');
-                    }
-                  }
-                },
               ),
             ),
-          ),
-        ],
+          );
+          if (!mounted) return;
+          if (savedNote != null) {
+            if (provider.currentPage == 1) {
+              if (_scrollController.hasClients &&
+                  _scrollController.offset > 0) {
+                _scrollController.animateTo(
+                  0,
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeInOut,
+                );
+              }
+            } else {
+              Util.showInfo(scaffoldMessenger, 'Note saved successfully.');
+            }
+          }
+        },
       ),
     );
   }
-
-
 
   Widget _buildBody(NotesProvider notesProvider) {
     if (notesProvider.isLoadingList) {
@@ -292,7 +286,9 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
                 final saved = await Navigator.push<bool>(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => NoteDetail(note: note, enterEditing: note.userId == UserSession().id),
+                    builder: (context) => NoteDetail(
+                        note: note,
+                        enterEditing: note.userId == UserSession().id),
                   ),
                 );
                 _handleEditResult(saved);
@@ -300,13 +296,15 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
               onDelete: (note) async {
                 final result = await notesProvider.deleteNote(note.id);
                 if (!result.isSuccess && mounted) {
-                  Util.showError(ScaffoldMessenger.of(context), result.errorMessage!);
+                  Util.showError(
+                      ScaffoldMessenger.of(context), result.errorMessage!);
                 }
               },
             ),
             noteCallbacks: NoteListCallbacks(
               onRefresh: refreshPage,
-              onTagTap: (note, tag) => NavigationHelper.onTagTap(context, note, tag),
+              onTagTap: (note, tag) =>
+                  NavigationHelper.onTagTap(context, note, tag),
               onDateHeaderTap: (date) => Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -315,7 +313,8 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
               ),
             ),
             config: const ListItemConfig(
-              showDate: false, // Don't show individual dates when showDateHeader is true
+              showDate:
+                  false, // Don't show individual dates when showDateHeader is true
               showAuthor: false,
               enableDismiss: true,
             ),

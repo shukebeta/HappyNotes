@@ -2,11 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:happy_notes/app_config.dart';
 import 'package:happy_notes/screens/components/tag_cloud.dart';
 import 'package:happy_notes/screens/components/controllers/tag_cloud_controller.dart';
-import 'package:happy_notes/screens/components/shared_fab.dart';
-import 'package:happy_notes/screens/new_note/new_note.dart';
+import 'package:happy_notes/screens/components/create_note_fab.dart';
 import 'package:happy_notes/screens/tag_notes/tag_notes.dart';
 import 'package:happy_notes/dependency_injection.dart';
-import 'package:happy_notes/utils/util.dart';
 
 class MyTagsPage extends StatefulWidget {
   const MyTagsPage({super.key});
@@ -77,38 +75,10 @@ class MyTagsPageState extends State<MyTagsPage> {
           ),
         ],
       ),
-      body: Stack(
-        fit: StackFit.expand,
-        children: [
-          _buildBody(),
-          Positioned(
-            right: 16,
-            bottom: 16,
-            child: Opacity(
-              opacity: 0.85,
-              child: SharedFab(
-                icon: Icons.edit_outlined,
-                isPrivate: AppConfig.privateNoteOnlyIsEnabled,
-                busy: false,
-                mini: false,
-                heroTag: 'fab_tags',
-                onPressed: () async {
-                  final scaffoldMessenger = ScaffoldMessenger.of(context);
-                  final bool? savedSuccessfully = await Navigator.push<bool>(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => NewNote(isPrivate: AppConfig.privateNoteOnlyIsEnabled),
-                    ),
-                  );
-                  if (savedSuccessfully ?? false) {
-                    if (!mounted) return;
-                    Util.showInfo(scaffoldMessenger, 'Note saved successfully.');
-                  }
-                },
-              ),
-            ),
-          ),
-        ],
+      body: _buildBody(),
+      floatingActionButton: CreateNoteFAB(
+        isPrivate: AppConfig.privateNoteOnlyIsEnabled,
+        heroTag: 'fab_tags',
       ),
     );
   }
@@ -125,11 +95,14 @@ class MyTagsPageState extends State<MyTagsPage> {
           children: [
             const Icon(Icons.cloud_off, size: 48, color: Colors.grey),
             const SizedBox(height: 16),
-            const Text('Unable to load tags', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500)),
+            const Text('Unable to load tags',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500)),
             const SizedBox(height: 8),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 32),
-              child: Text(_error!, textAlign: TextAlign.center, style: const TextStyle(color: Colors.grey)),
+              child: Text(_error!,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(color: Colors.grey)),
             ),
             const SizedBox(height: 24),
             ElevatedButton.icon(
@@ -149,7 +122,8 @@ class MyTagsPageState extends State<MyTagsPage> {
           children: [
             Icon(Icons.tag, size: 64, color: Colors.grey),
             SizedBox(height: 12),
-            Text('No tags yet', style: TextStyle(fontSize: 18, color: Colors.grey)),
+            Text('No tags yet',
+                style: TextStyle(fontSize: 18, color: Colors.grey)),
             SizedBox(height: 8),
             Text(
               'Add #tags to your notes to organize them',

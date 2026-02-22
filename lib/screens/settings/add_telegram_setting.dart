@@ -156,7 +156,7 @@ class AddTelegramSettingState extends State<AddTelegramSetting> {
                           border: OutlineInputBorder(),
                           contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                         ),
-                        value: _syncType,
+                        initialValue: _syncType,
                         items: const [
                           DropdownMenuItem<int>(
                             value: 1,

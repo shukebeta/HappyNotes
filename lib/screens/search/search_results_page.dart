@@ -10,14 +10,13 @@ import 'package:happy_notes/screens/tag_notes/tag_notes.dart';
 import 'package:happy_notes/screens/memories/memories_on_day.dart';
 import 'package:happy_notes/utils/navigation_helper.dart';
 import 'package:happy_notes/screens/account/user_session.dart';
-import 'package:happy_notes/screens/new_note/new_note.dart';
 import 'package:happy_notes/utils/util.dart';
 import 'package:happy_notes/screens/components/floating_pagination.dart';
 import 'package:happy_notes/screens/components/pagination_controls.dart';
 import 'package:happy_notes/screens/components/tappable_app_bar_title.dart';
 import 'package:happy_notes/entities/note.dart';
 import 'package:happy_notes/app_config.dart';
-import 'package:happy_notes/screens/components/shared_fab.dart';
+import 'package:happy_notes/screens/components/create_note_fab.dart';
 
 class SearchResultsPage extends StatefulWidget {
   final String query;
@@ -52,13 +51,15 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
       appBar: AppBar(
         title: TappableAppBarTitle(
           title: 'Search: "${widget.query}"',
-          onTap: () => NavigationHelper.showTagInputDialog(context, replacePage: true),
+          onTap: () =>
+              NavigationHelper.showTagInputDialog(context, replacePage: true),
           onLongPress: () async {
             final navigator = Navigator.of(context);
             final tagCloudController = TagCloudController();
             final tagData = await tagCloudController.loadTagCloud(context);
             if (!mounted) return;
-            NavigationHelper.showTagDiagram(navigator.context, tagData, myNotesOnly: true);
+            NavigationHelper.showTagDiagram(navigator.context, tagData,
+                myNotesOnly: true);
           },
         ),
         actions: [
@@ -71,7 +72,8 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => TagNotes(tag: widget.query, myNotesOnly: true),
+                    builder: (context) =>
+                        TagNotes(tag: widget.query, myNotesOnly: true),
                   ),
                 );
               },
@@ -89,36 +91,13 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
                   totalPages: searchProvider.totalPages,
                   navigateToPage: navigateToPage,
                 ),
-              Positioned(
-                right: 16,
-                bottom: 16,
-                child: Opacity(
-                  opacity: 0.85,
-                  child: SharedFab(
-                    icon: Icons.edit_outlined,
-                    isPrivate: AppConfig.privateNoteOnlyIsEnabled,
-                    busy: false,
-                    mini: false,
-                    heroTag: 'fab_search',
-                    onPressed: () async {
-                      final scaffoldMessenger = ScaffoldMessenger.of(context);
-                      final bool? savedSuccessfully = await Navigator.push<bool>(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => NewNote(isPrivate: AppConfig.privateNoteOnlyIsEnabled),
-                        ),
-                      );
-                      if (savedSuccessfully ?? false) {
-                        if (!mounted) return;
-                        Util.showInfo(scaffoldMessenger, 'Note saved successfully.');
-                      }
-                    },
-                  ),
-                ),
-              ),
             ],
           );
         },
+      ),
+      floatingActionButton: CreateNoteFAB(
+        isPrivate: AppConfig.privateNoteOnlyIsEnabled,
+        heroTag: 'fab_search',
       ),
     );
   }
@@ -132,7 +111,8 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
       return Center(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: Text('Error: ${searchProvider.error}', style: const TextStyle(color: Colors.red)),
+          child: Text('Error: ${searchProvider.error}',
+              style: const TextStyle(color: Colors.red)),
         ),
       );
     }
@@ -151,8 +131,10 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
               showDateHeader: true,
               callbacks: ListItemCallbacks<Note>(
                 onTap: (note) async {
-                  final result =
-                      await Navigator.push(context, MaterialPageRoute(builder: (context) => NoteDetail(note: note)));
+                  final result = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => NoteDetail(note: note)));
                   if (result == true && mounted) {
                     final searchProvider = context.read<SearchProvider>();
                     navigateToPage(searchProvider.currentPage);
@@ -162,7 +144,9 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
                   final result = await Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => NoteDetail(note: note, enterEditing: note.userId == UserSession().id)));
+                          builder: (context) => NoteDetail(
+                              note: note,
+                              enterEditing: note.userId == UserSession().id)));
                   if (result == true && mounted) {
                     final searchProvider = context.read<SearchProvider>();
                     navigateToPage(searchProvider.currentPage);
@@ -171,14 +155,17 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
                 onDelete: (note) async {
                   final result = await searchProvider.deleteNote(note.id);
                   if (result.isSuccess && mounted) {
-                    Util.showInfo(ScaffoldMessenger.of(context), 'Note deleted successfully.');
+                    Util.showInfo(ScaffoldMessenger.of(context),
+                        'Note deleted successfully.');
                   } else if (result.isError && mounted) {
-                    Util.showError(ScaffoldMessenger.of(context), result.errorMessage!);
+                    Util.showError(
+                        ScaffoldMessenger.of(context), result.errorMessage!);
                   }
                 },
               ),
               noteCallbacks: NoteListCallbacks(
-                onTagTap: (note, tag) => NavigationHelper.onTagTap(context, note, tag),
+                onTagTap: (note, tag) =>
+                    NavigationHelper.onTagTap(context, note, tag),
                 onRefresh: () {
                   final searchProvider = context.read<SearchProvider>();
                   return navigateToPage(searchProvider.currentPage);

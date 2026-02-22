@@ -1,38 +1,49 @@
-
 import 'package:flutter/material.dart';
+import 'package:happy_notes/entities/note.dart';
 import 'package:happy_notes/screens/components/shared_fab.dart';
+import 'package:happy_notes/screens/new_note/new_note.dart';
+import 'package:happy_notes/utils/util.dart';
 
-/// Floating Action Button for creating notes with visibility indicator
-/// 
-/// Displays a FAB with color-coded background and icon:
-/// - Public notes: Primary theme color with blue globe icon
-/// - Private notes: Light grey with dark grey lock icon
+/// Floating Action Button for creating notes.
 class CreateNoteFAB extends StatelessWidget {
   final bool isPrivate;
-  final VoidCallback onPressed;
+  final String heroTag;
+  final String successMessage;
+  final VoidCallback? onPressed;
 
   const CreateNoteFAB({
     super.key,
     required this.isPrivate,
-    required this.onPressed,
+    required this.heroTag,
+    this.successMessage = 'Note saved successfully.',
+    this.onPressed,
   });
+
+  Future<void> _handleCreateNote(BuildContext context) async {
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    // NewNote pops with Note on successful save, and null on cancel/back.
+    final Note? savedNote = await Navigator.push<Note>(
+      context,
+      MaterialPageRoute(
+        builder: (context) => NewNote(isPrivate: isPrivate),
+      ),
+    );
+    if (savedNote != null) {
+      Util.showInfo(scaffoldMessenger, successMessage);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    // Wrapper around SharedFab to preserve external API while improving visuals
-    return Positioned(
-      right: 16,
-      bottom: 16,
-      child: Opacity(
-        opacity: 0.95,
-        child: SharedFab(
-          icon: Icons.edit_outlined,
-          isPrivate: isPrivate,
-          busy: false,
-          mini: false,
-          onPressed: onPressed,
-          heroTag: 'fab_home',
-        ),
+    return Opacity(
+      opacity: 0.85,
+      child: SharedFab(
+        icon: Icons.edit_outlined,
+        isPrivate: isPrivate,
+        busy: false,
+        mini: false,
+        onPressed: onPressed ?? () => _handleCreateNote(context),
+        heroTag: heroTag,
       ),
     );
   }

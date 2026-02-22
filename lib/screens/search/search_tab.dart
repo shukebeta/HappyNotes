@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:happy_notes/app_config.dart';
 import 'package:happy_notes/screens/search/search_results_page.dart';
 import 'package:happy_notes/screens/memories/memories_on_day.dart';
-import 'package:happy_notes/screens/new_note/new_note.dart';
-import 'package:happy_notes/screens/components/shared_fab.dart';
-import 'package:happy_notes/utils/util.dart';
+import 'package:happy_notes/screens/components/create_note_fab.dart';
 
 class SearchTab extends StatefulWidget {
   const SearchTab({super.key});
@@ -51,9 +49,18 @@ class SearchTabState extends State<SearchTab> {
 
   String? _normalizeDateString(String input) {
     final monthNames = {
-      'jan': '01', 'feb': '02', 'mar': '03', 'apr': '04',
-      'may': '05', 'jun': '06', 'jul': '07', 'aug': '08',
-      'sep': '09', 'oct': '10', 'nov': '11', 'dec': '12'
+      'jan': '01',
+      'feb': '02',
+      'mar': '03',
+      'apr': '04',
+      'may': '05',
+      'jun': '06',
+      'jul': '07',
+      'aug': '08',
+      'sep': '09',
+      'oct': '10',
+      'nov': '11',
+      'dec': '12'
     };
 
     final monthNamePattern = RegExp(
@@ -68,7 +75,8 @@ class SearchTabState extends State<SearchTab> {
       return '$year-$month-$day';
     }
 
-    final numericPattern = RegExp(r'^(\d{4})-(0?[1-9]|1[0-2])-(0?[1-9]|[12]\d|3[01])$');
+    final numericPattern =
+        RegExp(r'^(\d{4})-(0?[1-9]|1[0-2])-(0?[1-9]|[12]\d|3[01])$');
     final numericMatch = numericPattern.firstMatch(input);
     if (numericMatch != null) {
       final year = numericMatch.group(1);
@@ -86,79 +94,52 @@ class SearchTabState extends State<SearchTab> {
       appBar: AppBar(
         title: const Text('Search'),
       ),
-      body: Stack(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              children: [
-                TextField(
-                  controller: _controller,
-                  focusNode: _focusNode,
-                  decoration: InputDecoration(
-                    hintText: 'Enter keyword or date',
-                    prefixIcon: const Icon(Icons.search),
-                    suffixIcon: IconButton(
-                      icon: const Icon(Icons.clear),
-                      onPressed: () => _controller.clear(),
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  textInputAction: TextInputAction.search,
-                  onSubmitted: (_) => _performSearch(),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            TextField(
+              controller: _controller,
+              focusNode: _focusNode,
+              decoration: InputDecoration(
+                hintText: 'Enter keyword or date',
+                prefixIcon: const Icon(Icons.search),
+                suffixIcon: IconButton(
+                  icon: const Icon(Icons.clear),
+                  onPressed: () => _controller.clear(),
                 ),
-                const SizedBox(height: 24),
-                const Opacity(
-                  opacity: 0.6,
-                  child: Column(
-                    children: [
-                      Icon(Icons.search, size: 64, color: Colors.grey),
-                      SizedBox(height: 12),
-                      Text(
-                        'Search your notes by keyword or date',
-                        style: TextStyle(fontSize: 16, color: Colors.grey),
-                      ),
-                      SizedBox(height: 8),
-                      Text(
-                        'Date formats: 2024-01-15, 2024-Jan-15',
-                        style: TextStyle(fontSize: 14, color: Colors.grey),
-                      ),
-                    ],
-                  ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
                 ),
-              ],
+              ),
+              textInputAction: TextInputAction.search,
+              onSubmitted: (_) => _performSearch(),
             ),
-          ),
-          Positioned(
-            right: 16,
-            bottom: 16,
-            child: Opacity(
-              opacity: 0.85,
-              child: SharedFab(
-                icon: Icons.edit_outlined,
-                isPrivate: AppConfig.privateNoteOnlyIsEnabled,
-                busy: false,
-                mini: false,
-                heroTag: 'fab_search_tab',
-                onPressed: () async {
-                  final scaffoldMessenger = ScaffoldMessenger.of(context);
-                  final bool? savedSuccessfully = await Navigator.push<bool>(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => NewNote(isPrivate: AppConfig.privateNoteOnlyIsEnabled),
-                    ),
-                  );
-                  if (savedSuccessfully ?? false) {
-                    if (!mounted) return;
-                    Util.showInfo(scaffoldMessenger, 'Note saved successfully.');
-                  }
-                },
+            const SizedBox(height: 24),
+            const Opacity(
+              opacity: 0.6,
+              child: Column(
+                children: [
+                  Icon(Icons.search, size: 64, color: Colors.grey),
+                  SizedBox(height: 12),
+                  Text(
+                    'Search your notes by keyword or date',
+                    style: TextStyle(fontSize: 16, color: Colors.grey),
+                  ),
+                  SizedBox(height: 8),
+                  Text(
+                    'Date formats: 2024-01-15, 2024-Jan-15',
+                    style: TextStyle(fontSize: 14, color: Colors.grey),
+                  ),
+                ],
               ),
             ),
-          ),
-        ],
+          ],
+        ),
+      ),
+      floatingActionButton: CreateNoteFAB(
+        isPrivate: AppConfig.privateNoteOnlyIsEnabled,
+        heroTag: 'fab_search_tab',
       ),
     );
   }

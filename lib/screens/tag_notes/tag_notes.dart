@@ -15,7 +15,7 @@ import '../new_note/new_note.dart';
 import '../components/tappable_app_bar_title.dart';
 import '../../entities/note.dart';
 import 'package:happy_notes/app_config.dart';
-import 'package:happy_notes/screens/components/shared_fab.dart';
+import 'package:happy_notes/screens/components/create_note_fab.dart';
 import 'package:happy_notes/utils/util.dart';
 
 class TagNotes extends StatefulWidget {
@@ -70,14 +70,16 @@ class TagNotesState extends State<TagNotes> {
       appBar: AppBar(
         title: TappableAppBarTitle(
           title: 'Notes with tag: ${widget.tag}',
-          onTap: () => NavigationHelper.showTagInputDialog(context, replacePage: true),
+          onTap: () =>
+              NavigationHelper.showTagInputDialog(context, replacePage: true),
           onLongPress: () async {
             final navigator = Navigator.of(context);
             final tagCloudController = TagCloudController();
             final tagData = await tagCloudController.loadTagCloud(context);
             // Show tag diagram on long press
             if (!mounted) return;
-            NavigationHelper.showTagDiagram(navigator.context, tagData, myNotesOnly: widget.myNotesOnly);
+            NavigationHelper.showTagDiagram(navigator.context, tagData,
+                myNotesOnly: widget.myNotesOnly);
           },
         ),
         actions: [
@@ -106,53 +108,41 @@ class TagNotesState extends State<TagNotes> {
                   totalPages: tagProvider.totalPages,
                   navigateToPage: navigateToPage,
                 ),
-              Positioned(
-                right: 16,
-                bottom: 16,
-                child: Opacity(
-                  opacity: 0.85,
-                  child: SharedFab(
-                    icon: Icons.edit_outlined,
-                    isPrivate: AppConfig.privateNoteOnlyIsEnabled,
-                    busy: false,
-                    mini: false,
-                    heroTag: 'fab_tag',
-                    onPressed: () async {
-                      final scaffoldMessenger = ScaffoldMessenger.of(context);
-                      final tagProvider = context.read<TagNotesProvider>();
-                      final Note? savedNote = await Navigator.push<Note>(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => NewNote(
-                            isPrivate: AppConfig.privateNoteOnlyIsEnabled,
-                            initialTag: widget.tag,
-                          ),
-                        ),
-                      );
-
-                      if (savedNote != null && mounted) {
-                        // Check if saved note contains the current tag
-                        final noteContainsTag = savedNote.tags?.contains(widget.tag) ?? false;
-
-                        if (noteContainsTag && currentPageNumber == 1) {
-                          // Optimistically insert the note at the top
-                          tagProvider.insertNoteIfOnFirstPage(savedNote);
-                        } else {
-                          // Show success message
-                          Util.showInfo(scaffoldMessenger, 'Note saved successfully.');
-                        }
-                      }
-                    },
-                  ),
-                ),
-              ),
             ],
           );
         },
       ),
+      floatingActionButton: CreateNoteFAB(
+        isPrivate: AppConfig.privateNoteOnlyIsEnabled,
+        heroTag: 'fab_tag',
+        onPressed: () async {
+          final scaffoldMessenger = ScaffoldMessenger.of(context);
+          final tagProvider = context.read<TagNotesProvider>();
+          final Note? savedNote = await Navigator.push<Note>(
+            context,
+            MaterialPageRoute(
+              builder: (context) => NewNote(
+                isPrivate: AppConfig.privateNoteOnlyIsEnabled,
+                initialTag: widget.tag,
+              ),
+            ),
+          );
+
+          if (savedNote != null && mounted) {
+            final noteContainsTag =
+                savedNote.tags?.contains(widget.tag) ?? false;
+            if (noteContainsTag && currentPageNumber == 1) {
+              // Optimistically insert the note at the top.
+              tagProvider.insertNoteIfOnFirstPage(savedNote);
+            } else {
+              // Fallback to success feedback when no in-place insert is applied.
+              Util.showInfo(scaffoldMessenger, 'Note saved successfully.');
+            }
+          }
+        },
+      ),
     );
   }
-
 
   Widget _buildBody() {
     return Consumer<TagNotesProvider>(
@@ -178,7 +168,8 @@ class TagNotesState extends State<TagNotes> {
 
         if (tagProvider.notes.isEmpty) {
           return const Center(
-            child: Text('No notes available. Create a new note to get started.'),
+            child:
+                Text('No notes available. Create a new note to get started.'),
           );
         }
 
@@ -205,7 +196,9 @@ class TagNotesState extends State<TagNotes> {
                       await Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => NoteDetail(note: note, enterEditing: note.userId == UserSession().id),
+                          builder: (context) => NoteDetail(
+                              note: note,
+                              enterEditing: note.userId == UserSession().id),
                         ),
                       );
                       navigateToPage(currentPageNumber);
@@ -215,15 +208,19 @@ class TagNotesState extends State<TagNotes> {
                       final result = await tagProvider.deleteNote(note.id);
                       if (result.isError && mounted) {
                         messenger.showSnackBar(
-                          SnackBar(content: Text('Delete failed: ${result.errorMessage}')),
+                          SnackBar(
+                              content: Text(
+                                  'Delete failed: ${result.errorMessage}')),
                         );
                       }
                       await navigateToPage(currentPageNumber);
                     },
                   ),
                   noteCallbacks: NoteListCallbacks(
-                    onTagTap: (note, tag) => NavigationHelper.onTagTap(context, note, tag),
-                    onRefresh: () async => await navigateToPage(currentPageNumber),
+                    onTagTap: (note, tag) =>
+                        NavigationHelper.onTagTap(context, note, tag),
+                    onRefresh: () async =>
+                        await navigateToPage(currentPageNumber),
                   ),
                   config: const ListItemConfig(
                     showDate: false,
