@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:happy_notes/app_config.dart';
 import 'package:happy_notes/screens/components/tag_cloud.dart';
 import 'package:happy_notes/screens/components/controllers/tag_cloud_controller.dart';
+import 'package:happy_notes/screens/components/shared_fab.dart';
+import 'package:happy_notes/screens/new_note/new_note.dart';
 import 'package:happy_notes/screens/tag_notes/tag_notes.dart';
 import 'package:happy_notes/dependency_injection.dart';
+import 'package:happy_notes/utils/util.dart';
 
 class MyTagsPage extends StatefulWidget {
   const MyTagsPage({super.key});
@@ -73,7 +77,39 @@ class MyTagsPageState extends State<MyTagsPage> {
           ),
         ],
       ),
-      body: _buildBody(),
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          _buildBody(),
+          Positioned(
+            right: 16,
+            bottom: 16,
+            child: Opacity(
+              opacity: 0.85,
+              child: SharedFab(
+                icon: Icons.edit_outlined,
+                isPrivate: AppConfig.privateNoteOnlyIsEnabled,
+                busy: false,
+                mini: false,
+                heroTag: 'fab_tags',
+                onPressed: () async {
+                  final scaffoldMessenger = ScaffoldMessenger.of(context);
+                  final bool? savedSuccessfully = await Navigator.push<bool>(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => NewNote(isPrivate: AppConfig.privateNoteOnlyIsEnabled),
+                    ),
+                  );
+                  if (savedSuccessfully ?? false) {
+                    if (!mounted) return;
+                    Util.showInfo(scaffoldMessenger, 'Note saved successfully.');
+                  }
+                },
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 

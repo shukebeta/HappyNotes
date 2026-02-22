@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:happy_notes/app_config.dart';
 import 'package:happy_notes/screens/search/search_results_page.dart';
 import 'package:happy_notes/screens/memories/memories_on_day.dart';
+import 'package:happy_notes/screens/new_note/new_note.dart';
+import 'package:happy_notes/screens/components/shared_fab.dart';
+import 'package:happy_notes/utils/util.dart';
 
 class SearchTab extends StatefulWidget {
   const SearchTab({super.key});
@@ -82,48 +86,79 @@ class SearchTabState extends State<SearchTab> {
       appBar: AppBar(
         title: const Text('Search'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            TextField(
-              controller: _controller,
-              focusNode: _focusNode,
-              decoration: InputDecoration(
-                hintText: 'Enter keyword or date',
-                prefixIcon: const Icon(Icons.search),
-                suffixIcon: IconButton(
-                  icon: const Icon(Icons.clear),
-                  onPressed: () => _controller.clear(),
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-              textInputAction: TextInputAction.search,
-              onSubmitted: (_) => _performSearch(),
-            ),
-            const SizedBox(height: 24),
-            const Opacity(
-              opacity: 0.6,
-              child: Column(
-                children: [
-                  Icon(Icons.search, size: 64, color: Colors.grey),
-                  SizedBox(height: 12),
-                  Text(
-                    'Search your notes by keyword or date',
-                    style: TextStyle(fontSize: 16, color: Colors.grey),
+      body: Stack(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                TextField(
+                  controller: _controller,
+                  focusNode: _focusNode,
+                  decoration: InputDecoration(
+                    hintText: 'Enter keyword or date',
+                    prefixIcon: const Icon(Icons.search),
+                    suffixIcon: IconButton(
+                      icon: const Icon(Icons.clear),
+                      onPressed: () => _controller.clear(),
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
-                  SizedBox(height: 8),
-                  Text(
-                    'Date formats: 2024-01-15, 2024-Jan-15',
-                    style: TextStyle(fontSize: 14, color: Colors.grey),
+                  textInputAction: TextInputAction.search,
+                  onSubmitted: (_) => _performSearch(),
+                ),
+                const SizedBox(height: 24),
+                const Opacity(
+                  opacity: 0.6,
+                  child: Column(
+                    children: [
+                      Icon(Icons.search, size: 64, color: Colors.grey),
+                      SizedBox(height: 12),
+                      Text(
+                        'Search your notes by keyword or date',
+                        style: TextStyle(fontSize: 16, color: Colors.grey),
+                      ),
+                      SizedBox(height: 8),
+                      Text(
+                        'Date formats: 2024-01-15, 2024-Jan-15',
+                        style: TextStyle(fontSize: 14, color: Colors.grey),
+                      ),
+                    ],
                   ),
-                ],
+                ),
+              ],
+            ),
+          ),
+          Positioned(
+            right: 16,
+            bottom: 16,
+            child: Opacity(
+              opacity: 0.85,
+              child: SharedFab(
+                icon: Icons.edit_outlined,
+                isPrivate: AppConfig.privateNoteOnlyIsEnabled,
+                busy: false,
+                mini: false,
+                heroTag: 'fab_search_tab',
+                onPressed: () async {
+                  final scaffoldMessenger = ScaffoldMessenger.of(context);
+                  final bool? savedSuccessfully = await Navigator.push<bool>(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => NewNote(isPrivate: AppConfig.privateNoteOnlyIsEnabled),
+                    ),
+                  );
+                  if (savedSuccessfully ?? false) {
+                    if (!mounted) return;
+                    Util.showInfo(scaffoldMessenger, 'Note saved successfully.');
+                  }
+                },
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
