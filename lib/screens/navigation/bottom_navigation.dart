@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 // Constants
@@ -6,8 +5,8 @@ const kSelectedItemColor = Colors.deepPurple;
 const kUnselectedItemColor = Colors.grey;
 const int indexNotes = 0;
 const int indexMemories = 1;
-const int indexNewNote = 2;
-const int indexSharedNotes = 3;
+const int indexSearch = 2;
+const int indexTags = 3;
 const int indexSettings = 4;
 
 // Remember to adjust rail_navigation.dart as well
@@ -28,6 +27,7 @@ class BottomNavigation extends StatelessWidget {
       currentIndex: currentIndex,
       selectedItemColor: kSelectedItemColor,
       unselectedItemColor: kUnselectedItemColor,
+      type: BottomNavigationBarType.fixed,
       onTap: onTap,
       items: const [
         BottomNavigationBarItem(
@@ -39,14 +39,13 @@ class BottomNavigation extends StatelessWidget {
           label: 'Memories',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.note_add_outlined),
-          label: 'New Note',
+          icon: Icon(Icons.search),
+          label: 'Search',
         ),
-        if (kIsWeb)
-          BottomNavigationBarItem(
-            icon: Icon(Icons.public),
-            label: 'Discovery',
-          ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.tag),
+          label: 'Tags',
+        ),
         BottomNavigationBarItem(
           icon: Icon(Icons.settings),
           label: 'Settings',

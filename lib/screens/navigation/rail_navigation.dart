@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class RailNavigation extends StatelessWidget {
@@ -29,16 +28,15 @@ class RailNavigation extends StatelessWidget {
           label: Text('Memories'),
         ),
         NavigationRailDestination(
-          icon: Icon(Icons.note_add_outlined),
-          selectedIcon: Icon(Icons.note_add_outlined, color: Colors.blue),
-          label: Text('New Note'),
+          icon: Icon(Icons.search),
+          selectedIcon: Icon(Icons.search, color: Colors.blue),
+          label: Text('Search'),
         ),
-        if (kIsWeb)
-          NavigationRailDestination(
-            icon: Icon(Icons.public),
-            selectedIcon: Icon(Icons.public, color: Colors.blue),
-            label: Text('Discovery'),
-          ),
+        NavigationRailDestination(
+          icon: Icon(Icons.tag),
+          selectedIcon: Icon(Icons.tag, color: Colors.blue),
+          label: Text('Tags'),
+        ),
         NavigationRailDestination(
           icon: Icon(Icons.settings),
           selectedIcon: Icon(Icons.settings, color: Colors.blue),

@@ -16,6 +16,7 @@ import 'package:happy_notes/screens/account/user_session.dart';
 import 'package:happy_notes/screens/initial_page.dart';
 import 'package:happy_notes/screens/main_menu.dart';
 import 'package:happy_notes/screens/navigation/bottom_navigation.dart';
+import 'package:happy_notes/screens/new_note/new_note.dart';
 import 'package:happy_notes/services/note_update_coordinator.dart';
 import 'package:quick_actions/quick_actions.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
@@ -136,16 +137,26 @@ class HappyNotesState extends State<HappyNotesApp> {
     quickActions!.initialize((String shortcutType) async {
       if (shortcutType == 'takeNote') {
         if (mainMenuKey.currentState != null) {
-          // MainMenu is already in the widget tree
-          mainMenuKey.currentState?.switchToPage(indexNewNote); // Switch to 'New Note' page
+          // MainMenu is already in the widget tree - navigate to NewNote screen
+          mainMenuKey.currentState?.switchToPage(indexNotes);
+          navigatorKey.currentState?.push(
+            MaterialPageRoute(
+              builder: (context) => NewNote(isPrivate: AppConfig.privateNoteOnlyIsEnabled),
+            ),
+          );
         } else {
-          // MainMenu is not in the widget tree, push it onto the stack
+          // MainMenu is not in the widget tree, push it then navigate to NewNote
           await navigatorKey.currentState?.pushReplacement(
             MaterialPageRoute(
               builder: (context) => MainMenu(
                 key: mainMenuKey,
-                initialPageIndex: indexNewNote, // Start with 'New Note' page
+                initialPageIndex: indexNotes,
               ),
+            ),
+          );
+          navigatorKey.currentState?.push(
+            MaterialPageRoute(
+              builder: (context) => NewNote(isPrivate: AppConfig.privateNoteOnlyIsEnabled),
             ),
           );
         }

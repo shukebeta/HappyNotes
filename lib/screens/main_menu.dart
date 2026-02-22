@@ -1,16 +1,14 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:happy_notes/screens/discovery/discovery.dart';
 import 'package:happy_notes/screens/navigation/rail_navigation.dart';
 import 'package:happy_notes/screens/settings/settings.dart';
+import 'package:happy_notes/screens/tags/my_tags_page.dart';
 import 'package:lazy_load_indexed_stack/lazy_load_indexed_stack.dart';
-import '../app_config.dart';
 import '../services/dialog_services.dart';
 import 'home_page/home_page.dart';
 import 'memories/memories.dart';
 import 'navigation/bottom_navigation.dart';
-import 'new_note/new_note.dart';
+import 'search/search_tab.dart';
 
 // Constants
 const kAppBarTitle = 'Happy Notes';
@@ -28,7 +26,6 @@ class MainMenuState extends State<MainMenu> {
   int _selectedIndex = 0;
   final GlobalKey<HomePageState> homePageKey = GlobalKey<HomePageState>();
   final GlobalKey<MemoriesState> memoriesKey = GlobalKey<MemoriesState>();
-  final GlobalKey<NewNoteState> newNoteKey = GlobalKey<NewNoteState>();
   final GlobalKey<SettingsState> settingsKey = GlobalKey<SettingsState>();
 
   @override
@@ -46,48 +43,23 @@ class MainMenuState extends State<MainMenu> {
           key: homePageKey,
         ),
         Memories(key: memoriesKey),
-        NewNote(
-          key: newNoteKey,
-          isPrivate: true,
-          onSaveSuccessInMainMenu: _handleSaveSuccessFromNewNoteTab, // Pass the handler
-        ),
-        if (kIsWeb) const Discovery(),
+        const SearchTab(),
+        const MyTagsPage(),
         Settings(
           key: settingsKey,
-          onLogout: null, // No longer needed - AuthProvider handles logout automatically
+          onLogout: null,
         ),
       ],
     );
   }
 
-  // This method is called by NewNote when save is successful in the MainMenu context
-  void _handleSaveSuccessFromNewNoteTab() {
-    // Switch to the HomePage and trigger its refresh logic via switchToPage
-    switchToPage(indexNotes);
-  }
-
-  // void _onNoteSaved(Note note) async { ... } // Delete this old method
-
   void switchToPage(int index) {
-    final focusNode = FocusScope.of(context);
-    if (_selectedIndex == indexNewNote && index != indexNewNote) {
-      // Remove focus when switching away from NewNote page
-      focusNode.unfocus();
-    }
     switch (index) {
-      case indexNewNote:
-        if (!AppConfig.isIOSWeb) {
-          Future.delayed(const Duration(milliseconds: 150), () => focusNode.requestFocus());
-        }
-        break;
       case indexNotes:
-        // No auto refresh; Notes lazily loads and caches itself
         break;
       case indexMemories:
-        // No auto refresh; Memories lazily loads and caches itself
         break;
-      case indexSharedNotes:
-        memoriesKey.currentState?.setState(() {});
+      case indexTags:
         break;
       case indexSettings:
         settingsKey.currentState?.setState(() {});
@@ -113,9 +85,6 @@ class MainMenuState extends State<MainMenu> {
         }
       },
       child: Scaffold(
-        // appBar: AppBar(
-        //   title: const Text(kAppBarTitle),
-        // ),
         body: Row(
           children: [
             if (isDesktop) RailNavigation(selectedIndex: _selectedIndex, onDestinationSelected: switchToPage),
