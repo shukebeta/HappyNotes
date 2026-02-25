@@ -9,6 +9,7 @@ import '../account/user_session.dart';
 import '../components/note_view.dart';
 import '../trash_bin/trash_bin_page.dart';
 import '../../providers/notes_provider.dart';
+import '../components/shared_fab.dart';
 import '../../utils/util.dart';
 import '../../services/seq_logger.dart';
 import '../../services/note_update_coordinator.dart';
