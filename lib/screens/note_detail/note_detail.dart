@@ -9,7 +9,7 @@ import '../account/user_session.dart';
 import '../components/note_view.dart';
 import '../trash_bin/trash_bin_page.dart';
 import '../../providers/notes_provider.dart';
-import '../components/shared_fab.dart';
+import '../components/privacy_save_fab.dart';
 import '../../utils/util.dart';
 import '../../services/seq_logger.dart';
 import '../../services/note_update_coordinator.dart';
@@ -226,6 +226,7 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
     return true;
   }
 
+
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
@@ -256,17 +257,12 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
                     title: Text(
                       '${note?.id} - ${noteModel.isPrivate ? 'Private' : 'Public'}${noteModel.isMarkdown ? ' with M↓' : ''}',
                       style: TextStyle(
-                        color: noteModel.isPrivate ? Colors.red : Colors.green, // Change colors accordingly
+                        color: noteModel.isPrivate ? Colors.blue : Colors.green, // Change colors accordingly
                       ),
                     ),
                     actions: [
                       if (note?.userId == UserSession().id) ...[
-                        if (_isEditing)
-                          IconButton(
-                            icon: _isSaving ? const CircularProgressIndicator() : const Icon(Icons.check),
-                            onPressed: _saveNoteHandler,
-                          )
-                        else
+                        if (!_isEditing)
                           IconButton(
                             icon: const Icon(Icons.edit),
                             onPressed: _enterEditingMode,
@@ -366,6 +362,13 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
                   ],
                 ),
               ),
+              floatingActionButton: _isEditing
+                  ? PrivacySaveFab(
+                      isSaving: _isSaving,
+                      onSave: _isSaving ? null : _saveNoteHandler,
+                      heroTag: 'note_detail_save_fab',
+                    )
+                  : null,
             ),
           );
         });

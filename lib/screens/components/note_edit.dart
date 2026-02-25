@@ -84,8 +84,11 @@ class NoteEditState extends State<NoteEdit> {
           focusNode: noteModel.focusNode,
           keyboardType: TextInputType.multiline,
           maxLines: null,
-          expands: true,
           textAlignVertical: TextAlignVertical.top,
+          expands: true,
+          style: TextStyle(
+            color: noteModel.isPrivate ? Colors.blue.shade300 : Colors.green.shade300,
+          ),
           decoration: InputDecoration(
             hintText: prompt,
             border: OutlineInputBorder(
@@ -119,14 +122,6 @@ class NoteEditState extends State<NoteEdit> {
         Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            _buildActionButton(
-              context,
-              noteModel,
-              icon: noteModel.isPrivate ? Icons.lock : Icons.lock_open,
-              color: noteModel.isPrivate ? Colors.blue : Colors.grey,
-              onTap: () => noteModel.togglePrivate(),
-              isSmallScreen: isSmallScreen,
-            ),
             _buildActionButton(
               context,
               noteModel,

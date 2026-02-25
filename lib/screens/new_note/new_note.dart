@@ -11,7 +11,7 @@ import '../../services/dialog_services.dart';
 import '../../services/draft_service.dart';
 import '../../utils/util.dart';
 import '../components/note_edit.dart';
-import 'package:happy_notes/screens/components/shared_fab.dart';
+import '../components/privacy_save_fab.dart';
 import '../components/hour_picker_dialog.dart';
 
 class NewNote extends StatefulWidget {
@@ -243,7 +243,7 @@ class NewNoteState extends State<NewNote> {
                     return Text(
                       _getNoteTitle(noteModel),
                       style: TextStyle(
-                        color: noteModel.isPrivate ? Colors.red : Colors.green, // Change colors accordingly
+                        color: noteModel.isPrivate ? Colors.blue : Colors.green, // Change colors accordingly
                       ),
                     );
                   },
@@ -255,20 +255,11 @@ class NewNoteState extends State<NewNote> {
                   onSubmit: _floatingActionButtonOnPressed,
                 ),
               ),
-              floatingActionButton: Opacity(
-                opacity: 0.85,
-                child: Consumer<NoteModel>(
-                  builder: (context, nm, child) {
-                    return SharedFab(
-                      icon: isSaving ? Icons.hourglass_top : Icons.save,
-                      isPrivate: nm.isPrivate,
-                      busy: isSaving,
-                      mini: true,
-                      onPressed: _floatingActionButtonOnPressed,
-                      heroTag: 'new_note_save_fab',
-                    );
-                  },
-                ),
+              floatingActionButton: PrivacySaveFab(
+                isSaving: isSaving,
+                onSave: isSaving ? null : _floatingActionButtonOnPressed,
+                mini: true,
+                heroTag: 'new_note_save_fab',
               ),
             ),
           );
