@@ -21,6 +21,4 @@
 - **Documentation**: Document all non-trivial methods and parameters
 - **Formatting**: Use standard Dart formatter with flutter_lints package rules
 - **Testing**: Group related tests, use descriptive test names, mock external dependencies
-- **File Editing**: Use eed (Enhanced Ed) for all file modifications - NEVER use Edit/MultiEdit tools
-
-**Key insight**: With eed, you express *intent* (what to change and where), not *exact text* (like Edit requires). This makes it robust and efficient
+- **File Editing**: Use Edit/MultiEdit tools for file modifications - commit frequently after each logical change to enable easy rollback if issues arise

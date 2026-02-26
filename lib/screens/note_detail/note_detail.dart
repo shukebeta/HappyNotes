@@ -243,6 +243,10 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
     return ChangeNotifierProvider(
         create: (_) => noteModel,
         builder: (context, child) {
+          // Set _saveNoteHandler here, before the Scaffold is built, so the FAB
+          // always receives a non-null onSave regardless of Consumer build order.
+          final nm = context.read<NoteModel>();
+          _saveNoteHandler = () => _saveNote(nm);
           return PopScope(
             canPop: false,
             onPopInvokedWithResult: (didPop, result) => _onPopInvoked(context, didPop),
@@ -250,7 +254,6 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
               appBar: PreferredSize(
                 preferredSize: const Size.fromHeight(kToolbarHeight),
                 child: Consumer<NoteModel>(builder: (context, noteModel, child) {
-                  // Define IconButton callback that can be reused
                   _saveNoteHandler = () => _saveNote(noteModel);
 
                   return AppBar(
@@ -309,9 +312,7 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
                   );
                 }),
               ),
-              body: GestureDetector(
-                onDoubleTap: _enterEditingMode,
-                child: Column(
+              body: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Publish time
@@ -351,7 +352,10 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
                                           note: note!,
                                           onSubmit: _saveNoteHandler,
                                         )
-                                      : NoteView(note: note!),
+                                      : GestureDetector(
+                                          onDoubleTap: _enterEditingMode,
+                                          child: NoteView(note: note!),
+                                        ),
                                 ),
                               ],
                             );
@@ -361,11 +365,11 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
                     ),
                   ],
                 ),
-              ),
               floatingActionButton: _isEditing
                   ? PrivacySaveFab(
                       isSaving: _isSaving,
                       onSave: _isSaving ? null : _saveNoteHandler,
+                      mini: true,
                       heroTag: 'note_detail_save_fab',
                     )
                   : null,

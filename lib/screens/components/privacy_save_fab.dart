@@ -22,8 +22,8 @@ class PrivacySaveFab extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<NoteModel>(
       builder: (context, noteModel, child) {
-        return Opacity(
-          opacity: 0.85,
+        return Material(
+          color: Colors.transparent,
           child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
           crossAxisAlignment: CrossAxisAlignment.center,
