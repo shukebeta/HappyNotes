@@ -128,7 +128,7 @@ class AppConfig {
   if (override != null) return override == '1';
   final privateNoteOnlyIsEnabledStr =
     UserSession().settings(AppConstants.privateNoteOnlyIsEnabled) ?? _env['PRIVATE_NOTE_ONLY'];
-  return privateNoteOnlyIsEnabledStr != null && privateNoteOnlyIsEnabledStr == '1';
+  return privateNoteOnlyIsEnabledStr == null || privateNoteOnlyIsEnabledStr == '1';
   }
 
   static bool get markdownIsEnabled {

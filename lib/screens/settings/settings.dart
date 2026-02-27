@@ -124,7 +124,7 @@ class SettingsState extends State<Settings> {
           children: [
             ListTile(
               title: const Text('Page Size'),
-              subtitle: const Text('Select the number of notes to display per page.'),
+              subtitle: const Text('Number of notes per page.'),
               trailing: DropdownButton<int>(
                 value: pageSize,
                 onChanged: (int? newValue) async {
@@ -165,7 +165,7 @@ class SettingsState extends State<Settings> {
             ),
             ListTile(
               title: const Text('Markdown'),
-              subtitle: const Text('Enable or disable markdown support.'),
+              subtitle: const Text('Format notes with Markdown.'),
               trailing: Switch(
                 value: markdownIsEnabled,
                 onChanged: (bool newValue) async {
@@ -180,8 +180,8 @@ class SettingsState extends State<Settings> {
               ),
             ),
             ListTile(
-              title: const Text('Private Note Only'),
-              subtitle: const Text('Enable to create all new notes as private by default.'),
+              title: const Text('Private notes by default'),
+              subtitle: const Text('New notes will be private by default.'),
               trailing: Switch(
                 value: privateNoteOnlyIsEnabled,
                 onChanged: (bool newValue) async {
@@ -196,8 +196,8 @@ class SettingsState extends State<Settings> {
               ),
             ),
             ListTile(
-              title: const Text('Notes Sync - Telegram'),
-              subtitle: const Text('Configure synchronization settings for Telegram.'),
+              title: const Text('Telegram Sync'),
+              subtitle: const Text('Sync notes to Telegram.'),
               onTap: () {
                 Navigator.push(
                   context,
@@ -206,8 +206,8 @@ class SettingsState extends State<Settings> {
               },
             ),
             ListTile(
-              title: const Text('Notes Sync - Mastodon'),
-              subtitle: const Text('Configure synchronization settings for Mastodon.'),
+              title: const Text('Mastodon Sync'),
+              subtitle: const Text('Sync notes to Mastodon.'),
               onTap: () {
                 Navigator.push(
                   context,
