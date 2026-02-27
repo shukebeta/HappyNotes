@@ -260,7 +260,7 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
                     title: Text(
                       '${note?.id} - ${noteModel.isPrivate ? 'Private' : 'Public'}${noteModel.isMarkdown ? ' with M↓' : ''}',
                       style: TextStyle(
-                        color: noteModel.isPrivate ? Colors.blue : Colors.green, // Change colors accordingly
+                        color: noteModel.isPrivate ? Colors.blue.shade700 : Colors.amber.shade700,
                       ),
                     ),
                     actions: [

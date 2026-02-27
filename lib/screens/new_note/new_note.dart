@@ -243,7 +243,7 @@ class NewNoteState extends State<NewNote> {
                     return Text(
                       _getNoteTitle(noteModel),
                       style: TextStyle(
-                        color: noteModel.isPrivate ? Colors.blue : Colors.green, // Change colors accordingly
+                        color: noteModel.isPrivate ? Colors.blue.shade700 : Colors.amber.shade700,
                       ),
                     );
                   },
