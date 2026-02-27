@@ -23,9 +23,9 @@ HappyNotes allows you to upload photos, but once a photo is successfully uploade
 This means that even if a note is private, the photos in it are public. This eliminates the possibility of private photo leaks from the source! Simply don't upload private photos. Remember: The cloud brings convenience but reduces security.
 
 **Creating Notes with the Floating Action Button (FAB):**
-- **Home Page**: Orange FAB with globe icon (🌍) for public notes / Blue FAB with lock icon (🔒) for private notes
+- **Home Page**: FAB with badge showing lock icon (🔒) for private notes / globe icon (🌍) for public notes
   - Default visibility is private; can be changed in Settings
-- **Memories on a Day Page**: Blue FAB with lock icon for adding private notes to that specific date
+- **Memories on a Day Page**: FAB with lock icon badge for adding private notes to that specific date
 - **Note Detail Page**: FAB inherits parent note's visibility - creates linked notes (@noteId) with same public/private setting
 - Photos are hosted on HappyNotes' image server, and anyone who knows the image URL can access your photos. Important thing to say three times: **Please do not upload private photos. Please do not upload private photos. Please do not upload private photos**.
 
