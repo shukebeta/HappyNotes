@@ -67,7 +67,8 @@ class NoteEditState extends State<NoteEdit> {
   }
 
   Widget _buildEditor(NoteModel noteModel) {
-    final borderColor = noteModel.isPrivate ? Colors.blue.shade700 : Colors.amber.shade700;
+    const baseBorderColor = Colors.grey;
+    final focusedBorderColor = noteModel.isPrivate ? Colors.blueAccent : Colors.orangeAccent;
     final backgroundColor = noteModel.isPrivate ? Colors.blue.shade50 : Colors.white;
 
     return CallbackShortcuts(
@@ -82,30 +83,40 @@ class NoteEditState extends State<NoteEdit> {
         onPointerDown: (event) {
           tagController.dispose(); // Close tag overlay if open
         },
-        child: Container(
-          decoration: BoxDecoration(
-            color: backgroundColor,
-            border: Border.all(color: borderColor, width: 2.0),
-            borderRadius: BorderRadius.circular(4.0),
-          ),
-          child: TextField(
-            controller: noteEditController.textController,
-            focusNode: noteModel.focusNode,
-            keyboardType: TextInputType.multiline,
-            maxLines: null,
-            textAlignVertical: TextAlignVertical.top,
-            expands: true,
-            style: const TextStyle(color: Colors.black),
-            decoration: InputDecoration(
-              hintText: prompt,
-              border: InputBorder.none,
-              contentPadding: const EdgeInsets.all(12.0),
-            ),
-            onChanged: (text) {
-              noteModel.content = text;
-              tagController.handleTextChanged(text, noteEditController.textController.selection, noteModel, context);
-            },
-          ),
+        child: AnimatedBuilder(
+          animation: noteModel.focusNode,
+          builder: (context, child) {
+            final hasFocus = noteModel.focusNode.hasFocus;
+            return AnimatedContainer(
+              duration: const Duration(milliseconds: 150),
+              decoration: BoxDecoration(
+                color: backgroundColor,
+                border: Border.all(
+                  color: hasFocus ? focusedBorderColor : baseBorderColor,
+                  width: 2.0,
+                ),
+                borderRadius: BorderRadius.circular(4.0),
+              ),
+              child: TextField(
+                controller: noteEditController.textController,
+                focusNode: noteModel.focusNode,
+                keyboardType: TextInputType.multiline,
+                maxLines: null,
+                textAlignVertical: TextAlignVertical.top,
+                expands: true,
+                style: const TextStyle(color: Colors.black),
+                decoration: InputDecoration(
+                  hintText: prompt,
+                  border: InputBorder.none,
+                  contentPadding: const EdgeInsets.all(12.0),
+                ),
+                onChanged: (text) {
+                  noteModel.content = text;
+                  tagController.handleTextChanged(text, noteEditController.textController.selection, noteModel, context);
+                },
+              ),
+            );
+          },
         ),
       ),
     );
