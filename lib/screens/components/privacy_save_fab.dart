@@ -25,6 +25,7 @@ class PrivacySaveFab extends StatelessWidget {
         return Material(
           color: Colors.transparent,
           child: Row(
+          mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.end,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
