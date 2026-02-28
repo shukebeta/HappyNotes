@@ -137,7 +137,9 @@ class NotesService {
   }
 
   // update a note and get the updated note
-  Future<Note> update(int noteId, String content, bool isPrivate, bool isMarkdown) async {
+  /// Returns the updated [Note], or `null` if the server reports a duplicate
+  /// (unchanged) request — meaning no actual update took place.
+  Future<Note?> update(int noteId, String content, bool isPrivate, bool isMarkdown) async {
     SeqLogger.info(
         'NotesService.update called: noteId=$noteId, content length=${content.length}, isPrivate=$isPrivate, isMarkdown=$isMarkdown');
 
@@ -154,6 +156,12 @@ class NotesService {
     if (!apiResult['successful'] && apiResult['errorCode'] != AppConfig.quietErrorCode) {
       SeqLogger.severe('NotesService.update API error: ${apiResult['errorMessage']} for noteId=$noteId');
       throw ApiException(apiResult);
+    }
+
+    // Duplicate request (quiet error) — content unchanged, nothing to do
+    if (!apiResult['successful'] && apiResult['errorCode'] == AppConfig.quietErrorCode) {
+      SeqLogger.info('NotesService.update: duplicate request detected for noteId=$noteId, no changes needed');
+      return null;
     }
 
     final updatedNote = Note.fromJson(apiResult['data']);
