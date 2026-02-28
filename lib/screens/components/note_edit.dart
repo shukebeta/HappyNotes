@@ -12,6 +12,7 @@ import '../../utils/happy_notes_prompts.dart';
 import '../../utils/util.dart';
 import 'controllers/note_edit_controller.dart';
 import 'controllers/tag_controller.dart';
+import 'markdown_toolbar.dart';
 
 class NoteEdit extends StatefulWidget {
   final Note? note;
@@ -54,12 +55,25 @@ class NoteEditState extends State<NoteEdit> {
   @override
   Widget build(BuildContext context) {
     return Consumer<NoteModel>(builder: (context, noteModel, child) {
+      final screenWidth = MediaQuery.of(context).size.width;
+      final isSmallScreen = screenWidth < 400;
       return Column(
         children: [
           Expanded(
             child: _buildEditor(noteModel),
           ),
-          const SizedBox(height: 8.0),
+          if (noteModel.isMarkdown)
+            Padding(
+              padding: const EdgeInsets.only(top: 4.0),
+              child: MarkdownToolbar(
+                textController: noteEditController.textController,
+                onChanged: (text) {
+                  noteModel.content = text;
+                },
+                isSmallScreen: isSmallScreen,
+              ),
+            ),
+          const SizedBox(height: 4.0),
           _buildActionButtons(context, noteModel),
         ],
       );
@@ -104,11 +118,13 @@ class NoteEditState extends State<NoteEdit> {
                 maxLines: null,
                 textAlignVertical: TextAlignVertical.top,
                 expands: true,
-                style: const TextStyle(color: Colors.black),
+                enableInteractiveSelection: true,
+                stylusHandwritingEnabled: true,
+                style: const TextStyle(color: Colors.black, height: 1.5),
                 decoration: InputDecoration(
                   hintText: prompt,
                   border: InputBorder.none,
-                  contentPadding: const EdgeInsets.all(12.0),
+                  contentPadding: const EdgeInsets.all(14.0),
                 ),
                 onChanged: (text) {
                   noteModel.content = text;
