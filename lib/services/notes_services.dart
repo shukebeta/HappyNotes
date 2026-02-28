@@ -186,6 +186,12 @@ class NotesService {
     return data;
   }
 
+  Future<void> setIsPrivate(int noteId, bool isPrivate) async {
+    var apiResult = (await NotesApi.setIsPrivate(noteId, isPrivate)).data;
+    _validateApiResponse(apiResult, 'setIsPrivate');
+    if (!apiResult['successful']) throw ApiException(apiResult);
+  }
+
   Future<Note> get(int noteId) async {
     var apiResult = (await NotesApi.get(noteId)).data;
     if (!apiResult['successful']) throw ApiException(apiResult);

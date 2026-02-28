@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/gestures.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:happy_notes/screens/account/user_session.dart';
 import 'package:happy_notes/screens/components/tag_widget.dart';
 import 'package:happy_notes/utils/navigation_helper.dart';
@@ -27,13 +27,28 @@ class NoteListItem extends StatelessWidget {
     Widget child = _buildContent(context);
 
     if (config.enableDismiss && callbacks.onDelete != null) {
-      return Dismissible(
+      return Slidable(
         key: Key(note.id.toString()),
-        direction: DismissDirection.endToStart,
-        dragStartBehavior: DragStartBehavior.down,
-        confirmDismiss: callbacks.confirmDismiss,
-        onDismissed: (_) => callbacks.onDelete!(note),
-        background: _buildDismissBackground(),
+        endActionPane: ActionPane(
+          motion: const DrawerMotion(),
+          extentRatio: 0.4,
+          children: [
+            SlidableAction(
+              onPressed: (_) => callbacks.onTogglePrivacy?.call(note),
+              backgroundColor: note.isPrivate ? Colors.green : Colors.blueGrey,
+              foregroundColor: Colors.white,
+              icon: note.isPrivate ? Icons.lock_open : Icons.lock,
+              label: note.isPrivate ? 'Public' : 'Private',
+            ),
+            SlidableAction(
+              onPressed: (_) => callbacks.onDelete!(note),
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+              icon: Icons.delete,
+              label: 'Delete',
+            ),
+          ],
+        ),
         child: child,
       );
     }
@@ -172,15 +187,6 @@ class NoteListItem extends StatelessWidget {
           const Text(' '), // a placeholder to make sure "View more" will show at the end of the row
         if (note.isLong) const Text('View more', style: TextStyle(color: Colors.blue)),
       ],
-    );
-  }
-
-  Widget _buildDismissBackground() {
-    return Container(
-      alignment: Alignment.centerRight,
-      padding: const EdgeInsets.only(right: 20.0),
-      color: Colors.red,
-      child: const Icon(Icons.delete, color: Colors.white),
     );
   }
 

@@ -300,6 +300,12 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
                       ScaffoldMessenger.of(context), result.errorMessage!);
                 }
               },
+              onTogglePrivacy: (note) async {
+                final result = await notesProvider.setNotePrivacy(note.id, !note.isPrivate);
+                if (!result.isSuccess && mounted) {
+                  Util.showError(ScaffoldMessenger.of(context), result.errorMessage!);
+                }
+              },
             ),
             noteCallbacks: NoteListCallbacks(
               onRefresh: refreshPage,

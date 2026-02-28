@@ -297,6 +297,13 @@ class MemoriesOnDayState extends State<MemoriesOnDay> with RouteAware {
               Util.showError(ScaffoldMessenger.of(context), result.errorMessage!);
             }
           },
+          onTogglePrivacy: (note) async {
+            final provider = context.read<MemoriesProvider>();
+            final result = await provider.setNotePrivacy(note.id, !note.isPrivate);
+            if (!result.isSuccess && mounted) {
+              Util.showError(ScaffoldMessenger.of(context), result.errorMessage!);
+            }
+          },
         ),
         noteCallbacks: NoteListCallbacks(
           onTagTap: (note, tag) => NavigationHelper.onTagTap(context, note, tag),

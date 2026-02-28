@@ -146,6 +146,30 @@ abstract class NoteListProvider extends AuthAwareProvider {
     }
   }
 
+  /// Toggle note privacy with optimistic update and rollback on failure
+  Future<OperationResult<void>> setNotePrivacy(int noteId, bool isPrivate) async {
+    // Store original state for rollback
+    final noteIndex = _notes.indexWhere((note) => note.id == noteId);
+    if (noteIndex == -1) return OperationResult.error('Note not found');
+
+    final originalNote = _notes[noteIndex];
+
+    // Optimistic update
+    _notes[noteIndex] = originalNote.copyWith(isPrivate: isPrivate);
+    notifyListeners();
+
+    try {
+      await notesService.setIsPrivate(noteId, isPrivate);
+      return OperationResult.success(null);
+    } catch (e) {
+      // Rollback on failure
+      _notes[noteIndex] = originalNote;
+      notifyListeners();
+      final errorMessage = handleServiceError(e, 'set note privacy');
+      return OperationResult.error(errorMessage);
+    }
+  }
+
   /// Abstract method for performing the actual delete operation
   /// Subclasses should implement this to call the appropriate service method
   Future<void> performDelete(int noteId);

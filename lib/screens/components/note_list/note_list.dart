@@ -89,6 +89,7 @@ class ListItemCallbacks<T> {
   final void Function(T item)? onDoubleTap;
   final void Function(T item)? onDelete;
   final void Function(T item)? onRestore;
+  final void Function(T item)? onTogglePrivacy;
   final Future<bool> Function(DismissDirection)? confirmDismiss;
 
   const ListItemCallbacks({
@@ -96,6 +97,7 @@ class ListItemCallbacks<T> {
     this.onDoubleTap,
     this.onDelete,
     this.onRestore,
+    this.onTogglePrivacy,
     this.confirmDismiss,
   });
 }

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/gestures.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:happy_notes/entities/note.dart';
 import 'package:happy_notes/entities/user.dart';
@@ -30,8 +30,8 @@ void main() {
       );
     });
 
-    group('Dismissible Tests', () {
-      testWidgets('should use Dismissible when dismissible enabled', (tester) async {
+    group('Slidable Tests', () {
+      testWidgets('should use Slidable when dismiss enabled', (tester) async {
         final widget = MaterialApp(
           home: Scaffold(
             body: NoteListItem(
@@ -46,10 +46,10 @@ void main() {
 
         await tester.pumpWidget(widget);
 
-        expect(find.byType(Dismissible), findsOneWidget);
+        expect(find.byType(Slidable), findsOneWidget);
       });
 
-      testWidgets('should have correct dismissible configuration', (tester) async {
+      testWidgets('should have correct slidable configuration', (tester) async {
         final widget = MaterialApp(
           home: Scaffold(
             body: NoteListItem(
@@ -64,11 +64,9 @@ void main() {
 
         await tester.pumpWidget(widget);
 
-        final dismissible = tester.widget<Dismissible>(find.byType(Dismissible));
-
-        expect(dismissible.direction, equals(DismissDirection.endToStart));
-        expect(dismissible.key, equals(Key(testNote.id.toString())));
-        expect(dismissible.dragStartBehavior, equals(DragStartBehavior.down));
+        final slidable = tester.widget<Slidable>(find.byType(Slidable));
+        expect(slidable.key, equals(Key(testNote.id.toString())));
+        expect(slidable.endActionPane, isNotNull);
       });
     });
 
@@ -88,8 +86,8 @@ void main() {
 
         await tester.pumpWidget(widget);
 
-        // Should not find Dismissible when disabled
-        expect(find.byType(Dismissible), findsNothing);
+        // Should not find Slidable when disabled
+        expect(find.byType(Slidable), findsNothing);
       });
 
       testWidgets('should not enable gestures when onDelete callback is null', (tester) async {
@@ -105,8 +103,8 @@ void main() {
 
         await tester.pumpWidget(widget);
 
-        // Should not find Dismissible when no delete callback
-        expect(find.byType(Dismissible), findsNothing);
+        // Should not find Slidable when no delete callback
+        expect(find.byType(Slidable), findsNothing);
       });
     });
 

@@ -70,6 +70,10 @@ class NotesApi {
     return await _dio.delete('/notes/purgeDeleted');
   }
 
+  static Future<Response> setIsPrivate(int noteId, bool isPrivate) async {
+    return await _dio.post('/Note/SetIsPrivate/$noteId/privacy', data: {'isPrivate': isPrivate});
+  }
+
   static Future<Response> searchNotes(String query, int pageSize, int pageNumber) async {
     // Ensure pageSize and pageNumber are valid, default if not
     final effectivePageSize = pageSize > 0 ? pageSize : AppConfig.pageSize;

@@ -169,6 +169,15 @@ class DiscoveryState extends State<Discovery> {
                         );
                       }
                     },
+                    onTogglePrivacy: (note) async {
+                      final messenger = ScaffoldMessenger.of(context);
+                      final result = await discoveryProvider.setNotePrivacy(note.id, !note.isPrivate);
+                      if (result.isError && mounted) {
+                        messenger.showSnackBar(
+                          SnackBar(content: Text('Toggle privacy failed: ${result.errorMessage}')),
+                        );
+                      }
+                    },
                   ),
                   noteCallbacks: NoteListCallbacks(
                     onTagTap: (note, tag) => NavigationHelper.onTagTap(context, note, tag),

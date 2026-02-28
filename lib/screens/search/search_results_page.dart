@@ -162,6 +162,12 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
                         ScaffoldMessenger.of(context), result.errorMessage!);
                   }
                 },
+                onTogglePrivacy: (note) async {
+                  final result = await searchProvider.setNotePrivacy(note.id, !note.isPrivate);
+                  if (result.isError && mounted) {
+                    Util.showError(ScaffoldMessenger.of(context), result.errorMessage!);
+                  }
+                },
               ),
               noteCallbacks: NoteListCallbacks(
                 onTagTap: (note, tag) =>
