@@ -32,6 +32,7 @@ class NoteEditState extends State<NoteEdit> {
   late String prompt;
   late NoteEditController noteEditController;
   late TagController tagController;
+  final UndoHistoryController _undoController = UndoHistoryController();
 
   @override
   void initState() {
@@ -47,6 +48,7 @@ class NoteEditState extends State<NoteEdit> {
 
   @override
   void dispose() {
+    _undoController.dispose();
     noteEditController.dispose();
     tagController.dispose();
     super.dispose();
@@ -67,6 +69,8 @@ class NoteEditState extends State<NoteEdit> {
               padding: const EdgeInsets.only(top: 4.0),
               child: MarkdownToolbar(
                 textController: noteEditController.textController,
+                undoController: _undoController,
+                focusNode: noteModel.focusNode,
                 onChanged: (text) {
                   noteModel.content = text;
                 },
@@ -113,6 +117,7 @@ class NoteEditState extends State<NoteEdit> {
               ),
               child: TextField(
                 controller: noteEditController.textController,
+                undoController: _undoController,
                 focusNode: noteModel.focusNode,
                 keyboardType: TextInputType.multiline,
                 maxLines: null,
