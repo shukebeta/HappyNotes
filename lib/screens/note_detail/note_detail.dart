@@ -9,7 +9,6 @@ import '../account/user_session.dart';
 import '../components/note_view.dart';
 import '../trash_bin/trash_bin_page.dart';
 import '../../providers/notes_provider.dart';
-import '../components/privacy_save_fab.dart';
 import '../../utils/util.dart';
 import '../../services/seq_logger.dart';
 import '../../services/note_update_coordinator.dart';
@@ -135,14 +134,18 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
         noteModel.isMarkdown,
       );
 
-      SeqLogger.info('NoteDetail._saveNote success: updated note ${updatedNote.id}');
+      if (updatedNote != null) {
+        SeqLogger.info('NoteDetail._saveNote success: updated note ${updatedNote.id}');
 
-      // Update local note for UI consistency
-      note = updatedNote;
-      widget.onNoteSaved?.call(updatedNote);
+        // Update local note for UI consistency
+        note = updatedNote;
+        widget.onNoteSaved?.call(updatedNote);
 
-      // Notify all relevant providers about the note update
-      coordinator.notifyNoteUpdated(updatedNote);
+        // Notify all relevant providers about the note update
+        coordinator.notifyNoteUpdated(updatedNote);
+      } else {
+        SeqLogger.info('NoteDetail._saveNote: no changes detected for noteId=$noteId');
+      }
 
       if (_editingFromDetailPage) {
         // Stay in view mode when editing from detail page
@@ -351,6 +354,7 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
                                       ? NoteEdit(
                                           note: note!,
                                           onSubmit: _saveNoteHandler,
+                                          isSaving: _isSaving,
                                         )
                                       : GestureDetector(
                                           onDoubleTap: _enterEditingMode,
@@ -365,14 +369,6 @@ class NoteDetailState extends State<NoteDetail> with RouteAware {
                     ),
                   ],
                 ),
-              floatingActionButton: _isEditing
-                  ? PrivacySaveFab(
-                      isSaving: _isSaving,
-                      onSave: _isSaving ? null : _saveNoteHandler,
-                      mini: true,
-                      heroTag: 'note_detail_save_fab',
-                    )
-                  : null,
             ),
           );
         });

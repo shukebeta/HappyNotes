@@ -11,7 +11,6 @@ import '../../services/dialog_services.dart';
 import '../../services/draft_service.dart';
 import '../../utils/util.dart';
 import '../components/note_edit.dart';
-import '../components/privacy_save_fab.dart';
 import '../components/hour_picker_dialog.dart';
 
 class NewNote extends StatefulWidget {
@@ -253,13 +252,8 @@ class NewNoteState extends State<NewNote> {
                 padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 16.0),
                 child: NoteEdit(
                   onSubmit: _floatingActionButtonOnPressed,
+                  isSaving: isSaving,
                 ),
-              ),
-              floatingActionButton: PrivacySaveFab(
-                isSaving: isSaving,
-                onSave: isSaving ? null : _floatingActionButtonOnPressed,
-                mini: true,
-                heroTag: 'new_note_save_fab',
               ),
             ),
           );

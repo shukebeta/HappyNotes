@@ -1,5 +1,4 @@
 // NoteEdit.dart
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -9,7 +8,6 @@ import '../../models/note_model.dart';
 import '../../services/image_service.dart';
 import '../../services/note_tag_service.dart';
 import '../../utils/happy_notes_prompts.dart';
-import '../../utils/util.dart';
 import 'controllers/note_edit_controller.dart';
 import 'controllers/tag_controller.dart';
 import 'markdown_toolbar.dart';
@@ -17,11 +15,13 @@ import 'markdown_toolbar.dart';
 class NoteEdit extends StatefulWidget {
   final Note? note;
   final VoidCallback? onSubmit;
+  final bool isSaving;
 
   const NoteEdit({
     Key? key,
     this.note,
     this.onSubmit,
+    this.isSaving = false,
   }) : super(key: key);
 
   @override
@@ -61,27 +61,117 @@ class NoteEditState extends State<NoteEdit> {
       final isSmallScreen = screenWidth < 400;
       return Column(
         children: [
-          Expanded(
-            child: _buildEditor(noteModel),
-          ),
-          if (noteModel.isMarkdown)
-            Padding(
-              padding: const EdgeInsets.only(top: 4.0),
-              child: MarkdownToolbar(
-                textController: noteEditController.textController,
-                undoController: _undoController,
-                focusNode: noteModel.focusNode,
-                onChanged: (text) {
-                  noteModel.content = text;
-                },
-                isSmallScreen: isSmallScreen,
-              ),
+          // Toolbar at top
+          MarkdownToolbar(
+            textController: noteEditController.textController,
+            undoController: _undoController,
+            focusNode: noteModel.focusNode,
+            onChanged: (text) {
+              noteModel.content = text;
+            },
+            isMarkdown: noteModel.isMarkdown,
+            onToggleMarkdown: () => noteModel.toggleMarkdown(),
+            onTagPressed: () => tagController.showTagList(
+              noteModel,
+              noteEditController.textController.text,
+              noteEditController.textController.selection.baseOffset,
+              context,
             ),
-          const SizedBox(height: 4.0),
-          _buildActionButtons(context, noteModel),
+            onImageUpload: () => noteEditController.pickAndUploadImage(context, noteModel),
+            onPaste: () async => await noteEditController.pasteFromClipboard(context, noteModel),
+            isUploading: noteModel.isUploading,
+            isPasting: noteModel.isPasting,
+            isSmallScreen: isSmallScreen,
+          ),
+          // Editor with floating save/privacy buttons
+          Expanded(
+            child: Stack(
+              children: [
+                _buildEditor(noteModel),
+                // Floating semi-transparent save/privacy buttons
+                Positioned(
+                  right: 8.0,
+                  bottom: 8.0,
+                  child: _buildFloatingButtons(noteModel),
+                ),
+              ],
+            ),
+          ),
         ],
       );
     });
+  }
+
+  Widget _buildFloatingButtons(NoteModel noteModel) {
+    return Opacity(
+      opacity: 0.7,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Privacy toggle
+          Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: widget.isSaving ? null : () => noteModel.togglePrivate(),
+              borderRadius: BorderRadius.circular(20.0),
+              child: Container(
+                padding: const EdgeInsets.all(8.0),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surface,
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.15),
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Icon(
+                  noteModel.isPrivate ? Icons.lock : Icons.lock_open,
+                  color: noteModel.isPrivate ? Colors.blue : Colors.grey,
+                  size: 20.0,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 8.0),
+          // Save button
+          Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: widget.isSaving ? null : widget.onSubmit,
+              borderRadius: BorderRadius.circular(20.0),
+              child: Container(
+                padding: const EdgeInsets.all(10.0),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.primaryContainer,
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.2),
+                      blurRadius: 6,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: widget.isSaving
+                    ? const SizedBox(
+                        width: 20.0,
+                        height: 20.0,
+                        child: CircularProgressIndicator(strokeWidth: 2.0),
+                      )
+                    : Icon(
+                        Icons.save,
+                        color: Theme.of(context).colorScheme.onPrimaryContainer,
+                        size: 20.0,
+                      ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _buildEditor(NoteModel noteModel) {
@@ -139,110 +229,6 @@ class NoteEditState extends State<NoteEdit> {
             );
           },
         ),
-      ),
-    );
-  }
-
-  Widget _buildActionButtons(BuildContext context, NoteModel noteModel) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final isSmallScreen = screenWidth < 400; // Adjust threshold as needed for iPhone SE size
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            _buildActionButton(
-              context,
-              noteModel,
-              child: Text(
-                "M↓",
-                style: TextStyle(
-                  fontSize: isSmallScreen ? 16.0 : 20.0,
-                  color: noteModel.isMarkdown ? Colors.blue : Colors.grey,
-                ),
-              ),
-              onTap: () => noteModel.toggleMarkdown(),
-              isSmallScreen: isSmallScreen,
-            ),
-            if (kIsWeb || defaultTargetPlatform != TargetPlatform.macOS)
-              _buildMarkdownActionButton(
-                context: context,
-                noteModel: noteModel,
-                icon: Icons.add_photo_alternate,
-                onPressed: () => noteEditController.pickAndUploadImage(context, noteModel),
-                isLoading: noteModel.isUploading,
-                isSmallScreen: isSmallScreen,
-              ),
-            if (Util.isPasteBoardSupported())
-              _buildMarkdownActionButton(
-                context: context,
-                noteModel: noteModel,
-                icon: Icons.paste,
-                onPressed: () async => await noteEditController.pasteFromClipboard(context, noteModel),
-                isLoading: noteModel.isPasting,
-                isSmallScreen: isSmallScreen,
-              ),
-            _buildActionButton(
-              context,
-              noteModel,
-              icon: Icons.tag,
-              onTap: () => tagController.showTagList(
-                noteModel,
-                noteEditController.textController.text,
-                noteEditController.textController.selection.baseOffset,
-                context,
-              ),
-              isSmallScreen: isSmallScreen,
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _buildActionButton(
-    BuildContext context,
-    NoteModel noteModel, {
-    required VoidCallback onTap,
-    Widget? child,
-    IconData? icon,
-    Color? color,
-    bool isSmallScreen = false,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      behavior: HitTestBehavior.opaque,
-      child: Padding(
-        padding: EdgeInsets.all(isSmallScreen ? 8.0 : 12.0),
-        child: child ??
-            Icon(
-              icon,
-              color: color ?? Colors.black,
-              size: isSmallScreen ? 20.0 : 24.0,
-            ),
-      ),
-    );
-  }
-
-  Widget _buildMarkdownActionButton({
-    required BuildContext context,
-    required NoteModel noteModel,
-    required IconData icon,
-    required VoidCallback onPressed,
-    required bool isLoading,
-    bool isSmallScreen = false,
-  }) {
-    return Visibility(
-      visible: noteModel.isMarkdown,
-      maintainSize: true,
-      maintainAnimation: true,
-      maintainState: true,
-      child: IconButton(
-        onPressed: onPressed,
-        icon: isLoading ? const CircularProgressIndicator() : Icon(icon),
-        iconSize: isSmallScreen ? 20.0 : 24.0,
-        padding: EdgeInsets.all(isSmallScreen ? 8.0 : 12.0),
       ),
     );
   }
