@@ -60,9 +60,8 @@ class NoteEditState extends State<NoteEdit> {
     return Consumer<NoteModel>(builder: (context, noteModel, child) {
       final screenWidth = MediaQuery.of(context).size.width;
       final isSmallScreen = screenWidth < 400;
-      final isMobile = !kIsWeb &&
-          (defaultTargetPlatform == TargetPlatform.android ||
-              defaultTargetPlatform == TargetPlatform.iOS);
+      final isMobile = defaultTargetPlatform == TargetPlatform.android ||
+          defaultTargetPlatform == TargetPlatform.iOS;
 
       final toolbar = MarkdownToolbar(
         textController: noteEditController.textController,
