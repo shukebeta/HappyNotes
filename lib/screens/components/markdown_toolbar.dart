@@ -95,7 +95,8 @@ class MarkdownToolbar extends StatelessWidget {
             // Bold
             _buildButton(
               tooltip: 'Bold',
-              child: Text('B', style: TextStyle(fontWeight: FontWeight.bold, fontSize: iconSize - 2)),
+              icon: Icons.format_bold,
+              iconSize: iconSize,
               onTap: withRefocus(() => MarkdownFormatService.wrapSelection(
                 textController,
                 prefix: '**',
@@ -109,7 +110,7 @@ class MarkdownToolbar extends StatelessWidget {
               _buildButton(
                 tooltip: 'Paste',
                 icon: Icons.paste,
-                iconSize: iconSize,
+                iconSize: iconSize - 2,
                 onTap: onPaste!,
                 padding: padding,
                 isLoading: isPasting,
@@ -119,7 +120,7 @@ class MarkdownToolbar extends StatelessWidget {
               _buildButton(
                 tooltip: 'Add image',
                 icon: Icons.add_photo_alternate,
-                iconSize: iconSize,
+                iconSize: iconSize - 2,
                 onTap: onImageUpload!,
                 padding: padding,
                 isLoading: isUploading,
@@ -149,11 +150,8 @@ class MarkdownToolbar extends StatelessWidget {
             // Inline code (before Code block)
             _buildButton(
               tooltip: 'Inline code',
-              child: Text('`', style: TextStyle(
-                fontFamily: 'monospace',
-                fontSize: iconSize,
-                fontWeight: FontWeight.bold,
-              )),
+              icon: Icons.data_object,
+              iconSize: iconSize,
               onTap: withRefocus(() => MarkdownFormatService.wrapSelection(
                 textController,
                 prefix: '`',
@@ -199,7 +197,8 @@ class MarkdownToolbar extends StatelessWidget {
             // Italic (before Strikethrough)
             _buildButton(
               tooltip: 'Italic',
-              child: Text('I', style: TextStyle(fontStyle: FontStyle.italic, fontSize: iconSize - 2)),
+              icon: Icons.format_italic,
+              iconSize: iconSize,
               onTap: withRefocus(() => MarkdownFormatService.wrapSelection(
                 textController,
                 prefix: '*',
@@ -211,10 +210,8 @@ class MarkdownToolbar extends StatelessWidget {
             // Strikethrough
             _buildButton(
               tooltip: 'Strikethrough',
-              child: Text('S', style: TextStyle(
-                decoration: TextDecoration.lineThrough,
-                fontSize: iconSize - 2,
-              )),
+              icon: Icons.format_strikethrough,
+              iconSize: iconSize,
               onTap: withRefocus(() => MarkdownFormatService.wrapSelection(
                 textController,
                 prefix: '~~',
@@ -321,7 +318,6 @@ class MarkdownToolbar extends StatelessWidget {
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: padding),
           child: SizedBox(
-            width: contentSize,
             height: double.infinity,
             child: Center(
               child: isLoading
