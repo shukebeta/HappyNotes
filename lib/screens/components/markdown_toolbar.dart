@@ -84,7 +84,15 @@ class MarkdownToolbar extends StatelessWidget {
           ],
           if (isMarkdown) ...[
             _verticalDivider(),
-            // Formatting buttons
+            // Tag
+            _buildButton(
+              tooltip: 'Tag',
+              icon: Icons.tag,
+              iconSize: iconSize,
+              onTap: onTagPressed,
+              padding: padding,
+            ),
+            // Bold
             _buildButton(
               tooltip: 'Bold',
               child: Text('B', style: TextStyle(fontWeight: FontWeight.bold, fontSize: iconSize - 2)),
@@ -96,17 +104,38 @@ class MarkdownToolbar extends StatelessWidget {
               )),
               padding: padding,
             ),
+            // Paste
+            if (onPaste != null && Util.isPasteBoardSupported())
+              _buildButton(
+                tooltip: 'Paste',
+                icon: Icons.paste,
+                iconSize: iconSize,
+                onTap: onPaste!,
+                padding: padding,
+                isLoading: isPasting,
+              ),
+            // Image upload
+            if (onImageUpload != null && (kIsWeb || defaultTargetPlatform != TargetPlatform.macOS))
+              _buildButton(
+                tooltip: 'Add image',
+                icon: Icons.add_photo_alternate,
+                iconSize: iconSize,
+                onTap: onImageUpload!,
+                padding: padding,
+                isLoading: isUploading,
+              ),
+            // Link
             _buildButton(
-              tooltip: 'Italic',
-              child: Text('I', style: TextStyle(fontStyle: FontStyle.italic, fontSize: iconSize - 2)),
-              onTap: withRefocus(() => MarkdownFormatService.wrapSelection(
+              tooltip: 'Link',
+              icon: Icons.link,
+              iconSize: iconSize,
+              onTap: withRefocus(() => MarkdownFormatService.insertLink(
                 textController,
-                prefix: '*',
-                suffix: '*',
                 onChanged: onChanged,
               )),
               padding: padding,
             ),
+            // Heading
             _buildButton(
               tooltip: 'Heading',
               icon: Icons.title,
@@ -117,6 +146,41 @@ class MarkdownToolbar extends StatelessWidget {
               )),
               padding: padding,
             ),
+            // Code block
+            _buildButton(
+              tooltip: 'Code block',
+              icon: Icons.code,
+              iconSize: iconSize,
+              onTap: withRefocus(() => MarkdownFormatService.insertCodeBlock(
+                textController,
+                onChanged: onChanged,
+              )),
+              padding: padding,
+            ),
+            // Quote
+            _buildButton(
+              tooltip: 'Quote',
+              icon: Icons.format_quote,
+              iconSize: iconSize,
+              onTap: withRefocus(() => MarkdownFormatService.toggleLinePrefix(
+                textController,
+                prefix: '> ',
+                onChanged: onChanged,
+              )),
+              padding: padding,
+            ),
+            // Horizontal rule
+            _buildButton(
+              tooltip: 'Horizontal rule',
+              icon: Icons.horizontal_rule,
+              iconSize: iconSize,
+              onTap: withRefocus(() => MarkdownFormatService.insertHorizontalRule(
+                textController,
+                onChanged: onChanged,
+              )),
+              padding: padding,
+            ),
+            // Strikethrough
             _buildButton(
               tooltip: 'Strikethrough',
               child: Text('S', style: TextStyle(
@@ -131,18 +195,7 @@ class MarkdownToolbar extends StatelessWidget {
               )),
               padding: padding,
             ),
-            _verticalDivider(),
-            _buildButton(
-              tooltip: 'Bullet list',
-              icon: Icons.format_list_bulleted,
-              iconSize: iconSize,
-              onTap: withRefocus(() => MarkdownFormatService.toggleLinePrefix(
-                textController,
-                prefix: '- ',
-                onChanged: onChanged,
-              )),
-              padding: padding,
-            ),
+            // Numbered list
             _buildButton(
               tooltip: 'Numbered list',
               icon: Icons.format_list_numbered,
@@ -154,90 +207,16 @@ class MarkdownToolbar extends StatelessWidget {
               )),
               padding: padding,
             ),
+            // Bullet list
             _buildButton(
-              tooltip: 'Quote',
-              icon: Icons.format_quote,
+              tooltip: 'Bullet list',
+              icon: Icons.format_list_bulleted,
               iconSize: iconSize,
               onTap: withRefocus(() => MarkdownFormatService.toggleLinePrefix(
                 textController,
-                prefix: '> ',
+                prefix: '- ',
                 onChanged: onChanged,
               )),
-              padding: padding,
-            ),
-            _verticalDivider(),
-            _buildButton(
-              tooltip: 'Inline code',
-              child: Text('`', style: TextStyle(
-                fontFamily: 'monospace',
-                fontSize: iconSize,
-                fontWeight: FontWeight.bold,
-              )),
-              onTap: withRefocus(() => MarkdownFormatService.wrapSelection(
-                textController,
-                prefix: '`',
-                suffix: '`',
-                onChanged: onChanged,
-              )),
-              padding: padding,
-            ),
-            _buildButton(
-              tooltip: 'Code block',
-              icon: Icons.code,
-              iconSize: iconSize,
-              onTap: withRefocus(() => MarkdownFormatService.insertCodeBlock(
-                textController,
-                onChanged: onChanged,
-              )),
-              padding: padding,
-            ),
-            _buildButton(
-              tooltip: 'Link',
-              icon: Icons.link,
-              iconSize: iconSize,
-              onTap: withRefocus(() => MarkdownFormatService.insertLink(
-                textController,
-                onChanged: onChanged,
-              )),
-              padding: padding,
-            ),
-            _buildButton(
-              tooltip: 'Horizontal rule',
-              icon: Icons.horizontal_rule,
-              iconSize: iconSize,
-              onTap: withRefocus(() => MarkdownFormatService.insertHorizontalRule(
-                textController,
-                onChanged: onChanged,
-              )),
-              padding: padding,
-            ),
-            _verticalDivider(),
-            // Image upload
-            if (onImageUpload != null && (kIsWeb || defaultTargetPlatform != TargetPlatform.macOS))
-              _buildButton(
-                tooltip: 'Add image',
-                icon: Icons.add_photo_alternate,
-                iconSize: iconSize,
-                onTap: onImageUpload!,
-                padding: padding,
-                isLoading: isUploading,
-              ),
-            // Paste
-            if (onPaste != null && Util.isPasteBoardSupported())
-              _buildButton(
-                tooltip: 'Paste',
-                icon: Icons.paste,
-                iconSize: iconSize,
-                onTap: onPaste!,
-                padding: padding,
-                isLoading: isPasting,
-              ),
-            // Tag
-            _buildButton(
-              tooltip: 'Tag',
-              icon: Icons.tag,
-              iconSize: iconSize,
-              onTap: onTagPressed,
               padding: padding,
             ),
             _verticalDivider(),
