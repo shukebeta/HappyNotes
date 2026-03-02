@@ -312,20 +312,27 @@ class MarkdownToolbar extends StatelessWidget {
     Widget? child,
     bool isLoading = false,
   }) {
+    final contentSize = iconSize ?? 20.0;
     return Tooltip(
       message: tooltip,
       child: InkWell(
         onTap: isLoading ? null : onTap,
         borderRadius: BorderRadius.circular(4.0),
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: padding, vertical: padding / 2),
-          child: isLoading
-              ? SizedBox(
-                  width: iconSize ?? 20.0,
-                  height: iconSize ?? 20.0,
-                  child: const CircularProgressIndicator(strokeWidth: 2.0),
-                )
-              : child ?? Icon(icon, size: iconSize, color: iconColor ?? Colors.black87),
+          padding: EdgeInsets.symmetric(horizontal: padding),
+          child: SizedBox(
+            width: contentSize,
+            height: double.infinity,
+            child: Center(
+              child: isLoading
+                  ? SizedBox(
+                      width: contentSize,
+                      height: contentSize,
+                      child: const CircularProgressIndicator(strokeWidth: 2.0),
+                    )
+                  : child ?? Icon(icon, size: contentSize, color: iconColor ?? Colors.black87),
+            ),
+          ),
         ),
       ),
     );
