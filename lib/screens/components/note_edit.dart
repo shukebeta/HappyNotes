@@ -1,4 +1,5 @@
 // NoteEdit.dart
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -59,45 +60,49 @@ class NoteEditState extends State<NoteEdit> {
     return Consumer<NoteModel>(builder: (context, noteModel, child) {
       final screenWidth = MediaQuery.of(context).size.width;
       final isSmallScreen = screenWidth < 400;
+      final isMobile = !kIsWeb &&
+          (defaultTargetPlatform == TargetPlatform.android ||
+              defaultTargetPlatform == TargetPlatform.iOS);
+
+      final toolbar = MarkdownToolbar(
+        textController: noteEditController.textController,
+        undoController: _undoController,
+        focusNode: noteModel.focusNode,
+        onChanged: (text) {
+          noteModel.content = text;
+        },
+        isMarkdown: noteModel.isMarkdown,
+        onToggleMarkdown: () => noteModel.toggleMarkdown(),
+        onTagPressed: () => tagController.showTagList(
+          noteModel,
+          noteEditController.textController.text,
+          noteEditController.textController.selection.baseOffset,
+          context,
+        ),
+        onImageUpload: () => noteEditController.pickAndUploadImage(context, noteModel),
+        onPaste: () async => await noteEditController.pasteFromClipboard(context, noteModel),
+        isUploading: noteModel.isUploading,
+        isPasting: noteModel.isPasting,
+        isSmallScreen: isSmallScreen,
+      );
+
+      final editor = Expanded(
+        child: Stack(
+          children: [
+            _buildEditor(noteModel),
+            Positioned(
+              right: 8.0,
+              bottom: 8.0,
+              child: _buildFloatingButtons(noteModel),
+            ),
+          ],
+        ),
+      );
+
       return Column(
-        children: [
-          // Toolbar at top
-          MarkdownToolbar(
-            textController: noteEditController.textController,
-            undoController: _undoController,
-            focusNode: noteModel.focusNode,
-            onChanged: (text) {
-              noteModel.content = text;
-            },
-            isMarkdown: noteModel.isMarkdown,
-            onToggleMarkdown: () => noteModel.toggleMarkdown(),
-            onTagPressed: () => tagController.showTagList(
-              noteModel,
-              noteEditController.textController.text,
-              noteEditController.textController.selection.baseOffset,
-              context,
-            ),
-            onImageUpload: () => noteEditController.pickAndUploadImage(context, noteModel),
-            onPaste: () async => await noteEditController.pasteFromClipboard(context, noteModel),
-            isUploading: noteModel.isUploading,
-            isPasting: noteModel.isPasting,
-            isSmallScreen: isSmallScreen,
-          ),
-          // Editor with floating save/privacy buttons
-          Expanded(
-            child: Stack(
-              children: [
-                _buildEditor(noteModel),
-                // Floating semi-transparent save/privacy buttons
-                Positioned(
-                  right: 8.0,
-                  bottom: 8.0,
-                  child: _buildFloatingButtons(noteModel),
-                ),
-              ],
-            ),
-          ),
-        ],
+        children: isMobile
+            ? [editor, toolbar]
+            : [toolbar, editor],
       );
     });
   }
