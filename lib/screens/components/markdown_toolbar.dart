@@ -146,6 +146,22 @@ class MarkdownToolbar extends StatelessWidget {
               )),
               padding: padding,
             ),
+            // Inline code (before Code block)
+            _buildButton(
+              tooltip: 'Inline code',
+              child: Text('`', style: TextStyle(
+                fontFamily: 'monospace',
+                fontSize: iconSize,
+                fontWeight: FontWeight.bold,
+              )),
+              onTap: withRefocus(() => MarkdownFormatService.wrapSelection(
+                textController,
+                prefix: '`',
+                suffix: '`',
+                onChanged: onChanged,
+              )),
+              padding: padding,
+            ),
             // Code block
             _buildButton(
               tooltip: 'Code block',
@@ -176,6 +192,18 @@ class MarkdownToolbar extends StatelessWidget {
               iconSize: iconSize,
               onTap: withRefocus(() => MarkdownFormatService.insertHorizontalRule(
                 textController,
+                onChanged: onChanged,
+              )),
+              padding: padding,
+            ),
+            // Italic (before Strikethrough)
+            _buildButton(
+              tooltip: 'Italic',
+              child: Text('I', style: TextStyle(fontStyle: FontStyle.italic, fontSize: iconSize - 2)),
+              onTap: withRefocus(() => MarkdownFormatService.wrapSelection(
+                textController,
+                prefix: '*',
+                suffix: '*',
                 onChanged: onChanged,
               )),
               padding: padding,
