@@ -144,7 +144,7 @@ class NoteEditState extends State<NoteEdit> {
           Material(
             color: Colors.transparent,
             child: InkWell(
-              onTap: widget.isSaving ? null : widget.onSubmit,
+              onTap: (widget.isSaving || noteModel.isUploading) ? null : widget.onSubmit,
               borderRadius: BorderRadius.circular(20.0),
               child: Container(
                 padding: const EdgeInsets.all(10.0),
@@ -159,7 +159,7 @@ class NoteEditState extends State<NoteEdit> {
                     ),
                   ],
                 ),
-                child: widget.isSaving
+                child: (widget.isSaving || noteModel.isUploading)
                     ? const SizedBox(
                         width: 20.0,
                         height: 20.0,
