@@ -1,7 +1,6 @@
-name: Deploy HappyNotes Web
+name: Deploy HappyNotes Web - Staging
 
 on:
-  workflow_dispatch:
   push:
     branches:
       - master
@@ -25,23 +24,21 @@ jobs:
           echo "commit_hash=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
           echo "build_date=$(date '+%Y-%b-%d')" >> $GITHUB_OUTPUT
 
-      - name: Build web
+      - name: Build web for staging
         run: |
           set -x
-          cp .env.production .env
+          cp .env.staging .env
           COMMIT_HASH=${{ steps.get_commit.outputs.commit_hash }}
           BUILD_DATE=${{ steps.get_commit.outputs.build_date }}
           VERSION_INFO="$COMMIT_HASH ($BUILD_DATE)"
           sed -i "s/VERSION_PLACEHOLDER/$VERSION_INFO/" .env
           sed -i "s/SEQ_API_KEY_PLACEHOLDER/${{ secrets.SEQ_API_KEY }}/" .env
           flutter config --enable-web
-          flutter build web --release --base-href "/"
-
-      - name: Create CNAME file
-        run: echo 'happynotes.shukebeta.com' > ./build/web/CNAME
+          flutter build web --release --base-href "/staging/"
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.RELEASE_TOKEN }}
           publish_dir: ./build/web
+          destination_dir: staging
