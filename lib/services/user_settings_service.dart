@@ -13,7 +13,7 @@ class UserSettingsService {
 
   Future<List<UserSettings>> getAll() async {
     List<dynamic> apiResult = (await _userSettingsApi.getAll()).data['data'];
-    final settings = apiResult.map((json) => UserSettings.fromJson(Map<String, dynamic>.from(json))).toList();
+    final settings = apiResult.map(_deserializeUserSettings).toList();
     await _replaceSessionAndCache(settings);
     return settings;
   }
@@ -52,10 +52,8 @@ class UserSettingsService {
       return false;
     }
 
-    final settings = decoded
-        .map((item) => UserSettings.fromJson(Map<String, dynamic>.from(item as Map)))
-        .toList();
-    UserSession().userSettings = settings;
+    final settings = decoded.map(_deserializeUserSettings).toList();
+    _replaceSessionSettings(settings);
     return settings.isNotEmpty;
   }
 
@@ -65,11 +63,27 @@ class UserSettingsService {
   }
 
   Future<void> _replaceSessionAndCache(List<UserSettings> settings) async {
-    UserSession().userSettings = List<UserSettings>.from(settings);
+    _replaceSessionSettings(settings);
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(
       _cachedUserSettingsKey,
       jsonEncode(UserSession().userSettings!.map((setting) => setting.toJson()).toList()),
     );
+  }
+
+  UserSettings _deserializeUserSettings(dynamic json) {
+    return UserSettings.fromJson(Map<String, dynamic>.from(json));
+  }
+
+  void _replaceSessionSettings(List<UserSettings> settings) {
+    final existingSettings = UserSession().userSettings;
+    if (existingSettings == null) {
+      UserSession().userSettings = List<UserSettings>.from(settings);
+      return;
+    }
+
+    existingSettings
+      ..clear()
+      ..addAll(settings);
   }
 }

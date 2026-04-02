@@ -104,5 +104,37 @@ void main() {
       expect(UserSession().settings(AppConstants.privateNoteOnlyIsEnabled), '1');
       expect(UserSession().settings(AppConstants.pageSize), '20');
     });
+
+    test('getAll preserves existing session list identity when refreshing', () async {
+      final existingSettings = <UserSettings>[
+        UserSettings(
+          id: 1,
+          userId: 123,
+          settingName: AppConstants.pageSize,
+          settingValue: '20',
+        ),
+      ];
+      UserSession().userSettings = existingSettings;
+      fakeApi.getAllResponse = Response<dynamic>(
+        requestOptions: RequestOptions(path: '/settings/getAll'),
+        data: {
+          'data': [
+            {
+              'id': 2,
+              'userId': 123,
+              'settingName': AppConstants.privateNoteOnlyIsEnabled,
+              'settingValue': '1',
+            },
+          ],
+        },
+      );
+
+      await service.getAll();
+
+      expect(identical(UserSession().userSettings, existingSettings), true);
+      expect(existingSettings, hasLength(1));
+      expect(existingSettings.first.settingName, AppConstants.privateNoteOnlyIsEnabled);
+      expect(existingSettings.first.settingValue, '1');
+    });
   });
 }
