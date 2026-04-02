@@ -27,10 +27,6 @@ class Settings extends StatefulWidget {
 }
 
 class SettingsState extends State<Settings> {
-  bool markdownIsEnabled = AppConfig.markdownIsEnabled;
-  bool privateNoteOnlyIsEnabled = AppConfig.privateNoteOnlyIsEnabled;
-  int pageSize = AppConfig.pageSize;
-  String? selectedTimezone = AppConfig.timezone;
   final SettingsController _settingsController = locator<SettingsController>();
   User? _currentUser;
   bool _isLoadingAvatar = true;
@@ -126,12 +122,13 @@ class SettingsState extends State<Settings> {
               title: const Text('Page Size'),
               subtitle: const Text('Number of notes per page.'),
               trailing: DropdownButton<int>(
-                value: pageSize,
+                value: AppConfig.pageSize,
                 onChanged: (int? newValue) async {
-                  await _settingsController.save(context, AppConstants.pageSize, newValue.toString());
-                  setState(() {
-                    if (newValue != null) pageSize = newValue;
-                  });
+                  if (newValue == null) return;
+                  final result = await _settingsController.save(context, AppConstants.pageSize, newValue.toString());
+                  if (result && mounted) {
+                    setState(() {});
+                  }
                 },
                 items: <int>[10, 20, 30, 40, 50, 60].map<DropdownMenuItem<int>>(
                   (int value) {
@@ -149,14 +146,12 @@ class SettingsState extends State<Settings> {
                 width: 245,
                 child: TimezoneDropdownItem(
                   items: TimezoneHelper.timezones,
-                  value: selectedTimezone,
+                  value: AppConfig.timezone,
                   onChanged: (String? newValue) async {
                     if (newValue != null) {
                       final result = await _settingsController.save(context, AppConstants.timezone, newValue);
-                      if (result) {
-                        setState(() {
-                          selectedTimezone = newValue;
-                        });
+                      if (result && mounted) {
+                        setState(() {});
                       }
                     }
                   },
@@ -167,14 +162,12 @@ class SettingsState extends State<Settings> {
               title: const Text('Markdown'),
               subtitle: const Text('Format notes with Markdown.'),
               trailing: Switch(
-                value: markdownIsEnabled,
+                value: AppConfig.markdownIsEnabled,
                 onChanged: (bool newValue) async {
                   final result =
                       await _settingsController.save(context, AppConstants.markdownIsEnabled, newValue ? "1" : "0");
-                  if (result) {
-                    setState(() {
-                      markdownIsEnabled = newValue;
-                    });
+                  if (result && mounted) {
+                    setState(() {});
                   }
                 },
               ),
@@ -183,14 +176,12 @@ class SettingsState extends State<Settings> {
               title: const Text('Private notes by default'),
               subtitle: const Text('New notes will be private by default.'),
               trailing: Switch(
-                value: privateNoteOnlyIsEnabled,
+                value: AppConfig.privateNoteOnlyIsEnabled,
                 onChanged: (bool newValue) async {
                   final result = await _settingsController.save(
                       context, AppConstants.privateNoteOnlyIsEnabled, newValue ? "1" : "0");
-                  if (result) {
-                    setState(() {
-                      privateNoteOnlyIsEnabled = newValue;
-                    });
+                  if (result && mounted) {
+                    setState(() {});
                   }
                 },
               ),

@@ -70,9 +70,14 @@ class AccountService {
 
   Future<void> _storeToken(String token) async {
     final prefs = await SharedPreferences.getInstance();
-    await setUserSession(token: token);
     await prefs.setString(_baseUrlKey, AppConfig.apiBaseUrl);
     await prefs.setString(_tokenKey, token);
+    try {
+      await setUserSession(token: token);
+    } catch (e) {
+      await _clearToken();
+      rethrow;
+    }
   }
 
   Future<void> setUserSession({String? token}) async {

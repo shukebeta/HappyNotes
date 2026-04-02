@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:happy_notes/providers/app_state_provider.dart';
@@ -16,6 +17,18 @@ import 'notes_provider_test.mocks.dart';
 import '../test_helpers/seq_logger_setup.dart';
 
 class MockAuthProvider extends Mock implements AuthProvider {
+  final List<VoidCallback> listeners = <VoidCallback>[];
+
+  @override
+  void addListener(VoidCallback listener) {
+    listeners.add(listener);
+  }
+
+  @override
+  void removeListener(VoidCallback listener) {
+    listeners.remove(listener);
+  }
+
   @override
   bool get isAuthenticated => super.noSuchMethod(
         Invocation.getter(#isAuthenticated),
@@ -136,7 +149,6 @@ void main() {
     late MockMemoriesProvider mockMemoriesProvider;
     late MockTrashProvider mockTrashProvider;
     late MockDiscoveryProvider mockDiscoveryProvider;
-
     setUp(() {
       // Initialize SeqLogger for tests
       setupSeqLoggerForTesting();
@@ -153,6 +165,16 @@ void main() {
       when(mockAuthProvider.isAuthenticated).thenReturn(false);
       when(mockAuthProvider.currentUserId).thenReturn(null);
       when(mockAuthProvider.currentUserEmail).thenReturn(null);
+      when(mockSearchProvider.onAuthStateChanged(true)).thenAnswer((_) async {});
+      when(mockSearchProvider.onAuthStateChanged(false)).thenAnswer((_) async {});
+      when(mockTagNotesProvider.onAuthStateChanged(true)).thenAnswer((_) async {});
+      when(mockTagNotesProvider.onAuthStateChanged(false)).thenAnswer((_) async {});
+      when(mockMemoriesProvider.onAuthStateChanged(true)).thenAnswer((_) async {});
+      when(mockMemoriesProvider.onAuthStateChanged(false)).thenAnswer((_) async {});
+      when(mockTrashProvider.onAuthStateChanged(true)).thenAnswer((_) async {});
+      when(mockTrashProvider.onAuthStateChanged(false)).thenAnswer((_) async {});
+      when(mockDiscoveryProvider.onAuthStateChanged(true)).thenAnswer((_) async {});
+      when(mockDiscoveryProvider.onAuthStateChanged(false)).thenAnswer((_) async {});
 
       notesProvider = NotesProvider(mockNotesService);
       appStateProvider = AppStateProvider(
@@ -236,6 +258,8 @@ void main() {
         // Explicitly mock all provider refresh methods
         when(mockSearchProvider.refreshSearch()).thenAnswer((_) async {});
         when(mockMemoriesProvider.refreshMemories()).thenAnswer((_) async {});
+        when(mockTrashProvider.refresh()).thenAnswer((_) async {});
+        when(mockDiscoveryProvider.refresh()).thenAnswer((_) async {});
 
         await appStateProvider.refreshAllData();
 

@@ -14,6 +14,17 @@ class FakeAccountApi extends AccountApi {
   int refreshCalls = 0;
 
   @override
+  Future<Response> login(Map<String, dynamic> params) async {
+    return Response<dynamic>(
+      requestOptions: RequestOptions(path: '/account/login'),
+      data: {
+        'successful': true,
+        'data': {'token': 'fresh-login-token'},
+      },
+    );
+  }
+
+  @override
   Future<Response> refreshToken() async {
     refreshCalls++;
     await Future<void>.delayed(const Duration(milliseconds: 50));
@@ -28,10 +39,14 @@ class FakeAccountApi extends AccountApi {
 }
 
 class FakeUserSettingsService extends UserSettingsService {
+  String? tokenSeenDuringGetAll;
+
   FakeUserSettingsService() : super(userSettingsApi: FakeUserSettingsApi());
 
   @override
   Future<List<UserSettings>> getAll() async {
+    final prefs = await SharedPreferences.getInstance();
+    tokenSeenDuringGetAll = prefs.getString('accessToken');
     return <UserSettings>[];
   }
 
@@ -60,15 +75,17 @@ class FakeTokenUtils extends TokenUtils {
 void main() {
   group('AccountService', () {
     late FakeAccountApi fakeAccountApi;
+    late FakeUserSettingsService fakeUserSettingsService;
     late AccountService accountService;
 
     setUp(() {
       setupSeqLoggerForTesting();
       SharedPreferences.setMockInitialValues({'accessToken': 'stored-token'});
       fakeAccountApi = FakeAccountApi();
+      fakeUserSettingsService = FakeUserSettingsService();
       accountService = AccountService(
         accountApi: fakeAccountApi,
-        userSettingsService: FakeUserSettingsService(),
+        userSettingsService: fakeUserSettingsService,
         tokenUtils: FakeTokenUtils(),
       );
     });
@@ -83,6 +100,14 @@ void main() {
       await Future<void>.delayed(const Duration(milliseconds: 120));
 
       expect(fakeAccountApi.refreshCalls, 1);
+    });
+
+    test('login stores token before loading user settings', () async {
+      SharedPreferences.setMockInitialValues({});
+
+      await accountService.login('user', 'pass');
+
+      expect(fakeUserSettingsService.tokenSeenDuringGetAll, 'fresh-login-token');
     });
   });
 }

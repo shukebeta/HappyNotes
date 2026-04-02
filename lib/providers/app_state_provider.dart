@@ -21,6 +21,7 @@ class AppStateProvider with ChangeNotifier {
   final MemoriesProvider _memoriesProvider;
   final TrashProvider _trashProvider;
   final DiscoveryProvider _discoveryProvider;
+  bool? _lastHandledAuthState;
 
   bool _isInitialized = false;
   bool get isInitialized => _isInitialized;
@@ -50,6 +51,10 @@ class AppStateProvider with ChangeNotifier {
   /// Coordinates state across all providers when auth changes
   void _onAuthStateChanged() async {
     final isAuthenticated = _authProvider.isAuthenticated;
+    if (_lastHandledAuthState == isAuthenticated) {
+      return;
+    }
+    _lastHandledAuthState = isAuthenticated;
     SeqLogger.info('AppStateProvider: Auth state changed - isAuthenticated: $isAuthenticated');
 
     // Always clear data first to prevent stale data
