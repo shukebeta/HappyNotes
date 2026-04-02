@@ -1,11 +1,6 @@
-import 'dart:convert';
-
 import 'package:happy_notes/apis/user_settings_api.dart';
-import 'package:happy_notes/app_constants.dart';
 import 'package:happy_notes/entities/user_settings.dart';
 import 'package:happy_notes/exceptions/api_exception.dart';
-import 'package:happy_notes/services/seq_logger.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:happy_notes/screens/account/user_session.dart';
 
 class UserSettingsService {
@@ -15,7 +10,7 @@ class UserSettingsService {
   Future<List<UserSettings>> getAll() async {
     List<dynamic> apiResult = (await _userSettingsApi.getAll()).data['data'];
     final settings = apiResult.map(_deserializeUserSettings).toList();
-    await _replaceSessionAndCache(settings);
+    _replaceSessionSettings(settings);
     return settings;
   }
 
@@ -36,46 +31,8 @@ class UserSettingsService {
         ),
       );
     }
-    await _replaceSessionAndCache(currentSettings);
+    _replaceSessionSettings(currentSettings);
     return true;
-  }
-
-  Future<bool> hydrateSessionFromCache() async {
-    final prefs = await SharedPreferences.getInstance();
-    final cachedSettings = prefs.getString(AppConstants.cachedUserSettings);
-    if (cachedSettings == null || cachedSettings.isEmpty) {
-      return false;
-    }
-
-    try {
-      final decoded = jsonDecode(cachedSettings);
-      if (decoded is! List) {
-        await prefs.remove(AppConstants.cachedUserSettings);
-        return false;
-      }
-
-      final settings = decoded.map(_deserializeUserSettings).toList();
-      _replaceSessionSettings(settings);
-      return settings.isNotEmpty;
-    } catch (e) {
-      SeqLogger.severe('UserSettingsService.hydrateSessionFromCache: Failed to restore cached settings: $e');
-      await prefs.remove(AppConstants.cachedUserSettings);
-      return false;
-    }
-  }
-
-  Future<void> clearCachedSettings() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(AppConstants.cachedUserSettings);
-  }
-
-  Future<void> _replaceSessionAndCache(List<UserSettings> settings) async {
-    _replaceSessionSettings(settings);
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(
-      AppConstants.cachedUserSettings,
-      jsonEncode(UserSession().userSettings!.map((setting) => setting.toJson()).toList()),
-    );
   }
 
   UserSettings _deserializeUserSettings(dynamic json) {

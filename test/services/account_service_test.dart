@@ -49,9 +49,6 @@ class FakeUserSettingsService extends UserSettingsService {
     tokenSeenDuringGetAll = prefs.getString('accessToken');
     return <UserSettings>[];
   }
-
-  @override
-  Future<void> clearCachedSettings() async {}
 }
 
 class FakeUserSettingsApi extends UserSettingsApi {}

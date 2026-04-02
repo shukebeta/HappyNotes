@@ -18,7 +18,6 @@ import 'package:happy_notes/screens/main_menu.dart';
 import 'package:happy_notes/screens/navigation/bottom_navigation.dart';
 import 'package:happy_notes/screens/new_note/new_note.dart';
 import 'package:happy_notes/services/note_update_coordinator.dart';
-import 'package:happy_notes/services/user_settings_service.dart';
 import 'package:quick_actions/quick_actions.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/services.dart';
@@ -38,8 +37,6 @@ void main() async {
     fileName: '.env',
     mergeWith: kIsWeb ? {} : Platform.environment,
   );
-
-  await di.locator<UserSettingsService>().hydrateSessionFromCache();
 
   // Initialize logging
   SeqLogger.initialize();

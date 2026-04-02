@@ -5,7 +5,6 @@ import 'package:happy_notes/app_constants.dart';
 import 'package:happy_notes/entities/user_settings.dart';
 import 'package:happy_notes/screens/account/user_session.dart';
 import 'package:happy_notes/services/user_settings_service.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class FakeUserSettingsApi extends UserSettingsApi {
   Response<dynamic>? getAllResponse;
@@ -33,7 +32,6 @@ void main() {
     late UserSettingsService service;
 
     setUp(() {
-      SharedPreferences.setMockInitialValues({});
       UserSession().id = 123;
       UserSession().email = 'test@example.com';
       UserSession().userSettings = null;
@@ -47,7 +45,7 @@ void main() {
       UserSession().userSettings = null;
     });
 
-    test('getAll stores fetched settings in session and cache', () async {
+    test('getAll stores fetched settings in session', () async {
       fakeApi.getAllResponse = Response<dynamic>(
         requestOptions: RequestOptions(path: '/settings/getAll'),
         data: {
@@ -66,15 +64,9 @@ void main() {
 
       expect(settings, hasLength(1));
       expect(UserSession().settings(AppConstants.privateNoteOnlyIsEnabled), '1');
-
-      UserSession().userSettings = null;
-      final hydrated = await service.hydrateSessionFromCache();
-
-      expect(hydrated, true);
-      expect(UserSession().settings(AppConstants.privateNoteOnlyIsEnabled), '1');
     });
 
-    test('upsert updates cache and appends missing settings in session', () async {
+    test('upsert appends missing settings in session', () async {
       UserSession().userSettings = [
         UserSettings(
           id: 1,
@@ -95,12 +87,6 @@ void main() {
         'settingName': AppConstants.privateNoteOnlyIsEnabled,
         'settingValue': '1',
       });
-      expect(UserSession().settings(AppConstants.privateNoteOnlyIsEnabled), '1');
-
-      UserSession().userSettings = null;
-      final hydrated = await service.hydrateSessionFromCache();
-
-      expect(hydrated, true);
       expect(UserSession().settings(AppConstants.privateNoteOnlyIsEnabled), '1');
       expect(UserSession().settings(AppConstants.pageSize), '20');
     });
@@ -135,19 +121,6 @@ void main() {
       expect(existingSettings, hasLength(1));
       expect(existingSettings.first.settingName, AppConstants.privateNoteOnlyIsEnabled);
       expect(existingSettings.first.settingValue, '1');
-    });
-
-    test('hydrateSessionFromCache clears malformed cached settings', () async {
-      SharedPreferences.setMockInitialValues({
-        AppConstants.cachedUserSettings: '{"bad":"shape"}',
-      });
-
-      final hydrated = await service.hydrateSessionFromCache();
-      final prefs = await SharedPreferences.getInstance();
-
-      expect(hydrated, false);
-      expect(UserSession().userSettings, isNull);
-      expect(prefs.getString(AppConstants.cachedUserSettings), isNull);
     });
   });
 }
