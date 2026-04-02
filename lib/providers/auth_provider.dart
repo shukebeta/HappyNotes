@@ -52,14 +52,18 @@ class AuthProvider with ChangeNotifier {
         if (isValid) {
           SeqLogger.info( 'AuthProvider.initAuth: Token is valid, setting up session...');
           _token = storedToken;
-          // Ensure session is populated - do this in background if it times out
           try {
             await _accountService.setUserSession(token: _token)
-                .timeout(const Duration(seconds: 8));
+                .timeout(const Duration(seconds: 30));
             SeqLogger.info( 'AuthProvider.initAuth: Session setup completed successfully');
           } catch (sessionError) {
-            SeqLogger.info( 'AuthProvider.initAuth: Session setup timeout, continuing with stored token: $sessionError');
-            // Continue anyway - user can still use the app
+            final hasCachedSettings = UserSession().userSettings?.isNotEmpty ?? false;
+            SeqLogger.severe(
+              'AuthProvider.initAuth: Session setup failed. Cached settings available: $hasCachedSettings. Error: $sessionError',
+            );
+            if (!hasCachedSettings) {
+              rethrow;
+            }
           }
         } else {
           SeqLogger.info( 'AuthProvider.initAuth: Token is invalid, clearing session...');

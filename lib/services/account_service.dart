@@ -86,6 +86,7 @@ class AccountService {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_tokenKey);
     await prefs.remove(_baseUrlKey);
+    await _userSettingsService.clearCachedSettings();
     UserSession().id = null;
     UserSession().email = null;
     UserSession().userSettings = null;

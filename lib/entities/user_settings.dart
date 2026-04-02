@@ -19,4 +19,13 @@ class UserSettings {
       settingValue: json['settingValue'],
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'userId': userId,
+      'settingName': settingName,
+      'settingValue': settingValue,
+    };
+  }
 }

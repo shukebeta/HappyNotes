@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
+import 'package:happy_notes/entities/user_settings.dart';
 import 'package:happy_notes/providers/auth_provider.dart';
 import 'package:happy_notes/services/account_service.dart';
 import 'package:happy_notes/screens/account/user_session.dart';
@@ -95,6 +96,37 @@ void main() {
       expect(authProvider.isAuthenticated, false);
       expect(authProvider.token, null);
       expect(authProvider.isLoading, false);
+      expect(authProvider.isInitialized, true);
+    });
+
+    test('initAuth should fail when session setup fails without cached settings', () async {
+      when(mockAccountService.getToken()).thenAnswer((_) async => 'valid_token');
+      when(mockAccountService.isValidToken()).thenAnswer((_) async => true);
+      when(mockAccountService.setUserSession(token: 'valid_token')).thenThrow(Exception('settings fetch failed'));
+
+      authProvider = AuthProvider();
+      await Future.delayed(Duration.zero);
+
+      expect(authProvider.isAuthenticated, false);
+      expect(authProvider.token, null);
+      expect(authProvider.isInitialized, true);
+      expect(authProvider.error, contains('settings fetch failed'));
+    });
+
+    test('initAuth should keep auth state when cached settings exist and session refresh fails', () async {
+      UserSession().userSettings = [
+        UserSettings(id: 1, userId: 123, settingName: 'privateNoteOnlyIsEnabled', settingValue: '1'),
+      ];
+      when(mockAccountService.getToken()).thenAnswer((_) async => 'valid_token');
+      when(mockAccountService.isValidToken()).thenAnswer((_) async => true);
+      when(mockAccountService.setUserSession(token: 'valid_token')).thenThrow(Exception('settings fetch failed'));
+
+      authProvider = AuthProvider();
+      await Future.delayed(Duration.zero);
+
+      expect(authProvider.isAuthenticated, true);
+      expect(authProvider.token, 'valid_token');
+      expect(authProvider.error, null);
       expect(authProvider.isInitialized, true);
     });
 
