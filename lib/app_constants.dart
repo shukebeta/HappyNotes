@@ -15,4 +15,5 @@ class AppConstants {
   static const String imageMaxDimension = 'imageMaxDimension';
   static const String seqApiKey = 'seqApiKey';
   static const String seqApiUrl = 'seqApiUrl';
+  static const String cachedUserSettings = 'cachedUserSettings';
 }

@@ -136,5 +136,18 @@ void main() {
       expect(existingSettings.first.settingName, AppConstants.privateNoteOnlyIsEnabled);
       expect(existingSettings.first.settingValue, '1');
     });
+
+    test('hydrateSessionFromCache clears malformed cached settings', () async {
+      SharedPreferences.setMockInitialValues({
+        AppConstants.cachedUserSettings: '{"bad":"shape"}',
+      });
+
+      final hydrated = await service.hydrateSessionFromCache();
+      final prefs = await SharedPreferences.getInstance();
+
+      expect(hydrated, false);
+      expect(UserSession().userSettings, isNull);
+      expect(prefs.getString(AppConstants.cachedUserSettings), isNull);
+    });
   });
 }

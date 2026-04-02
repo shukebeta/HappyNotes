@@ -11,6 +11,7 @@ class AccountService {
   final AccountApi _accountApi;
   final UserSettingsService _userSettingsService;
   final TokenUtils _tokenUtils;
+  Future<void>? _refreshTokenInFlight;
 
   AccountService({
     required AccountApi accountApi,
@@ -127,15 +128,21 @@ class AccountService {
   /// Fire-and-forget token refresh for all platforms
   /// This method starts token refresh in background without blocking the caller
   void _refreshTokenFireAndForget() {
+    if (_refreshTokenInFlight != null) {
+      return;
+    }
+
     // Use unawaited to explicitly indicate this is fire-and-forget
     // ignore: unawaited_futures
-    _refreshToken().timeout(const Duration(seconds: 30)).then(
+    _refreshTokenInFlight = _refreshToken().timeout(const Duration(seconds: 30)).then(
       (value) {
         SeqLogger.info('AccountService: Fire-and-forget token refresh completed successfully');
       },
     ).catchError((error) {
       SeqLogger.severe('AccountService: Fire-and-forget token refresh failed: $error');
       // Error is logged but doesn't affect the current operation
+    }).whenComplete(() {
+      _refreshTokenInFlight = null;
     });
   }
 
