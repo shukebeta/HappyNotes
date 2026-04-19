@@ -104,15 +104,6 @@ class NoteEditController {
     try {
       noteModel.setPasting(true);
       final clipboardContent = await clipboardService.readClipboardContent();
-      final richText = buildRichPasteContent(
-        clipboardContent: clipboardContent,
-        isMarkdown: noteModel.isMarkdown,
-      );
-
-      if (richText != null) {
-        insertTextAtCursor(noteModel, richText);
-        return;
-      }
 
       if (clipboardContent.imageBytes != null) {
         await imageService.uploadClipboardImage(
@@ -120,6 +111,16 @@ class NoteEditController {
           (text) => insertTextAtCursor(noteModel, text),
           (error) => Util.showError(scaffoldMessengerState, error),
         );
+        return;
+      }
+
+      final richText = buildRichPasteContent(
+        clipboardContent: clipboardContent,
+        isMarkdown: noteModel.isMarkdown,
+      );
+
+      if (richText != null) {
+        insertTextAtCursor(noteModel, richText);
         return;
       }
 

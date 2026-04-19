@@ -170,6 +170,45 @@ void main() {
       expect(noteModel.isPasting, isFalse);
     });
 
+    testWidgets('prefers clipboard image over html conversion',
+        (WidgetTester tester) async {
+      late BuildContext context;
+      final noteModel = NoteModel(isMarkdown: true, content: 'Start ');
+      controller.textController.value = const TextEditingValue(
+        text: 'Start ',
+        selection: TextSelection.collapsed(offset: 6),
+      );
+      clipboardService.nextContent = ClipboardContent(
+        text: 'https://example.com/image.png',
+        html: '<p><img src="https://example.com/image.png"/></p>',
+        imageBytes: Uint8List.fromList(<int>[1, 2, 3]),
+      );
+      imageService.pasteImageHandler = (imageBytes, onSuccess, onError) async {
+        onSuccess('![image](https://myserver.com/uploaded.png)');
+      };
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Builder(
+            builder: (BuildContext buildContext) {
+              context = buildContext;
+              return const SizedBox();
+            },
+          ),
+        ),
+      );
+
+      await controller.pasteFromClipboard(context, noteModel);
+
+      // Should upload the image, not use the HTML with external URL
+      expect(
+        noteModel.content,
+        'Start ![image](https://myserver.com/uploaded.png)',
+      );
+      expect(imageService.pasteImageCalled, isTrue);
+      expect(noteModel.isPasting, isFalse);
+    });
+
     testWidgets(
         'falls back to clipboard image paste when no text content exists',
         (WidgetTester tester) async {
