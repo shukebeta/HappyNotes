@@ -6,11 +6,13 @@ import 'package:provider/provider.dart';
 import '../../dependency_injection.dart';
 import '../../entities/note.dart';
 import '../../models/note_model.dart';
+import '../../services/clipboard_service.dart';
 import '../../services/image_service.dart';
 import '../../services/note_tag_service.dart';
 import '../../utils/happy_notes_prompts.dart';
 import 'controllers/note_edit_controller.dart';
 import 'controllers/tag_controller.dart';
+import 'controllers/html_to_markdown_converter.dart';
 import 'markdown_toolbar.dart';
 
 class NoteEdit extends StatefulWidget {
@@ -38,10 +40,17 @@ class NoteEditState extends State<NoteEdit> {
   @override
   void initState() {
     super.initState();
+    final clipboardService = locator<ClipboardService>();
+    final htmlToMarkdownConverter = locator<HtmlToMarkdownConverter>();
     final imageService = locator<ImageService>();
     final noteTagService = locator<NoteTagService>();
-    noteEditController = NoteEditController(imageService: imageService);
-    tagController = TagController(noteTagService: noteTagService, noteEditController: noteEditController);
+    noteEditController = NoteEditController(
+      imageService: imageService,
+      clipboardService: clipboardService,
+      htmlToMarkdownConverter: htmlToMarkdownConverter,
+    );
+    tagController = TagController(
+        noteTagService: noteTagService, noteEditController: noteEditController);
     final noteModel = context.read<NoteModel>();
     prompt = HappyNotesPrompts.getRandom(noteModel.isPrivate);
     noteEditController.initialize(noteModel, widget.note, context);
@@ -78,8 +87,10 @@ class NoteEditState extends State<NoteEdit> {
           noteEditController.textController.selection.baseOffset,
           context,
         ),
-        onImageUpload: () => noteEditController.pickAndUploadImage(context, noteModel),
-        onPaste: () async => await noteEditController.pasteFromClipboard(context, noteModel),
+        onImageUpload: () =>
+            noteEditController.pickAndUploadImage(context, noteModel),
+        onPaste: () async =>
+            await noteEditController.pasteFromClipboard(context, noteModel),
         isUploading: noteModel.isUploading,
         isPasting: noteModel.isPasting,
         isSmallScreen: isSmallScreen,
@@ -99,9 +110,7 @@ class NoteEditState extends State<NoteEdit> {
       );
 
       return Column(
-        children: isMobile
-            ? [editor, toolbar]
-            : [toolbar, editor],
+        children: isMobile ? [editor, toolbar] : [toolbar, editor],
       );
     });
   }
@@ -144,7 +153,9 @@ class NoteEditState extends State<NoteEdit> {
           Material(
             color: Colors.transparent,
             child: InkWell(
-              onTap: (widget.isSaving || noteModel.isUploading) ? null : widget.onSubmit,
+              onTap: (widget.isSaving || noteModel.isUploading)
+                  ? null
+                  : widget.onSubmit,
               borderRadius: BorderRadius.circular(20.0),
               child: Container(
                 padding: const EdgeInsets.all(10.0),
@@ -180,8 +191,10 @@ class NoteEditState extends State<NoteEdit> {
 
   Widget _buildEditor(NoteModel noteModel) {
     const baseBorderColor = Colors.grey;
-    final focusedBorderColor = noteModel.isPrivate ? Colors.blueAccent : Colors.orangeAccent;
-    final backgroundColor = noteModel.isPrivate ? Colors.blue.shade50 : Colors.white;
+    final focusedBorderColor =
+        noteModel.isPrivate ? Colors.blueAccent : Colors.orangeAccent;
+    final backgroundColor =
+        noteModel.isPrivate ? Colors.blue.shade50 : Colors.white;
 
     return CallbackShortcuts(
       bindings: {
@@ -227,7 +240,11 @@ class NoteEditState extends State<NoteEdit> {
                 ),
                 onChanged: (text) {
                   noteModel.content = text;
-                  tagController.handleTextChanged(text, noteEditController.textController.selection, noteModel, context);
+                  tagController.handleTextChanged(
+                      text,
+                      noteEditController.textController.selection,
+                      noteModel,
+                      context);
                 },
               ),
             );

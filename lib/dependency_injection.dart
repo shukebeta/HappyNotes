@@ -7,6 +7,7 @@ import 'package:happy_notes/screens/settings/telegram_sync_settings_controller.d
 import 'package:happy_notes/screens/settings/settings_controller.dart';
 import 'package:happy_notes/screens/components/controllers/tag_cloud_controller.dart';
 import 'package:happy_notes/services/account_service.dart';
+import 'package:happy_notes/services/clipboard_service.dart';
 import 'package:happy_notes/services/image_service.dart';
 import 'package:happy_notes/services/mastodon_application_service.dart';
 import 'package:happy_notes/services/mastodon_service.dart';
@@ -18,6 +19,7 @@ import 'package:get_it/get_it.dart';
 import 'package:happy_notes/services/telegram_settings_service.dart';
 import 'package:happy_notes/services/user_settings_service.dart';
 import 'package:happy_notes/utils/token_utils.dart';
+import 'package:happy_notes/screens/components/controllers/html_to_markdown_converter.dart';
 
 import 'apis/mastodon_application_api.dart';
 import 'apis/mastodon_user_account_api.dart';
@@ -48,18 +50,25 @@ void _registerServices() {
   locator.registerLazySingleton(() => NoteTagService(noteTagApi: locator()));
   locator.registerLazySingleton(() => NotesService());
   locator.registerLazySingleton(() => DraftService());
+  locator.registerLazySingleton(() => HtmlToMarkdownConverter());
+  locator.registerLazySingleton(() => ClipboardService());
   locator.registerLazySingleton(() => ImageService());
   locator.registerLazySingleton(() => AccountService(
         accountApi: locator(),
         userSettingsService: locator(),
         tokenUtils: locator(),
       ));
-  locator.registerLazySingleton(() => UserSettingsService(userSettingsApi: locator()));
-  locator.registerLazySingleton(() => TelegramSettingsService(telegramSettingsApi: locator()));
-  locator.registerLazySingleton(() => MastodonApplicationService(mastodonApplicationApi: locator()));
-  locator.registerLazySingleton(() => MastodonUserAccountService(mastodonUserAccountApi: locator()));
   locator.registerLazySingleton(
-      () => MastodonService(mastodonApplicationService: locator(), mastodonUserAccountService: locator()));
+      () => UserSettingsService(userSettingsApi: locator()));
+  locator.registerLazySingleton(
+      () => TelegramSettingsService(telegramSettingsApi: locator()));
+  locator.registerLazySingleton(
+      () => MastodonApplicationService(mastodonApplicationApi: locator()));
+  locator.registerLazySingleton(
+      () => MastodonUserAccountService(mastodonUserAccountApi: locator()));
+  locator.registerLazySingleton(() => MastodonService(
+      mastodonApplicationService: locator(),
+      mastodonUserAccountService: locator()));
 
   // Note: NoteUpdateCoordinator will be registered later in main.dart
   // after AppStateProvider is created, due to circular dependency
@@ -70,8 +79,10 @@ void _registerControllers() {
         accountService: locator(),
         userSettingsService: locator(),
       ));
-  locator.registerLazySingleton(() => TelegramSyncSettingsController(telegramSettingService: locator()));
-  locator.registerLazySingleton(() => MastodonSyncSettingsController(mastodonUserAccountService: locator()));
+  locator.registerLazySingleton(
+      () => TelegramSyncSettingsController(telegramSettingService: locator()));
+  locator.registerLazySingleton(() =>
+      MastodonSyncSettingsController(mastodonUserAccountService: locator()));
   locator.registerFactory(() => NewNoteController());
   locator.registerFactory(() => TagCloudController());
 }

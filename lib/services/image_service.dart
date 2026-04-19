@@ -1,7 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:pasteboard/pasteboard.dart';
 import 'package:flutter/foundation.dart'; // For kIsWeb
 import 'package:gal/gal.dart';
 import '../app_config.dart';
@@ -14,7 +13,10 @@ import '../dependency_injection.dart';
 import 'web_download_stub.dart' if (dart.library.html) 'web_download_impl.dart';
 
 class ImageService {
-  final fileUploaderApi = locator<FileUploaderApi>();
+  final FileUploaderApi fileUploaderApi;
+
+  ImageService({FileUploaderApi? fileUploaderApi})
+      : fileUploaderApi = fileUploaderApi ?? locator<FileUploaderApi>();
 
   /// Saves a network image to the device's gallery
   Future<bool> saveImageToGallery(String imageUrl) async {
@@ -42,7 +44,8 @@ class ImageService {
     }
   }
 
-  Future<MultipartFile?> compressImageIfNeeded(Uint8List imageBytes, String filename) async {
+  Future<MultipartFile?> compressImageIfNeeded(
+      Uint8List imageBytes, String filename) async {
     if (Util.isImageCompressionSupported()) {
       Uint8List? compressedImageBytes = await Util.compressImage(
         imageBytes,
@@ -50,7 +53,8 @@ class ImageService {
         maxPixel: AppConfig.imageMaxDimension,
       );
       if (compressedImageBytes != null) {
-        return MultipartFile.fromBytes(compressedImageBytes, filename: filename);
+        return MultipartFile.fromBytes(compressedImageBytes,
+            filename: filename);
       }
     }
     return MultipartFile.fromBytes(imageBytes, filename: filename);
@@ -66,60 +70,34 @@ class ImageService {
     return null;
   }
 
-  Future<void> uploadImage(MultipartFile imageFile, Function(String) onSuccess, Function(String) onError) async {
+  Future<void> uploadImage(MultipartFile imageFile, Function(String) onSuccess,
+      Function(String) onError) async {
     try {
       Response response = await fileUploaderApi.upload(imageFile);
       if (response.statusCode == 200 && response.data['errorCode'] == 0) {
         var img = response.data['data'];
-        var text = '![image](${AppConfig.imgBaseUrl}/${AppConfig.defaultDisplayImageWidth}${img['path']}${img['md5']}${img['fileExt']})';
+        var text =
+            '![image](${AppConfig.imgBaseUrl}/${AppConfig.defaultDisplayImageWidth}${img['path']}${img['md5']}${img['fileExt']})';
         onSuccess(text);
       } else {
-        onError('Failed to upload image ${imageFile.filename}: ${response.data['msg']} (${response.statusCode})');
+        onError(
+            'Failed to upload image ${imageFile.filename}: ${response.data['msg']} (${response.statusCode})');
       }
     } catch (e) {
       onError(e.toString());
     }
   }
 
-  /// Paste image or text from Clipboard
-  Future<void> pasteFromClipboard(Function(String) onSuccess, Function(String) onError) async {
-    // First try to get text since it's more common and faster
-    try {
-      String? text = await Pasteboard.text;
-      if (text != null && text.isNotEmpty) {
-        onSuccess(text);
-        return;
-      }
-    } catch (e) {
-      SeqLogger.fine('Clipboard text access failed (expected fallback)', e);
+  Future<void> uploadClipboardImage(Uint8List imageBytes,
+      Function(String) onSuccess, Function(String) onError) async {
+    final filename = 'image_${DateTime.now().millisecondsSinceEpoch}.jpeg';
+    final imageFile = await compressImageIfNeeded(imageBytes, filename);
+    if (imageFile == null) {
+      SeqLogger.warning('Image compression failed or returned null');
+      onError('Failed to process image from clipboard.');
+      return;
     }
 
-    // If no text found, try image
-    try {
-      final imageBytes = await Pasteboard.image;
-      if (imageBytes != null) {
-        final filename = 'image_${DateTime.now().millisecondsSinceEpoch}.jpeg';
-        final imageFile = await compressImageIfNeeded(imageBytes, filename);
-        if (imageFile != null) {
-          await uploadImage(imageFile, onSuccess, onError);
-          return;
-        } else {
-          SeqLogger.warning('Image compression failed or returned null');
-        }
-      } else {
-        SeqLogger.info('Clipboard image is null (no image in clipboard)');
-      }
-    } catch (e) {
-      SeqLogger.severe('Image clipboard access error', e);
-      if (e.toString().contains('JSObject') || e.toString().contains('TypeError')) {
-        onError(
-            'Clipboard access failed. This might be due to browser restrictions or permissions. Please ensure clipboard access is enabled in your browser settings.');
-        return;
-      }
-    }
-
-    // If we get here, neither text nor image was successfully processed
-    onError(
-        'No valid content found in clipboard. Check debug logs for more details or ensure clipboard access permissions are granted in your browser.');
+    await uploadImage(imageFile, onSuccess, onError);
   }
 }

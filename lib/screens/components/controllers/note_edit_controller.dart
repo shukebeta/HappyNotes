@@ -1,17 +1,25 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../../services/clipboard_service.dart';
 import '../../../services/image_service.dart';
 import '../../../models/note_model.dart';
 import '../../../utils/util.dart';
 import '../../../entities/note.dart';
 import '../image_warning_dialog.dart';
+import 'html_to_markdown_converter.dart';
 
 class NoteEditController {
   final ImageService imageService;
+  final ClipboardService clipboardService;
+  final HtmlToMarkdownConverter htmlToMarkdownConverter;
   TextEditingController textController = TextEditingController();
 
-  NoteEditController({required this.imageService});
+  NoteEditController({
+    required this.imageService,
+    required this.clipboardService,
+    required this.htmlToMarkdownConverter,
+  });
 
   void initialize(NoteModel noteModel, Note? note, BuildContext context) {
     // Delay the update to avoid triggering a rebuild during the build phase
@@ -58,7 +66,8 @@ class NoteEditController {
     return result ?? false;
   }
 
-  Future<void> pickAndUploadImage(BuildContext context, NoteModel noteModel) async {
+  Future<void> pickAndUploadImage(
+      BuildContext context, NoteModel noteModel) async {
     final scaffoldMessengerState = ScaffoldMessenger.of(context);
 
     // Show warning dialog first
@@ -89,36 +98,96 @@ class NoteEditController {
     caseSensitive: false,
   );
 
-  Future<void> pasteFromClipboard(BuildContext context, NoteModel noteModel) async {
+  Future<void> pasteFromClipboard(
+      BuildContext context, NoteModel noteModel) async {
     final scaffoldMessengerState = ScaffoldMessenger.of(context);
     try {
       noteModel.setPasting(true);
-      await imageService.pasteFromClipboard(
-        (text) {
-          text = text.trim();
-          if (text.isEmpty) return;
+      final clipboardContent = await clipboardService.readClipboardContent();
+      final richText = buildRichPasteContent(
+        clipboardContent: clipboardContent,
+        isMarkdown: noteModel.isMarkdown,
+      );
 
-          final processedText = noteModel.isMarkdown && _urlPattern.hasMatch(text) ? _processUrl(text) : text;
+      if (richText != null) {
+        insertTextAtCursor(noteModel, richText);
+        return;
+      }
 
-          final cursorPosition = textController.selection.baseOffset;
-          if (cursorPosition >= 0) {
-            noteModel.content = noteModel.content.substring(0, cursorPosition) +
-                processedText +
-                noteModel.content.substring(cursorPosition);
-            textController.selection = TextSelection.fromPosition(
-              TextPosition(offset: cursorPosition + processedText.length),
-            );
-          } else {
-            noteModel.content += processedText;
-          }
-        },
-        (error) {
-          Util.showError(scaffoldMessengerState, error);
-        },
+      if (clipboardContent.imageBytes != null) {
+        await imageService.uploadClipboardImage(
+          clipboardContent.imageBytes!,
+          (text) => insertTextAtCursor(noteModel, text),
+          (error) => Util.showError(scaffoldMessengerState, error),
+        );
+        return;
+      }
+
+      final plainText = buildTextPasteContent(
+        clipboardContent: clipboardContent,
+        isMarkdown: noteModel.isMarkdown,
+      );
+      if (plainText != null) {
+        insertTextAtCursor(noteModel, plainText);
+        return;
+      }
+
+      if (clipboardContent.unavailableMessage != null) {
+        Util.showError(
+          scaffoldMessengerState,
+          clipboardContent.unavailableMessage!,
+        );
+        return;
+      }
+
+      Util.showError(
+        scaffoldMessengerState,
+        'No valid content found in clipboard.',
       );
     } finally {
       noteModel.setPasting(false);
     }
+  }
+
+  @visibleForTesting
+  String? buildRichPasteContent({
+    required ClipboardContent clipboardContent,
+    required bool isMarkdown,
+  }) {
+    if (!isMarkdown) {
+      return null;
+    }
+
+    return htmlToMarkdownConverter.tryConvert(clipboardContent.html);
+  }
+
+  @visibleForTesting
+  String? buildTextPasteContent({
+    required ClipboardContent clipboardContent,
+    required bool isMarkdown,
+  }) {
+    final text = clipboardContent.text?.trim();
+    if (text == null || text.isEmpty) {
+      return null;
+    }
+
+    return isMarkdown && _urlPattern.hasMatch(text) ? _processUrl(text) : text;
+  }
+
+  @visibleForTesting
+  void insertTextAtCursor(NoteModel noteModel, String text) {
+    final cursorPosition = textController.selection.baseOffset;
+    final insertionOffset =
+        cursorPosition >= 0 ? cursorPosition : noteModel.content.length;
+    final updatedContent = noteModel.content.substring(0, insertionOffset) +
+        text +
+        noteModel.content.substring(insertionOffset);
+
+    textController.value = TextEditingValue(
+      text: updatedContent,
+      selection: TextSelection.collapsed(offset: insertionOffset + text.length),
+    );
+    noteModel.content = updatedContent;
   }
 
   String _processUrl(String url) {
