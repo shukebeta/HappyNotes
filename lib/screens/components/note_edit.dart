@@ -189,6 +189,11 @@ class NoteEditState extends State<NoteEdit> {
     );
   }
 
+  Future<void> _handlePaste() async {
+    final noteModel = context.read<NoteModel>();
+    await noteEditController.pasteFromClipboard(context, noteModel);
+  }
+
   Widget _buildEditor(NoteModel noteModel) {
     const baseBorderColor = Colors.grey;
     final focusedBorderColor =
@@ -203,6 +208,12 @@ class NoteEditState extends State<NoteEdit> {
             widget.onSubmit!();
           }
         },
+        // Ctrl+V / Cmd+V for rich paste
+        SingleActivator(
+          LogicalKeyboardKey.keyV,
+          control: true,
+          meta: defaultTargetPlatform == TargetPlatform.macOS,
+        ): _handlePaste,
       },
       child: Listener(
         onPointerDown: (event) {
