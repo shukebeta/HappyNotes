@@ -301,7 +301,7 @@ class SettingsState extends State<Settings> {
   }
 
   Future<void> _launchGitHub(BuildContext context) async {
-    const url = 'https://github.com/weizhong2004/happy-notes';
+    const url = 'https://github.com/shukebeta/HappyNotes';
     try {
       await launchUrlString(url, mode: LaunchMode.externalApplication);
       if (context.mounted) Navigator.pop(context);
