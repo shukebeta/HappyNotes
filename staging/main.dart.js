@@ -106552,7 +106552,7 @@ as3(a){var s=0,r=A.p(t.H),q=1,p=[],o,n,m
 var $async$CZ=A.l(function(b,c){if(b===1){p.push(c)
 s=q}for(;;)switch(s){case 0:q=3
 s=6
-return A.k(A.Qe("https://github.com/weizhong2004/happy-notes",B.uv),$async$CZ)
+return A.k(A.Qe("https://github.com/shukebeta/HappyNotes",B.uv),$async$CZ)
 case 6:if(a.e!=null)A.b1(a,!1).f3(null)
 q=1
 s=5
