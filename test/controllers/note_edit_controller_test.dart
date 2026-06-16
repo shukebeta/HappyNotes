@@ -314,4 +314,50 @@ void main() {
       expect(noteModel.isPasting, isFalse);
     });
   });
+
+  group('NoteEditController listener lifecycle', () {
+    late NoteEditController controller;
+
+    setUp(() {
+      controller = NoteEditController(
+        imageService: FakeImageService(),
+        clipboardService: FakeClipboardService(),
+        htmlToMarkdownConverter: HtmlToMarkdownConverter(),
+      );
+    });
+
+    testWidgets('post-dispose notifyListeners does not throw', (tester) async {
+      final noteModel = NoteModel();
+      await tester.pumpWidget(MaterialApp(
+        home: Builder(builder: (ctx) {
+          controller.initialize(noteModel, null, ctx);
+          return const SizedBox();
+        }),
+      ));
+      await tester.pump(); // allow addPostFrameCallback to fire
+
+      controller.dispose();
+
+      // Simulates in-flight upload/paste completing after navigation away
+      expect(() => noteModel.setUploading(true), returnsNormally);
+      expect(() => noteModel.setUploading(false), returnsNormally);
+      expect(() => noteModel.setPasting(true), returnsNormally);
+      expect(() => noteModel.setPasting(false), returnsNormally);
+    });
+
+    testWidgets('dispose before frame callback does not throw', (tester) async {
+      final noteModel = NoteModel();
+      await tester.pumpWidget(MaterialApp(
+        home: Builder(builder: (ctx) {
+          controller.initialize(noteModel, null, ctx);
+          // dispose immediately, before the frame callback fires
+          controller.dispose();
+          return const SizedBox();
+        }),
+      ));
+      await tester.pump(); // callback fires but should be a no-op
+
+      expect(() => noteModel.setUploading(false), returnsNormally);
+    });
+  });
 }

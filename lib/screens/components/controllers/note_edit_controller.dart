@@ -15,15 +15,29 @@ class NoteEditController {
   final HtmlToMarkdownConverter htmlToMarkdownConverter;
   TextEditingController textController = TextEditingController();
 
+  NoteModel? _noteModel;
+  bool _disposed = false;
+
   NoteEditController({
     required this.imageService,
     required this.clipboardService,
     required this.htmlToMarkdownConverter,
   });
 
+  void _syncControllerFromModel() {
+    if (_disposed) return;
+    final noteModel = _noteModel;
+    if (noteModel == null) return;
+    if (noteModel.content != textController.text) {
+      textController.text = noteModel.content;
+    }
+  }
+
   void initialize(NoteModel noteModel, Note? note, BuildContext context) {
     // Delay the update to avoid triggering a rebuild during the build phase
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_disposed) return;
+
       if (noteModel.initialContent.isNotEmpty && note == null) {
         noteModel.content = noteModel.initialContent;
       } else if (note != null) {
@@ -33,12 +47,8 @@ class NoteEditController {
       // Set the initial text in the controller
       textController.text = noteModel.content;
 
-      // Add listener to update controller.text when noteModel.content changes
-      noteModel.addListener(() {
-        if (noteModel.content != textController.text) {
-          textController.text = noteModel.content;
-        }
-      });
+      _noteModel = noteModel;
+      noteModel.addListener(_syncControllerFromModel);
 
       // Request focus
       noteModel.requestFocus();
@@ -196,6 +206,8 @@ class NoteEditController {
   }
 
   void dispose() {
+    _disposed = true;
+    _noteModel?.removeListener(_syncControllerFromModel);
     textController.dispose();
   }
 }
