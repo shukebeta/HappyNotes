@@ -217,7 +217,7 @@ class NoteEditState extends State<NoteEdit> {
       },
       child: Listener(
         onPointerDown: (event) {
-          tagController.dispose(); // Close tag overlay if open
+          tagController.closeOverlay();
         },
         child: AnimatedBuilder(
           animation: noteModel.focusNode,
