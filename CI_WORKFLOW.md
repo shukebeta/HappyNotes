@@ -26,8 +26,8 @@ This is the primary job that runs all Flutter unit tests and performs code quali
 - ✅ Create environment file (`.env`) with test configuration
 - ✅ Install Flutter dependencies
 - ✅ Verify Flutter installation
-- ✅ Analyze code with `flutter analyze --fatal-infos --fatal-warnings`
-- ✅ Check code formatting with `dart format --set-exit-if-changed`
+- ✅ Analyze code with `flutter analyze --fatal-infos --fatal-warnings` *(non-blocking: `continue-on-error: true`)*
+- ✅ Check code formatting with `dart format --set-exit-if-changed` *(non-blocking: `continue-on-error: true`)*
 - ✅ Run tests with coverage using `flutter test --coverage --reporter expanded`
 - ✅ Upload test results and coverage reports as artifacts
 
@@ -102,9 +102,10 @@ The workflow generates comprehensive test coverage reports:
 - ✅ Build and integration tests are skipped to save resources
 - ✅ Summary job still runs to provide consolidated status
 
-### When Code Quality Checks Fail
-- ✅ **Analysis failures**: Detailed warnings/errors shown in logs
-- ✅ **Formatting failures**: Shows which files need formatting
+### When Code Quality Checks Run With Issues
+Note: `flutter analyze` and `dart format` run with `continue-on-error: true` — they report findings but do **not** fail the CI job.
+- ✅ **Analysis warnings**: Shown in logs and the GitHub step summary
+- ✅ **Formatting issues**: Listed in logs; run `dart format --page-width=120 .` locally to fix
 - ✅ **Build failures**: Full build logs available for debugging
 
 ## Local Testing
