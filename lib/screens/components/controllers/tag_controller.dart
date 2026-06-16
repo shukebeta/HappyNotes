@@ -69,6 +69,7 @@ class TagController {
     _tagListOverlay = null;
   }
 
+  // assert fires in debug builds only; use closeOverlay() for runtime close operations.
   void dispose() {
     assert(!_disposed, 'TagController.dispose() called more than once');
     _disposed = true;
