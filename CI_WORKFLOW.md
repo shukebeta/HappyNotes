@@ -11,6 +11,8 @@ The CI workflow runs automatically on:
 - **Pull requests** to `main`, `master`, or `develop` branches
 - **Manual dispatch** (can be triggered manually from GitHub Actions tab)
 
+> **Keep in sync**: this document mirrors `.github/workflows/ci.yml` and `android_release.yml`. Any `flutter-version` or `java-version` bump in the workflow must update this doc in the same commit.
+
 ## Workflow Jobs
 
 ### 1. Test Job (`test`)
@@ -19,7 +21,7 @@ This is the primary job that runs all Flutter unit tests and performs code quali
 **Steps:**
 - ✅ Checkout repository
 - ✅ Setup Java 17 (Oracle distribution)
-- ✅ Setup Flutter 3.32.x (stable channel)
+- ✅ Setup Flutter 3.38.x (stable channel)
 - ✅ Cache Flutter dependencies for faster builds
 - ✅ Create environment file (`.env`) with test configuration
 - ✅ Install Flutter dependencies
