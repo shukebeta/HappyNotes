@@ -10,6 +10,7 @@ class TagController {
   final NoteEditController noteEditController;
   OverlayEntry? _tagListOverlay;
   Timer? _tagListTimer;
+  bool _disposed = false;
 
   TagController({required this.noteTagService, required this.noteEditController});
 
@@ -23,11 +24,7 @@ class TagController {
         showTagList(noteModel, text, cursorPosition, context);
       });
     } else {
-      _tagListTimer?.cancel();
-      if (_tagListOverlay != null) {
-        _tagListOverlay?.remove();
-        _tagListOverlay = null;
-      }
+      closeOverlay();
     }
   }
 
@@ -66,9 +63,16 @@ class TagController {
     return TextSelection.fromPosition(TextPosition(offset: newCursorPosition));
   }
 
-  void dispose() {
+  void closeOverlay() {
     _tagListTimer?.cancel();
     _tagListOverlay?.remove();
     _tagListOverlay = null;
+  }
+
+  // assert fires in debug builds only; use closeOverlay() for runtime close operations.
+  void dispose() {
+    assert(!_disposed, 'TagController.dispose() called more than once');
+    _disposed = true;
+    closeOverlay();
   }
 }
