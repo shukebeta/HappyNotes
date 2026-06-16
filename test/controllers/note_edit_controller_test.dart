@@ -357,6 +357,9 @@ void main() {
       ));
       await tester.pump(); // callback fires but should be a no-op
 
+      // setUploading(true) changes state and fires notifyListeners — the
+      // listener must not touch the disposed textController.
+      expect(() => noteModel.setUploading(true), returnsNormally);
       expect(() => noteModel.setUploading(false), returnsNormally);
     });
   });

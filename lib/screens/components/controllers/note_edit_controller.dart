@@ -34,6 +34,7 @@ class NoteEditController {
   }
 
   void initialize(NoteModel noteModel, Note? note, BuildContext context) {
+    assert(_noteModel == null, 'NoteEditController.initialize() must not be called more than once');
     // Delay the update to avoid triggering a rebuild during the build phase
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_disposed) return;
@@ -208,6 +209,7 @@ class NoteEditController {
   void dispose() {
     _disposed = true;
     _noteModel?.removeListener(_syncControllerFromModel);
+    _noteModel = null;
     textController.dispose();
   }
 }
