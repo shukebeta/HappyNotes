@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'login_controller.dart';
 import 'package:happy_notes/screens/account/registration.dart';
@@ -84,6 +85,20 @@ class _LoginState extends State<Login> {
                 onPressed: _isSubmitting ? null : () => _formModel.submitForm(context),
                 child: _isSubmitting ? const CircularProgressIndicator(color: Colors.white) : const Text('Submit'),
               ),
+              if (_formModel.googleSignInAvailable) ...[
+                const SizedBox(height: 16),
+                const Divider(),
+                const SizedBox(height: 8),
+                if (kIsWeb)
+                  _formModel.googleAuthService.buildWebSignInButton(
+                    onIdToken: (idToken) => _formModel.handleGoogleIdToken(context, idToken),
+                  )
+                else
+                  ElevatedButton(
+                    onPressed: _isSubmitting ? null : () => _formModel.submitGoogleSignIn(context),
+                    child: const Text('Sign in with Google'),
+                  ),
+              ],
               TextButton(
                 onPressed: () {
                   Navigator.push(

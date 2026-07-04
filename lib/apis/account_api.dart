@@ -19,6 +19,13 @@ class AccountApi {
     return await _dio.post('/account/register', data: params, options: options);
   }
 
+  Future<Response> googleLogin(String idToken) async {
+    final options = Options(
+      headers: {'AllowAnonymous': true},
+    );
+    return await _dio.post('/account/googleLogin', data: {'idToken': idToken}, options: options);
+  }
+
   Future<Response> refreshToken() async {
     return await _dio.post('/account/refreshToken', data: {});
   }

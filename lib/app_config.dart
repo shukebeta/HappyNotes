@@ -83,6 +83,16 @@ class AppConfig {
     return _env['SEQ_API_KEY'] ?? '';
   }
 
+  /// Web Application OAuth Client ID (see HappyNotes.Api#29). Passed to
+  /// `GoogleSignIn.initialize()` as `serverClientId` on Android and `clientId`
+  /// on web. Empty until the real credentials land, which keeps the Google
+  /// sign-in button hidden (see GoogleAuthService.isAvailable).
+  static String get googleServerClientId {
+    final override = _overrides[AppConstants.googleServerClientId];
+    if (override != null) return override;
+    return _env['GOOGLE_SIGN_IN_SERVER_CLIENT_ID'] ?? '';
+  }
+
   /// Returns the maximum dimension (width or height) for image processing.
   ///
   /// This value is used to determine the size limit for the longer side of an image.
@@ -189,6 +199,7 @@ class AppConfig {
     AppConstants.version: () => version,
     AppConstants.debugging: () => debugging,
     AppConstants.imageMaxDimension: () => imageMaxDimension,
+    AppConstants.googleServerClientId: () => googleServerClientId,
   };
 
   // Method to get property value by name

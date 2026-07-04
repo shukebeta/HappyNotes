@@ -8,6 +8,7 @@ import 'package:happy_notes/screens/settings/settings_controller.dart';
 import 'package:happy_notes/screens/components/controllers/tag_cloud_controller.dart';
 import 'package:happy_notes/services/account_service.dart';
 import 'package:happy_notes/services/clipboard_service.dart';
+import 'package:happy_notes/services/google_auth_service.dart';
 import 'package:happy_notes/services/image_service.dart';
 import 'package:happy_notes/services/mastodon_application_service.dart';
 import 'package:happy_notes/services/mastodon_service.dart';
@@ -53,6 +54,7 @@ void _registerServices() {
   locator.registerLazySingleton(() => HtmlToMarkdownConverter());
   locator.registerLazySingleton(() => ClipboardService());
   locator.registerLazySingleton(() => ImageService());
+  locator.registerLazySingleton(() => GoogleAuthService());
   locator.registerLazySingleton(() => AccountService(
         accountApi: locator(),
         userSettingsService: locator(),

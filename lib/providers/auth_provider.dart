@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:happy_notes/services/account_service.dart';
+import 'package:happy_notes/services/google_auth_service.dart';
 import 'package:happy_notes/screens/account/user_session.dart';
 import 'package:happy_notes/dependency_injection.dart';
 import 'package:happy_notes/services/seq_logger.dart';
 
 class AuthProvider with ChangeNotifier {
   final AccountService _accountService = locator<AccountService>();
+  final GoogleAuthService _googleAuthService = locator<GoogleAuthService>();
 
   String? _token;
   bool _isLoading = false;
@@ -108,6 +110,29 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
+  Future<bool> signInWithGoogle(String idToken) async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      await _accountService.googleLogin(idToken);
+      // After successful login, get the stored token
+      _token = await _accountService.getToken();
+      _error = null;
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _error = e.toString();
+      _token = null;
+      notifyListeners();
+      return false;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
   Future<bool> register(String username, String email, String password) async {
     _isLoading = true;
     _error = null;
@@ -136,6 +161,7 @@ class AuthProvider with ChangeNotifier {
     notifyListeners();
 
     await _accountService.logout();
+    await _googleAuthService.signOut();
 
     _token = null;
     _error = null;

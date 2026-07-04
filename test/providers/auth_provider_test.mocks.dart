@@ -3,9 +3,12 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'dart:async' as _i3;
+import 'dart:async' as _i5;
 
-import 'package:happy_notes/services/account_service.dart' as _i2;
+import 'package:flutter/foundation.dart' as _i3;
+import 'package:flutter/widgets.dart' as _i2;
+import 'package:happy_notes/services/account_service.dart' as _i4;
+import 'package:happy_notes/services/google_auth_service.dart' as _i6;
 import 'package:mockito/mockito.dart' as _i1;
 
 // ignore_for_file: type=lint
@@ -22,16 +25,30 @@ import 'package:mockito/mockito.dart' as _i1;
 // ignore_for_file: camel_case_types
 // ignore_for_file: subtype_of_sealed_class
 
+class _FakeWidget_0 extends _i1.SmartFake implements _i2.Widget {
+  _FakeWidget_0(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+
+  @override
+  String toString({_i3.DiagnosticLevel? minLevel = _i3.DiagnosticLevel.info}) =>
+      super.toString();
+}
+
 /// A class which mocks [AccountService].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockAccountService extends _i1.Mock implements _i2.AccountService {
+class MockAccountService extends _i1.Mock implements _i4.AccountService {
   MockAccountService() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i3.Future<dynamic> login(
+  _i5.Future<dynamic> login(
     String? username,
     String? password,
   ) =>
@@ -43,21 +60,30 @@ class MockAccountService extends _i1.Mock implements _i2.AccountService {
             password,
           ],
         ),
-        returnValue: _i3.Future<dynamic>.value(),
-      ) as _i3.Future<dynamic>);
+        returnValue: _i5.Future<dynamic>.value(),
+      ) as _i5.Future<dynamic>);
 
   @override
-  _i3.Future<void> logout() => (super.noSuchMethod(
+  _i5.Future<void> logout() => (super.noSuchMethod(
         Invocation.method(
           #logout,
           [],
         ),
-        returnValue: _i3.Future<void>.value(),
-        returnValueForMissingStub: _i3.Future<void>.value(),
-      ) as _i3.Future<void>);
+        returnValue: _i5.Future<void>.value(),
+        returnValueForMissingStub: _i5.Future<void>.value(),
+      ) as _i5.Future<void>);
 
   @override
-  _i3.Future<dynamic> register(
+  _i5.Future<dynamic> googleLogin(String? idToken) => (super.noSuchMethod(
+        Invocation.method(
+          #googleLogin,
+          [idToken],
+        ),
+        returnValue: _i5.Future<dynamic>.value(),
+      ) as _i5.Future<dynamic>);
+
+  @override
+  _i5.Future<dynamic> register(
     String? username,
     String? email,
     String? password,
@@ -71,35 +97,88 @@ class MockAccountService extends _i1.Mock implements _i2.AccountService {
             password,
           ],
         ),
-        returnValue: _i3.Future<dynamic>.value(),
-      ) as _i3.Future<dynamic>);
+        returnValue: _i5.Future<dynamic>.value(),
+      ) as _i5.Future<dynamic>);
 
   @override
-  _i3.Future<void> setUserSession({String? token}) => (super.noSuchMethod(
+  _i5.Future<void> setUserSession({String? token}) => (super.noSuchMethod(
         Invocation.method(
           #setUserSession,
           [],
           {#token: token},
         ),
-        returnValue: _i3.Future<void>.value(),
-        returnValueForMissingStub: _i3.Future<void>.value(),
-      ) as _i3.Future<void>);
+        returnValue: _i5.Future<void>.value(),
+        returnValueForMissingStub: _i5.Future<void>.value(),
+      ) as _i5.Future<void>);
 
   @override
-  _i3.Future<String?> getToken() => (super.noSuchMethod(
+  _i5.Future<String?> getToken() => (super.noSuchMethod(
         Invocation.method(
           #getToken,
           [],
         ),
-        returnValue: _i3.Future<String?>.value(),
-      ) as _i3.Future<String?>);
+        returnValue: _i5.Future<String?>.value(),
+      ) as _i5.Future<String?>);
 
   @override
-  _i3.Future<bool> isValidToken() => (super.noSuchMethod(
+  _i5.Future<bool> isValidToken() => (super.noSuchMethod(
         Invocation.method(
           #isValidToken,
           [],
         ),
-        returnValue: _i3.Future<bool>.value(false),
-      ) as _i3.Future<bool>);
+        returnValue: _i5.Future<bool>.value(false),
+      ) as _i5.Future<bool>);
+}
+
+/// A class which mocks [GoogleAuthService].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockGoogleAuthService extends _i1.Mock implements _i6.GoogleAuthService {
+  MockGoogleAuthService() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  bool get isAvailable => (super.noSuchMethod(
+        Invocation.getter(#isAvailable),
+        returnValue: false,
+      ) as bool);
+
+  @override
+  _i5.Future<String?> signInWithButton() => (super.noSuchMethod(
+        Invocation.method(
+          #signInWithButton,
+          [],
+        ),
+        returnValue: _i5.Future<String?>.value(),
+      ) as _i5.Future<String?>);
+
+  @override
+  _i2.Widget buildWebSignInButton(
+          {required _i3.ValueChanged<String>? onIdToken}) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #buildWebSignInButton,
+          [],
+          {#onIdToken: onIdToken},
+        ),
+        returnValue: _FakeWidget_0(
+          this,
+          Invocation.method(
+            #buildWebSignInButton,
+            [],
+            {#onIdToken: onIdToken},
+          ),
+        ),
+      ) as _i2.Widget);
+
+  @override
+  _i5.Future<void> signOut() => (super.noSuchMethod(
+        Invocation.method(
+          #signOut,
+          [],
+        ),
+        returnValue: _i5.Future<void>.value(),
+        returnValueForMissingStub: _i5.Future<void>.value(),
+      ) as _i5.Future<void>);
 }
