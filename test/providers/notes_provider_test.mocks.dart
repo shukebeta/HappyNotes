@@ -175,8 +175,7 @@ class MockNotesService extends _i1.Mock implements _i4.NotesService {
       ) as _i5.Future<_i2.NotesResult>);
 
   @override
-  _i5.Future<_i2.NotesResult> memoriesOn(String? yyyyMMdd) =>
-      (super.noSuchMethod(
+  _i5.Future<_i2.NotesResult> memoriesOn(String? yyyyMMdd) => (super.noSuchMethod(
         Invocation.method(
           #memoriesOn,
           [yyyyMMdd],
@@ -191,8 +190,7 @@ class MockNotesService extends _i1.Mock implements _i4.NotesService {
       ) as _i5.Future<_i2.NotesResult>);
 
   @override
-  _i5.Future<_i2.NotesResult> getLinkedNotes(int? noteId) =>
-      (super.noSuchMethod(
+  _i5.Future<_i2.NotesResult> getLinkedNotes(int? noteId) => (super.noSuchMethod(
         Invocation.method(
           #getLinkedNotes,
           [noteId],
@@ -222,7 +220,7 @@ class MockNotesService extends _i1.Mock implements _i4.NotesService {
       ) as _i5.Future<_i3.Note>);
 
   @override
-  _i5.Future<_i3.Note?> update(
+  _i5.Future<_i3.Note> update(
     int? noteId,
     String? content,
     bool? isPrivate,
@@ -238,8 +236,19 @@ class MockNotesService extends _i1.Mock implements _i4.NotesService {
             isMarkdown,
           ],
         ),
-        returnValue: _i5.Future<_i3.Note?>.value(),
-      ) as _i5.Future<_i3.Note?>);
+        returnValue: _i5.Future<_i3.Note>.value(_FakeNote_1(
+          this,
+          Invocation.method(
+            #update,
+            [
+              noteId,
+              content,
+              isPrivate,
+              isMarkdown,
+            ],
+          ),
+        )),
+      ) as _i5.Future<_i3.Note>);
 
   @override
   _i5.Future<int> delete(int? noteId) => (super.noSuchMethod(
@@ -258,23 +267,6 @@ class MockNotesService extends _i1.Mock implements _i4.NotesService {
         ),
         returnValue: _i5.Future<int>.value(0),
       ) as _i5.Future<int>);
-
-  @override
-  _i5.Future<void> setIsPrivate(
-    int? noteId,
-    bool? isPrivate,
-  ) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #setIsPrivate,
-          [
-            noteId,
-            isPrivate,
-          ],
-        ),
-        returnValue: _i5.Future<void>.value(),
-        returnValueForMissingStub: _i5.Future<void>.value(),
-      ) as _i5.Future<void>);
 
   @override
   _i5.Future<_i3.Note> get(int? noteId) => (super.noSuchMethod(
@@ -317,12 +309,11 @@ class MockNotesService extends _i1.Mock implements _i4.NotesService {
       ) as _i5.Future<_i2.NotesResult>);
 
   @override
-  _i5.Future<void> purgeDeleted() => (super.noSuchMethod(
+  _i5.Future<int> purgeDeleted() => (super.noSuchMethod(
         Invocation.method(
           #purgeDeleted,
           [],
         ),
-        returnValue: _i5.Future<void>.value(),
-        returnValueForMissingStub: _i5.Future<void>.value(),
-      ) as _i5.Future<void>);
+        returnValue: _i5.Future<int>.value(0),
+      ) as _i5.Future<int>);
 }

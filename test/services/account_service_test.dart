@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:happy_notes/apis/account_api.dart';
 import 'package:happy_notes/apis/user_settings_api.dart';
 import 'package:happy_notes/entities/user_settings.dart';
+import 'package:happy_notes/exceptions/api_exception.dart';
 import 'package:happy_notes/services/account_service.dart';
 import 'package:happy_notes/services/user_settings_service.dart';
 import 'package:happy_notes/utils/token_utils.dart';
@@ -12,6 +13,7 @@ import '../test_helpers/seq_logger_setup.dart';
 
 class FakeAccountApi extends AccountApi {
   int refreshCalls = 0;
+  bool googleLoginShouldFail = false;
 
   @override
   Future<Response> login(Map<String, dynamic> params) async {
@@ -20,6 +22,26 @@ class FakeAccountApi extends AccountApi {
       data: {
         'successful': true,
         'data': {'token': 'fresh-login-token'},
+      },
+    );
+  }
+
+  @override
+  Future<Response> googleLogin(String idToken) async {
+    if (googleLoginShouldFail) {
+      return Response<dynamic>(
+        requestOptions: RequestOptions(path: '/account/googleLogin'),
+        data: {
+          'successful': false,
+          'message': 'Invalid idToken',
+        },
+      );
+    }
+    return Response<dynamic>(
+      requestOptions: RequestOptions(path: '/account/googleLogin'),
+      data: {
+        'successful': true,
+        'data': {'token': 'fresh-google-token'},
       },
     );
   }
@@ -105,6 +127,20 @@ void main() {
       await accountService.login('user', 'pass');
 
       expect(fakeUserSettingsService.tokenSeenDuringGetAll, 'fresh-login-token');
+    });
+
+    test('googleLogin stores token before loading user settings', () async {
+      SharedPreferences.setMockInitialValues({});
+
+      await accountService.googleLogin('good-id-token');
+
+      expect(fakeUserSettingsService.tokenSeenDuringGetAll, 'fresh-google-token');
+    });
+
+    test('googleLogin throws ApiException on failure', () async {
+      fakeAccountApi.googleLoginShouldFail = true;
+
+      expect(() => accountService.googleLogin('bad-id-token'), throwsA(isA<ApiException>()));
     });
   });
 }
