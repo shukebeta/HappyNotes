@@ -36,6 +36,16 @@ class AccountService {
     await _clearToken();
   }
 
+  Future<dynamic> googleLogin(String idToken) async {
+    final apiResult = (await _accountApi.googleLogin(idToken)).data;
+    if (apiResult['successful']) {
+      await _storeToken(apiResult['data']['token']);
+    } else {
+      throw ApiException(apiResult);
+    }
+    return apiResult;
+  }
+
   Future<dynamic> register(String username, String email, String password) async {
     var params = {'username': username, 'email': email, 'password': password};
     var apiResult = (await _accountApi.register(params)).data;

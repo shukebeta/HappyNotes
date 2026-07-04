@@ -4,29 +4,37 @@ import 'package:mockito/annotations.dart';
 import 'package:happy_notes/entities/user_settings.dart';
 import 'package:happy_notes/providers/auth_provider.dart';
 import 'package:happy_notes/services/account_service.dart';
+import 'package:happy_notes/services/google_auth_service.dart';
 import 'package:happy_notes/screens/account/user_session.dart';
 import 'package:get_it/get_it.dart';
 
 import 'auth_provider_test.mocks.dart';
 import '../test_helpers/seq_logger_setup.dart';
 
-@GenerateMocks([AccountService])
+@GenerateMocks([AccountService, GoogleAuthService])
 void main() {
   group('AuthProvider', () {
     late AuthProvider authProvider;
     late MockAccountService mockAccountService;
+    late MockGoogleAuthService mockGoogleAuthService;
 
     setUp(() {
       // Initialize SeqLogger for testing
       setupSeqLoggerForTesting();
-      
-      mockAccountService = MockAccountService();
 
-      // Reset GetIt and register fresh mock
+      mockAccountService = MockAccountService();
+      mockGoogleAuthService = MockGoogleAuthService();
+
+      // Reset GetIt and register fresh mocks
       if (GetIt.instance.isRegistered<AccountService>()) {
         GetIt.instance.unregister<AccountService>();
       }
       GetIt.instance.registerSingleton<AccountService>(mockAccountService);
+
+      if (GetIt.instance.isRegistered<GoogleAuthService>()) {
+        GetIt.instance.unregister<GoogleAuthService>();
+      }
+      GetIt.instance.registerSingleton<GoogleAuthService>(mockGoogleAuthService);
 
       // Clear UserSession
       UserSession().id = null;
@@ -37,6 +45,9 @@ void main() {
     tearDown(() {
       if (GetIt.instance.isRegistered<AccountService>()) {
         GetIt.instance.unregister<AccountService>();
+      }
+      if (GetIt.instance.isRegistered<GoogleAuthService>()) {
+        GetIt.instance.unregister<GoogleAuthService>();
       }
     });
 
@@ -165,6 +176,40 @@ void main() {
       expect(authProvider.isLoading, false);
     });
 
+    test('signInWithGoogle should handle successful sign-in correctly', () async {
+      when(mockAccountService.getToken()).thenAnswer((_) async => null);
+      authProvider = AuthProvider();
+      await Future.delayed(Duration.zero); // Let initAuth complete
+
+      when(mockAccountService.googleLogin('id_token')).thenAnswer((_) async => {});
+      when(mockAccountService.getToken()).thenAnswer((_) async => 'google_token');
+
+      final result = await authProvider.signInWithGoogle('id_token');
+
+      expect(result, true);
+      expect(authProvider.isAuthenticated, true);
+      expect(authProvider.token, 'google_token');
+      expect(authProvider.error, null);
+      expect(authProvider.isLoading, false);
+      verify(mockAccountService.googleLogin('id_token')).called(1);
+    });
+
+    test('signInWithGoogle should handle failed sign-in correctly', () async {
+      when(mockAccountService.getToken()).thenAnswer((_) async => null);
+      authProvider = AuthProvider();
+      await Future.delayed(Duration.zero); // Let initAuth complete
+
+      when(mockAccountService.googleLogin('bad_token')).thenThrow(Exception('Invalid idToken'));
+
+      final result = await authProvider.signInWithGoogle('bad_token');
+
+      expect(result, false);
+      expect(authProvider.error, contains('Invalid idToken'));
+      expect(authProvider.isAuthenticated, false);
+      expect(authProvider.token, null);
+      expect(authProvider.isLoading, false);
+    });
+
     test('register should handle successful registration correctly', () async {
       when(mockAccountService.getToken()).thenAnswer((_) async => null);
       authProvider = AuthProvider();
@@ -210,6 +255,7 @@ void main() {
       await Future.delayed(Duration.zero); // Let initAuth complete
 
       when(mockAccountService.logout()).thenAnswer((_) async {});
+      when(mockGoogleAuthService.signOut()).thenAnswer((_) async {});
 
       await authProvider.logout();
 
@@ -218,6 +264,7 @@ void main() {
       expect(authProvider.error, null);
       expect(authProvider.isLoading, false);
       verify(mockAccountService.logout()).called(1);
+      verify(mockGoogleAuthService.signOut()).called(1);
     });
 
     test('should notify listeners on state changes', () async {

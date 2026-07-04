@@ -43,6 +43,9 @@ class StubAuthProvider extends ChangeNotifier implements AuthProvider {
   Future<bool> register(String username, String email, String password) async => false;
 
   @override
+  Future<bool> signInWithGoogle(String idToken) async => false;
+
+  @override
   Future<void> logout() async {}
 
   @override
