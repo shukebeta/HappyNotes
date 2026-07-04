@@ -3,6 +3,7 @@ import 'package:happy_notes/screens/settings/profile_controller.dart';
 import 'package:provider/provider.dart';
 import 'package:happy_notes/screens/settings/change_password_page.dart';
 import 'package:happy_notes/utils/util.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -50,6 +51,13 @@ class ProfilePage extends StatelessWidget {
                       title: Text(user.username, style: Theme.of(context).textTheme.titleLarge),
                       subtitle: Text(user.email),
                     ),
+                    ListTile(
+                      leading: const Icon(Icons.image_outlined),
+                      title: const Text('Set up your avatar'),
+                      subtitle: const Text('Powered by Gravatar — tap to manage your photo'),
+                      trailing: const Icon(Icons.open_in_new),
+                      onTap: () => _launchGravatar(context),
+                    ),
                     const Divider(),
                     ListTile(
                       leading: const Icon(Icons.password),
@@ -79,5 +87,18 @@ class ProfilePage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<void> _launchGravatar(BuildContext context) async {
+    const url = 'https://gravatar.com';
+    try {
+      await launchUrlString(url, mode: LaunchMode.externalApplication);
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Could not launch Gravatar: $e')),
+        );
+      }
+    }
   }
 }
