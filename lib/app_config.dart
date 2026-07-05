@@ -93,6 +93,15 @@ class AppConfig {
     return _env['GOOGLE_SIGN_IN_SERVER_CLIENT_ID'] ?? '';
   }
 
+  /// Name of the running environment ('staging' / 'beta' / 'production').
+  /// Defaults to 'production' so local dev env files that predate this field
+  /// (development/mbp15/zhw) don't show a non-production indicator.
+  static String get envName {
+    final override = _overrides[AppConstants.envName];
+    if (override != null) return override;
+    return _env['ENV_NAME'] ?? 'production';
+  }
+
   /// Returns the maximum dimension (width or height) for image processing.
   ///
   /// This value is used to determine the size limit for the longer side of an image.
@@ -200,6 +209,7 @@ class AppConfig {
     AppConstants.debugging: () => debugging,
     AppConstants.imageMaxDimension: () => imageMaxDimension,
     AppConstants.googleServerClientId: () => googleServerClientId,
+    AppConstants.envName: () => envName,
   };
 
   // Method to get property value by name

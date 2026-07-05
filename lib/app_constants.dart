@@ -16,4 +16,5 @@ class AppConstants {
   static const String seqApiKey = 'seqApiKey';
   static const String seqApiUrl = 'seqApiUrl';
   static const String googleServerClientId = 'googleServerClientId';
+  static const String envName = 'envName';
 }

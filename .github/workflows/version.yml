@@ -1,0 +1,45 @@
+name: Version
+
+on:
+  push:
+    branches:
+      - master
+
+permissions:
+  contents: write
+
+jobs:
+  tag-and-changelog:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fetch tags
+        run: git fetch --tags
+
+      - name: Create release tag
+        id: tag
+        run: |
+          tag="$(bin/release-tag)"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+
+      - name: Push tag
+        run: git push origin "${{ steps.tag.outputs.tag }}"
+
+      - name: Generate changelog
+        run: bash bin/generate-changelog CHANGELOG.md
+
+      - name: Commit changelog
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add CHANGELOG.md
+          if git diff --cached --quiet; then
+            echo "No changelog changes to commit"
+          else
+            git commit -m "docs: regenerate CHANGELOG.md [skip ci]"
+            git push origin HEAD:master
+          fi
