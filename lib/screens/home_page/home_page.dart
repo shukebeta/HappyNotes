@@ -116,7 +116,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
             ),
         ],
         title: TappableAppBarTitle(
-          title: 'My Notes',
+          title: AppConfig.envName == 'production' ? 'My Notes' : 'My Notes [${AppConfig.envName.toUpperCase()}]',
           onTap: () => NavigationHelper.showTagInputDialog(context),
           onLongPress: () async {
             final navigator = Navigator.of(context);
