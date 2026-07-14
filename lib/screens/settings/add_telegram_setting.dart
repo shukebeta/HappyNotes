@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:happy_notes/entities/telegram_settings.dart';
 import '../../dependency_injection.dart';
+import '../../services/dialog_services.dart';
 import 'telegram_sync_settings_controller.dart';
 import '../../utils/util.dart'; // Import Util
 
@@ -82,16 +83,32 @@ class AddTelegramSettingState extends State<AddTelegramSetting> {
     setState(() => _isLoading = true);
 
     try {
-      await _settingsController.addTelegramSetting(
-        TelegramSettings(
-          syncType: _syncType,
-          syncValue: _syncType == 4 ? _tagController.text : '',
-          channelId: _channelIdController.text.trim(),
-          channelName: _channelNameController.text.trim(),
-          tokenRemark: _remarkController.text.trim(),
-          encryptedToken: _tokenController.text.trim(),
-        ),
+      final setting = TelegramSettings(
+        syncType: _syncType,
+        syncValue: _syncType == 4 ? _tagController.text : '',
+        channelId: _channelIdController.text.trim(),
+        channelName: _channelNameController.text.trim(),
+        tokenRemark: _remarkController.text.trim(),
+        encryptedToken: _tokenController.text.trim(),
       );
+      await _settingsController.addTelegramSetting(setting);
+      if (mounted) {
+        // The setting is saved but untested and may not sync. Remind the user
+        // to test it, without blocking — either choice keeps the setting saved.
+        final testNow = await DialogService.showConfirmDialog(
+          context,
+          title: 'Test this setting?',
+          text: "This setting hasn't been tested yet and may not sync. Test it now?",
+          noText: 'Later',
+          yesText: 'Test now',
+        );
+        if (testNow == true && mounted) {
+          final messenger = ScaffoldMessenger.of(context);
+          if (await _settingsController.testTelegramSetting(context, setting)) {
+            Util.showInfo(messenger, 'Test message sent successfully.');
+          }
+        }
+      }
       if (mounted) {
         Navigator.of(context).pop();
       }
