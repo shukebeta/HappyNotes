@@ -125,6 +125,23 @@ class TelegramSyncSettingsState extends State<TelegramSyncSettings> {
                     ),
                   ),
                 ),
+                if (!setting.isTested) ...[
+                  const SizedBox(width: 8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: Colors.orange.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: const Text(
+                      'Untested',
+                      style: TextStyle(
+                        color: Colors.orange,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
                 const Spacer(),
                 Wrap(
                   spacing: 8,
