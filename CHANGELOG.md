@@ -2,6 +2,11 @@
 
 _Generated from release tags with `bash bin/generate-changelog`._
 
+## v0.2.0 (2026-07-14)
+
+### Features
+- feat: remind user to test an untested Telegram sync setting (#54)
+
 ## v0.1.1 (2026-07-07)
 
 ### Other Changes
