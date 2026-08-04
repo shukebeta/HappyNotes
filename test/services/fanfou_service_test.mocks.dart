@@ -27,8 +27,7 @@ import 'package:mockito/src/dummies.dart' as _i5;
 /// A class which mocks [FanfouUserAccountService].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockFanfouUserAccountService extends _i1.Mock
-    implements _i2.FanfouUserAccountService {
+class MockFanfouUserAccountService extends _i1.Mock implements _i2.FanfouUserAccountService {
   MockFanfouUserAccountService() {
     _i1.throwOnMissingStub(this);
   }
@@ -39,8 +38,7 @@ class MockFanfouUserAccountService extends _i1.Mock
           #getAll,
           [],
         ),
-        returnValue: _i3.Future<List<_i4.FanfouUserAccount>>.value(
-            <_i4.FanfouUserAccount>[]),
+        returnValue: _i3.Future<List<_i4.FanfouUserAccount>>.value(<_i4.FanfouUserAccount>[]),
       ) as _i3.Future<List<_i4.FanfouUserAccount>>);
 
   @override

@@ -9,8 +9,7 @@ import 'package:mockito/mockito.dart';
 import 'fanfou_user_account_service_test.mocks.dart';
 
 @GenerateMocks([FanfouUserAccountApi])
-Response<dynamic> _resp(Map<String, dynamic> data) =>
-    Response(requestOptions: RequestOptions(path: '/'), data: data);
+Response<dynamic> _resp(Map<String, dynamic> data) => Response(requestOptions: RequestOptions(path: '/'), data: data);
 
 void main() {
   late MockFanfouUserAccountApi api;

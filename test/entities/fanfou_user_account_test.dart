@@ -22,8 +22,7 @@ void main() {
     });
 
     test('syncTypeText reflects the sync rule', () {
-      FanfouUserAccount withSyncType(int syncType) =>
-          FanfouUserAccount(syncType: syncType, statusText: 'Normal');
+      FanfouUserAccount withSyncType(int syncType) => FanfouUserAccount(syncType: syncType, statusText: 'Normal');
 
       expect(withSyncType(1).syncTypeText, 'All');
       expect(withSyncType(2).syncTypeText, 'Public note only');

@@ -65,21 +65,14 @@ void _registerServices() {
         userSettingsService: locator(),
         tokenUtils: locator(),
       ));
+  locator.registerLazySingleton(() => UserSettingsService(userSettingsApi: locator()));
+  locator.registerLazySingleton(() => TelegramSettingsService(telegramSettingsApi: locator()));
+  locator.registerLazySingleton(() => MastodonApplicationService(mastodonApplicationApi: locator()));
+  locator.registerLazySingleton(() => MastodonUserAccountService(mastodonUserAccountApi: locator()));
   locator.registerLazySingleton(
-      () => UserSettingsService(userSettingsApi: locator()));
-  locator.registerLazySingleton(
-      () => TelegramSettingsService(telegramSettingsApi: locator()));
-  locator.registerLazySingleton(
-      () => MastodonApplicationService(mastodonApplicationApi: locator()));
-  locator.registerLazySingleton(
-      () => MastodonUserAccountService(mastodonUserAccountApi: locator()));
-  locator.registerLazySingleton(() => MastodonService(
-      mastodonApplicationService: locator(),
-      mastodonUserAccountService: locator()));
-  locator.registerLazySingleton(
-      () => FanfouUserAccountService(fanfouUserAccountApi: locator()));
-  locator.registerLazySingleton(
-      () => FanfouService(fanfouUserAccountService: locator()));
+      () => MastodonService(mastodonApplicationService: locator(), mastodonUserAccountService: locator()));
+  locator.registerLazySingleton(() => FanfouUserAccountService(fanfouUserAccountApi: locator()));
+  locator.registerLazySingleton(() => FanfouService(fanfouUserAccountService: locator()));
 
   // Note: NoteUpdateCoordinator will be registered later in main.dart
   // after AppStateProvider is created, due to circular dependency
@@ -90,12 +83,9 @@ void _registerControllers() {
         accountService: locator(),
         userSettingsService: locator(),
       ));
-  locator.registerLazySingleton(
-      () => TelegramSyncSettingsController(telegramSettingService: locator()));
-  locator.registerLazySingleton(() =>
-      MastodonSyncSettingsController(mastodonUserAccountService: locator()));
-  locator.registerLazySingleton(() =>
-      FanfouSyncSettingsController(fanfouUserAccountService: locator()));
+  locator.registerLazySingleton(() => TelegramSyncSettingsController(telegramSettingService: locator()));
+  locator.registerLazySingleton(() => MastodonSyncSettingsController(mastodonUserAccountService: locator()));
+  locator.registerLazySingleton(() => FanfouSyncSettingsController(fanfouUserAccountService: locator()));
   locator.registerFactory(() => NewNoteController());
   locator.registerFactory(() => TagCloudController());
 }

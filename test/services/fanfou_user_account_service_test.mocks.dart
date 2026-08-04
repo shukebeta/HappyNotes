@@ -36,8 +36,7 @@ class _FakeResponse_0<T> extends _i1.SmartFake implements _i2.Response<T> {
 /// A class which mocks [FanfouUserAccountApi].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockFanfouUserAccountApi extends _i1.Mock
-    implements _i3.FanfouUserAccountApi {
+class MockFanfouUserAccountApi extends _i1.Mock implements _i3.FanfouUserAccountApi {
   MockFanfouUserAccountApi() {
     _i1.throwOnMissingStub(this);
   }
@@ -48,8 +47,7 @@ class MockFanfouUserAccountApi extends _i1.Mock
           #requestToken,
           [],
         ),
-        returnValue:
-            _i4.Future<_i2.Response<dynamic>>.value(_FakeResponse_0<dynamic>(
+        returnValue: _i4.Future<_i2.Response<dynamic>>.value(_FakeResponse_0<dynamic>(
           this,
           Invocation.method(
             #requestToken,
@@ -64,8 +62,7 @@ class MockFanfouUserAccountApi extends _i1.Mock
           #getAll,
           [],
         ),
-        returnValue:
-            _i4.Future<_i2.Response<dynamic>>.value(_FakeResponse_0<dynamic>(
+        returnValue: _i4.Future<_i2.Response<dynamic>>.value(_FakeResponse_0<dynamic>(
           this,
           Invocation.method(
             #getAll,
@@ -80,8 +77,7 @@ class MockFanfouUserAccountApi extends _i1.Mock
           #nextSyncType,
           [],
         ),
-        returnValue:
-            _i4.Future<_i2.Response<dynamic>>.value(_FakeResponse_0<dynamic>(
+        returnValue: _i4.Future<_i2.Response<dynamic>>.value(_FakeResponse_0<dynamic>(
           this,
           Invocation.method(
             #nextSyncType,
@@ -96,8 +92,7 @@ class MockFanfouUserAccountApi extends _i1.Mock
           #activate,
           [],
         ),
-        returnValue:
-            _i4.Future<_i2.Response<dynamic>>.value(_FakeResponse_0<dynamic>(
+        returnValue: _i4.Future<_i2.Response<dynamic>>.value(_FakeResponse_0<dynamic>(
           this,
           Invocation.method(
             #activate,
@@ -112,8 +107,7 @@ class MockFanfouUserAccountApi extends _i1.Mock
           #disable,
           [],
         ),
-        returnValue:
-            _i4.Future<_i2.Response<dynamic>>.value(_FakeResponse_0<dynamic>(
+        returnValue: _i4.Future<_i2.Response<dynamic>>.value(_FakeResponse_0<dynamic>(
           this,
           Invocation.method(
             #disable,
@@ -128,8 +122,7 @@ class MockFanfouUserAccountApi extends _i1.Mock
           #delete,
           [],
         ),
-        returnValue:
-            _i4.Future<_i2.Response<dynamic>>.value(_FakeResponse_0<dynamic>(
+        returnValue: _i4.Future<_i2.Response<dynamic>>.value(_FakeResponse_0<dynamic>(
           this,
           Invocation.method(
             #delete,
