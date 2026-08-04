@@ -99,5 +99,19 @@ void main() {
       expect(switches[0].value, isTrue);
       expect(switches[1].value, isTrue);
     });
+
+    testWidgets('shows sync-target entries including Fanfou', (tester) async {
+      await tester.pumpWidget(
+        ChangeNotifierProvider<AuthProvider>.value(
+          value: StubAuthProvider(),
+          child: const MaterialApp(home: Settings()),
+        ),
+      );
+      await tester.pump();
+
+      expect(find.text('Telegram Sync'), findsOneWidget);
+      expect(find.text('Mastodon Sync'), findsOneWidget);
+      expect(find.text('Fanfou Sync'), findsOneWidget);
+    });
   });
 }
