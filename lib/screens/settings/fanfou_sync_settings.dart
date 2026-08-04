@@ -24,6 +24,7 @@ class FanfouSyncSettingsState extends State<FanfouSyncSettings> {
 
   Future<void> _loadSyncSettings() async {
     await _settingsController.getFanfouSettings(context);
+    if (!mounted) return;
     setState(() {});
   }
 
@@ -131,8 +132,14 @@ class FanfouSyncSettingsState extends State<FanfouSyncSettings> {
                         ),
                       TextButton.icon(
                         onPressed: () async {
+                          final scaffoldMessenger = ScaffoldMessenger.of(context);
                           if (true == await DialogService.showConfirmDialog(context)) {
-                            await _settingsController.deleteFanfouSetting();
+                            try {
+                              await _settingsController.deleteFanfouSetting();
+                            } catch (e) {
+                              if (!mounted) return;
+                              Util.showError(scaffoldMessenger, e.toString());
+                            }
                             _loadSyncSettings();
                           }
                         },
