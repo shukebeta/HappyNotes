@@ -2,6 +2,11 @@
 
 _Generated from release tags with `bash bin/generate-changelog`._
 
+## v0.3.0 (2026-08-04)
+
+### Features
+- feat: add Fanfou sync settings UI (connect account + choose sync rule) (#55)
+
 ## v0.2.0 (2026-07-14)
 
 ### Features
