@@ -100,7 +100,7 @@ void main() {
       expect(switches[1].value, isTrue);
     });
 
-    testWidgets('shows sync-target entries including Fanfou', (tester) async {
+    testWidgets('shows sync-target entries including Fanfou and Ember', (tester) async {
       await tester.pumpWidget(
         ChangeNotifierProvider<AuthProvider>.value(
           value: StubAuthProvider(),
@@ -112,6 +112,7 @@ void main() {
       expect(find.text('Telegram Sync'), findsOneWidget);
       expect(find.text('Mastodon Sync'), findsOneWidget);
       expect(find.text('Fanfou Sync'), findsOneWidget);
+      expect(find.text('Ember Sync'), findsOneWidget);
     });
   });
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import 'package:happy_notes/services/seq_logger.dart';
 import 'package:provider/provider.dart';
+import 'package:happy_notes/screens/settings/ember_sync_settings.dart';
 import 'package:happy_notes/screens/settings/mastodon_sync_settings.dart';
 import 'package:happy_notes/screens/settings/fanfou_sync_settings.dart';
 import 'package:happy_notes/screens/settings/settings_controller.dart';
@@ -214,6 +215,19 @@ class SettingsState extends State<Settings> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const FanfouSyncSettings()),
+                );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.sync),
+              title: const Text('Ember Sync'),
+              subtitle: const Text('Sync public notes to Ember.'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const EmberSyncSettings(),
+                  ),
                 );
               },
             ),
