@@ -2,6 +2,11 @@
 
 _Generated from release tags with `bash bin/generate-changelog`._
 
+## v0.4.0 (2026-08-22)
+
+### Features
+- feat: add Ember sync settings UI (#57)
+
 ## v0.3.0 (2026-08-04)
 
 ### Features
